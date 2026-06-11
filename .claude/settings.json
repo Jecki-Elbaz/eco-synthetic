@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git log*)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(git branch*)",
+      "Bash(git checkout*)",
+      "Bash(git pull*)",
+      "Bash(python3 *)",
+      "Bash(pip install *)",
+      "Bash(pytest*)",
+      "Bash(black *)",
+      "Bash(ruff *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(find *)",
+      "Bash(grep *)"
+    ],
+    "deny": [
+      "Write(.env)",
+      "Write(.env.*)",
+      "Write(sources/*)",
+      "Bash(rm -rf*)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(npm install --global*)",
+      "Bash(git push --force*)",
+      "Bash(git push -f *)",
+      "Bash(git reset --hard*)",
+      "Bash(drop *)",
+      "Bash(sudo *)"
+    ]
+  },
+  "cleanupPeriodDays": 30
+}
