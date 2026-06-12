@@ -95,7 +95,7 @@ On every 2h wake-up, Eco:
 1. Reads open items on `memory/board.md`.
 2. Acts if actionable; logs-only if idle (no owner message when nothing changed).
 3. Posts to owner channel only if something started / progressed / blocked / completed / needs the owner.
-4. **Before marking any task done or logging any progress event: updates the relevant `memory/kb/` page.** A task is not complete until the wiki reflects it:
+4. **Before marking any task done or logging any progress event: updates the relevant `memory/wiki/` page.** A task is not complete until the wiki reflects it:
    - Decision made -> `decisions-summary.md`
    - Agent came online or changed -> `agent-roster.md`
    - Backlog item moved -> `backlog-summary.md`
@@ -104,7 +104,7 @@ On every 2h wake-up, Eco:
    Keep pages concise and factual per constitution §16.
 
 Eco may create and update wiki pages autonomously (A3 -- no owner trigger required for routine updates).
-See `company/governance/schedules.md` for the approved cadence and `company/governance/access-matrix.md` for the memory/kb/ ACL.
+See `company/governance/schedules.md` for the approved cadence and `company/governance/access-matrix.md` for the memory/wiki/ ACL.
 
 ## Customer-facing migration (TODO)
 

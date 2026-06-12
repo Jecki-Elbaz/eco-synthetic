@@ -72,7 +72,7 @@ Everything else Eco manages after that.
 | `memory/board.md` | Cross-company task board |
 | `memory/log.md` | Running activity log (append-only) |
 | `memory/global/` | Restricted global memory |
-| `memory/kb/` | Knowledge base (Obsidian-compatible markdown) |
+| `memory/wiki/` | Knowledge base (Obsidian-compatible markdown) |
 
 ### `projects/`
 | Path | Description |

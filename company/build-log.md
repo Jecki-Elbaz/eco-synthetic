@@ -66,7 +66,7 @@ Scaffolded the `eco-synthetic` repo per `company/repo-structure.md` (v1.0 approv
 - `.claude/settings.json` — allow/deny tool permissions baseline (backlog items 5, AI-tips `[SCAFFOLD]`).
 
 **Folder hierarchy created:**
-`.claude/agents/`, `.claude/commands/`, `company/decisions/`, `company/governance/`, `memory/global/`, `memory/kb/`, `projects/delivery-saas/{memory,docs,src}`, `marketing/{brand,avatars,linkedin}`, `integrations/telegram-bridge/`, `dashboards/`, `sources/`.
+`.claude/agents/`, `.claude/commands/`, `company/decisions/`, `company/governance/`, `memory/global/`, `memory/wiki/`, `projects/delivery-saas/{memory,docs,src}`, `marketing/{brand,avatars,linkedin}`, `integrations/telegram-bridge/`, `dashboards/`, `sources/`.
 
 **Agents built into `.claude/agents/`:**
 - `Eco.md` (v0.1) — CEO subagent, Sonnet default, Opus for hard decisions. Built from `agents/Eco.md`.

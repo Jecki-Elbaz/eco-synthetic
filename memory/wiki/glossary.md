@@ -17,7 +17,7 @@
 | Constitution section 16 | Truthfulness rule: never guess; state uncertainty plainly |
 | Wake-up task | Scheduled 2h autonomous check-in from agent to jecki; see company/governance/schedules.md |
 | Board | memory/board.md -- company task board; Eco owns; Assaf monitors |
-| KB | This knowledge base at memory/kb/; quick-reference wiki for agents |
+| KB | This knowledge base at memory/wiki/; quick-reference wiki for agents |
 | Gate | Security + Legal clearance required before tool adoption or contract |
 | Sami pattern | One on-demand SME per active project; advisory only |
 | OWNER_ONLY_MODE | Bridge config flag (True = personal OAuth only; False = customer-facing API key) |

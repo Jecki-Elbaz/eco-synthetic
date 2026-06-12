@@ -19,7 +19,7 @@ This matrix is enforced by `CLAUDE.md` deny-list and `.claude/settings.json` too
 | `memory/owner-office/` | **Owner-only** | Shelly, jecki | Shelly only | Personal-task data; gitignored; all company agents (incl. Eco) denied read -- A3 hardening 2026-06-12 |
 | `memory/board.md` | **Company-shared** | All agents | Each agent writes to its own task rows | Cross-company task board |
 | `memory/log.md` | **Company-shared** | All agents | Each agent appends its own entries | Running activity log; append-only in practice |
-| `memory/kb/` | **Company-shared** | All agents (need-to-know) | Eco (read/write, A3 autonomous -- no owner trigger for routine updates), Dalia, designated knowledge owners | Knowledge base; Obsidian-compatible |
+| `memory/wiki/` | **Company-shared** | All agents (need-to-know) | Eco (read/write, A3 autonomous -- no owner trigger for routine updates), Dalia, designated knowledge owners | Knowledge base; Obsidian-compatible |
 | `projects/<name>/` | **Partitioned** | That project's assigned agents + on-demand SME (Sami) | That project's assigned agents | Eco and relevant VPs may read any project |
 | `projects/<name>/memory/` | **Partitioned** | Project agents | Project agents | Project-scoped working memory |
 | `marketing/` | **Sales group** | Hila, Tim, Eco (narrative posts), Eyal (clearance reads) | Hila (assets), Tim (direction) | Eco for company-narrative posts only |
