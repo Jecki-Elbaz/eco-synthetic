@@ -84,6 +84,14 @@ Format per entry:
   6. No gap is a red-line violation or conflicts with roster or constitution. Go-live cleared on condition all five items resolved before first scheduled R&R review.
 - **Files affected:** .claude/agents/Eco.md
 
+## 2026-06-12 -- Owner-office workspace hardening (A3 security measure)
+
+- **Author / gate:** jecki (A3 -- ACL extension, consistent with existing access-matrix)
+- **Decision:** Created `memory/owner-office/` as an owner-only workspace for Shelly's personal-task data. Access: Shelly (write) and jecki (read) only. All company agents -- including Eco -- are explicitly denied read access. Path added to `.gitignore` so it never reaches the company GitHub repo.
+- **Rationale:** Personal-task data (owner queue, reminders, personal errands) must not be readable by company agents (Eco, Rambo, Lital, etc.) per privacy principle and Shelly's office-manager scope. Interim hardening pending T-0010 (Shelly separation assessment) outcome.
+- **Alternatives considered:** Deferred hardening until T-0010 completes (rejected -- separation assessment may take weeks; data should be protected now).
+- **Files affected:** memory/owner-office/ (new, gitignored), .gitignore, company/governance/access-matrix.md.
+
 ## 2026-06-12 -- Scheduled wake-ups approved (Eco + Shelly, 2h cadence)
 
 - **Author / gate:** jecki (A1)

@@ -16,6 +16,7 @@ This matrix is enforced by `CLAUDE.md` deny-list and `.claude/settings.json` too
 | `company/` (other) | **Restricted** | Eco, Dalia (Q&G), Anat (HR), Rambo (Security), Eyal (Legal), Lital (CFO) + role-relevant reads | Eco (A2), Dalia, Anat, Rambo, Eyal, Lital in their domains | All other agents: read-only, need-to-know context |
 | `company/governance/` | **Restricted** | Eco, Dalia, Rambo, Eyal | Dalia (access-matrix), Eyal (gate-register), Rambo (security baseline) | |
 | `memory/global/` | **Restricted** | Need-to-know only; Eco + relevant staff | Eco, relevant VP or staff with context | Never shared broadly without Eco approval |
+| `memory/owner-office/` | **Owner-only** | Shelly, jecki | Shelly only | Personal-task data; gitignored; all company agents (incl. Eco) denied read -- A3 hardening 2026-06-12 |
 | `memory/board.md` | **Company-shared** | All agents | Each agent writes to its own task rows | Cross-company task board |
 | `memory/log.md` | **Company-shared** | All agents | Each agent appends its own entries | Running activity log; append-only in practice |
 | `memory/kb/` | **Company-shared** | All agents (need-to-know) | Eco, Dalia, designated knowledge owners | Knowledge base; Obsidian-compatible |

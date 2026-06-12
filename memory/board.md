@@ -36,6 +36,7 @@ Status values: `open`, `in-progress`, `blocked`, `done`, `cancelled`.
 | T-0007 | Eco | open | Owner presentations intake: photos/audio-transcript/web-extract -> feed into structure review when provided by owner | P2 | waiting-on-owner | Owner to share files when ready |
 | T-0008 | Eco | open | LLM Wiki: seed and maintain memory/kb/ -- update pages as decisions are logged; owner steers topics | P2 | ongoing | Seeded 2026-06-12; maintain going forward |
 | T-0009 | Eco | open | Monthly: review on-demand/later agents against current workload; draft wake-up proposals for any warranting autonomous work; escalate A1; log in decisions-log | P2 | monthly recurring | Transfer to Assaf (OE) when built |
+| T-0010 | Eco | open | Shelly separation assessment: evaluate whether Shelly stays in eco-synthetic repo/runtime or separates into independent private repo+process. Deliverables: (1) privacy/security analysis of personal data in company repo vs separated; (2) ops cost of second repo/runtime/scheduler; (3) handling of company-facing duties across boundary if split; (4) recommended trigger conditions for split; (5) migration sketch. Produces recommendation only -- any actual separation is A1. | P2 | queued | Owner-requested 2026-06-12; feeds T-0006 |
 
 ## Marketing (P1 light track -- Hila)
 
