@@ -36,6 +36,10 @@ Status (2026-06-12): initial stub. Rambo to expand as T-0008.
    Risk: flag visible in process list (ps/tasklist).
    Severity: low (no secrets in system prompts; only role file text).
 
+## Obsidian Git auto-sync
+
+Obsidian Git auto-sync: the plugin commits and pushes the wiki folder to GitHub automatically. Verify that memory/wiki/ never contains .env values, tokens, or customer personal data before enabling auto-push. The .gitignore in the repo root covers these, but confirm the plugin respects the root .gitignore (it does by default since it uses the repo's git config).
+
 ## Scan log
 
 | date | scope | result | notes |

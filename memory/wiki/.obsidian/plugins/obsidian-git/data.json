@@ -1,0 +1,11 @@
+{
+  "autoSaveInterval": 10,
+  "autoPushInterval": 0,
+  "autoPullInterval": 10,
+  "commitMessage": "wiki: auto-sync {{date}}",
+  "autoCommitMessage": "wiki: auto-sync {{date}}",
+  "disablePopups": false,
+  "pullBeforePush": true,
+  "updateSubmodules": false,
+  "syncMethod": "merge"
+}
