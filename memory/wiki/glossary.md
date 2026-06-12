@@ -24,3 +24,10 @@
 | Frontmatter | YAML header in agent .md files; stripped by bridge before use as system prompt |
 | Task envelope | Standard per-invocation format: task_id, requester, objective, context_refs, inputs, constraints/gate, output_format, priority/deadline, report_back |
 | Result envelope | Standard output format: result, artifacts, decisions, escalations, tokens_used, status |
+| Haiku | Fastest/cheapest Claude tier; used for routine, high-volume agent tasks |
+| Sonnet | Mid-tier Claude model; default for most agents |
+| Opus | Most capable Claude tier; used for hard decisions and deep reasoning |
+| Model matrix | Per-agent LLM permissions table; see [[model-matrix]] and company/model-matrix.md |
+| Model router | Planned Phase A skeleton: selects model + logs usage; Claude-only for now |
+
+> Source: eco-synthetic-model-matrix.md, ingested 2026-06-13

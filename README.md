@@ -108,7 +108,15 @@ All `eco-synthetic-*.md` planning files and original `agents/` role files archiv
 
 ---
 
-## E. Security baseline
+## E. Obsidian wiki
+
+Open `memory/wiki/` as an Obsidian vault: File -> Open folder as vault -> select `C:\Users\Jecki\DEV\projects\eco-synthetic\memory\wiki`
+
+Obsidian Git plugin: install via Settings -> Community plugins -> Browse -> search "Git" by Vinzent03. Enable community plugins first if fresh vault. Config is pre-set in `.obsidian/plugins/obsidian-git/data.json`. After install, wiki auto-commits every 10 min; push manually from the Git panel.
+
+---
+
+## F. Security baseline
 
 - `.env` is **gitignored** — never commit it. Real tokens go there only.
 - `sources/` is **gitignored** — read-only archived originals.

@@ -20,6 +20,7 @@ This matrix is enforced by `CLAUDE.md` deny-list and `.claude/settings.json` too
 | `memory/board.md` | **Company-shared** | All agents | Each agent writes to its own task rows | Cross-company task board |
 | `memory/log.md` | **Company-shared** | All agents | Each agent appends its own entries | Running activity log; append-only in practice |
 | `memory/wiki/` | **Company-shared** | All agents (need-to-know) | Eco (read/write, A3 autonomous -- no owner trigger for routine updates), Dalia, designated knowledge owners | Knowledge base; Obsidian-compatible |
+| `memory/wiki/raw/` | **Ingest staging** | Eco | jecki (owner), Claude Code | Staging area for /ingest; working copies only -- originals stay in sources/ |
 | `projects/<name>/` | **Partitioned** | That project's assigned agents + on-demand SME (Sami) | That project's assigned agents | Eco and relevant VPs may read any project |
 | `projects/<name>/memory/` | **Partitioned** | Project agents | Project agents | Project-scoped working memory |
 | `marketing/` | **Sales group** | Hila, Tim, Eco (narrative posts), Eyal (clearance reads) | Hila (assets), Tim (direction) | Eco for company-narrative posts only |

@@ -56,3 +56,11 @@ temp-repo-scan/
 
 # Node (for any future integrations)
 node_modules/
+
+# Obsidian -- keep app.json and plugin configs; ignore workspace state and cache
+memory/wiki/.obsidian/workspace.json
+memory/wiki/.obsidian/workspace-mobile.json
+memory/wiki/.obsidian/cache
+memory/wiki/.obsidian/*.log
+# Track app.json and plugin configs (already not matching the above patterns)
+
