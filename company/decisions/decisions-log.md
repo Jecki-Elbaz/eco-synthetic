@@ -123,3 +123,11 @@ Format per entry:
 - **Rationale:** Company Google account created (2026-06-12); Drive, Gmail, and Calendar access enables Eco to read meeting transcripts and proposals via /ingest, Shelly to monitor for awaiting-owner threads, and Eco to read calendar context for meeting prep. Gate bypass approved by owner given account is company-owned and access is read-only.
 - **Alternatives considered:** Full gate review (deferred -- owner waived given read-only scope and owned account); write access (not approved -- separate A1 required per service).
 - **Files affected:** .claude/settings.json (mcpServers), CLAUDE.md (connector rules), .claude/commands/ingest.md (Drive source), .claude/agents/Shelly.md (Gmail monitoring), .claude/agents/Eco.md (Calendar context), company/governance/access-matrix.md, company/governance/gate-register.md, memory/wiki/glossary.md.
+
+## 2026-06-13 -- Gmail MCP removed from project; Drive and Calendar retained
+
+- **Author / gate:** owner (A1)
+- **Decision:** Gmail MCP connector removed from project configuration. Drive and Calendar remain connected (read-only, pending re-authorization to eco.synthetic.org@gmail.com). Gmail monitoring deferred -- Shelly.md reverted to no Gmail tools.
+- **Rationale:** Owner chose to exclude Gmail from this project integration for now.
+- **Alternatives considered:** Keeping Gmail (deferred until explicit re-authorization request).
+- **Files affected:** .claude/settings.json, CLAUDE.md, .claude/agents/Shelly.md, company/governance/gate-register.md, company/governance/access-matrix.md.

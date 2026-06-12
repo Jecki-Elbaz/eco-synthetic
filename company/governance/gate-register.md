@@ -25,7 +25,6 @@ Per constitution §6: Security clears risk, Legal clears terms, then A2 grant (A
 | GitHub (free tier) | Git host / CI | free | jecki (A1) | Repo host; GitHub Actions for CI |
 | Canva (free tier) | Design / brand | free | jecki (A1) | Hila's brand and avatar tooling |
 | Google Drive MCP | connector | free (company account) | jecki (A1, gate bypassed 2026-06-12) | read-only scope; adopted (read-only); pin version at setup |
-| Gmail MCP | connector | free (company account) | jecki (A1, gate bypassed 2026-06-12) | read-only scope; adopted (read-only); pin version at setup |
 | Google Calendar MCP | connector | free (company account) | jecki (A1, gate bypassed 2026-06-12) | read-only scope; adopted (read-only); pin version at setup |
 
 ---

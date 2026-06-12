@@ -79,6 +79,5 @@ Rules:
 - NEVER send personal correspondence or sensitive email content to any summarization
   model without A1 + privacy review.
 - Drive: use for meeting transcripts, proposals, spec docs flowing into /ingest.
-- Gmail: Shelly monitors for awaiting-owner threads and company setup replies only.
-  Eco may search for project-relevant threads when explicitly tasked.
 - Calendar: read schedule context for task timing and meeting prep only.
+- Gmail: not connected to this project. Shelly Gmail monitoring is deferred.

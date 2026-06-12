@@ -30,7 +30,6 @@ This matrix is enforced by `CLAUDE.md` deny-list and `.claude/settings.json` too
 | `integrations/` | **Partitioned** | Shir (DevOps), Eco | Shir (DevOps), under VP R&D approval | Telegram bridge and future integrations |
 | `dashboards/` | **Restricted** | Lital (CFO), jecki | Assaf (OE templates), Lital (financial views) | Owner-facing views only |
 | Google Drive (read-only) | External | Eco, Shelly, Claude Code | read via MCP; no write |
-| Gmail (read-only) | External | Shelly (monitoring), Eco (on explicit task) | search+read only; no draft/send |
 | Google Calendar (read-only) | External | Eco (context), Shelly (scheduling) | read only; no create/edit |
 
 ---
