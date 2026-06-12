@@ -59,5 +59,15 @@ NanoClaw is not adopted and not approved. It is held in reserve only as a future
 
 ---
 
+## Pending review
+
+Items flagged by the owner or agents; blocked until Rambo (Security) + Eyal (Legal) clear them.
+
+| Tool / Service | Type | Source | Flagged by | Rambo | Eyal | Notes |
+|----------------|------|--------|------------|-------|------|-------|
+| meeting-prep agent | External agent / GitHub repo | https://github.com/automation-flow/meeting-prep | jecki (owner, 2026-06-13) | pending | pending | Proposed for Sales team (under Tim, P3). Rambo: scan for .claude/, CLAUDE.md, .cursorrules prompt-injection risk before adoption. Eyal: review repo license and any terms. Agent stub created at .claude/agents/MeetingPrep.md (status: pending-gate-clearance). Do not activate until both clear. |
+
+---
+
 ## Adding a new tool
 Any agent that identifies a tool need flags its manager. The manager escalates to Eco. Eco routes it to Rambo (Security risk review) and Eyal (Legal terms review). Once both clear it, A2 grant (or A1 if borderline or paid). The tool then gets a row here. Free-first is mandatory while budget is 0; any paid tool is A1.
