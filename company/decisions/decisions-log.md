@@ -68,3 +68,26 @@ Format per entry:
 - **Decision:** Repo scaffolded per `company/repo-structure.md`. All folders, infrastructure files, agent role files, and company docs placed. See `company/build-log.md` Phase 1 entry for full change list.
 - **Rationale:** Phase 1 prerequisite — repo structure required before activating Eco and Shelly.
 - **Files affected:** All new files listed in build-log.md 2026-06-12 entry.
+
+
+## 2026-06-12 -- Eco (CEO) HR certification
+
+- **Author / gate:** Anat (HR, A3 certification)
+- **Decision:** Conditionally certified. Go-live cleared. Gaps listed below must be resolved in the next role file update before the first R&R review.
+- **Rationale:** Reviewed Eco.md against role-file-template.md, roster (v2.2), constitution (v2.2), and access-matrix (v1.0). Core sections present and consistent: purpose, responsibilities, authority (A2 operational / A1 reserved for jecki), budget 0 / no spend, chain of command (tasked by jecki only), task and result envelopes, tone (matches constitution section 5), model spec (claude-sonnet-4-6), key files, certification status. Nine of thirteen constitution red lines reflected. No conflicts with roster, constitution, or access matrix. No red-line violations. Role correctly reflects Eco position: L2, reports to jecki only, A2 authority, A1 to owner.
+- **Gaps or flags:**
+  1. KPIs / success metrics -- absent. Template requires this section. Add in next version.
+  2. Triggers -- absent. Template requires this section. Add in next version.
+  3. Escalation path -- absent as explicit section (implied: jecki / A1). Must be explicit in next version.
+  4. Identity block -- version number, last-updated date, change log absent. Add in next version.
+  5. Constitution red lines 9, 10, 11 absent from Eco.md: RL9 personal data beyond stated purpose; RL10 third-party proprietary data unlawfully; RL11 represent company legally or publicly without authorization. RL11 is directly relevant for a CEO role. None are blocking at P1, but all three must be added in next version.
+  6. No gap is a red-line violation or conflicts with roster or constitution. Go-live cleared on condition all five items resolved before first scheduled R&R review.
+- **Files affected:** .claude/agents/Eco.md
+
+## 2026-06-12 -- Scheduled wake-ups approved (Eco + Shelly, 2h cadence)
+
+- **Author / gate:** jecki (A1)
+- **Decision:** Eco and Shelly are now triggered on a 2-hour internal schedule in addition to jecki's messages. Each agent sends a proactive task check-in to jecki's Telegram chat every 2h (first fire after 2h from bridge start; subsequent fires every 2h). Implemented as asyncio tasks in the Telegram bridge.
+- **Rationale:** Agents should be proactive. The 2h cadence allows autonomous progress review and surfacing of blockers without jecki needing to initiate each check-in. Internal asyncio loop chosen over Windows Task Scheduler for P1 simplicity.
+- **Alternatives considered:** Windows Task Scheduler (external; harder to maintain in P1); /tasks command only (too passive; relies on jecki initiating).
+- **Files affected:** integrations/telegram-bridge/bridge.py, company/governance/schedules.md.

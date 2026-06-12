@@ -44,5 +44,12 @@ ehthumbs.db
 *.log
 logs/
 
+# Runtime bridge data (conversation history, events -- never commit)
+memory/log.jsonl
+memory/chats/
+
+# Security scan staging area
+temp-repo-scan/
+
 # Node (for any future integrations)
 node_modules/
