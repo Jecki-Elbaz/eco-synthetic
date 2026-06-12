@@ -29,5 +29,8 @@
 | Opus | Most capable Claude tier; used for hard decisions and deep reasoning |
 | Model matrix | Per-agent LLM permissions table; see [[model-matrix]] and company/model-matrix.md |
 | Model router | Planned Phase A skeleton: selects model + logs usage; Claude-only for now |
+| MCP (Model Context Protocol) | The standard that lets Claude Code tools connect to external services |
+| Google Workspace MCP | Connector giving read-only access to Drive, Gmail, Calendar via claude.ai OAuth session |
+| /ingest drive | Command to pull a Drive file into the wiki: /ingest drive:"search query" |
 
 > Source: eco-synthetic-model-matrix.md, ingested 2026-06-13

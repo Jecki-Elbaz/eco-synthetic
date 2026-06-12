@@ -15,3 +15,23 @@ Ingest a raw file into the wiki. Steps:
 Never ingest files outside sources/ or memory/wiki/raw/.
 Never overwrite existing page content -- append or merge only.
 Apply constitution section 16: if content is ambiguous, note the ambiguity in the page rather than guessing.
+
+---
+
+## Drive ingest (addition to /ingest)
+
+Usage: /ingest drive:<search-query>
+Example: /ingest drive:"meeting transcript delivery saas"
+
+Steps:
+1. Search Drive for files matching <search-query> (use mcp__claude_ai_Google_Drive__search_files tool).
+2. For each result, read the file content (mcp__claude_ai_Google_Drive__read_file_content or download_file_content).
+3. Copy the raw content to memory/wiki/raw/<filename>-<date>.md (never modify the Drive original).
+4. Run the standard ingest process on the local copy.
+5. Log the Drive source URL in the source-reference line at the bottom of each wiki page:
+   "> Source: Drive/<filename>, ingested <date>"
+6. Report: files found, pages created/updated.
+
+Never download files outside the owner's explicit search query.
+Never store verbatim personal correspondence -- summarize and extract only.
+Write tools (copy_file, create_file) are blocked -- read-only access only.

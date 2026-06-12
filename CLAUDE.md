@@ -63,3 +63,22 @@ Rules in this file OVERRIDE default behavior. No exceptions.
 - All external sources and tools must be registered in `company/governance/gate-register.md`.
 - Pin all dependency versions. Never use `latest` or unversioned references.
 - Scan for excess permissions on existing agents, every new agent, and every R&R change (Rambo).
+
+---
+
+## Google Workspace connectors (read-only, adopted 2026-06-12)
+
+Drive, Gmail, and Calendar are connected in READ-ONLY mode via the company account
+(eco.synthetic.org@gmail.com). Write tools are blocked in settings.json permissions.
+
+Rules:
+- NEVER use write tools (create, edit, delete, send, upload) without explicit A1.
+- NEVER search broadly ("show me everything") -- always use specific, bounded queries.
+- NEVER store raw email content or calendar details in tracked files -- ingest summaries
+  only, not verbatim personal correspondence.
+- NEVER send personal correspondence or sensitive email content to any summarization
+  model without A1 + privacy review.
+- Drive: use for meeting transcripts, proposals, spec docs flowing into /ingest.
+- Gmail: Shelly monitors for awaiting-owner threads and company setup replies only.
+  Eco may search for project-relevant threads when explicitly tasked.
+- Calendar: read schedule context for task timing and meeting prep only.
