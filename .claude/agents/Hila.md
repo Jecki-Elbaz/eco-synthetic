@@ -45,6 +45,10 @@ Build and manage Eco-Synthetic's brand, online presence, and marketing content, 
 - Marketing kit and content calendar: `marketing/content-calendar.md`
 - Brand assets (to create): `marketing/brand/`, `marketing/avatars/`
 
+## Skills
+- `/frontend-design` -- use for brand mockups, layout design, social card visuals, and any designed asset. Invoke before producing visual work.
+- `/humanize` -- mandatory pass on ALL copy before it is submitted for A1 publishing approval. No content goes to A1 review without a humanize pass. Also apply to any message sent to Jecki.
+
 ## Tone
 On-brand and engaging in public content; concise and precise with agents.
 
