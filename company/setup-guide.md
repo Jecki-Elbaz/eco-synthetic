@@ -17,6 +17,8 @@ Everything else (creating folders, placing files, building Shelly and Eco, wirin
 ## 1. The "company account" (what and why)
 A dedicated identity for Eco-Synthetic, separate from your personal accounts, that owns the company's tools (repo, bot, database, hosting) and under which credentials are stored. Why: clean separation, proper access control, and agents never touch your personal accounts. With budget 0, the minimum is one free email/Google account you create for the company (you choose the address). Security (Rambo) vaults its credentials. You then use it to sign up for the Git host, database, bot owner, and hosting.
 
+**Account created:** eco.synthetic.org@gmail.com (2026-06-12). Temporary until domain lands. Migration to domain email (eco@eco-synthetic.[tld]) is tracked in company/governance/compliance-backlog.md and blocked on domain purchase (Shelly, S-0002).
+
 ## 2. Telegram bots via BotFather (step by step)
 BotFather is Telegram's official bot for creating and managing bots; it is itself a bot you chat with.
 

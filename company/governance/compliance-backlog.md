@@ -39,6 +39,14 @@ Status (2026-06-12): initial stub. Eyal and Lital to fill in detail.
 - Owner: Dalia (Quality + Governance) + Rambo (Security)
 - Notes: Adopt ISO 9001 / 27001 as guidance now; certify only if required (constitution section 13)
 
+## Company Google account migration
+
+- Status: pending -- account created (eco.synthetic.org@gmail.com, 2026-06-12); migration blocked on domain approval
+- Required by: before first external email or client contact
+- Owner: Shelly (execution, S-0002) + Eco (coordination)
+- Notes: When domain is approved and purchased by Shelly (S-0002), migrate eco.synthetic.org@gmail.com to eco@eco-synthetic.[tld]; update all MCP connector auth and the gate-register.
+- Action: Shelly tracks domain purchase in S-0002; Eco flags this item when domain is confirmed.
+
 ## Open items (Eyal + Lital to resolve)
 
 1. Eyal: confirm Israeli company registration timeline and cost; flag to Eco 30 days before first contract.

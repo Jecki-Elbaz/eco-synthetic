@@ -107,3 +107,11 @@ Format per entry:
 - **Rationale:** Agents should be proactive. The 2h cadence allows autonomous progress review and surfacing of blockers without jecki needing to initiate each check-in. Internal asyncio loop chosen over Windows Task Scheduler for P1 simplicity.
 - **Alternatives considered:** Windows Task Scheduler (external; harder to maintain in P1); /tasks command only (too passive; relies on jecki initiating).
 - **Files affected:** integrations/telegram-bridge/bridge.py, company/governance/schedules.md.
+
+## 2026-06-12 -- Company Google account created (A1)
+
+- **Author / gate:** owner (A1)
+- **Decision:** Company Google account created: eco.synthetic.org@gmail.com. This is the account to use for all Eco-Synthetic Google Workspace MCP connections (Drive, Gmail, Calendar). Temporary until domain lands; migration to domain email tracked in compliance-backlog.md. Shelly's personal Google connections go in her own separate project once she is separated.
+- **Rationale:** Clean separation of company identity from owner's personal accounts; required before any Google Workspace MCP integration (Drive, Gmail, Calendar) can be wired up.
+- **Alternatives considered:** Use owner's personal Google account (rejected -- violates company/personal separation principle).
+- **Files affected:** company/setup-guide.md, company/governance/compliance-backlog.md.
