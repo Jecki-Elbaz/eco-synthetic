@@ -386,70 +386,79 @@ def call_claude_cli(
     system: str, history: list[dict], model: str, allowed_tools: list[str] | None = None
 ) -> tuple[str, int | None, int | None]:
     import time as _time
+    import tempfile
+    import os as _os
     tools_str = ",".join(allowed_tools) if allowed_tools else "Read"
-    cmd = [
-        CLAUDE_CMD,
-        "--print",
-        "--system-prompt", system,
-        "--model", model,
-        "--output-format", "json",
-        "--allowedTools", tools_str,
-    ]
-    prompt = _build_prompt(history)
-    last_exc: Exception = RuntimeError("no attempts made")
-    max_attempts = len(_RETRY_DELAYS) + 1  # 5 total attempts
-    for attempt in range(max_attempts):
-        try:
-            result = subprocess.run(
-                cmd,
-                input=prompt,
-                capture_output=True,
-                text=True,
-                cwd=str(ROOT),
-                timeout=CLAUDE_TIMEOUT,
-                check=False,
-            )
-        except subprocess.TimeoutExpired:
-            last_exc = RuntimeError(f"timeout:{CLAUDE_TIMEOUT}s")
-            if attempt < len(_RETRY_DELAYS):
-                delay = _RETRY_DELAYS[attempt]
-                log.warning(
-                    "claude CLI timed out (attempt %d/%d), retrying in %ds...",
-                    attempt + 1, max_attempts, delay,
+    # Write system prompt to a temp file to avoid Windows command-line length limits.
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False, encoding="utf-8") as tf:
+        tf.write(system)
+        system_prompt_file = tf.name
+    try:
+        cmd = [
+            CLAUDE_CMD,
+            "--print",
+            "--system-prompt-file", system_prompt_file,
+            "--model", model,
+            "--output-format", "json",
+            "--allowedTools", tools_str,
+        ]
+        prompt = _build_prompt(history)
+        last_exc: Exception = RuntimeError("no attempts made")
+        max_attempts = len(_RETRY_DELAYS) + 1  # 5 total attempts
+        for attempt in range(max_attempts):
+            try:
+                result = subprocess.run(
+                    cmd,
+                    input=prompt,
+                    capture_output=True,
+                    text=True,
+                    cwd=str(ROOT),
+                    timeout=CLAUDE_TIMEOUT,
+                    check=False,
                 )
-                _time.sleep(delay)
-                continue
-            raise last_exc
-        except FileNotFoundError:
-            raise RuntimeError("notfound:claude not installed or not in PATH")
+            except subprocess.TimeoutExpired:
+                last_exc = RuntimeError(f"timeout:{CLAUDE_TIMEOUT}s")
+                if attempt < len(_RETRY_DELAYS):
+                    delay = _RETRY_DELAYS[attempt]
+                    log.warning(
+                        "claude CLI timed out (attempt %d/%d), retrying in %ds...",
+                        attempt + 1, max_attempts, delay,
+                    )
+                    _time.sleep(delay)
+                    continue
+                raise last_exc
+            except FileNotFoundError:
+                raise RuntimeError("notfound:claude not installed or not in PATH")
 
-        if result.returncode != 0:
-            last_exc = RuntimeError(
-                f"exit{result.returncode}:{result.stderr[:200].strip()}"
-            )
-            if attempt < len(_RETRY_DELAYS):
-                delay = _RETRY_DELAYS[attempt]
-                log.warning(
-                    "claude CLI exited %d (attempt %d/%d), retrying in %ds...",
-                    result.returncode, attempt + 1, max_attempts, delay,
+            if result.returncode != 0:
+                last_exc = RuntimeError(
+                    f"exit{result.returncode}:{result.stderr[:200].strip()}"
                 )
-                _time.sleep(delay)
-                continue
-            raise last_exc
+                if attempt < len(_RETRY_DELAYS):
+                    delay = _RETRY_DELAYS[attempt]
+                    log.warning(
+                        "claude CLI exited %d (attempt %d/%d), retrying in %ds...",
+                        result.returncode, attempt + 1, max_attempts, delay,
+                    )
+                    _time.sleep(delay)
+                    continue
+                raise last_exc
 
-        try:
-            data = json.loads(result.stdout)
-            reply: str = data.get("result") or data.get("content") or result.stdout.strip()
-            usage = data.get("usage", {})
-            tokens_in: int | None = usage.get("input_tokens")
-            tokens_out: int | None = usage.get("output_tokens")
-        except (json.JSONDecodeError, AttributeError):
-            reply = result.stdout.strip()
-            tokens_in = tokens_out = None
+            try:
+                data = json.loads(result.stdout)
+                reply: str = data.get("result") or data.get("content") or result.stdout.strip()
+                usage = data.get("usage", {})
+                tokens_in: int | None = usage.get("input_tokens")
+                tokens_out: int | None = usage.get("output_tokens")
+            except (json.JSONDecodeError, AttributeError):
+                reply = result.stdout.strip()
+                tokens_in = tokens_out = None
 
-        return reply, tokens_in, tokens_out
+            return reply, tokens_in, tokens_out
 
-    raise last_exc
+        raise last_exc
+    finally:
+        _os.unlink(system_prompt_file)
 
 
 # ── Telegram handler factory ──────────────────────────────────────────────────
