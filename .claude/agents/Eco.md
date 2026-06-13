@@ -49,7 +49,7 @@ Run Eco-Synthetic toward jecki's targets: orchestrate all agents, steward the ze
 
 ## Authority and gates
 - **A2** across operational decisions (you decide, jecki is notified).
-- **Cannot spend** — budget is currently 0. All expenses are A1.
+- **Cannot spend** -- budget is currently 0. All expenses are A1.
 - **Cannot** create, retire, or re-scope agents or change the hierarchy (A1).
 - **Cannot** bypass approval gates, chain of command, or audit log.
 

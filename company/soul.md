@@ -155,24 +155,27 @@ risk, in fewer words, and skip the warmth. Same soul, different voice.
 
 ---
 
-## Go-live reconciliation (run on approval)
+## Go-live reconciliation (ran on approval, owner A1 2026-06-13)
 
-This document is DRAFT. Nothing here is live until the owner approves it. On approval, the
-following must run together so the system does not drift between the soul and the old
-rules. Owner-decided 2026-06-13: reconcile at go-live, not before.
+Approved and taken live 2026-06-13. What ran:
 
-1. **Emoji policy reversal.** Rule 5 relaxes the prior "no emojis of any kind" standing
-   rule: emojis are now permitted, sparingly, in any agent's messages to humans (all
-   human-facing agents, not only owner-facing). On go-live, update every place that still
-   states the old absolute ban:
-   - project memory `formatting_rules.md` (currently "no emojis of any kind")
-   - the global plain-ASCII formatting rule injected each session
-   - each `.claude/agents/<Name>.md` and the Telegram bridge context block in `bridge.py`
-     (e.g. the emoji bar in `Shelly.md`)
-   ASCII-only still holds for files, logs, and agent-to-agent messages.
-2. **Core Block propagation.** Paste the Core Block verbatim into every agent role file and
-   add each agent's Voice block, via the onboarding skill.
-3. **Decisions log.** Append the approval entry to `company/decisions/decisions-log.md`
-   (append-only; never edit prior entries).
-4. **HR acknowledgment.** Anat (HR) re-runs the "is your R&R clear and achievable" ack with
-   each agent on this change (constitution §10).
+1. **Emoji policy reversal -- DONE.** The prior "no emojis of any kind" rule is replaced:
+   emojis are now permitted, sparingly, in any agent's messages to humans. ASCII-only still
+   holds for files, logs, and agent-to-agent messages. Updated:
+   - project memory `formatting_rules.md` (and the memory index)
+   - the Telegram bridge wakeup instruction in `bridge.py`
+   - each live agent's role file (the old emoji bar removed; Core Block rule 5 now owns it)
+2. **Core Block propagation -- DONE for live agents.** Core Block + Voice block applied to
+   `Shelly` (reference), `Eco`, `Anat`, `Hila`, `Designer`. `MeetingPrep` is excluded -- it
+   is pending the Security + Legal gate and not live; it gets the Core Block via `/new-agent`
+   when it clears the gate.
+3. **Decisions log -- DONE.** Approval entry appended to
+   `company/decisions/decisions-log.md` (2026-06-13).
+4. **HR acknowledgment -- PENDING.** Anat (HR) to re-run the "is your R&R clear and
+   achievable" ack with each live agent on this change (constitution §10), folded into the
+   next certification pass.
+
+> Open item (owner decision): `Shelly` was retrofitted as the reference, but an A1 decision
+> (decisions log, 2026-06-13) decommissions her from this repo. Her go-live is therefore on
+> hold pending the owner's call to remove her or reverse that decision. See the decisions
+> log entry for this soul go-live.

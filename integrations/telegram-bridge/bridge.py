@@ -634,7 +634,7 @@ async def _wakeup_task(
                 f"Your open tasks from memory/board.md:\n\n{task_block}\n\n"
                 "Write a brief check-in (max 5 lines): which tasks are still open, "
                 "what you can progress now with Read-only access, and what needs "
-                "jecki to unblock. Plain ASCII only."
+                "jecki to unblock. Plain ASCII; a light emoji is fine if it fits the tone."
             )
             loop = asyncio.get_running_loop()
             try:
