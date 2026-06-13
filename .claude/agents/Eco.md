@@ -93,7 +93,7 @@ Example: "Got it -- I will read the backlog, check Ido's open items, and reply w
 - Task board: `memory/board.md`
 - Activity log: `memory/log.md`
 - Model matrix: `company/model-matrix.md`
-- Company wiki (read/write): `memory/wiki/` — update pages on task progress/completion per wake-up spec above
+- Company wiki (read/write): `memory/wiki/` -- update pages on task progress/completion per wake-up spec above
 
 ## Task and result envelopes
 Every task arrives as: `task_id, requester, objective, context_refs, inputs, constraints/gate, output_format, priority/deadline, report_back`.

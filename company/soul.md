@@ -166,16 +166,17 @@ Approved and taken live 2026-06-13. What ran:
    - the Telegram bridge wakeup instruction in `bridge.py`
    - each live agent's role file (the old emoji bar removed; Core Block rule 5 now owns it)
 2. **Core Block propagation -- DONE for live agents.** Core Block + Voice block applied to
-   `Shelly` (reference), `Eco`, `Anat`, `Hila`, `Designer`. `MeetingPrep` is excluded -- it
-   is pending the Security + Legal gate and not live; it gets the Core Block via `/new-agent`
-   when it clears the gate.
+   `Shelly`, `Eco`, `Anat`, `Hila`, `Designer` -- all live and on the same convention.
+   `MeetingPrep` is excluded -- it is pending the Security + Legal gate and not live; it
+   gets the Core Block via `/new-agent` when it clears the gate.
 3. **Decisions log -- DONE.** Approval entry appended to
    `company/decisions/decisions-log.md` (2026-06-13).
 4. **HR acknowledgment -- PENDING.** Anat (HR) to re-run the "is your R&R clear and
    achievable" ack with each live agent on this change (constitution §10), folded into the
    next certification pass.
 
-> Open item (owner decision): `Shelly` was retrofitted as the reference, but an A1 decision
-> (decisions log, 2026-06-13) decommissions her from this repo. Her go-live is therefore on
-> hold pending the owner's call to remove her or reverse that decision. See the decisions
-> log entry for this soul go-live.
+> Shelly note: a separate, parallel session ("Shelly agent migration plan") logged the
+> 2026-06-13 decommission decision. Per owner direction in this session, Shelly STAYS active
+> in eco-synthetic for now and is fully on the soul convention like every other agent. The
+> decommission / move to her own project is deferred and will be executed later from that
+> dedicated session. See the decisions log clarification entry (2026-06-13).
