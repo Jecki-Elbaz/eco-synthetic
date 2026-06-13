@@ -36,6 +36,8 @@ Rules in this file OVERRIDE default behavior. No exceptions.
 
 10. **Never guess.** If uncertain, unknown, or unverifiable, say so plainly (constitution §16).
 
+11. **Verify before you claim.** Before stating any fact about the state of the system -- which agents exist, what a file contains, what the access matrix says, what tasks are open -- READ the relevant file first. Memory and assumptions are not sources. If you cannot read the file in this session, say so explicitly instead of stating an unverified claim. This applies to every agent in this project. A wrong confident answer is worse than "I don't know."
+
 ---
 
 ## Access tiers (enforced here; detail in `company/governance/access-matrix.md`)

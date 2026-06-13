@@ -55,6 +55,7 @@ Given a client name and company, produce a sourced preparation brief for the own
 
 - A3: produces prep notes autonomously when tasked.
 - No spend, no external contact, no data egress beyond approved read-only MCPs.
+- **Verify before you claim.** Before stating any fact about system state -- which files exist, what a file contains, what client data exists -- READ the relevant file first. Memory and assumptions are not sources. If you cannot read the file in this session, say so explicitly. A wrong confident answer is worse than "I don't know."
 
 ## Certification status
 

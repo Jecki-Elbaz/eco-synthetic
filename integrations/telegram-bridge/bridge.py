@@ -142,10 +142,18 @@ _AGENT_ACCESS: dict[str, list[str]] = {
         "integrations/ — bridge and future integrations",
     ],
     "shelly": [
-        "memory/board.md — owner-office section (your own task rows)",
+        "memory/board.md — read and write your own task rows (owner-office scope)",
         "company/setup-guide.md — your pending task reference",
         ".claude/agents/Shelly.md — your own role file",
     ],
+}
+
+# Tools granted to each agent at the CLI level (--allowedTools).
+# Must match the tools: line in the agent's .claude/agents/*.md frontmatter,
+# scoped to what is safe to grant in a Telegram session.
+_AGENT_TOOLS: dict[str, list[str]] = {
+    "eco": ["Read"],
+    "shelly": ["Read", "Write", "Edit"],
 }
 
 
@@ -176,7 +184,11 @@ def _strip_frontmatter(text: str) -> str:
 
 def _build_bridge_context(agent_name: str) -> str:
     access = _AGENT_ACCESS.get(agent_name.lower(), ["memory/board.md"])
+    tools = _AGENT_TOOLS.get(agent_name.lower(), ["Read"])
     access_lines = "\n".join(f"  - {p}" for p in access)
+    tools_str = ", ".join(tools)
+    unavailable = [t for t in ["Write", "Edit", "Bash", "WebSearch", "WebFetch"] if t not in tools]
+    unavailable_str = ", ".join(unavailable) if unavailable else "none"
     return f"""
 ---
 
@@ -185,13 +197,12 @@ def _build_bridge_context(agent_name: str) -> str:
 You are responding through the Eco-Synthetic Telegram bridge. This session has hard
 limits that override any assumption from your role file.
 
-**Available tools:** Read only.
-**Paths you are authorised to read in this session:**
+**Available tools:** {tools_str}.
+**Paths you are authorised to access in this session:**
 {access_lines}
 
-**Not available:** Write, Edit, Bash, Agent tool, web access, inter-agent messaging.
-You cannot contact other agents. You cannot write or modify files.
-You cannot make external network calls.
+**Not available in this session:** {unavailable_str}, Agent tool, inter-agent messaging.
+You cannot contact other agents. You cannot make external network calls.
 
 **Non-negotiable rule (constitution §16 + CLAUDE.md red line 10):**
 Never state, imply, or confirm that you have done something you have not done.
@@ -372,16 +383,17 @@ _RETRY_DELAYS = (1, 2, 4, 8)  # exponential backoff delays in seconds (4 retries
 
 
 def call_claude_cli(
-    system: str, history: list[dict], model: str
+    system: str, history: list[dict], model: str, allowed_tools: list[str] | None = None
 ) -> tuple[str, int | None, int | None]:
     import time as _time
+    tools_str = ",".join(allowed_tools) if allowed_tools else "Read"
     cmd = [
         CLAUDE_CMD,
         "--print",
         "--system-prompt", system,
         "--model", model,
         "--output-format", "json",
-        "--allowedTools", "Read",
+        "--allowedTools", tools_str,
     ]
     prompt = _build_prompt(history)
     last_exc: Exception = RuntimeError("no attempts made")
@@ -457,9 +469,10 @@ def make_handlers(bot_name: str, system_prompt: str):
         chat_id = update.effective_chat.id  # type: ignore[union-attr]
         loop = asyncio.get_running_loop()
         try:
+            agent_tools = _AGENT_TOOLS.get(bot_name, ["Read"])
             reply, tokens_in, tokens_out = await loop.run_in_executor(
                 None,
-                lambda: call_claude_cli(system_prompt, history, model),
+                lambda: call_claude_cli(system_prompt, history, model, agent_tools),
             )
         except Exception as exc:
             err = str(exc)
@@ -577,12 +590,14 @@ async def _wakeup_task(
             )
             loop = asyncio.get_running_loop()
             try:
+                agent_tools = _AGENT_TOOLS.get(bot_name, ["Read"])
                 reply, tokens_in, tokens_out = await loop.run_in_executor(
                     None,
                     lambda: call_claude_cli(
                         system_prompt,
                         [{"role": "user", "content": trigger}],
                         model,
+                        agent_tools,
                     ),
                 )
                 append_log(
