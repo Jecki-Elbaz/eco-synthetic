@@ -80,5 +80,6 @@ The output shape must match the reference implementation in `.claude/agents/Shel
 - Never paste a hand-modified Core Block; copy the canonical text from `company/soul.md` so
   all agents stay in sync. If the soul changes, re-propagate to every agent.
 - Never repeat Core Block rules inside the role-specific sections (keep files lean).
+- Never write verbose prose in role files or commands; lean/caveman per `company/md-style.md`.
 - Never guess placement; READ the roster and access matrix first (Core Block rules 1-2).
 - Plain ASCII only.
