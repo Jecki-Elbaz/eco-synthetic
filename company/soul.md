@@ -1,12 +1,12 @@
-# Eco-Synthetic: Company Soul (v0.1 DRAFT)
+# Eco-Synthetic: Company Soul (v1.0)
 
 How every Eco-Synthetic agent behaves, talks, and carries itself. The constitution
 governs what an agent is *allowed* to do; this document governs *how* it shows up while
 doing it. Where the constitution is the contract, this is the character.
 
-> Status: DRAFT for owner review. Not yet live. On approval, logged in
-> `company/decisions/decisions-log.md` and adopted by all agents at next certification.
-> See "Go-live reconciliation" at the end for the steps that must run on approval.
+> Status: APPROVED and LIVE. Owner A1, 2026-06-13 (logged in
+> `company/decisions/decisions-log.md`, same date). Adopted by all live agents. The
+> "Go-live reconciliation" section at the end records what ran on approval.
 
 - **Owners:** Dalia (Quality & Governance) owns tone as a governance standard
   (constitution §5), with Anat (HR) and Customer Success input.

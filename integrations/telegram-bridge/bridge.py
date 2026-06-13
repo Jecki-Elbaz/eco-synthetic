@@ -1,5 +1,8 @@
 """Eco-Synthetic Telegram bridge — OAuth via Claude Max subscription.
 
+Runs the Eco (CEO) bot via long-polling. (Shelly was separated into her own
+standalone project on 2026-06-13 — see company/decisions/decisions-log.md.)
+
 Authentication model
 --------------------
 Calls Claude through the `claude` CLI, which reads CLAUDE_CODE_OAUTH_TOKEN
@@ -18,9 +21,9 @@ Headless setup (one-time, on any machine that will run the bridge):
 
 TODO — CUSTOMER-FACING AUTH SWITCH
 ------------------------------------
-OWNER_ONLY_MODE = True means the bots serve jecki only via personal OAuth.
+OWNER_ONLY_MODE = True means the bot serves jecki only via personal OAuth.
 
-When bots are ever exposed to external customers, you MUST:
+When the bot is ever exposed to external customers, you MUST:
   1. Set OWNER_ONLY_MODE = False
   2. Remove CLAUDE_CODE_OAUTH_TOKEN; provision a scoped Console API key
   3. Set ANTHROPIC_API_KEY to that key (and remove the guard below)
@@ -92,13 +95,10 @@ if "ANTHROPIC_API_KEY" in os.environ:
 
 # ── Telegram tokens ───────────────────────────────────────────────────────────
 ECO_TOKEN: str = os.environ["ECO_TELEGRAM_BOT_TOKEN"]
-SHELLY_TOKEN: str = os.environ["SHELLY_TELEGRAM_BOT_TOKEN"]
 
 # ── Models ────────────────────────────────────────────────────────────────────
 ECO_DEFAULT_MODEL = "claude-sonnet-4-6"
 ECO_ESCALATED_MODEL = "claude-opus-4-8"
-SHELLY_DEFAULT_MODEL = "claude-haiku-4-5"
-SHELLY_ESCALATED_MODEL = "claude-sonnet-4-6"
 
 # ── Limits ────────────────────────────────────────────────────────────────────
 MAX_HISTORY_MESSAGES = 20
@@ -144,11 +144,6 @@ _AGENT_ACCESS: dict[str, list[str]] = {
         "projects/ — any project folder (read)",
         "integrations/ — bridge and future integrations",
     ],
-    "shelly": [
-        "memory/board.md — read and write your own task rows (owner-office scope)",
-        "company/setup-guide.md — your pending task reference",
-        ".claude/agents/Shelly.md — your own role file",
-    ],
 }
 
 # Tools granted to each agent at the CLI level (--allowedTools).
@@ -156,14 +151,13 @@ _AGENT_ACCESS: dict[str, list[str]] = {
 # scoped to what is safe to grant in a Telegram session.
 _AGENT_TOOLS: dict[str, list[str]] = {
     "eco": ["Read", "Write", "Edit"],
-    "shelly": ["Read", "Write", "Edit"],
 }
 
 
 # ── Owner chat registry (populated on first /start per bot) ──────────────────
 # Used by the scheduled wake-up task to send proactive check-ins to jecki.
 
-_owner_chat: dict[str, int | None] = {"eco": None, "shelly": None}
+_owner_chat: dict[str, int | None] = {"eco": None}
 
 
 def _register_owner_chat(bot_name: str, chat_id: int) -> None:
@@ -213,9 +207,7 @@ Never pretend to contact an agent, write a file, complete a task, or say "done"
 unless you used a tool and it succeeded.
 
 If a request needs a capability you lack here, surface it plainly:
-- CORRECT: "I can't reach Eco from this session — no Agent tool. You can relay this yourself."
 - CORRECT: "I can read memory/board.md but can't update it — no Write tool here."
-- WRONG: "I've told Eco." — if no tool was used
 - WRONG: "Done." / "Noted." — if no file was written
 
 Accuracy over comfort, always. If uncertain: try, report the result honestly.
@@ -348,23 +340,13 @@ _ECO_HARD = re.compile(
     r"hire|fire|terminate|restructure|acquire|partnership|milestone|A1|gate)\b",
     re.IGNORECASE,
 )
-_SHELLY_DRAFT = re.compile(
-    r"\b(draft|write|compose|email|letter|proposal|document|report|"
-    r"announcement|memo|press|blog)\b",
-    re.IGNORECASE,
-)
 
 
 def choose_model(bot_name: str, text: str) -> str:
-    if bot_name == "eco":
-        if _ECO_HARD.search(text) or len(text) > 500:
-            log.info("Eco: escalating to %s", ECO_ESCALATED_MODEL)
-            return ECO_ESCALATED_MODEL
-        return ECO_DEFAULT_MODEL
-    if _SHELLY_DRAFT.search(text) or len(text) > 300:
-        log.info("Shelly: escalating to %s", SHELLY_ESCALATED_MODEL)
-        return SHELLY_ESCALATED_MODEL
-    return SHELLY_DEFAULT_MODEL
+    if _ECO_HARD.search(text) or len(text) > 500:
+        log.info("Eco: escalating to %s", ECO_ESCALATED_MODEL)
+        return ECO_ESCALATED_MODEL
+    return ECO_DEFAULT_MODEL
 
 
 # ── Claude CLI call ───────────────────────────────────────────────────────────
@@ -491,7 +473,7 @@ def make_handlers(bot_name: str, system_prompt: str):
     """Return (on_start, on_tasks, on_message) handlers for the given bot."""
 
     agent_display = bot_name.capitalize()
-    default_model = ECO_DEFAULT_MODEL if bot_name == "eco" else SHELLY_DEFAULT_MODEL
+    default_model = ECO_DEFAULT_MODEL
 
     async def _typing_loop(chat_id: int, bot) -> None:
         """Send 'typing' action every 4s so the user sees activity while Claude works."""
@@ -628,7 +610,7 @@ async def _wakeup_task(
             agent_display = bot_name.capitalize()
             tasks = load_agent_tasks(agent_display)
             task_block = _format_tasks(tasks)
-            model = ECO_DEFAULT_MODEL if bot_name == "eco" else SHELLY_DEFAULT_MODEL
+            model = ECO_DEFAULT_MODEL
             trigger = (
                 "[Scheduled 2h check-in]\n\n"
                 f"Your open tasks from memory/board.md:\n\n{task_block}\n\n"
@@ -673,57 +655,38 @@ async def main() -> None:
     log.info("claude CLI detected: %s", check.stdout.strip())
 
     eco_prompt = load_agent_prompt("Eco")
-    shelly_prompt = load_agent_prompt("Shelly")
-
     eco_start, eco_tasks, eco_msg = make_handlers("eco", eco_prompt)
-    shelly_start, shelly_tasks, shelly_msg = make_handlers("shelly", shelly_prompt)
-
     eco_app: Application = ApplicationBuilder().token(ECO_TOKEN).build()
-    shelly_app: Application = ApplicationBuilder().token(SHELLY_TOKEN).build()
 
     eco_app.add_handler(CommandHandler("start", eco_start))
     eco_app.add_handler(CommandHandler("tasks", eco_tasks))
     eco_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, eco_msg))
 
-    shelly_app.add_handler(CommandHandler("start", shelly_start))
-    shelly_app.add_handler(CommandHandler("tasks", shelly_tasks))
-    shelly_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, shelly_msg))
-
     log.info(
-        "Starting Eco (default=%s, escalated=%s) and Shelly (default=%s, escalated=%s)...",
+        "Starting Eco (default=%s, escalated=%s)...",
         ECO_DEFAULT_MODEL, ECO_ESCALATED_MODEL,
-        SHELLY_DEFAULT_MODEL, SHELLY_ESCALATED_MODEL,
     )
 
     async with eco_app:
-        async with shelly_app:
-            await eco_app.updater.start_polling(drop_pending_updates=True)
-            await shelly_app.updater.start_polling(drop_pending_updates=True)
-            await eco_app.start()
-            await shelly_app.start()
+        await eco_app.updater.start_polling(drop_pending_updates=True)
+        await eco_app.start()
 
-            eco_wakeup = asyncio.create_task(
-                _wakeup_task("eco", eco_app, eco_prompt), name="eco-wakeup"
-            )
-            shelly_wakeup = asyncio.create_task(
-                _wakeup_task("shelly", shelly_app, shelly_prompt), name="shelly-wakeup"
-            )
-            log.info(
-                "Both bots online. Wake-ups scheduled every %ds (~%.0fh). Press Ctrl+C to stop.",
-                WAKEUP_INTERVAL, WAKEUP_INTERVAL / 3600,
-            )
-            try:
-                await asyncio.Event().wait()
-            except (KeyboardInterrupt, asyncio.CancelledError):
-                pass
-            finally:
-                eco_wakeup.cancel()
-                shelly_wakeup.cancel()
-                log.info("Shutting down...")
-                await eco_app.updater.stop()
-                await shelly_app.updater.stop()
-                await eco_app.stop()
-                await shelly_app.stop()
+        eco_wakeup = asyncio.create_task(
+            _wakeup_task("eco", eco_app, eco_prompt), name="eco-wakeup"
+        )
+        log.info(
+            "Eco online. Wake-ups scheduled every %ds (~%.0fh). Press Ctrl+C to stop.",
+            WAKEUP_INTERVAL, WAKEUP_INTERVAL / 3600,
+        )
+        try:
+            await asyncio.Event().wait()
+        except (KeyboardInterrupt, asyncio.CancelledError):
+            pass
+        finally:
+            eco_wakeup.cancel()
+            log.info("Shutting down...")
+            await eco_app.updater.stop()
+            await eco_app.stop()
 
 
 if __name__ == "__main__":
