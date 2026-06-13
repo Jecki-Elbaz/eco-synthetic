@@ -1,6 +1,8 @@
 {
   "permissions": {
     "allow": [
+      "WebSearch(*)",
+      "WebFetch(*)",
       "Bash(git log*)",
       "Bash(git status*)",
       "Bash(git diff*)",
