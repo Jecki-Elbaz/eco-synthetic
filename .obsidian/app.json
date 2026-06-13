@@ -1,0 +1,19 @@
+{
+  "alwaysUpdateLinks": true,
+  "newLinkFormat": "shortest",
+  "useMarkdownLinks": false,
+  "userIgnoreFilters": [
+    ".claude/",
+    ".git/",
+    "sources/",
+    "integrations/",
+    "node_modules/",
+    "__pycache__/",
+    "dashboards/",
+    ".env",
+    ".env.example",
+    "bridge_stderr.log",
+    "bridge_stdout.log",
+    "/\\.log$/"
+  ]
+}

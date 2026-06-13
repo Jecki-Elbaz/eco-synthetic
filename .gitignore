@@ -57,10 +57,14 @@ temp-repo-scan/
 # Node (for any future integrations)
 node_modules/
 
-# Obsidian -- keep app.json and plugin configs; ignore workspace state and cache
+# Obsidian -- vault rooted at repo root; keep app.json + plugin configs, ignore UI state/cache
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache
+.obsidian/*.log
+# Legacy wiki-scoped vault state (if used); app.json + plugin configs stay tracked
 memory/wiki/.obsidian/workspace.json
 memory/wiki/.obsidian/workspace-mobile.json
 memory/wiki/.obsidian/cache
 memory/wiki/.obsidian/*.log
-# Track app.json and plugin configs (already not matching the above patterns)
 
