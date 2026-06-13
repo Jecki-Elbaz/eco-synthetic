@@ -56,7 +56,8 @@ The output shape must match the reference implementation in `.claude/agents/Shel
      with, its characteristic care or caution per audience. Keep it lean (constitution
      section 9: files stay lean and link to the data slice rather than copying it).
    - AI model section. Certification status: Pending (Anat/HR before go-live).
-   - Plain ASCII throughout (Core Block rule 5).
+   - Plain ASCII (Core Block rule 5) and lean/caveman per `company/md-style.md` -- this is a
+     machine-facing file; min tokens, preserve every constraint.
 
 5. Draft the register updates (as drafts, for approval):
    - `company/roster.md`: add or update the agent's row.

@@ -405,16 +405,16 @@ def call_claude_cli(
             "--output-format", "json",
             "--allowedTools", tools_str,
         ]
-        prompt = _build_prompt(history)
+        prompt_bytes = _build_prompt(history).encode("utf-8")
         last_exc: Exception = RuntimeError("no attempts made")
         max_attempts = len(_RETRY_DELAYS) + 1  # 5 total attempts
         for attempt in range(max_attempts):
             try:
+                # Pass input as bytes to avoid Windows cp1252 encoding issues on stdin.
                 result = subprocess.run(
                     cmd,
-                    input=prompt,
+                    input=prompt_bytes,
                     capture_output=True,
-                    text=True,
                     cwd=str(ROOT),
                     timeout=CLAUDE_TIMEOUT,
                     check=False,
@@ -433,9 +433,12 @@ def call_claude_cli(
             except FileNotFoundError:
                 raise RuntimeError("notfound:claude not installed or not in PATH")
 
+            stdout = result.stdout.decode("utf-8", errors="replace")
+            stderr = result.stderr.decode("utf-8", errors="replace")
+
             if result.returncode != 0:
                 last_exc = RuntimeError(
-                    f"exit{result.returncode}:{result.stderr[:200].strip()}"
+                    f"exit{result.returncode}:{stderr[:200].strip()}"
                 )
                 if attempt < len(_RETRY_DELAYS):
                     delay = _RETRY_DELAYS[attempt]
@@ -448,13 +451,13 @@ def call_claude_cli(
                 raise last_exc
 
             try:
-                data = json.loads(result.stdout)
-                reply: str = data.get("result") or data.get("content") or result.stdout.strip()
+                data = json.loads(stdout)
+                reply: str = data.get("result") or data.get("content") or stdout.strip()
                 usage = data.get("usage", {})
                 tokens_in: int | None = usage.get("input_tokens")
                 tokens_out: int | None = usage.get("output_tokens")
             except (json.JSONDecodeError, AttributeError):
-                reply = result.stdout.strip()
+                reply = stdout.strip()
                 tokens_in = tokens_out = None
 
             return reply, tokens_in, tokens_out
