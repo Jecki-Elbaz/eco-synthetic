@@ -136,7 +136,10 @@ _AGENT_ACCESS: dict[str, list[str]] = {
     "eco": [
         "memory/board.md — full board (CEO oversees all tasks)",
         "memory/log.md and memory/log.jsonl — activity and event logs",
+        "memory/wiki/ — company wiki (read/write, A3 autonomous updates)",
         "company/ — any file (constitution, roster, decisions, governance)",
+        "company/hr/interviews/ — certified HR interview records",
+        "company/hr/interviews/_staging/ — working area for in-progress interviews",
         ".claude/agents/*.md — role files (read-only; changes are A1)",
         "projects/ — any project folder (read)",
         "integrations/ — bridge and future integrations",
@@ -152,7 +155,7 @@ _AGENT_ACCESS: dict[str, list[str]] = {
 # Must match the tools: line in the agent's .claude/agents/*.md frontmatter,
 # scoped to what is safe to grant in a Telegram session.
 _AGENT_TOOLS: dict[str, list[str]] = {
-    "eco": ["Read"],
+    "eco": ["Read", "Write", "Edit"],
     "shelly": ["Read", "Write", "Edit"],
 }
 
@@ -463,11 +466,41 @@ def call_claude_cli(
 
 # ── Telegram handler factory ──────────────────────────────────────────────────
 
+_TG_MAX_CHARS = 4096
+
+
+async def _send_long(send_fn, text: str) -> None:
+    """Send text, splitting into chunks if it exceeds Telegram's 4096-char limit."""
+    if len(text) <= _TG_MAX_CHARS:
+        await send_fn(text)
+        return
+    lines = text.splitlines(keepends=True)
+    chunk = ""
+    for line in lines:
+        if len(chunk) + len(line) > _TG_MAX_CHARS:
+            if chunk:
+                await send_fn(chunk.rstrip())
+            chunk = line
+        else:
+            chunk += line
+    if chunk:
+        await send_fn(chunk.rstrip())
+
+
 def make_handlers(bot_name: str, system_prompt: str):
     """Return (on_start, on_tasks, on_message) handlers for the given bot."""
 
     agent_display = bot_name.capitalize()
     default_model = ECO_DEFAULT_MODEL if bot_name == "eco" else SHELLY_DEFAULT_MODEL
+
+    async def _typing_loop(chat_id: int, bot) -> None:
+        """Send 'typing' action every 4s so the user sees activity while Claude works."""
+        try:
+            while True:
+                await bot.send_chat_action(chat_id=chat_id, action="typing")
+                await asyncio.sleep(4)
+        except asyncio.CancelledError:
+            pass
 
     async def _call_and_reply(
         update: Update,
@@ -477,12 +510,17 @@ def make_handlers(bot_name: str, system_prompt: str):
     ) -> None:
         chat_id = update.effective_chat.id  # type: ignore[union-attr]
         loop = asyncio.get_running_loop()
+        typing_task = asyncio.create_task(
+            _typing_loop(chat_id, update.get_bot())
+        )
         try:
             agent_tools = _AGENT_TOOLS.get(bot_name, ["Read"])
             reply, tokens_in, tokens_out = await loop.run_in_executor(
                 None,
                 lambda: call_claude_cli(system_prompt, history, model, agent_tools),
             )
+        finally:
+            typing_task.cancel()
         except Exception as exc:
             err = str(exc)
             log.error("Claude CLI error (%s/%s): %s", bot_name, action, err)
@@ -505,7 +543,7 @@ def make_handlers(bot_name: str, system_prompt: str):
         history.append({"role": "assistant", "content": reply})
         save_history(bot_name, chat_id, history)
         append_log(agent_display, chat_id, action, model, tokens_in, tokens_out)
-        await update.message.reply_text(reply)  # type: ignore[union-attr]
+        await _send_long(update.message.reply_text, reply)  # type: ignore[union-attr]
 
     async def on_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         if update.effective_chat is None or update.message is None:
@@ -613,7 +651,7 @@ async def _wakeup_task(
                     agent_display, chat_id, "scheduled_wakeup",
                     model, tokens_in, tokens_out,
                 )
-                await app.bot.send_message(chat_id=chat_id, text=reply)
+                await _send_long(lambda t: app.bot.send_message(chat_id=chat_id, text=t), reply)
                 log.info("Wake-up sent for %s to chat %d", bot_name, chat_id)
             except Exception as exc:
                 log.error("Wake-up error (%s): %s", bot_name, exc)
