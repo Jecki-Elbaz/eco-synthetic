@@ -22,6 +22,7 @@ Status values: `open`, `in-progress`, `blocked`, `done`, `cancelled`.
 | S-0004 | Shelly | in-progress | Owner queue triage + awaiting-owner list + reminders | P1 | recurring | Active; approved per schedules.md |
 | S-0005 | Shelly | open | WhatsApp adoption evaluation: cost, terms, Evolution-vs-Cloud-API tradeoff; recommendation to owner (A1 before any action) | P3 | later | From role file responsibilities |
 | S-0006 | Shelly | open | Owner dashboard surfacing (when dashboards exist) | P3 | later | Blocked on dashboards build |
+| S-0006a | Shelly | open | Sub-task of S-0006: surface pending approval requests (A1 actions / Claude Code permission prompts) in the owner dashboard, so the owner can see and act on them without hunting in the CLI/app. Each item shows: requesting agent, action, target path/resource, timestamp, approve/deny. | P2 | with dashboards build | Owner-requested 2026-06-13; today approvals only appear in Claude Code, not surfaced to owner |
 
 ## Company (Eco)
 
