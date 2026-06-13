@@ -519,9 +519,8 @@ def make_handlers(bot_name: str, system_prompt: str):
                 None,
                 lambda: call_claude_cli(system_prompt, history, model, agent_tools),
             )
-        finally:
-            typing_task.cancel()
         except Exception as exc:
+            typing_task.cancel()
             err = str(exc)
             log.error("Claude CLI error (%s/%s): %s", bot_name, action, err)
             append_log(agent_display, chat_id, f"error:{action}", "none", None, None)
@@ -540,6 +539,8 @@ def make_handlers(bot_name: str, system_prompt: str):
                 )
             await update.message.reply_text(user_msg)  # type: ignore[union-attr]
             return
+        finally:
+            typing_task.cancel()
         history.append({"role": "assistant", "content": reply})
         save_history(bot_name, chat_id, history)
         append_log(agent_display, chat_id, action, model, tokens_in, tokens_out)
