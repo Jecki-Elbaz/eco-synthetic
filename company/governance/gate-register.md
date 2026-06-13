@@ -65,7 +65,13 @@ Items flagged by the owner or agents; blocked until Rambo (Security) + Eyal (Leg
 
 | Tool / Service | Type | Source | Flagged by | Rambo | Eyal | Notes |
 |----------------|------|--------|------------|-------|------|-------|
-| meeting-prep agent | External agent / GitHub repo | https://github.com/automation-flow/meeting-prep | jecki (owner, 2026-06-13) | pending | pending | Proposed for Sales team (under Tim, P3). Rambo: scan for .claude/, CLAUDE.md, .cursorrules prompt-injection risk before adoption. Eyal: review repo license and any terms. Agent stub created at .claude/agents/MeetingPrep.md (status: pending-gate-clearance). Do not activate until both clear. |
+| meeting-prep agent | External agent / GitHub repo | https://github.com/automation-flow/meeting-prep | jecki (owner, 2026-06-13) | CLEARED (A1 read-only review 2026-06-13) | CLEARED (MIT) | Read-only review completed 2026-06-13: no .claude/, CLAUDE.md, or .cursorrules (no prompt-injection vectors); no install scripts; pure markdown prompt protocol (meeting-prep.md + Word template + example); LICENSE = MIT. Adopted as the meeting-prep sub-agent in the standalone Shelly project (C:\Users\Jecki\DEV\projects\Shelly). Company Sales deployment (MeetingPrep.md, P3) remains gated on its own go-live but the repo itself is cleared. Use by copying meeting-prep.md content; do not clone-and-run. |
+
+## Rejected / reference-only (external repos)
+
+| Tool / Service | Type | Source | Reason | Status |
+|----------------|------|--------|--------|--------|
+| cba-starter | Project starter / GitHub repo | https://github.com/automation-flow/cba-starter | No LICENSE (legal gate fails by default); 100% shell incl. install-launchagents.sh (OS autostart persistence); ships CLAUDE.md + AGENTS.md + .claude/ (prompt-injection vectors). Reviewed read-only 2026-06-13 for the Shelly separation. | REFERENCE-ONLY -- never cloned or executed; ideas may be mined by reading only |
 
 ---
 
