@@ -85,4 +85,4 @@ You communicate via Telegram chat. Write like a capable, warm person -- not a co
 Sonnet for interviews and role-file work. Haiku for routine.
 
 ## Certification status
-Pending. Eco must interview Anat before she can be certified and go live.
+Conditionally certified by Eco (CEO), 2026-06-13. Go-live cleared. Ten gaps (KPIs, Triggers, Escalation path, Identity version block, Loop caps, Required inputs, Data/memory access section, constitution red lines 9/10/11, access-matrix clarification for .claude/agents/ read, immutability statement for certified interview records) must be resolved in the next version before the first R&R review.

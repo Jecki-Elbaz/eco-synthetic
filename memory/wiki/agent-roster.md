@@ -41,5 +41,6 @@ Source: company/roster.md
 ## Certification status
 
 - Eco: conditionally certified (Anat, 2026-06-12); 5 gaps -- see T-0002
+- Anat: conditionally certified (Eco, 2026-06-13); 10 gaps -- resolve before first R&R review
 - Shelly: pending certification (Anat; see S-0003)
 - All others: not yet active

@@ -124,6 +124,24 @@ Format per entry:
 - **Alternatives considered:** Full gate review (deferred -- owner waived given read-only scope and owned account); write access (not approved -- separate A1 required per service).
 - **Files affected:** .claude/settings.json (mcpServers), CLAUDE.md (connector rules), .claude/commands/ingest.md (Drive source), .claude/agents/Shelly.md (Gmail monitoring), .claude/agents/Eco.md (Calendar context), company/governance/access-matrix.md, company/governance/gate-register.md, memory/wiki/glossary.md.
 
+## 2026-06-13 -- Anat (HR) certification
+
+- **Author / gate:** Eco (CEO, A2 -- Eco certifies Anat per Anat.md process)
+- **Decision:** Conditionally certified. Go-live cleared. Ten gaps listed below must be resolved in the next role file update before the first R&R review.
+- **Rationale:** Reviewed Anat.md against constitution (v2.2) and access matrix (v1.0). Core sections present and consistent: purpose, responsibilities, authority (A3 interview records / A2 Eco to certify / A1 create-retire-re-scope), budget 0 / no spend, chain of command (tasked by Eco and jecki only), tool scope (Read/Write/Edit, least privilege, appropriate for P1 HR work), key files, constitution section 16 (never guess) explicitly included. Red lines covering her scope (RL-5 secrets, RL-6 agent lifecycle, RL-7 self-grant, RL-8 bypass chain, RL-13 out-of-chain commands) all explicitly covered. Self-certification prohibition explicit. No red-line violations. Role correctly reflects Anat position: L3 staff, reports to Eco (CEO). Anat is critical path for P1 agent buildout -- no other agent can be certified without her operating.
+- **Gaps or flags:**
+  1. KPIs / success metrics -- absent. Template requires this section. Add in next version.
+  2. Triggers -- absent. Template requires this section. Add in next version.
+  3. Escalation path -- absent as explicit section (implied: Eco / A1). Must be explicit in next version.
+  4. Identity block -- version number, last-updated date, change log absent. Add in next version.
+  5. Loop caps -- absent. Add in next version.
+  6. Required inputs section -- absent. Add in next version.
+  7. Data/memory access section -- Key files listed but no explicit read/write scope statement. Add in next version.
+  8. Constitution red lines 9, 10, 11 not in role file. RL-9 personal data beyond stated purpose; RL-10 third-party proprietary data unlawfully; RL-11 represent company legally or publicly without authorization. Add in next version.
+  9. Access matrix does not explicitly list Anat for .claude/agents/ reads (needed for her core function). Flagged for Dalia (Q&G) to clarify in next access-matrix revision.
+  10. Certified interview records should be explicitly stated as immutable in the role file. Add in next version.
+- **Files affected:** .claude/agents/Anat.md (certification status updated), company/hr/interviews/anat-interview.md (certified record created), company/hr/interviews/_staging/anat-interview.md (staging copy retained)
+
 ## 2026-06-13 -- Gmail MCP removed from project; Drive and Calendar retained
 
 - **Author / gate:** owner (A1)
