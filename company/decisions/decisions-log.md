@@ -149,3 +149,10 @@ Format per entry:
 - **Rationale:** Owner chose to exclude Gmail from this project integration for now.
 - **Alternatives considered:** Keeping Gmail (deferred until explicit re-authorization request).
 - **Files affected:** .claude/settings.json, CLAUDE.md, .claude/agents/Shelly.md, company/governance/gate-register.md, company/governance/access-matrix.md.
+
+## 2026-06-13 -- Ongoing agent assessment model adopted
+- **Author / gate:** jecki (owner, A1)
+- **Decision:** Adopted a four-layer ongoing assessment model for all agents. Anat owns formal R&R reviews (triggered or scheduled). Direct managers/VPs own day-to-day performance signals and escalation. Assaf (Operational Excellence) owns periodic operational metrics (task completion, escalation rate, token efficiency, loop cap breaches) surfaced quarterly or on trigger. Dalia (Quality & Governance) owns periodic quality audits (sampling agent outputs for accuracy, constitution compliance, output quality). When Assaf and Dalia role files are built, these responsibilities must be reflected in their R&R.
+- **Rationale:** Initial certification cannot guarantee ongoing performance quality. A layered model distributes monitoring across the roles closest to the relevant signal.
+- **Alternatives considered:** Anat monitors all agents directly (too much load, wrong signal type); Eco monitors directly (not scalable).
+- **Files affected:** company/hr/skills/hr-interview-methodology.md (Part 5), .claude/agents/Anat.md.

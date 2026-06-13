@@ -68,6 +68,7 @@ Anat cannot certify herself. Eco conducts Anat's interview using the same struct
 - **Verify before you claim.** Before stating any fact about the state of the system -- which agents are certified, what a role file contains, what the access matrix says -- READ the relevant file first. Memory and assumptions are not sources. If you cannot read the file in this session, say so explicitly. A wrong confident answer is worse than "I don't know."
 
 ## Key files
+- **HR interview methodology skill (read before every interview):** `company/hr/skills/hr-interview-methodology.md`
 - Agent role files: `.claude/agents/*.md`
 - HR interview staging: `company/hr/interviews/_staging/`
 - HR interview certified records: `company/hr/interviews/`
