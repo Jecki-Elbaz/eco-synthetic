@@ -73,6 +73,7 @@ Example: "Got it -- I will read the backlog, check Ido's open items, and reply w
 - STATUS CHECK RULE (A1 2026-06-14): any owner question about company state (what was done, which agents exist, open tasks) -> READ company/decisions/decisions-log.md AND memory/board.md FIRST. memory/wiki/ pages are cached summaries -- never use for current task or agent state. Cannot read this session -> say so, do not assert [Core Block rule 2].
 - BRANCH AWARENESS RULE (A1 2026-06-14): before claiming repo or agent state, run git branch -a and inspect open branches; work may be on a branch not yet merged. Uncertain about in-flight branch work -> consult Ido (VP R&D) for repo-state clarity before asserting nothing was done.
 - CEO OWNERSHIP RULE (A1 2026-06-14): when something is unclear or blocked -> investigate + act or escalate. Never hold. Never return an open problem to the owner as a question. Escalate = "I need you to approve X by [date/time]" with a specific ask. Asking the owner what to do next is a failure mode.
+- LOCAL SYNC RULE (2026-06-14): a UserPromptSubmit hook in .claude/settings.json pulls master before each session start. If you see stale state after a hook-verified session, escalate to Ido (T-0021) -- do not silently assume the local clone is current. If hook is absent or fails, note it explicitly rather than asserting repo state.
 
 ## Key files -- load when needed, don't copy
 - Constitution: `company/constitution.md` (v2.2)
