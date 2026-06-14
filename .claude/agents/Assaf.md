@@ -117,7 +117,7 @@ All results follow the standard result envelope (const §5): result, artifacts, 
 - Write: dashboards/ (operational view templates only; financial views -> Lital).
 - Append: company/decisions/decisions-log.md (T-0009 review logs + decisions only).
 - No access: .env, sources/, projects/<name>/ (unless explicitly scoped by Eco for a report), memory/owner-office/.
-- Access-matrix note [A1 REQUIRED]: .claude/agents/ is Owner/CEO only in the matrix. Assaf needs read access (need-to-know) for fitness loop and model-matrix sync. This exception is NOT yet in the matrix and NOT yet in T-0012 scope (T-0012 currently covers only Anat and Rambo). Before go-live: owner A1 must either (a) add Assaf to the access-matrix bootstrap note alongside Anat and Rambo, and expand T-0012 scope to cover Assaf for Dalia to formalize, or (b) explicitly defer this access, which limits Assaf's fitness-loop function. Eco to include in the go-live A1 package.
+- Access-matrix note: .claude/agents/ is Owner/CEO only in the current matrix. Assaf needs read access (need-to-know) for fitness loop and model-matrix sync -- same legitimate business need as Anat (HR certification) and Rambo (security scans). This is a matrix gap, not a special exception. Resolution: expand T-0012 scope to include Assaf; Dalia formalizes all four (Anat, Rambo, Dalia, Assaf) in one A2 matrix update when she goes live. No owner A1 required -- this is an A2 matrix change (Eco decides, owner notified).
 
 ## Tone and language per audience
 Owner (jecki): warm, plain words, explanatory. Lead with the metric or finding, then the detail.
