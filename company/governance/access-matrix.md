@@ -26,7 +26,7 @@ This matrix is enforced by `CLAUDE.md` deny-list and `.claude/settings.json` too
 | `marketing/` | **Sales group** | Hila, Tim, Eco (narrative posts), Eyal (clearance reads) | Hila (assets), Tim (direction) | Eco for company-narrative posts only |
 | `marketing/brand/` | **Sales group** | Hila, Tim; A1 publish gate | Hila (drafts, A3); publish = A1 | |
 | `marketing/avatars/` | **Sales group** | Hila, Tim; A1 publish gate | Hila (drafts, A3); publish = A1 | |
-| `.claude/agents/` | **Owner/CEO only** | Eco (operational reads), jecki | jecki (A1 for any change) | Agent role files are A1 to create/change/retire |
+| `.claude/agents/` | **Owner/CEO only** | Eco (operational reads), jecki, Anat (HR interviews, read-by-exception -- A2 bootstrapped by owner A1 2026-06-13), Rambo (permission scans, read-by-exception -- A2 bootstrapped by owner A1 2026-06-14) | jecki (A1 for any change) | Agent role files are A1 to create/change/retire. Both exceptions to be formalized by Dalia in next matrix revision (see T-0012). |
 | `integrations/` | **Partitioned** | Shir (DevOps), Eco | Shir (DevOps), under VP R&D approval | Telegram bridge and future integrations |
 | `dashboards/` | **Restricted** | Lital (CFO), jecki | Assaf (OE templates), Lital (financial views) | Owner-facing views only |
 | Google Drive (read-only) | External | Eco, Shelly, Claude Code | read via MCP; no write |
