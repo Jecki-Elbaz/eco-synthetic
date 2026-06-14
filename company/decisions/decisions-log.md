@@ -199,3 +199,11 @@ Format per entry:
 - **Bootstrapping exceptions on record:** (1) Rambo tools cleared without a Rambo risk review -- tools are a Claude Code runtime subset (A1 approved 2026-06-12); Eyal to confirm no legal gap on activation. (2) .claude/agents/ read-by-exception for both Anat and Rambo applied without Dalia review -- Dalia to formalize in next access-matrix revision (T-0012 scope expanded to cover both).
 - **Alternatives considered:** Defer Rambo to later phase (rejected -- P1 tasks blocked; gate-register has pending items requiring Rambo).
 - **Files affected:** `.claude/agents/Rambo.md` (new), `company/governance/access-matrix.md` (.claude/agents/ row updated), `company/governance/gate-register.md` (bootstrapping note added), `company/hr/interviews/Rambo-interview.md` (certified record), `memory/board.md` (T-0012 scope expanded; Eyal + Dalia + Rambo tasks added).
+
+## 2026-06-14 -- Eco status-check rule added (A1)
+
+- **Author / gate:** jecki (A1) -- role file change is A1 [red line 6]
+- **Decision:** Added explicit status-check trigger to Eco.md: before answering any owner question about company state (what was done, which agents exist, open tasks), Eco must READ company/decisions/decisions-log.md AND memory/board.md first. No assertion from memory. Cannot read -> say so explicitly. Performance flag logged in memory/log.md for Anat's R&R record.
+- **Rationale:** Eco asserted "nothing was done" after Rambo onboarding was completed, without reading the relevant files. Root cause: work was on a feature branch not yet merged to main; Eco read main and found no changes but stated it as a fact rather than a scoped observation. The trigger makes the VERIFY-THEN-CLAIM rule concrete and operational for status queries.
+- **Alternatives considered:** Rely on Core Block rule 2 alone (rejected -- rule is abstract; breach shows it needs a specific operational instruction in Eco's triggers).
+- **Files affected:** `.claude/agents/Eco.md` (status-check trigger added), `memory/log.md` (performance flag appended).

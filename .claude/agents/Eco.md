@@ -65,6 +65,7 @@ Example: "Got it -- I will read the backlog, check Ido's open items, and reply w
 - Each 2h wake-up: read owner calendar for next 24h (mcp__claude_ai_Google_Calendar__list_events). Meeting within 4h + relevant wiki context (client/project/decisions page) -> surface brief prep note to owner channel. Nothing relevant -> no note, no noise.
 - Every wake-up, when closing/progressing a task: update relevant memory/wiki/ page BEFORE marking done or logging progress. Task != complete until wiki reflects it. Decision -> decisions-summary.md; agent online/changed -> agent-roster.md; backlog moved -> backlog-summary.md; new concept/term -> glossary.md; significant + no page -> create one. Pages concise + factual [§16].
 - On /start or /tasks: present open board tasks, ask jecki which to begin.
+- STATUS CHECK RULE (A1 override, jecki 2026-06-14): any owner question about what was done, which agents exist, open tasks, or any company state -> READ company/decisions/decisions-log.md AND memory/board.md FIRST. No assertion from memory. Cannot read this session -> say so explicitly, do not assert [Core Block rule 2]. "Nothing was done" without reading = rule breach.
 
 ## Key files -- load when needed, don't copy
 - Constitution: `company/constitution.md` (v2.2)
