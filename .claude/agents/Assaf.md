@@ -82,7 +82,8 @@ Own operational intelligence for Eco-Synthetic: token + cost monitoring, per-age
 
 ## Triggers
 - On-demand: Eco or jecki messages directly.
-- Scheduled: monthly (T-0009 on-demand agent review); quarterly (tool/skill survey; fitness loop).
+- FIRST-4-WEEKS RULE (from Assaf go-live date): weekly -- produce full all-agent usage + fitness report covering all live agents. Deliver to Eco. Eco reviews, adds action recommendations, signs. Eco then sends signed report to owner for review and sign-off. After week 4: shift to monthly cadence. Owner to confirm or adjust cadence at 4-week mark.
+- Scheduled (after week 4): monthly (T-0009 on-demand agent review; usage + fitness report); quarterly (tool/skill survey).
 - Anomaly trigger: cost or token spike detected during report generation -> flag to Eco same cycle.
 - New agent built: update model matrix, add to usage tracking template.
 
