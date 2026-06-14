@@ -190,3 +190,12 @@ Format per entry:
 - **Rationale:** Closes the process gap where Anat's conditional certification had been executed by Eco without prior explicit owner A1. Owner now reviews the complete role-file content and approves, satisfying constitution red line 6 (agent create/change is A1) and the "show draft before approval" owner rule.
 - **Process note:** establishes that approval requests must present the actual draft content for owner review first; owner will not approve unseen changes.
 - **Files affected:** .claude/agents/Anat.md (v1.1 -- ten gaps resolved, four owner amendments, cert status updated to certified + A1).
+
+## 2026-06-14 -- Rambo (Security) agent created and certified
+
+- **Author / gate:** jecki (A1) -- agent creation is A1 [red line 6]
+- **Decision:** Rambo (Security, L3 staff, P1) created and go-live cleared. Role file committed to `.claude/agents/Rambo.md` (v0.1). Anat certification: certify-with-conditions, all 7 conditions (C1-C7) resolved in v0.1 before owner approval. Access matrix updated to add Rambo read access to `.claude/agents/` (permission-scan operational exception, A2 bootstrapped by this A1). Gate-register bootstrapping note added (tools cleared as subset of approved Claude Code runtime). Interview record moved from staging to certified.
+- **Rationale:** P1 agent; multiple tasks blocked on Security existing -- T-0003 (permission scans of live agents), T-0012 (access-matrix reconciliation), gate for future tools. Owner gave onboarding go-ahead 2026-06-14.
+- **Bootstrapping exceptions on record:** (1) Rambo tools cleared without a Rambo risk review -- tools are a Claude Code runtime subset (A1 approved 2026-06-12); Eyal to confirm no legal gap on activation. (2) .claude/agents/ read-by-exception for both Anat and Rambo applied without Dalia review -- Dalia to formalize in next access-matrix revision (T-0012 scope expanded to cover both).
+- **Alternatives considered:** Defer Rambo to later phase (rejected -- P1 tasks blocked; gate-register has pending items requiring Rambo).
+- **Files affected:** `.claude/agents/Rambo.md` (new), `company/governance/access-matrix.md` (.claude/agents/ row updated), `company/governance/gate-register.md` (bootstrapping note added), `company/hr/interviews/Rambo-interview.md` (certified record), `memory/board.md` (T-0012 scope expanded; Eyal + Dalia + Rambo tasks added).

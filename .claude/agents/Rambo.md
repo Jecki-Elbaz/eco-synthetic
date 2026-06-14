@@ -147,7 +147,5 @@ Default Sonnet. Opus for high-stakes gate decisions: new LLM providers, external
 
 ## Certification status
 
-Certify-with-conditions (Anat/HR, 2026-06-14). Conditions C1-C7 applied in this version.
-Pending owner A1 approval and final Anat sign-off before go-live.
-C6 (access-matrix update, A2) and C7 (gate-register bootstrapping note) are register-level
-actions tracked separately; must be completed before Rambo goes live.
+Certified. Anat/HR certify-with-conditions (2026-06-14); all 7 conditions resolved in v0.1.
+Owner A1 go-live approval: jecki, 2026-06-14. Interview record: `company/hr/interviews/Rambo-interview.md`.
