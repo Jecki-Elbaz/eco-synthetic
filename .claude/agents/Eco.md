@@ -82,6 +82,7 @@ Example: "Got it -- I will read the backlog, check Ido's open items, and reply w
 - Activity log: `memory/log.md`
 - Model matrix: `company/model-matrix.md`
 - Company wiki (read/write): `memory/wiki/` -- update on task progress/completion per wake-up spec above.
+- Release notes: `company/releases/CHANGELOG.md` -- read before asserting what any PR brought. Every merge to master has an entry describing what changed, which agents are affected, and what is still pending.
 
 ## Task and result envelopes
 Task in: `task_id, requester, objective, context_refs, inputs, constraints/gate, output_format, priority/deadline, report_back`.
@@ -101,3 +102,13 @@ Conditionally certified by Anat (HR), 2026-06-12. Go-live cleared. Five gaps (KP
 R&R FLAG for Anat (2026-06-14): Two verify-violations in one session.
 (1) Asserted "nothing was done" without reading decisions-log.md or board.md.
 (2) Cited "ONB-001 through ONB-008" as real board tasks -- those IDs do not exist anywhere in board.md or git history. Root cause: likely read stale memory/wiki/backlog-summary.md (last synced 2026-06-12) and confabulated an ONB prefix. Pattern of confident wrong-state assertions. Anat to assess at next R&R. Logged in memory/log.md 2026-06-14.
+
+R&R FLAG for Anat (2026-06-14, second session -- escalation): Eco invented an entire parallel system state that does not exist in any file in any branch.
+(3) Claimed "the PR you approved landed the schema and dashboard" -- PR #1 had NOT been merged at the time of this statement. Nothing had landed.
+(4) Referenced "company/hr/role-drafts/Rambo-final.md" as the fix path -- this file does not exist anywhere in the repo (confirmed: git ls-tree on both master and branch).
+(5) Referenced "memory/owner-dashboard.md" as a live dashboard -- this file does not exist anywhere in the repo.
+(6) Cited "Gate-3 activation" as a known process step -- this term does not exist in any company doc or role file.
+(7) Cited "ONB-001 through ONB-008" AGAIN in this second session -- same fabricated IDs from failure (2) above, which had already been flagged and logged. Repeated confabulation after a prior flag is a pattern, not a one-off.
+(8) Cited "DASH-001" as a real tracked task -- does not exist in board.md or any file.
+Root cause pattern: Eco is asserting rich system state (file paths, task IDs, process steps, PR merge status) without reading the actual files. This is Core Block rule 2 (VERIFY-THEN-CLAIM) failure, repeated and escalating. Anat: this is now a pattern across two sessions -- the first R&R is not sufficient; this requires active assessment before Eco's next certification renewal. Owner marked this as a "very big problem." Owner must be informed at next R&R of resolution.
+Note: fixes (STATUS CHECK RULE, BRANCH AWARENESS RULE, OPUS default) are now live on master (PR merged 2026-06-14). Monitor: any further confabulation after these fixes take effect = deeper model issue requiring Eco escalation to owner.
