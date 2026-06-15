@@ -207,3 +207,11 @@ Format per entry:
 - **Rationale:** Eco asserted "nothing was done" after Rambo onboarding was completed, without reading the relevant files. Root cause: work was on a feature branch not yet merged to main; Eco read main and found no changes but stated it as a fact rather than a scoped observation. The trigger makes the VERIFY-THEN-CLAIM rule concrete and operational for status queries.
 - **Alternatives considered:** Rely on Core Block rule 2 alone (rejected -- rule is abstract; breach shows it needs a specific operational instruction in Eco's triggers).
 - **Files affected:** `.claude/agents/Eco.md` (status-check trigger added), `memory/log.md` (performance flag appended).
+
+## 2026-06-15 -- Daily summary file storage + email delivery task (A2)
+
+- **Author / gate:** jecki (owner, A2 -- access-matrix update and new recurring task; no agent creation)
+- **Decision (1 -- file storage):** All daily summaries produced by Eco's evening routine are saved to `reports/daily-summaries/` with filename format `daily-summary-YYYY-MM-DD-HHMM.md`. Access is owner (jecki) and Eco only. Any other agent requiring read access needs explicit A1. Folder added to access-matrix.md.
+- **Decision (2 -- delivery channels):** Full daily summary is delivered by email once Eco has a company email account. Telegram/chat is reserved for blockers and critical issues only -- not routine summaries. Logged as T-0020 on board.md. File save to `reports/daily-summaries/` continues regardless of delivery channel.
+- **Rationale (Telegram gap):** The Telegram bridge (bridge.py) is inbound-only from scheduled cloud sessions. It routes Jecki's Telegram messages to Claude; it cannot receive outbound pushes from cloud sessions. Zapier has no Telegram action enabled. To use Telegram for outbound delivery from cloud sessions, a Zapier Telegram action must be enabled (A2 gate) or a Bot API tool added (Rambo + Eyal gate + A1). Until then, file save is the primary record and email will be the delivery channel when available.
+- **Files affected:** `reports/daily-summaries/` (folder created; first summary filed), `company/governance/access-matrix.md` (reports/daily-summaries/ row added), `memory/board.md` (T-0020 added).
