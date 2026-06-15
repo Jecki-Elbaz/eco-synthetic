@@ -2,7 +2,7 @@
 
 Single view of every task queue across the company, plus what needs your action.
 Maintained by Eco. Refreshed each wake-up cycle and whenever the board changes.
-Source of truth: memory/board.md. Last refreshed: 2026-06-15.
+Source of truth: memory/board.md. Last refreshed: 2026-06-15 (T-0016 refresh).
 
 This is the INTERIM dashboard (a maintained markdown view) so you have control now.
 The engineered version (auto-refresh / live surface) is tracked as DASH-001, scoped by Ido.
@@ -11,35 +11,34 @@ The engineered version (auto-refresh / live surface) is tracked as DASH-001, sco
 NEEDS YOUR ACTION (do these to unblock the company)
 =====================================================================
 
-1. T-0002 -- Design-decisions brief is OVERDUE (due 2026-06-15).
-   Read company/memos/design-decisions-brief-2026-06-14.md and tell Eco which
-   items to proceed with (concurrency, task-log storage, durable memory, Gemini).
-   Eco executes after your decision.
+1. T-0002 -- Design-decisions brief not yet prepared.
+   Eco must draft company/memos/design-decisions-brief.md covering four items:
+   concurrency rule, task-log storage (JSONL vs SQLite), durable chat memory
+   (store + retrieval via MCP), Gemini for non-sensitive research. Once drafted,
+   owner reads and decides which items to proceed with. Eco cannot act until then.
 
-2. ONB-002 -- Rambo activation. Due 2026-06-15 18:00.
-   One action in a Claude Code session: copy company/hr/role-drafts/Rambo-final.md
-   to .claude/agents/Rambo.md and approve the write prompt. Unblocks Rambo + RAM-001.
-   FLAG: a CC session reported this already done, but the repo this bridge reads
-   still has NO Rambo.md. Verify in CC with `git status` + `pwd` -- likely a
-   wrong-folder or unpushed-change issue. Not live here until the file exists.
+2. T-0019 -- Competency testing: not yet started. BLOCKS all 10 P1 agent go-lives.
+   Owner gave go-ahead 2026-06-14. Eco to draft competency specs; managers run tests;
+   Anat reviews. No agent from the 10 P1 drafts (Ido, Eyal, Lital, Dalia, Noam,
+   Assaf, Gal, Shir, Luci, Erez) goes live until T-0019 complete.
 
-3. ONB-001 -- Hila certification. Due 2026-06-15.
+3. ONB-001 -- Hila certification. Due 2026-06-15 (overdue).
    Needs a Claude Code session where Anat holds the Agent tool to run the interview.
 
-4. PR visibility -- the PR you approved DID land here: the 8-field task schema and
-   this dashboard are now in the repo (board.md + decisions-log 2026-06-15 entry).
-   BUT it did not include Rambo: still 6 agents, no .claude/agents/Rambo.md, no
-   Gate-3 activation entry. So ONB-002/RAM-001 remain not-live here despite the
-   earlier CC "Rambo is live" report. That is the one item still needing your action.
+4. STATUS NOTE (correcting prior stale entry): Rambo IS live. .claude/agents/Rambo.md
+   confirmed present. 17 agent role files exist in .claude/agents/ as of 2026-06-15.
+   All 10 P1 drafts (Ido, Eyal, Lital, Dalia, Noam, Assaf, Gal, Shir, Luci, Erez)
+   are committed. T-0015 drafts-complete milestone met. Go-lives blocked on T-0019.
 
 =====================================================================
 PENDING APPROVALS / GATES (waiting on you, A1)
 =====================================================================
 
-- Agent creations (ONB-003..008): A1 to create each already granted; each still
-  needs a CC session + Gate-3 activation sign-off.
-- RAM-001 outcome: after Rambo + Eyal clear the bridge-toolset review, expanding
-  Eco's bridge tools is your A1.
+- 10 P1 agent go-lives: A1 already granted for creations; all blocked on T-0019
+  (competency testing) before any go-live can proceed. Role drafts are ready.
+- RAM-001 / T-0014: Rambo is live. Next: Eco tasks Rambo on T-0014 (permission scan
+  of live agents). After T-0014 complete, RAM-001 bridge-toolset review proceeds;
+  expanding Eco's bridge tools after that is your A1.
 - Any domain purchase (S-0002): A1 + payment before buying.
 
 =====================================================================
@@ -68,25 +67,29 @@ COMPANY (Eco)
 - T-0010 open         Shelly separation assessment          due queued
 - T-0011 blocked      Wiki feature evaluation               due after wiki setup
 - T-0012 blocked      Access-matrix reconciliation          due when Dalia built
+- T-0013 blocked      Gate-register review (Eyal, legal)    due when Eyal built
+- T-0014 open         Rambo: permission scan all live agents due immediate (unblocked)
+- T-0015 in-progress  P1 agent role drafts (all 10 done)    due blocked on T-0019
+- T-0016 in-progress  Wiki + dashboard refresh (this run)   due immediate
+- T-0017 open         Israeli law/finance tool process       due on-need
+- T-0018 open         Assaf .claude/agents/ access (T-0012) due with T-0012
+- T-0019 open         Competency testing -- 10 P1 agents     due before any go-live
 
 OWNER CONTROL
 - DASH-001 open       Owner dashboard (engineered build)    due Ido scope <24h post-activation
 
-ONBOARDING (Anat + Eco)
-- ONB-001 open        Certify Hila                          due 2026-06-15
-- ONB-002 blocked     Bring up Rambo                        due 2026-06-15 18:00
-- ONB-003 open        Bring up Ido (VP R&D)                 due 2026-06-16
-- ONB-004 open        Bring up Dalia (Q&G)                  due 2026-06-16
-- ONB-005 open        Bring up Lital (CFO)                  due 2026-06-17
-- ONB-006 open        Bring up Eyal (Legal)                 due 2026-06-17
-- ONB-007 open        Bring up Noam (Product)               due 2026-06-17
-- ONB-008 open        Bring up Assaf (OE)                   due 2026-06-17
+ONBOARDING -- NOTE: ONB- IDs are dashboard tracking only; board uses T-/S-/HIL- prefixes.
+- ONB-001 open        Certify Hila                          due 2026-06-15 (overdue)
+- ONB-002 DONE        Rambo live (.claude/agents/Rambo.md confirmed 2026-06-15)
+- ONB-003..012        10 P1 agents (Ido, Eyal, Lital, Dalia, Noam, Assaf, Gal, Shir,
+                      Luci, Erez): role drafts committed; blocked on T-0019
 
 R&D (Ido)
 - RD-001 blocked      Bridge media support (photo + voice)  due on Ido activation
 
 SECURITY (Rambo)
-- RAM-001 blocked     Bridge toolset review + perm sweep    due on Rambo activation
+- T-0014 open         Permission scan of all live agents    due immediate (Rambo live)
+- RAM-001 open        Bridge toolset review + perm sweep    unblocked; after T-0014
 
 MARKETING (Hila)
 - HIL-001 blocked     Brand basics                          due after cert
@@ -98,7 +101,8 @@ MARKETING (Hila)
 CRITICAL PATH (what unblocks the most)
 =====================================================================
 
-One Claude Code session with Anat (Agent tool) clears the biggest jam:
-certify Hila (ONB-001) + create/activate Rambo (ONB-002), then proceed down
-ONB-003..008. Rambo going live auto-starts RAM-001; Ido going live auto-starts
-RD-001 and lets DASH-001 (this dashboard, engineered) be scoped.
+Start T-0019 (competency testing). This is the single action that unblocks all 10
+P1 agent go-lives. Eco drafts competency specs; managers run 3 test scenarios per
+agent; Anat reviews. Parallel with T-0019: Eco tasks Rambo on T-0014 (permission
+scan of live agents -- T-0014 is already unblocked). Once T-0019 complete and Anat
+signs off, owner gives go-live A1 per /hiring process, and Ido, Dalia, etc. activate.

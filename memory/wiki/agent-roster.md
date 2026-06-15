@@ -40,7 +40,16 @@ Source: company/roster.md
 
 ## Certification status
 
-- Eco: conditionally certified (Anat, 2026-06-12); 5 gaps -- see T-0002
-- Anat: certified + owner-approved (Eco cert + jecki A1, 2026-06-13); all 10 gaps resolved in v1.1 with 4 owner amendments
-- Shelly: pending certification (Anat; see S-0003)
-- All others: not yet active
+- Eco: conditionally certified (Anat, 2026-06-12); gaps partially addressed
+  (status-check trigger added A1 2026-06-14; full gap resolution pending next R&R)
+- Anat: certified + owner-approved (Eco cert + jecki A1, 2026-06-13 finalized);
+  all 10 conditional gaps resolved in v1.1 with 4 owner amendments
+- Rambo: certified and owner-approved (A1 jecki, 2026-06-14); .claude/agents/Rambo.md live
+- Shelly: active; pending formal certification (see S-0003)
+- Hila: active (P1 light track); pending certification (ONB-001 overdue 2026-06-15)
+- Designer: role file drafted; not yet active
+- 10 P1 drafts (Ido, Eyal, Lital, Dalia, Noam, Assaf, Gal, Shir, Luci, Erez):
+  role files committed to .claude/agents/ as of 2026-06-14 (T-0015 milestone);
+  go-lives blocked on T-0019 (competency testing) + owner A1 per /hiring process
+
+Last updated: 2026-06-15 (T-0016 wiki refresh)
