@@ -223,3 +223,11 @@ Format per entry:
 - **Rationale:** Owner direction. Shelly's office-manager and personal-admin work (drafting, summaries, scheduling, channel management) benefits from Sonnet's stronger reasoning and writing.
 - **Alternatives considered:** Keep Haiku default with Sonnet only for drafting (rejected -- owner wants Sonnet across the board).
 - **Files affected:** `.claude/agents/Shelly.md` (frontmatter `model` field + AI model section), `company/model-matrix.md` (Shelly row), `memory/wiki/model-matrix.md` (Shelly row mirror).
+
+## 2026-06-15 -- Shelly model change: runtime binding corrected in bridge (A1, follow-up)
+
+- **Author / gate:** jecki (owner, A1) -- follow-up to the entry above; same approved decision.
+- **Decision:** The Telegram bridge (`integrations/telegram-bridge/bridge.py`) selects Shelly's model from hardcoded constants (`SHELLY_DEFAULT_MODEL`), NOT from the role-file frontmatter -- `load_agent_prompt()` strips the frontmatter before use. Changed `SHELLY_DEFAULT_MODEL` from `claude-haiku-4-5` to `claude-sonnet-4-6` so the live Telegram bot actually runs on Sonnet. `SHELLY_ESCALATED_MODEL` left at Sonnet.
+- **Rationale:** The prior entry edited the frontmatter `model` field, which binds the Agent/subagent path but is ignored by the bridge. Without the bridge constant change, Shelly's live Telegram bot would have stayed on Haiku. Verify-then-claim correction.
+- **Process note:** Shelly's runtime model is governed in TWO places -- role-file frontmatter (Agent/subagent path) and `bridge.py` constants (Telegram path). Any future model change must update both. Flagged for R&D/DevOps to consider sourcing the bridge model from the frontmatter to remove the duplication.
+- **Files affected:** `integrations/telegram-bridge/bridge.py` (`SHELLY_DEFAULT_MODEL`).
