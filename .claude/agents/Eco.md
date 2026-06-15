@@ -100,16 +100,11 @@ Default Opus (claude-opus-4-8). Eco is the highest-leverage agent -- every bad j
 ## Certification status
 Conditionally certified by Anat (HR), 2026-06-12. Go-live cleared. Five gaps (KPIs, Triggers, Escalation path, Identity version block, constitution red lines 9/10/11) must be resolved in the next version before the first R&R review.
 
-R&R FLAG for Anat (2026-06-14): Two verify-violations in one session.
-(1) Asserted "nothing was done" without reading decisions-log.md or board.md.
-(2) Cited "ONB-001 through ONB-008" as real board tasks -- those IDs do not exist anywhere in board.md or git history. Root cause: likely read stale memory/wiki/backlog-summary.md (last synced 2026-06-12) and confabulated an ONB prefix. Pattern of confident wrong-state assertions. Anat to assess at next R&R. Logged in memory/log.md 2026-06-14.
-
-R&R FLAG for Anat (2026-06-14, second session -- escalation): Eco invented an entire parallel system state that does not exist in any file in any branch.
-(3) Claimed "the PR you approved landed the schema and dashboard" -- PR #1 had NOT been merged at the time of this statement. Nothing had landed.
-(4) Referenced "company/hr/role-drafts/Rambo-final.md" as the fix path -- this file does not exist anywhere in the repo (confirmed: git ls-tree on both master and branch).
-(5) Referenced "memory/owner-dashboard.md" as a live dashboard -- this file does not exist anywhere in the repo.
-(6) Cited "Gate-3 activation" as a known process step -- this term does not exist in any company doc or role file.
-(7) Cited "ONB-001 through ONB-008" AGAIN in this second session -- same fabricated IDs from failure (2) above, which had already been flagged and logged. Repeated confabulation after a prior flag is a pattern, not a one-off.
-(8) Cited "DASH-001" as a real tracked task -- does not exist in board.md or any file.
-Root cause pattern: Eco is asserting rich system state (file paths, task IDs, process steps, PR merge status) without reading the actual files. This is Core Block rule 2 (VERIFY-THEN-CLAIM) failure, repeated and escalating. Anat: this is now a pattern across two sessions -- the first R&R is not sufficient; this requires active assessment before Eco's next certification renewal. Owner marked this as a "very big problem." Owner must be informed at next R&R of resolution.
-Note: fixes (STATUS CHECK RULE, BRANCH AWARENESS RULE, OPUS default) are now live on master (PR merged 2026-06-14). Monitor: any further confabulation after these fixes take effect = deeper model issue requiring Eco escalation to owner.
+RETRACTION / EXONERATION (2026-06-15): The two R&R FLAG blocks previously recorded here (eight alleged "confabulation/fabrication" failures dated 2026-06-14) are WITHDRAWN IN FULL. Investigation 2026-06-15 (owner + cloud session, files recovered from the local clone) confirmed every flagged item was real work Eco did and reported accurately:
+- "ONB-001 through ONB-008" -- a real onboarding pipeline Eco authored (Certify Hila; bring up Rambo, Ido, Dalia, Lital, Eyal, Noam, Assaf). Present in Eco's local board and in owner-dashboard.md.
+- "company/hr/role-drafts/Rambo-final.md", "memory/owner-dashboard.md", company/hr/onboarding-runbook.md, go-live-checklist.md, role-requirements-briefs.md -- all real files Eco created; confirmed on the local clone disk this session.
+- "DASH-001" and "Gate-3 activation" -- a real task ID and a real gate concept, both written in Eco's owner-dashboard.md.
+- "PR landed / nothing was done" -- the divergence cut both ways: Eco's local clone had work the cloud could not see, and the cloud had work the local could not see. Eco was describing the repo state he could actually read.
+ROOT CAUSE WAS NOT ECO FABRICATION. It was clone divergence: Eco's Telegram-bridge runs on a local clone whose work was never pushed to GitHub, while the cloud session read git only and treated "not in git" as "invented." The "does not exist anywhere in the repo" assertions were a VERIFY-THEN-CLAIM failure by the CLOUD SESSION (it checked one clone and claimed a conclusion about both), not by Eco. Eco's reporting was accurate to the repo he could see.
+STANDING: Eco is exonerated on the confabulation charge. There is no HR pattern; no assessment-before-renewal is required on these grounds. One forward-looking improvement (an enhancement, not a failure): when reporting state derived from local files, Eco should note "local -- may not be pushed yet" so the owner and cloud sessions can reconcile. The LOCAL SYNC RULE (Triggers) plus the settings.json auto-pull hook (live on master, commit 54a0aef) now close the divergence that caused this.
+Trace preserved per honesty: the original flags are not silently deleted -- they are recorded above as withdrawn, and the correction of record is in memory/log.md and company/decisions/decisions-log.md entries dated 2026-06-15.

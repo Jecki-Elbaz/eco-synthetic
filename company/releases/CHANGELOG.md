@@ -57,24 +57,26 @@ Open items / what still needs to happen:
 
 ---
 
-## 2026-06-14 -- Eco sync fix + R&R flags + Ido validation task (PR #2)
+## 2026-06-15 -- Eco sync fix + Eco exoneration + Ido validation task (PR #2)
 Branch: claude/eco-hr-flags-changelog-2026-06-14
 Merged by: jecki (Owner) -- pending
-Summary: Diagnoses and documents the Eco local-clone sync gap; adds UserPromptSubmit hook for auto-pull; records Eco second-session R&R flag escalation; assigns Ido to validate the sync mechanism.
+Summary: Closes the Eco local-clone sync gap (auto-pull hook, now applied to master) and RETRACTS the 2026-06-14 Eco "confabulation" flags -- investigation proved they were real local work never pushed, not fabrication. Eco is exonerated. Assigns Ido to validate and lock the sync mechanism.
 
 What changed:
-- .claude/agents/Eco.md: LOCAL SYNC RULE added to Triggers (hook auto-pulls master on session start; escalate to Ido if stale after hook-verified session)
-- memory/board.md: T-0021 added (Ido: validate and lock the UserPromptSubmit auto-pull mechanism; P1 urgent)
-- memory/log.md: sync-fix entry appended (root cause documented; fix applied; owner must manually edit settings.json; T-0021 created)
-- company/releases/CHANGELOG.md: this entry (PR #2)
-- .claude/settings.json: UserPromptSubmit hook written but NOT applied -- auto-mode classifier blocked the Edit; owner must apply the JSON change manually. Exact diff: add "hooks": { "UserPromptSubmit": [{ "matcher": "", "hooks": [{ "type": "command", "command": "git pull --ff-only origin master 2>&1 | tail -2 || true" }] }] } alongside existing cleanupPeriodDays.
+- .claude/settings.json: UserPromptSubmit hook APPLIED by owner on master (commit 54a0aef) -- runs `git pull --ff-only origin master` before every session start, so the local Telegram-bridge clone stays current. (Cloud-session Edit was blocked by the auto-mode classifier; owner applied it locally and pushed.)
+- .claude/agents/Eco.md: LOCAL SYNC RULE added to Triggers; certification section -- the eight 2026-06-14 confabulation flags REPLACED with a full retraction/exoneration (real local work, not fabrication; misattribution was a verify-then-claim failure by the cloud session).
+- memory/board.md: T-0021 added (Ido: validate and lock auto-pull; three-agent review Rambo+Dalia+Ido; P1 urgent).
+- memory/log.md: sync-fix entry + flag-retraction entry appended (append-only; prior flags left intact, correction of record added).
+- company/decisions/decisions-log.md: exoneration decision appended (root cause = clone divergence, not Eco reliability).
+- company/ + memory/: Eco's real local-only work products preserved into git (role-drafts/, owner-dashboard.md, onboarding-runbook.md, go-live-checklist.md, role-requirements-briefs.md, design-decisions-brief.md, governance/proposals/) -- committed from the local clone.
 
 Agents affected (live behavior changes):
-- Eco: LOCAL SYNC RULE added; now knows the auto-pull hook exists and how to handle missing/failed sync
+- Eco: LOCAL SYNC RULE added; confabulation flags withdrawn -- HR record corrected to exonerated.
 
 Agents added (draft, not yet live): none
 
 Open items / what still needs to happen:
-- Owner must manually edit .claude/settings.json to add the UserPromptSubmit hook (exact JSON in entry above)
-- T-0021: Ido (VP R&D) to validate the hook fires, assess 2h-wake-up gap, harden edge cases, document
-- All items from PR #1 open list remain open (T-0019, T-0012, T-0013, T-0014, T-0016, Shir A-F)
+- T-0021: Ido (VP R&D) to validate the hook fires, assess 2h-wake-up gap, harden edge cases, cover the local->cloud direction, document; Rambo (security) + Dalia (governance) review.
+- Reconcile Eco's recovered local drafts (company/hr/role-drafts/) against the cloud's PR #1 .claude/agents/ drafts -- likely overlapping; dedupe as a follow-up.
+- Anat (HR) to record Eco's exoneration at next R&R.
+- All items from PR #1 open list remain open (T-0019, T-0012, T-0013, T-0014, T-0016, Shir A-F).
