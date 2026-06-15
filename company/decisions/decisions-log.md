@@ -215,3 +215,11 @@ Format per entry:
 - **Decision (2 -- delivery channels):** Full daily summary is delivered by email once Eco has a company email account. Telegram/chat is reserved for blockers and critical issues only -- not routine summaries. Logged as T-0020 on board.md. File save to `reports/daily-summaries/` continues regardless of delivery channel.
 - **Rationale (Telegram gap):** The Telegram bridge (bridge.py) is inbound-only from scheduled cloud sessions. It routes Jecki's Telegram messages to Claude; it cannot receive outbound pushes from cloud sessions. Zapier has no Telegram action enabled. To use Telegram for outbound delivery from cloud sessions, a Zapier Telegram action must be enabled (A2 gate) or a Bot API tool added (Rambo + Eyal gate + A1). Until then, file save is the primary record and email will be the delivery channel when available.
 - **Files affected:** `reports/daily-summaries/` (folder created; first summary filed), `company/governance/access-matrix.md` (reports/daily-summaries/ row added), `memory/board.md` (T-0020 added).
+
+## 2026-06-15 -- Shelly model changed Haiku -> Sonnet (A1)
+
+- **Author / gate:** jecki (owner, A1) -- agent role-file change is A1 [red line 6]; `.claude/agents/` is owner/CEO-only.
+- **Decision:** Shelly's runtime model is changed from Haiku (`claude-haiku-4-5-20251001`) to Sonnet (`claude-sonnet-4-6`), effective now. Sonnet becomes her default for all work, not just drafting.
+- **Rationale:** Owner direction. Shelly's office-manager and personal-admin work (drafting, summaries, scheduling, channel management) benefits from Sonnet's stronger reasoning and writing.
+- **Alternatives considered:** Keep Haiku default with Sonnet only for drafting (rejected -- owner wants Sonnet across the board).
+- **Files affected:** `.claude/agents/Shelly.md` (frontmatter `model` field + AI model section), `company/model-matrix.md` (Shelly row), `memory/wiki/model-matrix.md` (Shelly row mirror).
