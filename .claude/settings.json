@@ -44,6 +44,17 @@
   },
     "cleanupPeriodDays": 30,
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard.py\""
+          }
+        ]
+      }
+    ],
     "UserPromptSubmit": [
       {
         "matcher": "",
