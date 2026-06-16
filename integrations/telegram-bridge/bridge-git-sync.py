@@ -88,11 +88,13 @@ NEVER_STAGE = [
     "company/constitution.md",
     ".env",
     "sources/",
+    "integrations/telegram-bridge/outbound/",
 ]
 
 # Control-plane regex pattern (canonical from recommendation.md Section 3.1).
 CP_PATTERN = re.compile(
-    r"^(\.claude/|CLAUDE\.md$|bridge\.py$|scripts/|company/governance/|company/constitution\.md$)"
+    r"^(\.claude/|CLAUDE\.md$|bridge\.py$|scripts/|company/governance/|company/constitution\.md$"
+    r"|integrations/telegram-bridge/bridge-git-sync\.py$)"
 )
 
 # Data-plane prefixes (authoritative from runner design Section 1.2).

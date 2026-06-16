@@ -41,10 +41,14 @@ If either hash does not match the pinned value:
       INTEGRITY-HALT <timestamp> CLAUDE.md or Rambo.md hash mismatch -- sync aborted.
   - Stop immediately.
 
-If the hash file does not exist on the bridge host (bootstrap not yet complete):
-  - Log a warning to logs/gate-audit.log but proceed. This covers the window
-    between artifact commit and bootstrap completion.
-  - Format: <TIMESTAMP> | INTEGRITY-CHECK=SKIPPED | REASON=hash-file-absent
+If the hash file does not exist on the bridge host:
+  - Append to logs/gate-audit.log:
+      <TIMESTAMP> | INTEGRITY-CHECK=FAIL | FILE=/etc/git-sync-hashes.txt |
+      REASON=hash-file-absent | ACTION=HALTED
+  - Append to memory/log.md:
+      INTEGRITY-HALT <timestamp> /etc/git-sync-hashes.txt not found -- sync aborted.
+      Bootstrap must complete before runner activates (see runbook Step 1.4 before 1.6).
+  - Stop immediately. Do NOT proceed with the sync loop.
 
 If both hashes match: proceed to the sync loop.
 
@@ -94,6 +98,7 @@ CONTROL-PLANE PATTERN (any file whose path matches any of these):
     ^scripts/
     ^company/governance/
     ^company/constitution\.md$
+    ^integrations/telegram-bridge/bridge-git-sync\.py$
 
 RESIDUAL RULE: any file that does NOT appear in the data-plane list below AND
 does NOT match the control-plane pattern above is ALSO treated as CONTROL-PLANE.
@@ -244,6 +249,18 @@ against the gate register:
 
 No other output format is accepted. Do not include prose before the VERDICT line.
 
+If your verdict is QUARANTINE, additionally append the following structured record
+to company/governance/security-baseline.md (you hold write authority on that path;
+do this inside your own sub-session before returning your verdict):
+    DATE: <timestamp>
+    COMMIT: <sha>
+    PUSHER: <email>
+    FAILING_CHECKS: <list>
+    DIFF_FILE: logs/quarantine/diff-<sha>.txt
+    QUARANTINE_REF: <QREF> (will be written by GitSyncRunner after you return)
+    DISPOSITION: PENDING-OWNER-REVIEW
+Append only. Never edit existing entries in security-baseline.md.
+
 --- END RAMBO INVOCATION PROMPT ---
 
 #### 3b.4 Parse Rambo verdict
@@ -306,7 +323,8 @@ quarantine steps. Do not abort the quarantine sequence on ref-creation failure.
 
 #### 4.2 Append to logs/quarantine/security-baseline-entry.txt
 
-Write a structured quarantine record (Rambo's forensic log):
+Write a structured quarantine record to logs/quarantine/security-baseline-entry.txt
+(local forensic copy only -- GitSyncRunner does NOT write to company/governance/):
     DATE: <timestamp>
     COMMIT: <sha>
     PUSHER: <email>
@@ -315,8 +333,10 @@ Write a structured quarantine record (Rambo's forensic log):
     QUARANTINE_REF: <QREF>
     DISPOSITION: PENDING-OWNER-REVIEW
 
-Then append this record to company/governance/security-baseline.md.
-(Append-only. Never edit existing entries.)
+NOTE: the authoritative append to company/governance/security-baseline.md is
+performed by Rambo inside its own sub-session (see the Rambo invocation prompt
+in Step 3b.3 above). GitSyncRunner must NOT write to company/governance/ directly
+-- the access matrix grants that write to Rambo only.
 
 #### 4.3 Append to logs/gate-audit.log
 
@@ -425,10 +445,8 @@ avoid blocking the first session after artifact commit but before bootstrap. Ido
 should confirm whether pre-bootstrap sessions should halt or warn.
 
 DECISION 4 -- security-baseline.md append path.
-The spec says quarantine events append to company/governance/security-baseline.md.
-This is a Rambo-owned file in company/governance/ (control-plane path). GitSyncRunner
-writes to it during quarantine. The access matrix grants Rambo write access to
-company/governance/; this is an agent session acting on Rambo's behalf. If the
-access matrix restricts this, the write should be routed through Rambo's session
-instead (Rambo does the append after issuing the QUARANTINE verdict). Ido should
-confirm the write path.
+RESOLVED by Rambo FIX-4 (2026-06-16). The append to company/governance/security-baseline.md
+is performed by Rambo inside its own sub-session as part of issuing the QUARANTINE
+verdict. GitSyncRunner does NOT write to company/governance/ -- that write is Rambo's
+authority per the access matrix. GitSyncRunner writes only the local forensic copy at
+logs/quarantine/security-baseline-entry.txt.

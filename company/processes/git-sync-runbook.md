@@ -108,6 +108,11 @@ Then:
 
 ### 1.6 Schedule GitSyncRunner in the Claude cloud scheduler
 
+IMPORTANT SEQUENCING: Step 1.4 (write /etc/git-sync-hashes.txt) MUST be completed
+BEFORE this step. If the scheduler fires before the hash file exists, GitSyncRunner
+will log INTEGRITY-CHECK=FAIL and halt -- it will not proceed without the hash file.
+Complete Step 1.4 first.
+
 Configure a recurring scheduled cloud session using the Claude Code scheduler:
   - System prompt: contents of scripts/git-sync-runner-prompt.md
   - Schedule: every 15 minutes
