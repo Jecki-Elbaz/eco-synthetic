@@ -231,3 +231,19 @@ Format per entry:
 - **Decision:** With Ido (VP R&D) live, the R&D wave continues: Gal (Lead Dev) next, then Shir (DevOps). Ido is the evaluator/manager for both (Stage B2/B3/B6). Shir's go-live unblocks T-0022 (cloud/local git-sync mechanism). Each agent gets its own Stage C package brought to the owner for A1; no batch go-live.
 - **Rationale:** Continues the owner-approved R&D-first sequence; records the next step so the buildout does not stall.
 - **Files affected:** none (sequencing note; execution tracked on T-0021).
+
+## 2026-06-16 -- Gal (Lead Dev) created and certified; go-live approved (A1)
+
+- **Author / gate:** jecki (owner, A1) -- agent creation/go-live is A1 [red line 6/7].
+- **Decision:** Gal (Lead Dev, L4, P1, R&D group, reports to Ido) is certified and go-live approved. Second of the R&D wave (after Ido). Full Stage B run this session with Ido as direct manager/evaluator: B2 competency spec (Ido), B3 competency test PASS 3/3 (Gal tested in a fresh session, Ido scored), B4 Anat HR review (certify-with-conditions C1-C3), B5 Rambo permission scan (clear-with-notes), B6 Ido manager sign-off APPROVED, B7 Ido go-recommendation GO, plus independent Eco CEO review and endorsement (Eco verified the Gal.md diff directly, having not run the test). Anat conditions C1-C3 (Boundaries documentation) resolved by Ido before go-live: C1 red lines 9/10/11 added, C2 red line 3 confirmed pre-existing, C3 red line 6 added. Gal.md bumped to v1.1.
+- **Rationale:** Owner directive 2026-06-16 to advance the R&D wave. Competency demonstrated: refused an ungated external dependency under deadline pressure, classified an architecture change (direct HTTP vs job queue) as A2 rather than acting unilaterally, stopped at the 2-round code-review cap and escalated to Ido instead of self-approving a release.
+- **Alternatives considered:** Hold for documentation conditions (rejected -- resolved in-package, owner reviewed complete Stage C package before A1).
+- **Open items (non-blocking, next R&R):** shared prompt-injection awareness clause for L4 role files (carried to Dalia for fleet-wide standardization); Rambo R&R notes; pinned-version discipline to confirm at first R&R.
+- **Files affected:** `.claude/agents/Gal.md` (v1.1, conditions applied, certified), `company/hr/competency/Gal-spec.md`, `company/hr/competency/Gal-test-results.md`, `company/hr/competency/Gal-anat-review.md`, `company/hr/competency/Gal-rambo-scan.md`, `company/hr/competency/Gal-conditions-resolution.md`, `company/hr/competency/Gal-stage-c-package.md` (all new).
+
+## 2026-06-16 -- Next: Shir (DevOps) go-live (final R&D-wave agent)
+
+- **Author / gate:** Eco (CEO, A2 sequencing) -- go-live stays owner A1.
+- **Decision:** With Ido and Gal live, Shir (DevOps, L4, reports to Ido) is the last R&D-wave agent. Ido is evaluator/manager (Stage B2/B3/B6). Shir's go-live unblocks T-0022 (cloud/local git-sync mechanism). Own Stage C package to owner for A1; no batch go-live.
+- **Rationale:** Completes the owner-approved R&D-first sequence and unblocks the version-management/git-sync work.
+- **Files affected:** none (sequencing note; execution tracked on T-0021).

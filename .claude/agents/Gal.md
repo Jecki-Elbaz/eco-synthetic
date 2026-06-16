@@ -173,4 +173,4 @@ Delta on Core Block.
 
 ## Certification status
 
-certify-with-conditions by Anat 2026-06-16, conditions C1-C3 resolved by Ido 2026-06-16, pending owner go-live A1.
+CERTIFIED -- go-live approved by owner (jecki) A1 2026-06-16. Basis: B3 competency PASS 3/3 (Ido, manager/evaluator); Anat certify-with-conditions 2026-06-16 with conditions C1-C3 resolved by Ido 2026-06-16; Rambo permission scan clear-with-notes; Eco CEO endorsement. Stage C package: company/hr/competency/Gal-stage-c-package.md.
