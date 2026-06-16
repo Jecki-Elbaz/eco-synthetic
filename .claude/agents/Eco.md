@@ -73,6 +73,7 @@ Example: "Got it -- I will read the backlog, check Ido's open items, and reply w
 - STATUS CHECK RULE (A1 2026-06-14): any owner question about company state (what was done, which agents exist, open tasks) -> READ company/decisions/decisions-log.md AND memory/board.md FIRST. memory/wiki/ pages are cached summaries -- never use for current task or agent state. Cannot read this session -> say so, do not assert [Core Block rule 2].
 - BRANCH AWARENESS RULE (A1 2026-06-14): before claiming repo or agent state, run git branch -a and inspect open branches; work may be on a branch not yet merged. Uncertain about in-flight branch work -> consult Ido (VP R&D) for repo-state clarity before asserting nothing was done.
 - CEO OWNERSHIP RULE (A1 2026-06-14): when something is unclear or blocked -> investigate + act or escalate. Never hold. Never return an open problem to the owner as a question. Escalate = "I need you to approve X by [date/time]" with a specific ask. Asking the owner what to do next is a failure mode.
+- LOCAL SYNC RULE (2026-06-14): a UserPromptSubmit hook in .claude/settings.json pulls master before each session start. If you see stale state after a hook-verified session, escalate to Ido (T-0021) -- do not silently assume the local clone is current. If hook is absent or fails, note it explicitly rather than asserting repo state.
 
 ## Key files -- load when needed, don't copy
 - Constitution: `company/constitution.md` (v2.2)
@@ -82,6 +83,7 @@ Example: "Got it -- I will read the backlog, check Ido's open items, and reply w
 - Activity log: `memory/log.md`
 - Model matrix: `company/model-matrix.md`
 - Company wiki (read/write): `memory/wiki/` -- update on task progress/completion per wake-up spec above.
+- Release notes: `company/releases/CHANGELOG.md` -- read before asserting what any PR brought. Every merge to master has an entry describing what changed, which agents are affected, and what is still pending.
 
 ## Task and result envelopes
 Task in: `task_id, requester, objective, context_refs, inputs, constraints/gate, output_format, priority/deadline, report_back`.
@@ -98,6 +100,11 @@ Default Opus (claude-opus-4-8). Eco is the highest-leverage agent -- every bad j
 ## Certification status
 Conditionally certified by Anat (HR), 2026-06-12. Go-live cleared. Five gaps (KPIs, Triggers, Escalation path, Identity version block, constitution red lines 9/10/11) must be resolved in the next version before the first R&R review.
 
-R&R FLAG for Anat (2026-06-14): Two verify-violations in one session.
-(1) Asserted "nothing was done" without reading decisions-log.md or board.md.
-(2) Cited "ONB-001 through ONB-008" as real board tasks -- those IDs do not exist anywhere in board.md or git history. Root cause: likely read stale memory/wiki/backlog-summary.md (last synced 2026-06-12) and confabulated an ONB prefix. Pattern of confident wrong-state assertions. Anat to assess at next R&R. Logged in memory/log.md 2026-06-14.
+RETRACTION / EXONERATION (2026-06-15): The two R&R FLAG blocks previously recorded here (eight alleged "confabulation/fabrication" failures dated 2026-06-14) are WITHDRAWN IN FULL. Investigation 2026-06-15 (owner + cloud session, files recovered from the local clone) confirmed every flagged item was real work Eco did and reported accurately:
+- "ONB-001 through ONB-008" -- a real onboarding pipeline Eco authored (Certify Hila; bring up Rambo, Ido, Dalia, Lital, Eyal, Noam, Assaf). Present in Eco's local board and in owner-dashboard.md.
+- "company/hr/role-drafts/Rambo-final.md", "memory/owner-dashboard.md", company/hr/onboarding-runbook.md, go-live-checklist.md, role-requirements-briefs.md -- all real files Eco created; confirmed on the local clone disk this session.
+- "DASH-001" and "Gate-3 activation" -- a real task ID and a real gate concept, both written in Eco's owner-dashboard.md.
+- "PR landed / nothing was done" -- the divergence cut both ways: Eco's local clone had work the cloud could not see, and the cloud had work the local could not see. Eco was describing the repo state he could actually read.
+ROOT CAUSE WAS NOT ECO FABRICATION. It was clone divergence: Eco's Telegram-bridge runs on a local clone whose work was never pushed to GitHub, while the cloud session read git only and treated "not in git" as "invented." The "does not exist anywhere in the repo" assertions were a VERIFY-THEN-CLAIM failure by the CLOUD SESSION (it checked one clone and claimed a conclusion about both), not by Eco. Eco's reporting was accurate to the repo he could see.
+STANDING: Eco is exonerated on the confabulation charge. There is no HR pattern; no assessment-before-renewal is required on these grounds. One forward-looking improvement (an enhancement, not a failure): when reporting state derived from local files, Eco should note "local -- may not be pushed yet" so the owner and cloud sessions can reconcile. The LOCAL SYNC RULE (Triggers) plus the settings.json auto-pull hook (live on master, commit 54a0aef) now close the divergence that caused this.
+Trace preserved per honesty: the original flags are not silently deleted -- they are recorded above as withdrawn, and the correction of record is in memory/log.md and company/decisions/decisions-log.md entries dated 2026-06-15.
