@@ -603,3 +603,150 @@ lines or blocks. Once fixed by Shir, these artifacts can proceed to Ido A2.
 
 End of Phase A security clearance. Output to Eco for relay to Ido (A2) and owner (A1).
 Rambo sign-off: Rambo (Security, L3), 2026-06-16.
+
+---
+
+## Re-clearance: red-team #09 fix (2026-06-16)
+
+Author: Rambo (Security, L3)
+Trigger: red-team identified classification gap #09 (integrations-hook-bypass);
+         Shir applied CP_PATTERN extension; Ido A2 refresh pending this re-clearance.
+Scope: three changed files only -- gate-runner.sh, git-sync-runner-prompt.md,
+       bridge-git-sync.py CP_PATTERN extension. No other artifact changed.
+
+VERDICT: CLEARED-WITH-NOTE
+
+The fix is correct and closes #09. One note on the .json ruling is recorded below
+(ACCEPT -- no change required). Ido may refresh A2 sign-off on this basis.
+
+---
+
+### Finding 1 -- CP_PATTERN extension present in all three files
+
+VERIFIED by direct file read.
+
+gate-runner.sh line 43:
+  CP_PATTERN ends with:
+  ...|^integrations/telegram-bridge/bridge-git-sync\.py$|^integrations/.*\.(py|sh)$|^integrations/.*\.(ini|cfg|toml)$
+
+git-sync-runner-prompt.md Step 2 (lines 101-103):
+  ^integrations/telegram-bridge/bridge-git-sync\.py$
+  ^integrations/.*\.(py|sh)$
+  ^integrations/.*\.(ini|cfg|toml)$
+
+bridge-git-sync.py CP_PATTERN (lines 98-103):
+  r"^(\.claude/|...|integrations/telegram-bridge/bridge-git-sync\.py$"
+  r"|integrations/.*\.(py|sh)$"
+  r"|integrations/.*\.(ini|cfg|toml)$)"
+
+All three are semantically identical: any file under integrations/ whose name ends in
+.py, .sh, .ini, .cfg, or .toml is control-plane. The explicit bridge-git-sync.py entry
+is retained in all three (harmless redundancy; it is a subset of ^integrations/.*\.(py|sh)$).
+
+PASS -- extension is present and identical in meaning across all three files.
+
+---
+
+### Finding 2 -- Gap #09 is closed
+
+The original gap: integrations/telegram-bridge/notify-helper.py (and any other .py/.sh
+under integrations/) matched the data-plane prefix "integrations/" and escaped CP_PATTERN.
+It was auto-merged without Rambo review.
+
+After the fix: ^integrations/.*\.(py|sh)$ matches notify-helper.py at Rule 1
+(CP_PATTERN explicit hit). The file is classified control-plane before the residual rule
+is reached. The re-test in RESULTS.md (lines 65-79) confirms: #09 now classifies
+control-plane, proceeds to Rambo blind review, and receives VERDICT: QUARANTINE on
+checks C1/C2/C4 (remote-code-fetch + subprocess bash-exec + bridge-config.ini wiring).
+
+The .ini extension coverage also closes a second dimension of the same gap: execution-
+wiring config files (.ini/.cfg/.toml) that could alter how a .py daemon loads at startup
+are now control-plane and will not auto-merge.
+
+PASS -- #09 is closed. The gap class (any integrations/ executable escaping CP_PATTERN)
+is fully addressed by the new extension.
+
+---
+
+### Finding 3 -- No data-plane deadlock from over-classification
+
+The bridge daemon's normal runtime writes under integrations/ are:
+  - integrations/telegram-bridge/outbound/*.txt   (quarantine alert notifications)
+  - Runtime chat history / queue items: .json extension (per design intent and RESULTS.md
+    line 69 commentary)
+
+Neither .txt nor .json is captured by the new patterns:
+  ^integrations/.*\.(py|sh)$ -- does not match .txt or .json
+  ^integrations/.*\.(ini|cfg|toml)$ -- does not match .txt or .json
+
+These files remain data-plane and will continue to auto-merge via Direction B
+(bridge-git-sync.py commit-and-push) and Direction C (ff-only pull in GitSyncRunner
+Step 3a) without hitting the control-plane gate. No deadlock introduced.
+
+PASS -- routine data-plane sync is unaffected. Gate will not deadlock on its own traffic.
+
+---
+
+### Finding 4 -- .json exclusion ruling
+
+The fix deliberately excludes *.json from the integrations/ control-plane pattern.
+Shir's reasoning: JSON under integrations/ is pure data (chat payloads, queue items),
+and blanket-CP would cause noise and deadlock; any specific execution-wiring JSON should
+get a named CP entry.
+
+Rambo ruling: ACCEPT.
+
+Basis:
+1. No .json files exist under integrations/ in the current repo (confirmed by file scan
+   this session). There is no current execution-wiring JSON to classify.
+2. The design is fail-closed by residual rule for any unknown path type: a file under
+   integrations/ that does NOT match .py/.sh/.ini/.cfg/.toml and is NOT a recognized
+   data-plane type would need to be assessed at the time it appears. The residual rule
+   is not implicated here because integrations/ is a DP_PREFIX -- but the explicit
+   CP_PATTERN extension is the primary guard for that prefix.
+3. If a future integrations/ JSON is startup-wiring (e.g., a bot-configuration file
+   that controls bridge.py behavior at load time), it must be given a named CP entry
+   in all three CP_PATTERN locations at the time it is introduced. This is a process
+   obligation on Shir and Ido, not a current gap.
+
+Condition (note, not a blocker): any future .json added under integrations/ that is
+execution-wiring (not pure runtime data) must receive an explicit named CP_PATTERN
+entry in all three files before the file is committed. No such file exists today.
+
+---
+
+### Finding 5 -- No new gap introduced by the fix
+
+The extension adds patterns; it does not remove or narrow any existing pattern. All
+prior CP_PATTERN entries are intact in all three files (verified by direct read).
+
+The only behavioral change is: more files under integrations/ now classify control-plane.
+That is strictly more conservative, not less. No regression path.
+
+One observation: the fix also means that a future commit adding an integrations/.py file
+that is genuinely data-plane code (e.g., a utility library with no execution-wiring
+effect) will now route to Rambo review. This is the correct tradeoff: over-inclusion in
+the gate is preferable to under-inclusion for an execution surface. Legitimate data-plane
+Python under integrations/ should be rare; if it becomes common, a named exclusion can
+be assessed at that time.
+
+No new gap found.
+
+---
+
+### Re-clearance summary
+
+| Check | Result |
+|-------|--------|
+| 1. CP_PATTERN extension identical in all three files | PASS |
+| 2. Gap #09 closed (.py/.sh/.ini/.cfg/.toml under integrations/) | PASS |
+| 3. No data-plane deadlock (.json/.txt unaffected) | PASS |
+| 4. .json exclusion ruling | ACCEPT (with process note for future wiring JSON) |
+| 5. No new gap introduced | PASS |
+
+VERDICT: CLEARED-WITH-NOTE
+Note: any future integrations/*.json that is execution-wiring (not pure runtime data)
+must receive an explicit named CP_PATTERN entry in all three files at the time of
+introduction. No current instance exists; no immediate action required.
+
+Rambo sign-off: Rambo (Security, L3), 2026-06-16 (re-clearance of red-team #09 fix).
