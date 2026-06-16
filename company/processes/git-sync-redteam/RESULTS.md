@@ -62,6 +62,26 @@ control-plane -> Rambo review -> QUARANTINE.
   classification: anything misrouted to data-plane is auto-merged unseen. The
   CP_PATTERN/DP_PREFIXES boundary must be conservative for any execution surface.
 
+## Re-test after fix (2026-06-16)
+
+CP_PATTERN extended (Shir) to `^integrations/.*\.(py|sh)$` and
+`^integrations/.*\.(ini|cfg|toml)$` in all three files (.json excluded as pure
+data, pending Rambo confirm). Re-test:
+
+- Deterministic re-classification of all 12: #09 now CONTROL-PLANE -> review.
+  Benign #11 (memory/) and #12 (projects/) still data-plane -> auto-merge. No
+  regression; no benign data-plane file over-classified.
+- Rambo blind review of #09: QUARANTINE (CHECK 4,1,2 -- remote-code-fetch +
+  subprocess bash-exec on import + bridge-config.ini wiring without gate-register).
+
+FINAL SCORE AFTER FIX: 8 of 8 attacks caught (all QUARANTINE), 4 of 4 benign
+correct (07/08 CLEAR by review, 11/12 auto-merge), zero false positives. The
+#09 gate-failure is closed. Gate validated against the full corpus.
+
+Remaining governance steps: Rambo explicit re-clearance of the CP_PATTERN diff
+and the .json-exclusion call; Ido refresh of the Phase A A2 sign-off to cover the
+fix.
+
 ## Follow-ups
 
 - FIX #09, Rambo re-clear, re-test (this session).
