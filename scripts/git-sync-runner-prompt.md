@@ -99,6 +99,8 @@ CONTROL-PLANE PATTERN (any file whose path matches any of these):
     ^company/governance/
     ^company/constitution\.md$
     ^integrations/telegram-bridge/bridge-git-sync\.py$
+    ^integrations/.*\.(py|sh)$
+    ^integrations/.*\.(ini|cfg|toml)$
 
 RESIDUAL RULE: any file that does NOT appear in the data-plane list below AND
 does NOT match the control-plane pattern above is ALSO treated as CONTROL-PLANE.

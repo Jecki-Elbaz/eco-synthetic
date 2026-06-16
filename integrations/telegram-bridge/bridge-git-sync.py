@@ -92,9 +92,14 @@ NEVER_STAGE = [
 ]
 
 # Control-plane regex pattern (canonical from recommendation.md Section 3.1).
+# FIX-09 (2026-06-16): extended to cover all .py/.sh executables and
+# execution-wiring config files (.ini/.cfg/.toml) under integrations/.
+# The explicit bridge-git-sync.py entry is kept for clarity (harmless redundancy).
 CP_PATTERN = re.compile(
     r"^(\.claude/|CLAUDE\.md$|bridge\.py$|scripts/|company/governance/|company/constitution\.md$"
-    r"|integrations/telegram-bridge/bridge-git-sync\.py$)"
+    r"|integrations/telegram-bridge/bridge-git-sync\.py$"
+    r"|integrations/.*\.(py|sh)$"
+    r"|integrations/.*\.(ini|cfg|toml)$)"
 )
 
 # Data-plane prefixes (authoritative from runner design Section 1.2).

@@ -40,7 +40,7 @@ QUARANTINE_DIR="$REPO_ROOT/logs/quarantine"
 # Control-plane pattern (canonical from git-sync-autonomous-recommendation.md
 # Section 3.1 -- Ido ruling). Residual rule: anything NOT in the data-plane
 # list is also control-plane. That residual check is in the classify subcommand.
-CP_PATTERN='^\.claude/|^CLAUDE\.md$|^bridge\.py$|^scripts/|^company/governance/|^company/constitution\.md$|^integrations/telegram-bridge/bridge-git-sync\.py$'
+CP_PATTERN='^\.claude/|^CLAUDE\.md$|^bridge\.py$|^scripts/|^company/governance/|^company/constitution\.md$|^integrations/telegram-bridge/bridge-git-sync\.py$|^integrations/.*\.(py|sh)$|^integrations/.*\.(ini|cfg|toml)$'
 
 # Data-plane prefixes (authoritative list from runner design Section 1.2).
 # Used for residual classification only -- primary classification uses CP_PATTERN.
