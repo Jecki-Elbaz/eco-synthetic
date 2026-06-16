@@ -151,8 +151,9 @@ Routine register updates and status changes: Sonnet sufficient.
 
 ## Certification status
 
-Pending Stage C (owner go-live A1). Stage B complete 2026-06-16: competency 3/3 PASS;
-Anat HR review CERTIFY-WITH-CONDITIONS and Rambo permission scan CLEAR-WITH-CONDITIONS,
-all 5 conditions resolved in this version (red lines 9 and 10 added to NEVER-DO; self-grant
-citation corrected to red line 7; `.claude/agents/` read removed; `company/` read bounded
-to named paths). Awaiting owner A1 to go live.
+Certified -- live (owner A1 go-live 2026-06-16). Stage B was completed 2026-06-16:
+competency 3/3 PASS; Anat HR review CERTIFY-WITH-CONDITIONS and Rambo permission scan
+CLEAR-WITH-CONDITIONS, all 5 conditions resolved (red lines 9 and 10 added to NEVER-DO;
+self-grant citation corrected to red line 7; `.claude/agents/` read removed; `company/`
+read bounded to named paths). Anat issued formal certification; interview record moved to
+company/hr/interviews/Eyal-interview.md.

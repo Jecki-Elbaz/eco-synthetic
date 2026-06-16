@@ -274,5 +274,14 @@ Doc completeness: all substantive sections present -- no blocking conditions.
 
 Interviewing agent: Anat (HR, L3, P1)
 Date: 2026-06-16
-Status: STAGING -- pending Eco B7 review; do not move to certified folder until Stage C
-A1 owner approval and all conditions resolved.
+Status: CERTIFIED
+
+Formal certification -- 2026-06-16:
+Owner A1 go-live granted by jecki 2026-06-16 (relayed via Eco, task CERT-EYAL-STAGEC).
+All 5 conditions verified resolved in .claude/agents/Eyal.md:
+  (1) Red line 9 (personal data / Israeli privacy) added explicitly to "What you must NEVER do" (item 9).
+  (2) Red line 10 (third-party proprietary content) added explicitly to "What you must NEVER do" (item 10).
+  (3) Self-grant citation corrected from "[red line 9]" to "[red line 7]" in Authority section.
+  (4) .claude/agents/ read removed from the Data/memory access table (not present).
+  (5) company/ read bounded to named paths: company/governance/, company/constitution.md, company/processes/.
+Certification issued by Anat (HR, L3, P1). Record ready for Eco to move to certified folder.

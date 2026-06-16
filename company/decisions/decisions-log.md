@@ -215,3 +215,21 @@ Format per entry:
 - **Decision (2 -- delivery channels):** Full daily summary is delivered by email once Eco has a company email account. Telegram/chat is reserved for blockers and critical issues only -- not routine summaries. Logged as T-0020 on board.md. File save to `reports/daily-summaries/` continues regardless of delivery channel.
 - **Rationale (Telegram gap):** The Telegram bridge (bridge.py) is inbound-only from scheduled cloud sessions. It routes Jecki's Telegram messages to Claude; it cannot receive outbound pushes from cloud sessions. Zapier has no Telegram action enabled. To use Telegram for outbound delivery from cloud sessions, a Zapier Telegram action must be enabled (A2 gate) or a Bot API tool added (Rambo + Eyal gate + A1). Until then, file save is the primary record and email will be the delivery channel when available.
 - **Files affected:** `reports/daily-summaries/` (folder created; first summary filed), `company/governance/access-matrix.md` (reports/daily-summaries/ row added), `memory/board.md` (T-0020 added).
+
+## 2026-06-16 -- T-0002 design decisions approved (A1)
+
+- **Author / gate:** jecki (owner, A1) -- directions presented in company/design-decisions-brief.md.
+- **Decision 1 (concurrency):** Owner chose file-level locking AT ALL TIMES (option B), NOT the soft last-write-wins convention Eco recommended. Every agent writing a shared file (board.md, decisions-log.md, wiki pages) acquires a lock token first; held max 60s; others wait or escalate. Applies always, not only past 3 concurrent agents. Implementation is a build task (tracked under T-0002).
+- **Decision 2 (task-log storage):** Approved -- stay on JSONL (memory/log.jsonl) now; migrate to SQLite when the log passes 2,000 lines (Assaf owns the trigger).
+- **Decision 3 (durable chat memory):** Approved -- wiki-first now; SQLite keyword-search as the planned next step once Assaf and Ido are live; embeddings only if keyword search proves insufficient.
+- **Decision 4 (Gemini second model):** Pre-approved in principle. The Rambo (Security) + Eyal (Legal) tool-adoption gate runs when both are live; does not proceed if either flags. No spend; free tier only (any paid use is a separate A1).
+- **Rationale:** Cheap-now / expensive-later choices set so build can proceed without retrofits. Owner overrode Eco's concurrency recommendation in favor of stronger always-on locking.
+- **Files affected:** company/design-decisions-brief.md (status -> approved); memory/board.md (T-0002 implementation tracking).
+
+## 2026-06-16 -- Eyal (Legal) certified and go-live approved (A1)
+
+- **Author / gate:** jecki (owner, A1) -- agent go-live is A1 [red line 6 / Stage C].
+- **Decision:** Eyal (Legal, L3 direct, P1) certified and cleared to go live. First agent certified via the T-0019 competency-testing pipeline run in a Claude Code session (Agent tool). Stage B complete: competency 3/3 PASS; Anat HR review CERTIFY-WITH-CONDITIONS; Rambo permission scan CLEAR-WITH-CONDITIONS; all 5 conditions resolved in Eyal.md (red lines 9 and 10 added to NEVER-DO; self-grant citation corrected to red line 7; .claude/agents/ read removed; company/ read bounded to named paths). Interview record moved from _staging/ to certified.
+- **Rationale:** Unblocks T-0005 (compliance backlog with Lital) and the tool-adoption gate (Rambo + Eyal). Owner reviewed the Stage C package and approved go-live.
+- **Process note:** Demonstrates the supervised pipeline -- competency tested by fresh sub-agent sessions, independent Anat + Rambo review, owner A1 at Stage C, role-file edits gated owner-only (A1) throughout.
+- **Files affected:** .claude/agents/Eyal.md (conditions resolved; cert status -> certified), company/hr/competency/Eyal-spec.md + Eyal-test-results.md (new), company/hr/interviews/Eyal-interview.md (certified record, moved from _staging/).

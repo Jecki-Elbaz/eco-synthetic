@@ -1,5 +1,5 @@
 # Design Decisions Brief -- T-0002
-# Author: Eco (CEO) | Date: 2026-06-14 | Status: Awaiting owner review
+# Author: Eco (CEO) | Date: 2026-06-14 | Status: APPROVED by owner 2026-06-16 (D1 = file-lock always; D2, D3, D4 as recommended)
 
 Four small decisions that are cheap now and expensive to retrofit later.
 Each is a [DESIGN] item from company/backlog.md. I am not executing any of them --
