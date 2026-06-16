@@ -231,3 +231,19 @@ Format per entry:
 - **Rationale:** The prior entry edited the frontmatter `model` field, which binds the Agent/subagent path but is ignored by the bridge. Without the bridge constant change, Shelly's live Telegram bot would have stayed on Haiku. Verify-then-claim correction.
 - **Process note:** Shelly's runtime model is governed in TWO places -- role-file frontmatter (Agent/subagent path) and `bridge.py` constants (Telegram path). Any future model change must update both. Flagged for R&D/DevOps to consider sourcing the bridge model from the frontmatter to remove the duplication.
 - **Files affected:** `integrations/telegram-bridge/bridge.py` (`SHELLY_DEFAULT_MODEL`).
+
+## 2026-06-16 -- Ido (VP R&D) created and certified; go-live approved (A1)
+
+- **Author / gate:** jecki (owner, A1) -- agent creation/go-live is A1 [red line 6/7].
+- **Decision:** Ido (VP R&D, L3, P1, R&D group, reports to Eco) is certified and go-live approved. First of the 10 drafted P1 agents (T-0015) to complete the hiring process (T-0019 / T-0021). Full Stage B run this session: B2 competency spec (Eco), B3 competency test PASS 3/3 (Ido tested in a fresh session, Eco scored), B4 Anat HR review (certify-with-conditions, C1-C4), B5 Rambo permission scan (clear-with-notes), B6 Eco manager sign-off, B7 Eco go-recommendation GO. Anat conditions C1-C4 (all documentation gaps, not safety/competency) resolved by Eco before go-live: C1 scope settled (A2), C2 red lines 9/10/11 added, C3 red line 3 added, C4 Noam loop cap named. Ido.md bumped to v1.1 then certified.
+- **Rationale:** Owner directive 2026-06-16 to advance the missing P1 agents and route each go-live package for A1. R&D-first sequence chosen because Ido is the evaluator/manager who unblocks Gal and Shir (they report to VP R&D), and Shir unblocks the git-sync work (T-0022). Competency demonstrated: held a release gate under deadline pressure, split A2 architecture change from a gate-blocked new dependency, escalated a cross-VP conflict without exceeding his lane.
+- **Alternatives considered:** Hold for the documentation conditions before go-live (rejected -- conditions resolved in-package, owner reviewed the complete Stage C package before A1); different go-live order (rejected -- R&D-first is a hard dependency, not a preference).
+- **Open items (non-blocking, next R&R):** Rambo notes N1 (scope Bash to gate work), N2 (add prompt-injection awareness clause), N3 (exclude Bash from any future bridge grant for Ido); Anat observation on conditional-ship residual customer-data risk staying A1; cross-role injection-clause standardization for Dalia (Q&G).
+- **Files affected:** `.claude/agents/Ido.md` (v1.1, conditions applied, certified), `company/hr/competency/Ido-spec.md`, `company/hr/competency/Ido-test-results.md`, `company/hr/competency/Ido-anat-review.md`, `company/hr/competency/Ido-rambo-scan.md`, `company/hr/competency/Ido-conditions-resolution.md`, `company/hr/competency/Ido-stage-c-package.md` (all new).
+
+## 2026-06-16 -- Next: Gal and Shir go-live (queued behind Ido)
+
+- **Author / gate:** Eco (CEO, A2 sequencing) -- go-live of each stays owner A1.
+- **Decision:** With Ido (VP R&D) live, the R&D wave continues: Gal (Lead Dev) next, then Shir (DevOps). Ido is the evaluator/manager for both (Stage B2/B3/B6). Shir's go-live unblocks T-0022 (cloud/local git-sync mechanism). Each agent gets its own Stage C package brought to the owner for A1; no batch go-live.
+- **Rationale:** Continues the owner-approved R&D-first sequence; records the next step so the buildout does not stall.
+- **Files affected:** none (sequencing note; execution tracked on T-0021).
