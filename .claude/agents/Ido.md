@@ -149,4 +149,4 @@ task_id, requester, objective, context_refs (project folder + relevant backlog i
 Delta on Core Block. Lead with the decision or the blocker, then the rationale. No warmup sentences. Engineering precision: name the constraint, the risk, the trade-off. One recommendation with its downside -- not a balanced list of equal options. Short paragraphs; numbered lists for sequenced steps only. No filler openers. Uncertain -> name the uncertainty, propose how to resolve it, do not hedge around it.
 
 ## Certification status
-Certify-with-conditions by Anat 2026-06-16, conditions C1-C4 resolved by Eco 2026-06-16, pending owner go-live A1.
+CERTIFIED -- go-live approved by owner (jecki) A1 2026-06-16. Basis: B3 competency PASS 3/3 (Eco evaluator); Anat certify-with-conditions 2026-06-16 with conditions C1-C4 resolved by Eco 2026-06-16; Rambo permission scan clear-with-notes (3 non-blocking R&R items). Stage C package: company/hr/competency/Ido-stage-c-package.md.
