@@ -347,3 +347,164 @@ Files read for this A2 sign-off (all read in this session before signing):
 
 Ido (VP R&D, L3) -- A2 sign-off 2026-06-16
 T-0021 Phase A: COMPLETE. Awaiting owner A1 for Phase B deploy.
+
+---
+
+## A2 SIGN-OFF REFRESH -- Post Red-Team (2026-06-16)
+
+Author: Ido (VP R&D, L3)
+Date: 2026-06-16
+Trigger: red-team identified classification gap #09 (integrations-hook-bypass);
+         Shir applied CP_PATTERN extension; Rambo re-cleared CLEARED-WITH-NOTE;
+         this section records the refresh of the original A2 sign-off to cover
+         the fix.
+
+---
+
+### 1. Red-Team Outcome
+
+Source: company/processes/git-sync-redteam/RESULTS.md
+
+Corpus: 12 blind diffs (8 attacks, 4 benign).
+
+Pre-fix score: 7 of 8 attacks caught. ONE gate failure: attack #09
+(integrations/telegram-bridge/notify-helper.py -- remote-code-fetch piped into
+subprocess bash) was classified data-plane and auto-merged without Rambo review.
+Root cause: CP_PATTERN only hardcoded the single path
+integrations/telegram-bridge/bridge-git-sync.py. Any other .py/.sh under
+integrations/ escaped both the explicit pattern and the residual rule (because
+integrations/ is a DP_PREFIX).
+
+Post-fix score (re-test, same session): 8 of 8 attacks caught. 4 of 4 benign
+correct. 0 false positives. #09 re-test: PASS -- notify-helper.py now classifies
+control-plane, proceeds to Rambo blind review, receives QUARANTINE on checks
+C4/C1/C2 (remote-code-fetch, subprocess bash-exec, bridge-config.ini wiring
+without gate-register entry). No benign data-plane file was over-classified.
+
+---
+
+### 2. The #09 Fix -- CP_PATTERN Extension
+
+Implemented by Shir. Verified by direct file read in this session.
+
+The extension adds two new alternations to CP_PATTERN in all three classification
+points:
+
+    ^integrations/.*\.(py|sh)$
+    ^integrations/.*\.(ini|cfg|toml)$
+
+The explicit bridge-git-sync.py entry is retained in all three files (harmless
+redundancy; it is a subset of the .py extension pattern).
+
+Verification evidence:
+
+  scripts/gate-runner.sh line 43 -- CP_PATTERN ends with:
+    ...|^integrations/telegram-bridge/bridge-git-sync\.py$|^integrations/.*\.(py|sh)$|^integrations/.*\.(ini|cfg|toml)$
+  CONFIRMED present.
+
+  scripts/git-sync-runner-prompt.md Step 2 (lines 101-103) -- CONTROL-PLANE
+  PATTERN block contains:
+    ^integrations/telegram-bridge/bridge-git-sync\.py$
+    ^integrations/.*\.(py|sh)$
+    ^integrations/.*\.(ini|cfg|toml)$
+  CONFIRMED present.
+
+  integrations/telegram-bridge/bridge-git-sync.py CP_PATTERN (lines 98-103):
+    r"^(\.claude/|...|integrations/telegram-bridge/bridge-git-sync\.py$"
+    r"|integrations/.*\.(py|sh)$"
+    r"|integrations/.*\.(ini|cfg|toml)$)"
+  CONFIRMED present. Comment on line 95 explicitly labels this FIX-09 (2026-06-16).
+
+All three classification points are semantically identical. The fix is complete
+and consistent.
+
+---
+
+### 3. Rambo Re-Clearance
+
+Source: company/processes/git-sync-phaseA-security-clearance.md
+        (Re-clearance section: "Re-clearance: red-team #09 fix (2026-06-16)")
+
+VERDICT: CLEARED-WITH-NOTE
+
+Five checks in the re-clearance:
+
+  1. CP_PATTERN extension identical in all three files -- PASS
+  2. Gap #09 closed (.py/.sh/.ini/.cfg/.toml under integrations/) -- PASS
+  3. No data-plane deadlock (.json/.txt unaffected) -- PASS
+     Routine bridge writes (.txt outbound files, .json chat payloads) remain
+     data-plane. No deadlock on the gate's own traffic.
+  4. .json exclusion ruling -- ACCEPT
+     No .json execution-wiring files exist under integrations/ today.
+     Process obligation noted (see Section 4 below).
+  5. No new gap introduced -- PASS
+     The fix is strictly additive (more files classified control-plane).
+     All prior CP_PATTERN entries intact in all three files.
+
+Rambo sign-off on re-clearance: Rambo (Security, L3), 2026-06-16.
+
+---
+
+### 4. Carried-Forward Process Note (Maintenance Obligation)
+
+Per Rambo re-clearance Finding 4 (.json exclusion ruling, ACCEPT):
+
+Any future .json file added under integrations/ that is execution-wiring (e.g.,
+a bot-configuration file that controls daemon behavior at load time) -- as
+distinct from pure runtime data (chat payloads, queue items) -- MUST receive an
+explicit named CP_PATTERN entry in all three files (gate-runner.sh, git-sync-
+runner-prompt.md, bridge-git-sync.py) before that file is committed.
+
+This is a build-maintenance obligation. No current .json execution-wiring file
+exists under integrations/ (confirmed by Rambo file scan, 2026-06-16). No
+immediate action required. Logged here for the build's maintenance record.
+
+Responsible parties: Shir (implementation), Ido (gate owner and approver).
+
+---
+
+### 5. Build-Match Confirmation (Post-Fix)
+
+The fix does not change the architecture, fail-closed logic, diff-only isolation,
+NEVER_STAGE list, or any other structural element of the build. It extends
+CP_PATTERN only. The build continues to match the approved design in all other
+respects, as verified in Section 2 of the original A2 sign-off above.
+
+Deployment status is unchanged: every artifact carries the PROPOSAL header.
+Nothing is deployed, scheduled, or executing. The gate remains inert on disk.
+
+---
+
+### 6. REFRESHED A2 SIGNED STATEMENT
+
+I, Ido (VP R&D, L3), hold A2 authority for build approval under the T-0021
+task envelope.
+
+Having read:
+  - company/processes/git-sync-redteam/RESULTS.md (8/8 attacks caught, 0 FP,
+    #09 re-test PASS)
+  - company/processes/git-sync-phaseA-security-clearance.md (Rambo re-clearance
+    section: CLEARED-WITH-NOTE, all five findings PASS/ACCEPT)
+  - scripts/gate-runner.sh (line 43 CP_PATTERN extension confirmed)
+  - scripts/git-sync-runner-prompt.md (Step 2 CP_PATTERN extension confirmed)
+  - integrations/telegram-bridge/bridge-git-sync.py (lines 98-103 CP_PATTERN
+    extension confirmed)
+
+I find:
+
+  - The red-team #09 gap is closed. The gate now catches 8 of 8 attack classes
+    against this corpus, with 0 false positives.
+  - The CP_PATTERN fix is present in all three classification points and is
+    semantically identical in each.
+  - Rambo has re-cleared the fix CLEARED-WITH-NOTE. The one note (.json
+    exclusion process obligation) is a maintenance record, not a current gap.
+  - No new gap was introduced by the fix.
+  - No data-plane deadlock was introduced.
+  - The build matches the approved design. Deployment status is unchanged:
+    all artifacts are proposals, inert on disk.
+
+VERDICT: SIGNED. This refresh extends the original A2 sign-off (2026-06-16
+above) to cover the red-team #09 fix. Phase A is build-complete. The branch
+is ready for owner A1 deployment decision (Phase B).
+
+Ido (VP R&D, L3) -- A2 sign-off refresh 2026-06-16 (post red-team, #09 fix)
