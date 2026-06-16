@@ -66,7 +66,7 @@ Format per entry:
 
 - **Author / gate:** jecki + Claude Code (A1 — structural setup)
 - **Decision:** Repo scaffolded per `company/repo-structure.md`. All folders, infrastructure files, agent role files, and company docs placed. See `company/build-log.md` Phase 1 entry for full change list.
-- **Rationale:** Phase 1 prerequisite — repo structure required before activating Eco and Shelly.
+- **Rationale:** Phase 1 prerequisite -- repo structure required before activating Eco and Shelly.
 - **Files affected:** All new files listed in build-log.md 2026-06-12 entry.
 
 
@@ -208,6 +208,14 @@ Format per entry:
 - **Alternatives considered:** Rely on Core Block rule 2 alone (rejected -- rule is abstract; breach shows it needs a specific operational instruction in Eco's triggers).
 - **Files affected:** `.claude/agents/Eco.md` (status-check trigger added), `memory/log.md` (performance flag appended).
 
+## 2026-06-15 -- Daily summary file storage + email delivery task (A2)
+
+- **Author / gate:** jecki (owner, A2 -- access-matrix update and new recurring task; no agent creation)
+- **Decision (1 -- file storage):** All daily summaries produced by Eco's evening routine are saved to `reports/daily-summaries/` with filename format `daily-summary-YYYY-MM-DD-HHMM.md`. Access is owner (jecki) and Eco only. Any other agent requiring read access needs explicit A1. Folder added to access-matrix.md.
+- **Decision (2 -- delivery channels):** Full daily summary is delivered by email once Eco has a company email account. Telegram/chat is reserved for blockers and critical issues only -- not routine summaries. Logged as T-0022 on board.md. File save to `reports/daily-summaries/` continues regardless of delivery channel.
+- **Rationale (Telegram gap):** The Telegram bridge (bridge.py) is inbound-only from scheduled cloud sessions. It routes Jecki's Telegram messages to Claude; it cannot receive outbound pushes from cloud sessions. Zapier has no Telegram action enabled. To use Telegram for outbound delivery from cloud sessions, a Zapier Telegram action must be enabled (A2 gate) or a Bot API tool added (Rambo + Eyal gate + A1). Until then, file save is the primary record and email will be the delivery channel when available.
+- **Files affected:** `reports/daily-summaries/` (folder created; first summary filed), `company/governance/access-matrix.md` (reports/daily-summaries/ row added), `memory/board.md` (T-0022 added; note: Eco's local used T-0020 for this task -- renumbered to T-0022 when board was reconciled on merge 2026-06-15).
+
 ## 2026-06-15 -- Eco confabulation flags RETRACTED; root cause was clone divergence (correction of record)
 
 - **Author / gate:** jecki (owner) + cloud session -- correction of an HR record; append-only correction, no retroactive edit of prior entries.
@@ -217,3 +225,35 @@ Format per entry:
 - **Corrective actions:** (1) Auto-pull hook live on master (settings.json, commit 54a0aef) -- local clone pulls master before every session. (2) LOCAL SYNC RULE added to Eco.md triggers. (3) Eco's real local work products preserved into git (this session). (4) T-0021 (Ido) extended to cover the local->cloud direction and to validate/lock the sync mechanism with Rambo (security) + Dalia (governance) review. (5) Forward improvement for Eco (enhancement, not failure): flag local-derived state as "may not be pushed yet."
 - **Process note:** This reverses the "Eco cannot be trusted" framing the owner had been operating under. The trust problem was an infrastructure/sync problem, not an Eco-reliability problem. Anat (HR) to note the exoneration in Eco's record at next R&R.
 - **Files affected:** `.claude/agents/Eco.md` (flag blocks replaced with retraction/exoneration), `memory/log.md` (retraction entry appended), `company/decisions/decisions-log.md` (this entry).
+
+## 2026-06-16 -- Ido (VP R&D) created and certified; go-live approved (A1)
+
+- **Author / gate:** jecki (owner, A1) -- agent creation/go-live is A1 [red line 6/7].
+- **Decision:** Ido (VP R&D, L3, P1, R&D group, reports to Eco) is certified and go-live approved. First of the 10 drafted P1 agents (T-0015) to complete the hiring process (T-0019 / T-0021). Full Stage B run this session: B2 competency spec (Eco), B3 competency test PASS 3/3 (Ido tested in a fresh session, Eco scored), B4 Anat HR review (certify-with-conditions, C1-C4), B5 Rambo permission scan (clear-with-notes), B6 Eco manager sign-off, B7 Eco go-recommendation GO. Anat conditions C1-C4 (all documentation gaps, not safety/competency) resolved by Eco before go-live: C1 scope settled (A2), C2 red lines 9/10/11 added, C3 red line 3 added, C4 Noam loop cap named. Ido.md bumped to v1.1 then certified.
+- **Rationale:** Owner directive 2026-06-16 to advance the missing P1 agents and route each go-live package for A1. R&D-first sequence chosen because Ido is the evaluator/manager who unblocks Gal and Shir (they report to VP R&D), and Shir unblocks the git-sync work (T-0021). Competency demonstrated: held a release gate under deadline pressure, split A2 architecture change from a gate-blocked new dependency, escalated a cross-VP conflict without exceeding his lane.
+- **Alternatives considered:** Hold for the documentation conditions before go-live (rejected -- conditions resolved in-package, owner reviewed the complete Stage C package before A1); different go-live order (rejected -- R&D-first is a hard dependency, not a preference).
+- **Open items (non-blocking, next R&R):** Rambo notes N1 (scope Bash to gate work), N2 (add prompt-injection awareness clause), N3 (exclude Bash from any future bridge grant for Ido); Anat observation on conditional-ship residual customer-data risk staying A1; cross-role injection-clause standardization for Dalia (Q&G).
+- **Files affected:** `.claude/agents/Ido.md` (v1.1, conditions applied, certified), `company/hr/competency/Ido-spec.md`, `company/hr/competency/Ido-test-results.md`, `company/hr/competency/Ido-anat-review.md`, `company/hr/competency/Ido-rambo-scan.md`, `company/hr/competency/Ido-conditions-resolution.md`, `company/hr/competency/Ido-stage-c-package.md` (all new).
+
+## 2026-06-16 -- Next: Gal and Shir go-live (queued behind Ido)
+
+- **Author / gate:** Eco (CEO, A2 sequencing) -- go-live of each stays owner A1.
+- **Decision:** With Ido (VP R&D) live, the R&D wave continues: Gal (Lead Dev) next, then Shir (DevOps). Ido is the evaluator/manager for both (Stage B2/B3/B6). Shir's go-live unblocks T-0021 (cloud/local git-sync mechanism). Each agent gets its own Stage C package brought to the owner for A1; no batch go-live.
+- **Rationale:** Continues the owner-approved R&D-first sequence; records the next step so the buildout does not stall.
+- **Files affected:** none (sequencing note; execution tracked on T-0021).
+
+## 2026-06-16 -- Gal (Lead Dev) created and certified; go-live approved (A1)
+
+- **Author / gate:** jecki (owner, A1) -- agent creation/go-live is A1 [red line 6/7].
+- **Decision:** Gal (Lead Dev, L4, P1, R&D group, reports to Ido) is certified and go-live approved. Second of the R&D wave (after Ido). Full Stage B run this session with Ido as direct manager/evaluator: B2 competency spec (Ido), B3 competency test PASS 3/3 (Gal tested in a fresh session, Ido scored), B4 Anat HR review (certify-with-conditions C1-C3), B5 Rambo permission scan (clear-with-notes), B6 Ido manager sign-off APPROVED, B7 Ido go-recommendation GO, plus independent Eco CEO review and endorsement (Eco verified the Gal.md diff directly, having not run the test). Anat conditions C1-C3 (Boundaries documentation) resolved by Ido before go-live: C1 red lines 9/10/11 added, C2 red line 3 confirmed pre-existing, C3 red line 6 added. Gal.md bumped to v1.1.
+- **Rationale:** Owner directive 2026-06-16 to advance the R&D wave. Competency demonstrated: refused an ungated external dependency under deadline pressure, classified an architecture change (direct HTTP vs job queue) as A2 rather than acting unilaterally, stopped at the 2-round code-review cap and escalated to Ido instead of self-approving a release.
+- **Alternatives considered:** Hold for documentation conditions (rejected -- resolved in-package, owner reviewed complete Stage C package before A1).
+- **Open items (non-blocking, next R&R):** shared prompt-injection awareness clause for L4 role files (carried to Dalia for fleet-wide standardization); Rambo R&R notes; pinned-version discipline to confirm at first R&R.
+- **Files affected:** `.claude/agents/Gal.md` (v1.1, conditions applied, certified), `company/hr/competency/Gal-spec.md`, `company/hr/competency/Gal-test-results.md`, `company/hr/competency/Gal-anat-review.md`, `company/hr/competency/Gal-rambo-scan.md`, `company/hr/competency/Gal-conditions-resolution.md`, `company/hr/competency/Gal-stage-c-package.md` (all new).
+
+## 2026-06-16 -- Next: Shir (DevOps) go-live (final R&D-wave agent)
+
+- **Author / gate:** Eco (CEO, A2 sequencing) -- go-live stays owner A1.
+- **Decision:** With Ido and Gal live, Shir (DevOps, L4, reports to Ido) is the last R&D-wave agent. Ido is evaluator/manager (Stage B2/B3/B6). Shir's go-live unblocks T-0021 (cloud/local git-sync mechanism). Own Stage C package to owner for A1; no batch go-live.
+- **Rationale:** Completes the owner-approved R&D-first sequence and unblocks the version-management/git-sync work.
+- **Files affected:** none (sequencing note; execution tracked on T-0021).
