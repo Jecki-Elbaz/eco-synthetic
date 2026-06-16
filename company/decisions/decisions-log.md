@@ -289,3 +289,40 @@ Format per entry:
 - **Unblocks:** T-0022 (cloud/local git-sync mechanism) -- Shir is the DevOps owner for that work, now live.
 - **Open items (non-blocking, next R&R):** Anat N1-N5 and Rambo Findings 2-4 (prompt-injection clause; bridge.py-write must be logged in decisions-log not informal sign-off; bridge tool-grant exclusion of Bash if Shir ever added to the bridge); cross-role injection clause for Dalia.
 - **Files affected:** `.claude/agents/Shir.md` (v1.1, conditions applied, certified), `company/hr/competency/Shir-spec.md`, `Shir-test-results.md`, `Shir-anat-review.md`, `Shir-rambo-scan.md`, `Shir-conditions-resolution.md`, `Shir-stage-c-package.md` (all new).
+
+## 2026-06-16 -- T-0002 design decisions approved (A1)
+
+- **Author / gate:** jecki (owner, A1) -- directions presented in company/design-decisions-brief.md.
+- **Decision 1 (concurrency):** Owner chose file-level locking AT ALL TIMES (option B), NOT the soft last-write-wins convention Eco recommended. Every agent writing a shared file (board.md, decisions-log.md, wiki pages) acquires a lock token first; held max 60s; others wait or escalate. Applies always, not only past 3 concurrent agents. Implementation is a build task (tracked under T-0002).
+- **Decision 2 (task-log storage):** Approved -- stay on JSONL (memory/log.jsonl) now; migrate to SQLite when the log passes 2,000 lines (Assaf owns the trigger).
+- **Decision 3 (durable chat memory):** Approved -- wiki-first now; SQLite keyword-search as the planned next step once Assaf and Ido are live; embeddings only if keyword search proves insufficient.
+- **Decision 4 (Gemini second model):** Pre-approved in principle. The Rambo (Security) + Eyal (Legal) tool-adoption gate runs when both are live; does not proceed if either flags. No spend; free tier only (any paid use is a separate A1).
+- **Rationale:** Cheap-now / expensive-later choices set so build can proceed without retrofits. Owner overrode Eco's concurrency recommendation in favor of stronger always-on locking.
+- **Files affected:** company/design-decisions-brief.md (status -> approved); memory/board.md (T-0002 implementation tracking).
+
+## 2026-06-16 -- Eyal (Legal) certified and go-live approved (A1)
+
+- **Author / gate:** jecki (owner, A1) -- agent go-live is A1 [red line 6 / Stage C].
+- **Decision:** Eyal (Legal, L3 direct, P1) certified and cleared to go live. First agent certified via the T-0019 competency-testing pipeline run in a Claude Code session (Agent tool). Stage B complete: competency 3/3 PASS; Anat HR review CERTIFY-WITH-CONDITIONS; Rambo permission scan CLEAR-WITH-CONDITIONS; all 5 conditions resolved in Eyal.md (red lines 9 and 10 added to NEVER-DO; self-grant citation corrected to red line 7; .claude/agents/ read removed; company/ read bounded to named paths). Interview record moved from _staging/ to certified.
+- **Rationale:** Unblocks T-0005 (compliance backlog with Lital) and the tool-adoption gate (Rambo + Eyal). Owner reviewed the Stage C package and approved go-live.
+- **Process note:** Demonstrates the supervised pipeline -- competency tested by fresh sub-agent sessions, independent Anat + Rambo review, owner A1 at Stage C, role-file edits gated owner-only (A1) throughout.
+- **Files affected:** .claude/agents/Eyal.md (conditions resolved; cert status -> certified), company/hr/competency/Eyal-spec.md + Eyal-test-results.md (new), company/hr/interviews/Eyal-interview.md (certified record, moved from _staging/).
+
+## 2026-06-16 -- Five P1 agents certified and go-live approved; .claude/agents/ read grant (A1)
+
+- **Author / gate:** jecki (owner, A1) -- agent go-live and agent-file read grant are A1 [red line 6].
+- **Decision (go-live):** Ido (VP R&D), Noam (Product), Lital (CFO), Dalia (Q&G), Assaf (OE) certified and live, via the T-0019 competency pipeline as one consolidated batch. Each: competency 3/3 PASS; Anat B4 CERTIFY-WITH-CONDITIONS; Rambo B5 CLEAR-WITH-CONDITIONS; all conditions resolved in the role files (missing red-line citations and template sections added). Rambo caught a real error in Assaf.md claiming the .claude/agents/ grant was "A2, no owner A1 required" -- corrected to A1. Interview records moved from _staging/ to certified.
+- **Decision (.claude/agents/ read grant):** Owner A1 grants Dalia (quality audit + tone governance) and Assaf (fitness loop + model-matrix sync) read access to .claude/agents/, matching the existing Anat and Rambo exceptions. access-matrix.md updated. Granting this read is A1 (owner), not A2. Dalia formalizes all four exceptions in T-0012 (her first task on go-live).
+- **Rationale:** Unblocks the P1 org -- R&D (Ido) and Product (Noam, T-0001), compliance (Lital with Eyal, T-0005), governance/audit (Dalia), operational + cost monitoring (Assaf). Owner reviewed the consolidated Stage C package and approved go-live for all five plus the access grant.
+- **Deferred (non-blocking, first R&R):** Lital -- precise Opus-trigger standard; IRB financial-analysis format. **Open process items:** Eco to log Noam's need-to-know access-matrix read; Eco to confirm Shelly dashboards-surfacing path for Lital/Assaf; T-0012 matrix reconciliation.
+- **Process note:** First multi-agent batch certified through the supervised pipeline -- competency by fresh sub-agent sessions, independent Anat + Rambo review, all role-file edits gated owner A1.
+- **Files affected:** .claude/agents/{Ido,Noam,Lital,Dalia,Assaf}.md (conditions resolved; cert status -> certified), company/governance/access-matrix.md (.claude/agents/ row -- Dalia + Assaf added), company/hr/competency/{Ido,Noam,Lital,Dalia,Assaf}-{spec,test-results}.md (new), company/hr/interviews/{Ido,Noam,Lital,Dalia,Assaf}-interview.md (certified records, moved from _staging/).
+
+## 2026-06-16 -- Merge reconciliation: Ido double-certification incident (documented)
+
+- **Author / gate:** Claude Code session (merge to master), under owner A1 to push to production.
+- **What happened:** Two parallel sessions certified Ido (VP R&D) independently on the same day. The R&D-wave session certified Ido on master (entry "Ido (VP R&D) created and certified", 2026-06-16) as part of the Ido -> Gal -> Shir sequence. Concurrently, the agent-tool-bridge-config session certified Ido again inside its consolidated 5-agent batch (entry "Five P1 agents certified", 2026-06-16). Both reached the same result: Ido certified, owner A1, competency 3/3.
+- **Resolution (no information lost):** On merge, MASTER's Ido is kept as the live/canonical version (.claude/agents/Ido.md plus the Ido competency records), because it was already in production and its competency record is more detailed (release-gate, message-broker, auto-categorization scenarios). The bridge-config session's Ido artifacts are preserved in git history on branch claude/agent-tool-bridge-config-8kotbr (commits up to 4d1a6f9) if ever needed. The bridge-config "Five P1 agents" entry is retained as-is for the historical record; for the ROLE FILE its Ido portion is superseded by master's Ido entry -- only Noam, Lital, Dalia, Assaf (and Eyal earlier) were net-new certifications from that session. decisions-log entries from both sessions are unioned; none dropped.
+- **Root cause:** Concurrent work on diverged clones/branches with no cross-session lock -- exactly the concurrency collision that T-0002 Decision 1 (file-level locking at all times, owner A1 2026-06-16) is meant to prevent. Until that lock is built, agent-buildout work should be serialized through one session or coordinated via the board to avoid duplicate certification.
+- **Action items:** (1) Dalia (Q&G) to expand the post-mortem at company/post-mortems/2026-06-16-ido-double-certification.md and fold the lesson into the T-0002 file-lock build requirement. (2) Eco to confirm no other agent was double-certified -- per the merge diff, only Ido overlapped between the two branches.
+- **Files affected:** company/decisions/decisions-log.md (this entry), company/post-mortems/2026-06-16-ido-double-certification.md (new).

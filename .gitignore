@@ -48,6 +48,10 @@ logs/
 memory/log.jsonl
 memory/chats/
 
+# Autonomy-guard runtime state -- never commit (control flag + per-run audit stream)
+memory/SAFE_MODE
+memory/agent-runs.jsonl
+
 # Owner-office workspace -- Shelly personal-task data; never commit (A3 hardening 2026-06-12)
 memory/owner-office/
 
