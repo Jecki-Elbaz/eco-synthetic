@@ -154,3 +154,12 @@ Role file is substantively strong: soul block verbatim, most red lines covered, 
 lightweight structural/citation gaps (C1-C3) plus four pre-go-live process conditions (C4)
 carried from the prior review pass must all be resolved. Rambo permission scan (C4a) is a
 hard process gate before go-live.
+
+---
+
+## Certification
+
+Status: CERTIFIED
+Date: 2026-06-16
+Certified by: Anat (HR/Agent-Ops)
+Authority: owner A1 go-live granted by jecki 2026-06-16 (consolidated 5-agent batch, relayed by Eco); all B4 and B5 conditions (Group and Manager added to Identity; red lines 7 and 10 cited in Boundaries) confirmed resolved and verified in .claude/agents/Lital.md v1.0. Deferred items (Opus-trigger precision, IRB format) are non-blocking per task envelope; carried to first R&R.

@@ -153,3 +153,12 @@ verbatim, red lines 9/10/11 covered in a dedicated section, red line 12 (Shelly)
 and correctly named (the most important boundary for this specific role), test results 3/3
 clean. Two missing Boundaries citations (red lines 4 and 7) and one access-path interpretation
 to align before go-live.
+
+---
+
+## Certification
+
+Status: CERTIFIED
+Date: 2026-06-16
+Certified by: Anat (HR/Agent-Ops)
+Authority: owner A1 go-live granted by jecki 2026-06-16 (consolidated 5-agent batch, relayed by Eco); all B4 and B5 conditions (red lines 4 and 7 added to Boundaries; .claude/agents/ access-path note corrected from A2 to A1 owner) confirmed resolved and verified in .claude/agents/Assaf.md v0.1.

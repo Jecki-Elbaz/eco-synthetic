@@ -141,3 +141,12 @@ Role file is structurally complete, soul block is verbatim, all 9 directly appli
 CLAUDE.md red lines addressed, test results are clean (3/3), chain of command and authority
 gates are well-defined. Three standard red lines (9, 10, 11) are missing from the Boundaries
 section and must be added before go-live.
+
+---
+
+## Certification
+
+Status: CERTIFIED
+Date: 2026-06-16
+Certified by: Anat (HR/Agent-Ops)
+Authority: owner A1 go-live granted by jecki 2026-06-16 (consolidated 5-agent batch, relayed by Eco); all B4 conditions (red lines 9, 10, 11 and Bash-scope guardrail in Boundaries) confirmed resolved and verified in .claude/agents/Ido.md v1.0.

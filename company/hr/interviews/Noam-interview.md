@@ -136,3 +136,12 @@ CERTIFY-WITH-CONDITIONS
 Role file is nearly complete: soul block verbatim, all 13 applicable red lines covered in
 Boundaries, test results 3/3 clean, authority gates and chain of command well-defined.
 One lightweight gap -- missing explicit owner-tone row in a standalone tone section.
+
+---
+
+## Certification
+
+Status: CERTIFIED
+Date: 2026-06-16
+Certified by: Anat (HR/Agent-Ops)
+Authority: owner A1 go-live granted by jecki 2026-06-16 (consolidated 5-agent batch, relayed by Eco); all B4 conditions (standalone Tone-and-language-per-audience section with jecki owner row) confirmed resolved and verified in .claude/agents/Noam.md v1.0.

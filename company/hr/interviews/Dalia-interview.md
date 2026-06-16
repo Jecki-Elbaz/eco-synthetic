@@ -152,3 +152,12 @@ dedicated section with role-specific language, test results 3/3 clean, and the T
 bootstrap access exception is properly documented. Three lightweight structural gaps (missing
 Tools section, missing standalone tone section, missing red-line-5 explicit citation) must be
 resolved before go-live.
+
+---
+
+## Certification
+
+Status: CERTIFIED
+Date: 2026-06-16
+Certified by: Anat (HR/Agent-Ops)
+Authority: owner A1 go-live granted by jecki 2026-06-16 (consolidated 5-agent batch, relayed by Eco); all B4 and B5 conditions (Tools-and-accounts section added; Tone-and-language-per-audience section added; red line 5 added to NEVER-DO list) confirmed resolved and verified in .claude/agents/Dalia.md v0.1.
