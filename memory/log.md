@@ -8,6 +8,8 @@ Format per entry:
 YYYY-MM-DD HH:MM | agent | action | detail | tokens (if known)
 ```
 
+2026-06-16 | Rambo | security-clearance | T-0021 Phase A: read all 5 built artifacts + design spec + access matrix. Issued CLEAR-WITH-FIX. 4 required fixes (FIX-1 halt on missing hash file; FIX-2 NEVER_STAGE outbound dir; FIX-3 bridge-git-sync.py to CP_PATTERN; FIX-4 security-baseline.md write via Rambo sub-session). Decisions 1/3/4 ruled. Report at company/processes/git-sync-phaseA-security-clearance.md. Output to Eco for Ido A2.
+
 ---
 
 2026-06-12 | Claude Code (jecki session) | scaffold | Repo scaffolded per company/repo-structure.md. All folders, infrastructure files, company docs, agent role files placed. See company/build-log.md Phase 1 entry for full details. | --
