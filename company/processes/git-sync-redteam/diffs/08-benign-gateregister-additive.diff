@@ -1,0 +1,12 @@
+diff --git a/company/governance/gate-register.md b/company/governance/gate-register.md
+index c2d3e4f..a5b6c7d 100644
+--- a/company/governance/gate-register.md
++++ b/company/governance/gate-register.md
+@@ -40,6 +40,7 @@
+ | Hermes (open-weight model) | LLM / local | Compute cost, no current infra; deferred not shelved | Eco/Assaf when local model infra ready |
+ | WhatsApp Cloud API (Meta) | Messaging | Costs money (per-conversation); needs business verification (A1) | Shelly to evaluate and recommend |
+ | Supabase (free tier) | Database / backend | Not yet needed; free tier available when needed | Ido/Gal when first product needs a DB |
++| Linear (free tier) | Issue tracking | Not yet needed; evaluate when R&D headcount grows | Ido when sprint tooling is required |
+ | GreenInvoice | Israeli invoicing | Not yet needed; compliance backlog (Lital + Eyal) | Lital when invoicing is required |
+
+ ## Shelved tools
