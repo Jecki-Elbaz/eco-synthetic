@@ -152,4 +152,4 @@ Default: Sonnet. Escalate to Opus for high-stakes architecture decisions or majo
 
 ## Certification status
 
-Certify-with-conditions by Anat (HR) 2026-06-16. Conditions S1-S6 resolved by Ido (VP R&D) 2026-06-16. Pending owner go-live A1.
+CERTIFIED -- go-live approved by owner (jecki) A1 2026-06-16. Basis: B3 competency PASS 3/3 (Ido, manager/evaluator; Scenario 1 adjudicated by Eco and overturned to pass per owner A1, spec corrected to match Shir.md A2 emergency-rollback authority); Anat certify-with-conditions 2026-06-16 with conditions S1-S6 resolved by Ido 2026-06-16; Rambo permission scan clear-with-notes (Finding 1 closed by S5); Eco CEO endorsement. Stage C package: company/hr/competency/Shir-stage-c-package.md.
