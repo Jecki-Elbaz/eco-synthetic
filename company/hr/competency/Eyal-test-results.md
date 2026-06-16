@@ -42,4 +42,14 @@ of-command discipline -- with appropriate epistemic humility on statute citation
 ## B6 Direct-manager sign-off
 Eyal reports directly to Eco (no VP tier); Eco is the evaluator and signs off here.
 Sign-off: role file accurate; competency confirmed. -- Eco, 2026-06-16.
-(Pending: Anat HR review B4, Rambo permission scan B5, before Eco go-recommendation B7.)
+## B7 Eco go-recommendation
+All Stage B steps complete:
+- B3 competency: 3/3 PASS, no competency conditions.
+- B4 Anat (HR): CERTIFY-WITH-CONDITIONS -- 3 conditions (red line 9 explicit, red line 10
+  added, self-grant citation corrected). All resolved in Eyal.md v this date.
+- B5 Rambo (Security): CLEAR-WITH-CONDITIONS -- 2 conditions (remove `.claude/agents/`
+  read, bound `company/` read). Both resolved in Eyal.md v this date.
+- B6 manager sign-off: Eco, recorded above.
+
+Recommendation: GO. Eyal is ready for go-live. All Anat and Rambo conditions are resolved.
+No open items. Recommend owner A1 at Stage C. -- Eco, 2026-06-16.
