@@ -76,5 +76,28 @@ Items flagged by the owner or agents; blocked until Rambo (Security) + Eyal (Leg
 
 ---
 
+---
+
+## T-0013 Legal Confirmation -- Rambo Tool Set (2026-06-16)
+
+Reviewed by: Eyal (Legal)
+Date: 2026-06-16
+Task: T-0013 (bootstrapping legal confirmation deferred from Rambo go-live)
+
+Tools reviewed: Read, Write, Edit, Grep, Glob, WebFetch (Claude Code built-ins, Rambo agent)
+
+Verdict: NO LEGAL TERMS GAP.
+
+Rationale:
+- All six tools are Claude Code built-in runtime tools with no separate vendor, account, or API.
+- Governing terms: Anthropic/Claude Code subscription, approved A1 by jecki 2026-06-12. No new terms relationship is created by Rambo's agent-level use.
+- Data-processing: tools operate on local filesystem content and, for WebFetch, on outbound HTTP requests scoped within the existing Claude Code runtime permissions (.claude/settings.json). Rambo's security-scanning use case does not open a new personal data pipeline or trigger any new data-processing obligation.
+- Licensing: proprietary Anthropic tooling under the existing subscription. No open-source license obligations triggered.
+- Use-case scope: Rambo uses these tools for security review (scanning repos, reading files, writing scan results, fetching public URLs). All within the approved runtime scope.
+
+T-0013 is closed. Gate-register row for Rambo tools is confirmed with no legal gap. Eyal sign-off complete.
+
+---
+
 ## Adding a new tool
 Any agent that identifies a tool need flags its manager. The manager escalates to Eco. Eco routes it to Rambo (Security risk review) and Eyal (Legal terms review). Once both clear it, A2 grant (or A1 if borderline or paid). The tool then gets a row here. Free-first is mandatory while budget is 0; any paid tool is A1.
