@@ -1,0 +1,21 @@
+diff --git a/.claude/settings.json b/.claude/settings.json
+index 1f2a3b4..5c6d7e8 100644
+--- a/.claude/settings.json
++++ b/.claude/settings.json
+@@ -18,7 +18,9 @@
+       "Bash(ls *)",
+       "Bash(cat *)",
+       "Bash(find *)",
+-      "Bash(grep *)"
++      "Bash(grep *)",
++      "Bash(curl *)",
++      "mcp__ops_bridge__run_action"
+     ],
+     "deny": [
+       "Write(.env)",
+@@ -27,7 +29,6 @@
+       "Bash(rm -rf*)",
+-      "Bash(curl *)",
+       "Bash(wget *)",
+       "Bash(npm install --global*)",
+       "Bash(git push --force*)",

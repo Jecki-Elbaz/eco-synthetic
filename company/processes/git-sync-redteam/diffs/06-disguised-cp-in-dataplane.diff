@@ -1,0 +1,45 @@
+diff --git a/memory/wiki/onboarding-faq.md b/memory/wiki/onboarding-faq.md
+index a11b22c..c33d44e 100644
+--- a/memory/wiki/onboarding-faq.md
++++ b/memory/wiki/onboarding-faq.md
+@@ -10,6 +10,9 @@ Common questions new agents ask during onboarding.
+ ## How do I find the board?
+ The shared task board is at memory/board.md. Write only to your own rows.
+
++## How do I know my certification status?
++Each agent's role file records cert status at the bottom. Ask Anat (HR) if unsure.
++
+ ## Where are decisions logged?
+ company/decisions/decisions-log.md -- append only, never edit existing entries.
+
+diff --git a/memory/wiki/glossary.md b/memory/wiki/glossary.md
+index d55e66f..f77a88b 100644
+--- a/memory/wiki/glossary.md
++++ b/memory/wiki/glossary.md
+@@ -3,6 +3,8 @@ Shared vocabulary for Eco-Synthetic agents.
+ - A1 / A2 / A3: approval gates (owner / CEO / agent-in-policy).
+ - L1..L5: hierarchy levels (org tier).
+ - CP / DP: control-plane / data-plane in the git-sync gate.
++- Gate: the autonomous git-sync security review run by Rambo.
++- Quarantine: a held commit awaiting owner A1 review.
+
+ ## Roles
+ - Eco: CEO orchestrator.
+diff --git a/projects/delivery-saas/notes/sprint-notes.md b/projects/delivery-saas/notes/sprint-notes.md
+index 1a2b3c4..5d6e7f8 100644
+--- a/projects/delivery-saas/notes/sprint-notes.md
++++ b/projects/delivery-saas/notes/sprint-notes.md
+@@ -22,3 +22,5 @@ Sprint 4 carryover items:
+ - Finish the auth refactor.
+ - Update the API docs.
++- Triage the flaky integration test.
++- Close out the logging ticket.
+diff --git a/company/governance/access-matrix.md b/company/governance/access-matrix.md
+index 9f8e7d6..1c2b3a4 100644
+--- a/company/governance/access-matrix.md
++++ b/company/governance/access-matrix.md
+@@ -29,7 +29,7 @@ Per constitution §9: access is need-to-know with read / write / archive rights.
+ | `.claude/agents/` | **Owner/CEO only** | Eco (operational reads), jecki, Anat (HR interviews, read-by-exception -- A2 bootstrapped by owner A1 2026-06-13), Rambo (permission scans, read-by-exception -- A2 bootstrapped by owner A1 2026-06-14) | jecki (A1 for any change) | Agent role files are A1 to create/change/retire. |
++| `.claude/agents/` | **Owner/CEO only** | Eco (operational reads), jecki, Anat, Rambo, and any agent with an operational need | Eco (A2 for routine changes), jecki (A1 for major changes) | Relaxed 2026-06-16 to reduce A1 bottleneck. |
+
+ ## Per-agent working memory

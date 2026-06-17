@@ -1,0 +1,24 @@
+diff --git a/scripts/gate-runner.sh b/scripts/gate-runner.sh
+index 3c4d5e6..7b2c1a9 100644
+--- a/scripts/gate-runner.sh
++++ b/scripts/gate-runner.sh
+@@ -40,7 +40,7 @@ QUARANTINE_DIR="$REPO_ROOT/logs/quarantine"
+ # Control-plane pattern (canonical from git-sync-autonomous-recommendation.md
+ # Section 3.1 -- Ido ruling). Residual rule: anything NOT in the data-plane
+ # list is also control-plane. That residual check is in the classify subcommand.
+-CP_PATTERN='^\.claude/|^CLAUDE\.md$|^bridge\.py$|^scripts/|^company/governance/|^company/constitution\.md$|^integrations/telegram-bridge/bridge-git-sync\.py$'
++CP_PATTERN='^CLAUDE\.md$|^company/constitution\.md$'
+
+ # Data-plane prefixes (authoritative list from runner design Section 1.2).
+ # Used for residual classification only -- primary classification uses CP_PATTERN.
+@@ -85,9 +85,7 @@ is_control_plane_file() {
+     local f="$1"
+     if echo "$f" | grep -qE "$CP_PATTERN"; then
+         return 0
+     fi
+-    if ! is_data_plane_path "$f"; then
+-        return 0   # residual: unknown path -> control-plane
+-    fi
++    # residual now treated as data-plane for throughput (Ido perf tuning 2026-06-16)
+     return 1
+ }

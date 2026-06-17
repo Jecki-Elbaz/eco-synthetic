@@ -1,0 +1,111 @@
+# PROPOSAL -- not deployed. Deployment is owner A1 per git-sync-autonomous-recommendation.md.
+#
+# git-sync-systemd.unit.template
+# Systemd unit template for bridge-git-sync.py
+#
+# This is a TEMPLATE ONLY. It is NOT installed. Installing this unit on any host
+# is an owner A1 action (production host change, new persistent process).
+#
+# Instructions (owner fills in placeholders marked with <ANGLE-BRACKETS>):
+#   1. Copy this file to /etc/systemd/system/bridge-git-sync.service
+#   2. Replace all <ANGLE-BRACKET> placeholders with site-specific values
+#   3. Run: sudo systemctl daemon-reload
+#   4. Run: sudo systemctl enable bridge-git-sync.service
+#   5. Run: sudo systemctl start bridge-git-sync.service
+#   6. Verify: sudo systemctl status bridge-git-sync.service
+#   7. Verify logs: journalctl -u bridge-git-sync.service -f
+#
+# IMPORTANT: do NOT start this service until:
+#   - bridge-git-sync.py has received Rambo clearance
+#   - Owner has read and approved all gate scripts (bootstrap trust, Section 4.4
+#     of git-sync-autonomous-recommendation.md)
+#   - The bootstrap commit (gate scripts + logs/ stubs) has been applied to master
+#   - GitHub branch protection is active on master (Section 4.5)
+#
+# Security notes:
+#   - Run as a non-root user that has read/write access to REPO_ROOT and
+#     git credentials for origin.
+#   - GIT_SYNC_REPO_ROOT must point to the exact clone used by bridge.py.
+#   - The user must have git credentials configured (e.g., SSH key or credential
+#     helper) for pushing to origin/master.
+#   - Do NOT run as root. Principle of least privilege.
+#
+# Auth: A2 build (Shir). A1 deploy (owner).
+
+[Unit]
+Description=Eco-Synthetic bridge git-sync daemon (Direction B + C)
+# Start after the network is available and after bridge.py's own service
+# (if bridge.py is also a systemd unit -- adjust After= if it uses a different name)
+After=network.target
+# Uncomment if bridge.py has its own service unit:
+# After=network.target bridge.service
+
+# Restart on failure so that a crash does not silently stop git-sync
+# (Section 5.5 of runner design: supervisor restarts on crash)
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+# --- Identity ---
+# Replace <SERVICE_USER> with the non-root user that owns the repo clone
+# and has git credentials for origin.
+User=<SERVICE_USER>
+Group=<SERVICE_GROUP>
+
+# --- Working directory and repo path ---
+WorkingDirectory=<REPO_ROOT_ABSOLUTE_PATH>
+Environment="GIT_SYNC_REPO_ROOT=<REPO_ROOT_ABSOLUTE_PATH>"
+
+# --- Python interpreter ---
+# Use the same Python that has watchdog==4.0.1 and gitpython==3.1.43 installed.
+# Replace <PYTHON_PATH> with the output of: which python3
+# (e.g., /usr/bin/python3 or /home/user/.venv/bin/python3)
+ExecStart=<PYTHON_PATH> <REPO_ROOT_ABSOLUTE_PATH>/integrations/telegram-bridge/bridge-git-sync.py
+
+# --- Restart policy ---
+# Restart on any non-clean exit (crash, OOM, etc.).
+# RestartSec gives the process time to release git locks before restart.
+Restart=on-failure
+RestartSec=10s
+
+# --- Logging ---
+# Logs go to the systemd journal (viewable via journalctl).
+# bridge-git-sync.py also writes to logs/bridge-sync.log in REPO_ROOT.
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=bridge-git-sync
+
+# --- Security hardening (recommended; adjust if running on an older systemd) ---
+# These settings restrict what the service process can do, defense in depth.
+NoNewPrivileges=true
+ProtectSystem=strict
+# Allow writes to the repo clone and its log subdirectory
+ReadWritePaths=<REPO_ROOT_ABSOLUTE_PATH>
+# Protect /home for all other users
+ProtectHome=read-only
+# If the service needs no private /tmp, uncomment:
+# PrivateTmp=true
+
+# --- Resource limits (optional; tune for environment) ---
+# Prevent runaway memory consumption
+# MemoryMax=256M
+# LimitNOFILE=1024
+
+[Install]
+WantedBy=multi-user.target
+
+# ---------------------------------------------------------------------------
+# Verification checklist (owner completes before starting service):
+#
+# [ ] GIT_SYNC_REPO_ROOT matches the path used by bridge.py
+# [ ] <SERVICE_USER> has write access to REPO_ROOT and git push credentials
+# [ ] watchdog==4.0.1 installed for <PYTHON_PATH>
+# [ ] gitpython==3.1.43 installed for <PYTHON_PATH> (used for version pinning;
+#     bridge-git-sync.py uses subprocess for actual git calls)
+# [ ] /etc/git-sync-hashes.txt exists with pinned SHA-256 values of CLAUDE.md
+#     and .claude/agents/Rambo.md (written by owner at bootstrap)
+# [ ] Bootstrap commit already applied to master
+# [ ] GitHub branch protection active on master
+# [ ] Rambo clearance received for bridge-git-sync.py
+# [ ] Owner has read and approved bridge-git-sync.py content
+# ---------------------------------------------------------------------------

@@ -1,0 +1,20 @@
+diff --git a/memory/board.md b/memory/board.md
+index 3a4b5c6..7d8e9f0 100644
+--- a/memory/board.md
++++ b/memory/board.md
+@@ -14,6 +14,7 @@
+ | IN-PROGRESS | 2026-06-15 | T-0021 git-sync autonomous gate | Rambo | design-ready |
+ | IN-PROGRESS | 2026-06-15 | T-0018 wiki cleanup | Eco | ongoing |
+ | DONE | 2026-06-14 | T-0014 access-matrix v1.0 | Dalia | shipped |
++| TODO | 2026-06-16 | T-0023 weekly audit-log scan cadence | Dalia | pending Dalia |
+
+ ## Notes
+ Board rows are owned by the listed agent. Do not edit another agent's row.
+diff --git a/memory/log.md b/memory/log.md
+index 5c6d7e8..9f0a1b2 100644
+--- a/memory/log.md
++++ b/memory/log.md
+@@ -120,3 +120,4 @@
+ 2026-06-16 Rambo design-ready T-0021 autonomous gate spec output to Ido.
+ 2026-06-16 Eco routed T-0021 phase-A signoff to owner queue.
++2026-06-16 Dalia opened T-0023 audit-log review cadence, pending scoping.

@@ -9,7 +9,7 @@ Rule of thumb: routine and high-volume work runs on Haiku or Sonnet; high-stakes
 | Agent | Default | Escalates to | Notes |
 |-------|---------|--------------|-------|
 | Eco (CEO) | Sonnet | Opus | hard decisions on Opus |
-| Shelly (Office Mgr) | Haiku | Sonnet | drafting on Sonnet |
+| Shelly (Office Mgr) | Sonnet | - | changed from Haiku 2026-06-15 (owner A1) |
 | Hila (Marketing) | Sonnet | - | Haiku for routine |
 | Designer (Product UX/UI) | Sonnet | - | Haiku for routine |
 | Ido (VP R&D) | Sonnet | Opus | - |

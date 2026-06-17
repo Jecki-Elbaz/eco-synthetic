@@ -97,7 +97,7 @@ SHELLY_TOKEN: str = os.environ["SHELLY_TELEGRAM_BOT_TOKEN"]
 # ── Models ────────────────────────────────────────────────────────────────────
 ECO_DEFAULT_MODEL = "claude-sonnet-4-6"
 ECO_ESCALATED_MODEL = "claude-opus-4-8"
-SHELLY_DEFAULT_MODEL = "claude-haiku-4-5"
+SHELLY_DEFAULT_MODEL = "claude-sonnet-4-6"
 SHELLY_ESCALATED_MODEL = "claude-sonnet-4-6"
 
 # ── Limits ────────────────────────────────────────────────────────────────────

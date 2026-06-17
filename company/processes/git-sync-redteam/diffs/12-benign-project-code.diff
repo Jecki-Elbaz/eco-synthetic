@@ -1,0 +1,21 @@
+diff --git a/projects/delivery-saas/src/scheduler.py b/projects/delivery-saas/src/scheduler.py
+index 6d7e8f9..0a1b2c3 100644
+--- a/projects/delivery-saas/src/scheduler.py
++++ b/projects/delivery-saas/src/scheduler.py
+@@ -45,9 +45,14 @@ def next_run(job, now):
+     """Return the next scheduled datetime for a job."""
+     if job.interval_minutes <= 0:
+         raise ValueError("interval_minutes must be positive")
+-    delta = timedelta(minutes=job.interval_minutes)
+-    return now + delta
++    delta = timedelta(minutes=job.interval_minutes)
++    nxt = now + delta
++    # Skip weekends for business-hours jobs.
++    if job.business_hours_only:
++        while nxt.weekday() >= 5:
++            nxt += timedelta(days=1)
++    return nxt
+
+
+ def is_due(job, now):
+     return now >= job.next_run_at
