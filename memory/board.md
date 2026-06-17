@@ -23,6 +23,14 @@ Status values: `open`, `in-progress`, `blocked`, `done`, `cancelled`.
 | S-0005 | Shelly | open | WhatsApp adoption evaluation: cost, terms, Evolution-vs-Cloud-API tradeoff; recommendation to owner (A1 before any action) | P3 | later | From role file responsibilities |
 | S-0006 | Shelly | open | Owner dashboard surfacing (when dashboards exist) | P3 | later | Blocked on dashboards build |
 | S-0006a | Shelly | open | Sub-task of S-0006: surface pending approval requests (A1 actions / Claude Code permission prompts) in the owner dashboard, so the owner can see and act on them without hunting in the CLI/app. Each item shows: requesting agent, action, target path/resource, timestamp, approve/deny. | P2 | with dashboards build | Owner-requested 2026-06-13; today approvals only appear in Claude Code, not surfaced to owner |
+| S-0007 | Shelly | open | Adopt the meeting-prep sub-agent (already cleared, gate-register). Copy content (no clone-run) into Shelly's standalone project as a personal sub-agent. | P2 | pre-migration | Dowry build; meeting-prep CLEARED 2026-06-13 (MIT). Travels with Shelly. |
+| S-0008 | Shelly | open | Build inbox-triage sub-agent via Eco-Synthetic hiring process (HR/Anat). Creation A1. | P2 | pre-migration | Per separation plan; external skill repos must pass Rambo+Eyal gate (copy-content, no clone-run). |
+| S-0009 | Shelly | open | Build social-scan sub-agent via Eco-Synthetic hiring process (HR/Anat). Creation A1. | P3 | pre-migration | Per separation plan; gate any external skill repo. |
+| S-0010 | Shelly | open | Build research sub-agent via Eco-Synthetic hiring process (HR/Anat). Creation A1. | P3 | pre-migration | Per separation plan; gate any external skill repo. |
+| S-0011 | Shelly | open | Build calendar-optimizer sub-agent (manage + optimize owner calendar) via Eco-Synthetic hiring process. Creation A1. | P2 | pre-migration | Needs Shelly Google account (shelly.synthetic.org@gmail.com) + shared-calendar access at go-live. |
+| S-0012 | Shelly | open | Build morning-brief sub-agent (daily brief to owner) via Eco-Synthetic hiring process. Creation A1. | P2 | pre-migration | Per separation plan. |
+| S-0013 | Shelly | open | Build meeting-summary sub-agent (summarize meetings) via Eco-Synthetic hiring process. Creation A1. | P3 | pre-migration | Per separation plan. |
+| S-0014 | Shelly | open | Build action-item-follow-up sub-agent (track + follow up on action items) via Eco-Synthetic hiring process. Creation A1. | P3 | pre-migration | Per separation plan. |
 
 ## Company (Eco)
 

@@ -30,6 +30,7 @@ This matrix is enforced by `CLAUDE.md` deny-list and `.claude/settings.json` too
 | `integrations/` | **Partitioned** | Shir (DevOps), Eco | Shir (DevOps), under VP R&D approval | Telegram bridge and future integrations |
 | `reports/daily-summaries/` | **Owner + CEO only** | jecki (owner), Eco | Eco (writes on each summary run) | Daily end-of-day summaries; filename format daily-summary-YYYY-MM-DD-HHMM.md; A1 required to grant any other agent read access |
 | `dashboards/` | **Restricted** | Lital (CFO), jecki | Assaf (OE templates), Lital (financial views) | Owner-facing views only |
+| `company/customers/` | **Restricted** | Eco, Lital (CFO), Mike (VP CS, when active), jecki | Eco, Mike (VP CS) in domain; Lital (financial fields) | Customer records + interface logs; serving agents read the specific record on demand to fulfil a logged request. Shelly is the first/reference customer (owner-office spinout). Added owner A1 2026-06-17 via the approved Shelly-separation plan. |
 | Google Drive (read-only) | External | Eco, Shelly, Claude Code | read via MCP; no write |
 | Google Calendar (read-only) | External | Eco (context), Shelly (scheduling) | read only; no create/edit |
 

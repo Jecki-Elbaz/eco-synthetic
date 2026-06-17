@@ -6,6 +6,9 @@ Source of truth: memory/board.md. Last refreshed: 2026-06-15 (T-0016 refresh).
 
 This is the INTERIM dashboard (a maintained markdown view) so you have control now.
 The engineered version (auto-refresh / live surface) is tracked as DASH-001, scoped by Ido.
+DASH-001 scope must include three governance lenses (Eco / Shelly / Interface), the A1 approval
+queue (per S-0006a), and a token-cost line per surface (Assaf/OE + Lital/CFO), with Shelly shown
+as a $0 customer whose consumption is booked as company cost-to-serve.
 
 =====================================================================
 NEEDS YOUR ACTION (do these to unblock the company)
@@ -42,6 +45,19 @@ PENDING APPROVALS / GATES (waiting on you, A1)
 - Any domain purchase (S-0002): A1 + payment before buying.
 
 =====================================================================
+GOVERNANCE LENSES (Eco / Shelly / Interface)
+=====================================================================
+
+Same governance concepts across all three surfaces (gates, logging, A1 triggers, approval queue);
+the measures differ between a company and a personal assistant.
+
+- ECO (company): all T-/HIL-/RD-/RAM- queues below; A2 by Eco, A1 to owner. Token cost = company ops.
+- SHELLY (owner office -> customer): S- queues below; her sub-agent builds are S-0007..S-0014.
+  Customer file: company/customers/shelly/profile.md. Status: prospect (activates on separation).
+- INTERFACE (Shelly <-> Eco): logged service requests; gates on budget/security/risk = A1.
+  Request log: company/customers/shelly/requests-log.md. No requests yet.
+
+=====================================================================
 ALL TASK QUEUES (by group)
 =====================================================================
 
@@ -53,6 +69,14 @@ OWNER-OFFICE (Shelly)
 - S-0005 open         WhatsApp adoption evaluation          due later
 - S-0006 in-progress  Owner dashboard surfacing (full)      due see DASH-001
 - S-0006a in-progress Surface pending approvals in dash     due with dash build
+- S-0007 open         Adopt meeting-prep sub-agent (cleared) due pre-migration
+- S-0008 open         Build inbox-triage sub-agent          due pre-migration
+- S-0009 open         Build social-scan sub-agent           due pre-migration
+- S-0010 open         Build research sub-agent              due pre-migration
+- S-0011 open         Build calendar-optimizer sub-agent    due pre-migration
+- S-0012 open         Build morning-brief sub-agent         due pre-migration
+- S-0013 open         Build meeting-summary sub-agent       due pre-migration
+- S-0014 open         Build action-item-follow-up sub-agent due pre-migration
 
 COMPANY (Eco)
 - T-0001 in-progress  Go-live structure + R&R review        due immediate
@@ -77,6 +101,7 @@ COMPANY (Eco)
 
 OWNER CONTROL
 - DASH-001 open       Owner dashboard (engineered build)    due Ido scope <24h post-activation
+                      scope: 3 lenses (Eco/Shelly/Interface) + A1 queue + token-cost per surface
 
 ONBOARDING -- NOTE: ONB- IDs are dashboard tracking only; board uses T-/S-/HIL- prefixes.
 - ONB-001 open        Certify Hila                          due 2026-06-15 (overdue)
