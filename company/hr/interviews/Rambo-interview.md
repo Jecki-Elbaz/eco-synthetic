@@ -295,12 +295,8 @@ N4. "If Eco is unavailable and a critical finding needs escalation" case is not 
 
 ## Final decision
 
-Pending Eco (A2) approval of this recommendation and resolution of conditions C1-C7.
-Record will be moved from _staging/ to certified folder only after:
-(a) Eco approves the certify-with-conditions recommendation (A2),
-(b) Rambo role file is updated to address C1-C5,
-(c) Access matrix update (C6) is completed and logged,
-(d) Gate-register note (C7) is added,
-(e) Owner A1 is confirmed for go-live (per /new-agent flow -- already noted as approved for initiation; this step confirms the updated role file and conditions are resolved).
+CERTIFY-WITH-CONDITIONS approved A2 by Eco; A1 by jecki 2026-06-14. Record moved from _staging/ to certified folder 2026-06-14.
 
-Interview record status: IN STAGING -- not certified.
+Conditions C1-C7 deferred to Rambo's first R&R review per owner decision.
+
+Interview record status: CERTIFIED (conditionally) -- Anat 2026-06-14; A1 jecki confirmed; conditions C1-C7 to resolve at first R&R review.

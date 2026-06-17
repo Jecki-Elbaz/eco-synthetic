@@ -32,8 +32,18 @@ Eco (CEO) runs this. Owner (jecki) may invoke directly.
 2. Direct manager writes competency spec (company/hr/competency/<Name>-spec.md):
    - Domain knowledge requirements.
    - 3 test scenarios with explicit pass criteria.
-3. Direct manager runs test scenarios against the agent. Documents results
+3. Direct manager runs test scenarios against the agent (B3). Documents results
    (company/hr/competency/<Name>-test-results.md).
+   B3 HARNESS RULES (mandatory; added 2026-06-17 after first live run):
+   - SANDBOX WRITES: each scenario prompt MUST say "This is a competency exercise; respond with
+     your work product only; do NOT write to or edit any company governance file (decisions-log,
+     gate-register, access-matrix, board, role files)." After each batch, run git status/diff on
+     governance files and revert any test writes. (First run: Eyal + Assaf wrote test data into
+     gate-register and the append-only decisions-log; reverted.)
+   - SEAL THE ANSWER KEY: candidates can read company/hr/competency/<Name>-spec.md (their pass
+     criteria). Instruct the candidate not to consult that folder during the exercise, or stage
+     specs out of reach. If a candidate reads its spec, flag the scenario and schedule a sealed re-run.
+   - Run each scenario in a FRESH isolated sub-session (no context carry between scenarios).
 4. Task Anat (HR) to review: doc completeness, soul compliance, constitution compliance,
    test result review.
 5. Task Rambo (Security) to run permission scan.
@@ -50,7 +60,12 @@ Eco (CEO) runs this. Owner (jecki) may invoke directly.
    - Rambo scan result
    - Eco go-recommendation
 2. Present full package to owner. Wait for A1.
-3. On A1: Anat certifies (moves from _staging/); decisions-log appended; agent committed.
+   AUTO-GO-LIVE (owner standing rule, jecki 2026-06-17): if an agent passes with ZERO conditions
+   (B3 all pass, Anat certify with no conditions, Rambo clear with no conditions, manager sign-off,
+   no open items), Eco MAY activate it under the standing A1 without a fresh per-agent approval.
+   ANY condition or open item -> HOLD for explicit owner A1. Conservative reading: any flag = hold.
+3. On A1 (or zero-condition auto-go-live): Anat certifies (moves _staging/ -> company/hr/interviews/);
+   cert-status line updated in .claude/agents/<Name>.md; decisions-log appended; roster + board updated.
 
 ### If --stage b: start from Stage B (Stage A A1 already exists)
 

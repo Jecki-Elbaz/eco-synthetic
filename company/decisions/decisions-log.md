@@ -207,3 +207,135 @@ Format per entry:
 - **Rationale:** Eco asserted "nothing was done" after Rambo onboarding was completed, without reading the relevant files. Root cause: work was on a feature branch not yet merged to main; Eco read main and found no changes but stated it as a fact rather than a scoped observation. The trigger makes the VERIFY-THEN-CLAIM rule concrete and operational for status queries.
 - **Alternatives considered:** Rely on Core Block rule 2 alone (rejected -- rule is abstract; breach shows it needs a specific operational instruction in Eco's triggers).
 - **Files affected:** `.claude/agents/Eco.md` (status-check trigger added), `memory/log.md` (performance flag appended).
+
+## 2026-06-15 -- Batch Stage A hire approval formalized: 10 P1 agents
+
+- **Author / gate:** jecki (A1) -- agent creation is A1 [red line 6]. Approval effective 2026-06-14 via owner direction on T-0015. This entry formalizes it per agent-hiring.md Stage A log requirement.
+- **Decision:** Owner approves the decision to hire the following 10 P1 agents: Ido (VP R&D), Dalia (Quality & Governance), Noam (Product), Lital (CFO), Eyal (Legal), Assaf (Operational Excellence), Gal (Lead Developer), Shir (DevOps), Luci (Devil's Advocate), Erez (Investor / IRB Lead). Hila's Stage A was covered by the 2026-06-10 entries (P1 light track approval). The overall roster and org structure were part of the 2026-06-12 scaffold approval. The explicit build-role-files direction was given on 2026-06-14 (T-0015 trigger: "jecki 2026-06-14"). This entry formalizes that direction as the Stage A approval per agent-hiring.md, so Stage C packages have a clean reference.
+- **Rationale:** Stage A per agent-hiring.md requires a decisions-log.md entry. The approval was effectively given on 2026-06-14 when jecki directed role-file construction for all 10 agents. Logging retroactively to close the gap -- no decisions changed, only formally recorded.
+- **Alternatives considered:** Leaving Stage A approval implicit (rejected -- Stage C packages require an explicit Stage A reference; implicit approval cannot satisfy the package-completeness check).
+- **Files affected:** company/hr/competency/ (11 test-results shells created 2026-06-15 referencing this entry as Stage A approval).
+
+## 2026-06-15 -- Communication rules refined; policy ownership; two new agents; Hila + VP Sales pulled forward
+
+- **Author / gate:** jecki (owner). Items below are A1 (new agents, re-scope, role-file changes); communication-rule wording and policy-framework ownership are A2 by Eco on owner direction.
+- **Decision (six parts):**
+  1. Communication rules finalized. Agent-to-agent: no greetings, always use the other agent's name. Agent-to-manager: use the manager's name most of the time; "Boss" is human slang, allowed for humor/warmth, never default; agent may ask the human their preferred address; open the first daily exchange with a time-of-day greeting. Customer: use customer name if a known specific person, else "Dear Customer"; all human rules apply on top; politeness MANDATORY; customer procedures are A1 before use. Drafted as a policy at company/policies/human-communication-policy.md (DRAFT, pending review). jecki's standing preference: address as "Jecki"; "Boss" ok when humorous.
+  2. (Item 1) Company policy framework owned by Dalia (Quality & Governance). Dalia defines what qualifies as a policy (real need, value, no contradiction, no overload), where policies live (company/policies/, role-gated), access, and version control; she finalizes the human-communication policy with HR + CS input. Dalia R&R update required (A1 role-file edit, pending Claude Code).
+  3. (Item 2) New Knowledge/Documentation manager approved as a sub-agent under Dalia, to own documentation QC, naming conventions, a legend/index of every informational file, and version control. Must run the full hiring process. Dalia R&R update required.
+  4. (Item 3) New Chronicler / build-historian agent approved -- documents the build of Eco-Synthetic in near-real-time (decisions, mistakes, wins) as source of truth for learning, how-to-build playbooks/articles, and raw material for social posts (published by Hila). Anat starts hiring by defining the JD with the hiring manager. Eco decision: Chronicler reports to Eco (CEO), dotted line to Dalia (records standards) and Hila (content handoff). Access: READ-ONLY across logs, decisions-log, agent-to-agent chats, and the owner Telegram channel; never writes to what it reads; strict confidentiality/discretion -- shares to no unauthorized agent or human; confidentiality terms baked into role file + access-matrix. Full hiring process required.
+  5. (Item 4) Hila pulled from P1 light track to full marketing track (full brand build + ongoing multi-channel cadence + owner personal-presence track). Sequencing: brand foundation (positioning, mission, vision, voice, visual identity) before any account creation; real LinkedIn/Facebook accounts + public posting are A1 and need the Legal+Security gate first. Role-file scope edit is A1 (pending Claude Code).
+  6. (Items 4+5) VP Sales (Tim, L3) pulled forward from P3 so pricing/sales-model inputs exist before product go-live; Tim manages Hila. Tim has no role file yet -- draft + creation via hiring (A1). Interim early pricing/sales-model input may be commissioned from Lital (CFO) + Erez (Investor).
+- **Rationale:** Owner wants formal, valuable, non-overlapping policies under one owner; documentation and the build-story owned by experts before volume/loss makes them unrecoverable; real brand and sales motion started now without compromising quality. Free time during blockers is to be spent advancing lower-priority and later-phase work.
+- **Alternatives considered:** Single agent owning policy + docs + chronicle (rejected -- overload and blurred roles); chronicler reporting to Dalia (rejected for now -- confidentiality + owner-channel read favor direct CEO oversight); retroactive build documentation (rejected -- near-real-time capture only).
+- **Execution note:** New-agent creation, role-file R&R edits (Dalia, Hila), VP Sales role file, and all hiring runs (Anat) and the Rambo Agent-tool gate (T-0020) require a Claude Code session. They cannot be executed from the Telegram bridge (Read/Write/Edit only; role files are read-only here). Captured on the board so nothing is lost.
+- **Files affected:** company/policies/human-communication-policy.md (new DRAFT), memory/board.md (DAL-001, DAL-002, HIRE-001, HIRE-002, ORG-001, ORG-002 added). Pending (Claude Code): .claude/agents/Dalia.md, .claude/agents/Hila.md, new Chronicler + Doc-manager + Tim role files.
+
+## 2026-06-15 -- T-0020 security report secured; mitigation section added; assessment standard set
+
+- **Author / gate:** Rambo (A3 operational), owner A1 direction (jecki, 2026-06-15, task T-0020-followup via Eco).
+- **Decision (three parts):**
+  1. T-0020 gate review report moved to restricted location: company/security/reports/T-0020-2026-06-15.md. Access: Rambo + owner (jecki) only. All other access A1. The company/security/ path is new and not yet in access-matrix.md -- Eco to route access-matrix addition to Dalia (A2 change process). See access-matrix change flag in the report file.
+  2. Mitigation / solution section added to T-0020 report. Covers R1-R5 with interim and permanent mitigations, owners, and summary table. Reflects approved interim posture (owner A1 2026-06-15): non-Bash agents only per company/governance/agent-tool-spawn-allowlist.md; Bash agents (Ido, Gal, Shir) off-bridge until Shir builds sender-allowlist + shell-tool stripping.
+  3. Standing standard established: every future security assessment must include a "Recommended mitigation / solution" section (interim + permanent + owner + summary table). Standard documented in company/governance/security-baseline.md. Reference implementation: T-0020-2026-06-15.md.
+- **Rationale:** Security reviews that only flag risk without proposing solutions are incomplete. Owner direction (jecki, 2026-06-15) made this explicit. Standard codified so it applies to all future reviews without a new trigger.
+- **Files affected:** company/security/reports/T-0020-2026-06-15.md (new), company/governance/security-baseline.md (standing standard appended), company/decisions/decisions-log.md (this entry), memory/log.md (activity entry).
+
+## 2026-06-15 -- access-matrix updated for company/security/ (closes T-0020 flag)
+
+- **Author / gate:** Eco (A2 decision); executed by Dalia (Q&G, matrix owner); jecki notified.
+- **Decision:** Added two rows to company/governance/access-matrix.md restricting company/security/ and company/security/reports/ to Rambo + owner (jecki); all other access A1. Closes the access-matrix flag raised in the T-0020 report.
+- **Rationale:** Security reports were protected only by an in-file access header and operational discipline. Formalizing in the access matrix makes the restriction enforceable governance, not just convention.
+- **Process note:** Routed via the Agent tool from the Telegram bridge under the approved interim grant (non-Bash agents only; Dalia is on the permitted-spawn allowlist). Spawn logged to memory/log.md per audit condition C8. Owner re-confirmed the interim grant this session.
+- **Files affected:** company/governance/access-matrix.md (2 rows added; no existing rows edited), memory/log.md, company/decisions/decisions-log.md (this entry).
+
+## 2026-06-17 -- Noam (Product) B5 permission scan -- CLEAR-WITH-CONDITIONS
+
+- **Author / gate:** Rambo (Security, A3 operational)
+- **Decision:** CLEAR-WITH-CONDITIONS. Noam's tool set (Read, Write, Edit) is fully justified
+  and lean -- no excess, no missing permissions. Data access scope is correctly bounded and
+  all deny-list blocks are in place. One condition applied: Noam must not be added to the
+  Agent tool permitted-spawn allowlist until C3 (deny-rule cascade verification) is resolved
+  per security-baseline.md T-0020 follow-up. This condition is system-wide and not
+  Noam-specific; it does not block certification or go-live.
+- **Rationale:** No Bash, no network tools, no Agent tool. Blast radius limited to project
+  file and board writes. Least-privilege alignment is good. C1 condition mirrors standing
+  policy blocking all agents from the spawn allowlist until Shir resolves C3.
+- **Files affected:** company/hr/competency/Noam-rambo-scan.md (new),
+  company/governance/security-baseline.md (scan log row added).
+
+## 2026-06-17 -- Correction: removed a competency-test artifact from this log
+
+- **Author / gate:** Eco (CEO), during the full-hiring-process run (jecki direction 2026-06-17).
+- **Decision:** Removed a single entry that had been written to this log in error: a "T-0009 monthly on-demand agent review (Zvika, Erez)" entry dated 2026-06-17. It was produced by the Assaf candidate agent during a B3 competency test (Scenario 3), from fabricated test inputs -- not a real review and never an authorized decision. It was removed to keep the canonical log truthful. This correction note preserves the audit trail.
+- **Rationale:** B3 tests were run with live agents that hold Write/Edit tools; the test scenario was framed as a real task, so the candidate appended to the real append-only log. A fabricated "decision" must not persist here. Removing it restores integrity; documenting the removal honors the append-only spirit.
+- **Process fix:** B3 prompts from this point forward state explicitly that the exercise is a competency test and the agent must NOT write to any company governance file (decisions-log, gate-register, access-matrix); respond with the work product only. Logged as a lessons-learned (test-harness sandboxing).
+- **Files affected:** company/decisions/decisions-log.md (bogus entry removed; this note appended); company/governance/gate-register.md (parallel test artifact reverted -- see that file).
+
+## 2026-06-17 -- Full hiring run launched (all agents, managers first); Eyal go-live
+
+- **Author / gate:** jecki (A1 direction 2026-06-17: run the full hiring process for all agents regardless of phase, managers first, no corners cut; auto-go-live ONLY for zero-condition passes, all conditional agents held for owner review). Eco executes; Anat (B4), Rambo (B5) per agent-hiring.md.
+- **Decision / progress this session (Claude Code):**
+  - Processed B3-B7 + Stage C for the L3 tier: Ido (VP R&D), Dalia (Q&G), Noam (Product), Lital (CFO), Eyal (Legal), Assaf (OE). All six PASSED B3 competency (3/3 each).
+  - GO-LIVE (Stage C A1, owner standing pre-authorization for zero-condition passes): Eyal (Legal). Anat B4 = certify, no conditions; Rambo B5 = clear, no conditions; Eco B3 = 3/3 PASS. Interview record moved _staging/ -> company/hr/interviews/Eyal-interview.md. Eyal.md cert-status updated. T-0013 (gate-register bootstrap review) auto-starts; T-0005 (compliance backlog, with Lital) enabled on Lital go-live.
+  - HELD FOR OWNER A1 BATCH (conditional passes; Stage C packages in company/hr/stage-c/): Ido (remove Bash [Rambo, A1 role-file edit] + add RL-9/10/11 + off spawn-allowlist until T-0020 C3); Dalia (v0.1->v1.0 + T-0012 sequencing); Noam (add RL3/RL6 boundary text before Designer P2 + sealed S3 re-run + T-0001 VP decision); Lital (T-0012 must add her compliance-backlog write + Shelly dashboards read + GreenInvoice 30-day trigger into Eco triggers); Assaf (format discipline no-tables-in-Telegram + T-0012 names him 4th .claude/agents/ exception + v0.1->v1.0).
+  - SYSTEMIC FINDINGS: (a) most role files share the RL-9/10/11 boundary-text gap (Anat flags it each time; same pattern as Eco/Anat at their own certs) -- batch-fixable; (b) Ido/Gal/Shir share a Bash over-permission flag (consistent with T-0020).
+  - NOT YET STARTED this run (queued, continue next session): Luci, Erez (owner office); Gal, Shir (R&D -- B6 needs Ido live); Shelly (retroactive process check per owner); Tim (VP Sales -- needs B1 role file + B2 spec from scratch before B3). Per owner: Tim before Hila/Alex.
+- **Rationale:** Owner wants the full org put through the proven process with complete documentation (for evaluation and for the Chronicler + Hila). Managers first so they can sign off on their reports. Eyal cleared with zero conditions, so the owner's pre-authorization applied.
+- **Process incident:** Two B3 candidates (Eyal, Assaf) wrote to real governance files from fabricated test inputs (gate-register, decisions-log); both reverted (see prior correction entry). One candidate (Noam) read its own pass criteria on S3. Harness fixes logged in lessons-learned.
+- **Files affected:** .claude/agents/Eyal.md (cert status); company/hr/interviews/Eyal-interview.md (moved from _staging); company/hr/competency/*-test-results.md and *-rambo-scan.md (Ido, Dalia, Noam, Lital, Eyal, Assaf); company/hr/interviews/_staging/*-interview.md (held agents); company/hr/stage-c/*.md (packages); memory/board.md; memory/wiki/agent-roster.md; company/processes/lessons-learned.md.
+
+## 2026-06-17 -- Standing practice: repeated actions become skills
+
+- **Author / gate:** jecki (A1 direction 2026-06-17): "create skills for every repeated action, by you or by any other agent." Eco executes (skill creation is A2 per T-0011; owner directed the practice).
+- **Decision:** Every repeated structured action becomes a skill in .claude/commands/<name>.md, run consistently rather than re-improvised. Practice + catalog recorded in company/governance/skills-register.md (owner: Dalia/Q&G when live, Eco interim). Guardrail (DAL-001 test): real repeated need, clear value, no constitution conflict, no overload -- do not skill one-off actions.
+- **Done this session:**
+  - Hardened /hiring with the two B3 harness rules (sandbox test writes; seal the answer key) and the zero-condition auto-go-live rule.
+  - Created 3 new skills for actions repeated across tonight's run: /permission-scan (Rambo B5 + R&R + adhoc), /usage-report (Lital + Assaf, const section 8), /tool-gate (Rambo risk + Eyal terms adoption gate).
+  - Catalogued candidate skills (fitness-loop, ondemand-review, prd, mvp-scope, release-gate, compliance-flag, decision-log, pricing-proposal) in the register, to build when each owning agent goes live or on 2nd use.
+- **Rationale:** Consistency, lower token waste, and transferable institutional memory (the Chronicler and new agents inherit the playbooks). Tonight's manual hiring run exposed gaps that a skill encodes once and fixes everywhere.
+- **Alternatives considered:** Build a skill for every micro-action now (rejected -- overload, violates DAL-001 guardrail; build on real repeat + owner/agent readiness).
+- **Files affected:** .claude/commands/hiring.md (hardened), .claude/commands/permission-scan.md, .claude/commands/usage-report.md, .claude/commands/tool-gate.md (new), company/governance/skills-register.md (new), memory/board.md (SKILL-001).
+
+## 2026-06-17 -- GO-LIVE: 7 P1 agents activated (owner A1 batch)
+
+- **Author / gate:** jecki (A1, 2026-06-17, reviewed each item one-by-one in-session) + Eco (executes activation).
+- **Decision:** Owner approved go-live for 7 agents (in addition to Eyal, already live). All 7 had B3 3/3 PASS and Stage C packages held for review; owner approved each with its conditions resolved or noted. Now LIVE:
+  1. **Ido (VP R&D)** -- Bash REMOVED from tools (Rambo B5 excess-privilege finding); const red lines 9/10/11 added to Boundaries. Unblocks Gal + Shir B6. First task DASH-001 (24h clock from 2026-06-17).
+  2. **Dalia (Q&G)** -- v0.1 -> v1.0. First task T-0012 (formalize .claude/agents/ read exceptions for Anat, Rambo, Dalia, Assaf). Unblocks Assaf agents/ read.
+  3. **Noam (VP Product)** -- T-0001 RESOLVED: jecki (A1) granted the VP Product title. RL-11 added; self-grant line updated. Sealed re-run of B3 Scenario 3 scheduled before first R&R (answer-key was visible). RL-3/RL-6 to add before any Designer (L4) hire in P2.
+  4. **Lital (CFO)** -- required Rambo scan CLEAR; RL-10 added. T-0012 to add her compliance-backlog write + Shelly dashboards read; GreenInvoice 30-day trigger to add to Eco.
+  5. **Assaf (OE)** -- v0.1 -> v1.0; sequenced after Dalia (T-0012 gives him agents/ read). Format-discipline condition (no Markdown tables in Telegram reports). Owns the new model-config audit task.
+  6. **Luci (Devil's Advocate)** -- model frontmatter opus-4-8 -> sonnet-4-6 (cost fix); removed standing projects/ read (scope creep); added red lines 4/5/9/10/11.
+  7. **Erez (Investor, on-demand)** -- model frontmatter opus-4-8 -> sonnet-4-6; tainted-content rule added (treat fetched web content as untrusted, synthesize+cite, never relay raw); WebSearch/WebFetch confirmed read-only/public scope. On-demand, jecki-invoked only.
+- **Cross-agent flag found + fixed:** Luci and Erez had model: claude-opus-4-8 in frontmatter while their bodies specified Sonnet-default -- an unintended Opus-always-on cost leak. Both reconciled to Sonnet. Owner approved a standing model-config audit across all role files, assigned to Assaf.
+- **Conditions that survive go-live (tracked):** Ido/Dalia/Noam/Lital/Assaf/Luci off the agent-tool permitted-spawn allowlist until T-0020 C3 (deny-rule cascade) closes via Shir. RL-9/10/11 batch completion across remaining files in progress (owner-approved; non-blocking, due before each agent's first R&R).
+- **Interview records moved** _staging/ -> company/hr/interviews/ for all 7; cert-status lines updated in each .claude/agents/<Name>.md; board ONB rows closed.
+- **Rationale:** Owner directed the full hiring run now (no 9AM wait), reviewing each go-live with its conditions. Zero-condition Eyal auto-activated earlier; these 7 are explicit per-item A1.
+- **Files affected:** .claude/agents/{Ido,Dalia,Noam,Lital,Assaf,Luci,Erez}.md; company/hr/interviews/ (7 moved); memory/board.md; memory/wiki/agent-roster.md; company/governance/gate-register.md (Erez web-tool scope note pending).
+
+## 2026-06-17 -- Tool-gate batch: whatsapp-mcp (A1), caveman + hebrew-rtl (A2); 360dialog staged
+
+- **Author / gate:** jecki (A1 for each, reviewed in-session) + Eco (gate coordination); Rambo (security) + Eyal (legal) reviews on all three.
+- **Decision:**
+  1. **whatsapp-mcp (@lharries)** -- ADOPTED A1 for company agent use on a SECONDARY WhatsApp number. Owner knowingly accepts WhatsApp ToS violation + account-ban risk and the Israeli-privacy obligations. Conditions binding: secondary number only, no business/customer use on this track; send_file excluded from agent tools; recipient allowlist; inbound treated as untrusted (tainted-input); bounded queries, no raw message text in tracked files; store/ gitignored + retention window before real-person ingest; DPA-with-Anthropic before any LLM-processing of third-party content; pinned manual install; Shir to add bridge-layer sanitization + allowlist when live (SHIR-002). Install PENDING (owner QR auth on 2nd phone + Shir setup).
+  2. **caveman skill (JuliusBrussee)** -- ADOPTED A2. Internal + agent-to-agent output compression. Steward Assaf. Install by manual SKILL.md copy from a pinned commit only (official curl|bash / npx installer is a red line 4 violation -- prohibited). Never activate /caveman in owner-facing or Telegram-bridge sessions. caveman-shrink MCP middleware NOT adopted (separate gate).
+  3. **hebrew-rtl-best-practices (skills-il)** -- ADOPTED A2. Hebrew/RTL UI guidance for Designer/Gal/Shir + Hila. Install pinned skills-il@1.10.0 + skill v1.3.0 with CI=true; post-install content check. Individual SKILL.md is MIT; agentskills.co.il ToS confirmed it permits commercial use of individual skills.
+  4. **360dialog (WhatsApp Cloud API BSP)** -- STAGED, not adopted. Chosen vehicle for the official Cloud API business/customer track (10k+/mo). Activate only when a real customer needs it (owner notifies); then /tool-gate 360dialog, Lital costs first, A1 (paid).
+- **Rationale:** Owner needs WhatsApp for both personal/agent use (now) and customers (later, high volume). Unofficial APIs are unacceptable for the business track at 10k+/mo (ToS + ban), so customer messaging routes to the official Cloud API via 360dialog when a customer materializes; agent use accepts the unofficial whatsapp-mcp on a throwaway number. caveman + hebrew-rtl are free, MIT, cleared by both reviewers.
+- **Alternatives considered:** evolution-api Baileys mode and whatsapp-mcp for BUSINESS -- REJECTED (ToS + ban at scale; evolution stays shelved). evolution-api Cloud-mode self-host -- viable but more ops than 360dialog; not chosen. Twilio BSP -- per-message markup too high at 10k+. caveman-shrink MCP -- deferred (larger attack surface).
+- **Files affected:** company/governance/gate-register.md (3 rows granted + 360dialog deferred row); company/governance/gate-review-{whatsapp-mcp,caveman,hebrew-rtl}-rambo.md (new); company/rnd/claude-md-template-kit.md (new, R&D reference); memory/log.md.
+
+## 2026-06-17 -- GO-LIVE: Gal, Shir, Tim, Hila (owner A1 "push all to production")
+
+- **Author / gate:** jecki (A1, 2026-06-17). Eco executes.
+- **Decision:** Four more agents activated, completing the P1 build wave:
+  1. **Gal (Lead Developer)** -- B3 3/3 PASS; Anat certify-w-cond; Rambo clear (Bash JUSTIFIED for dev, no removal); Ido B6 CONFIRM. LIVE. Open: RL-9/10/11 doc before R&R; off spawn-allowlist until T-0020 C3.
+  2. **Shir (DevOps)** -- B3 3/3 PASS (S3 escalation coaching); Anat certify-w-cond; Rambo clear (Bash JUSTIFIED for DevOps); Ido B6 confirm-w-note. LIVE. Open: Ido coaches escalation hygiene; A1 prod-deploy gate in bridge; integrations/ task-envelope; off allowlist until C3 -- and Shir BUILDS the C3 fix (SHIR-001 first sprint).
+  3. **Tim (VP Sales)** -- role file BUILT this session (B1), then B3 3/3 PASS; Anat certify; Rambo clear-w-cond; Eco B6. LIVE, clean. Manages Hila; does her B6.
+  4. **Hila (Marketing)** -- B3 3/3 PASS (S2 escalation coaching); Anat certify-w-cond (C5 go-live blocker: added refuse-AND-escalate text + RL-9/RL-11 at go-live); Rambo clear-w-cond; Tim B6 confirm-w-note. LIVE on P1 LIGHT-TRACK SCOPE ONLY.
+- **Hila scope limit (explicit):** ORG-001 full-track expansion (full brand build, multi-channel, owner personal presence, REAL social accounts + public posting) is NOT active. It needs a separate A1 role-file scope edit + a supplementary B2 spec + re-test, AND public account creation/posting needs the Legal+Security gate (Eyal+Rambo) + A1 per action. Queued.
+- **Cross-agent finding:** Shir (S3) and Hila (S2) both refused out-of-chain requests correctly but did NOT flag the contact up to their manager. "Refuse + escalate" is ONE action. Routed to Dalia (soul/training reinforcement) + Anat (R&R awareness); Hila's role file now states it explicitly; Ido + Tim coach Shir + Hila at onboarding.
+- **Roster now: 16 agents LIVE** -- Eco, Anat, Rambo, Shelly, Eyal, Ido, Dalia, Noam (VP Product), Lital, Assaf, Luci, Erez, Gal, Shir, Tim, Hila. The full P1 set is live.
+- **Rationale:** Owner directed activate all + push to production, then continue with remaining (later-phase) agents.
+- **Files affected:** .claude/agents/{Gal,Shir,Tim,Hila}.md (cert + fixes); company/hr/interviews/ (Gal,Shir,Tim,Hila moved); company/hr/competency/ (test-results + scans + Tim built); company/hr/stage-c/; memory/board.md; memory/wiki/agent-roster.md.

@@ -169,4 +169,7 @@ Delta on Core Block.
 
 ## Certification status
 
-Pending -- Anat (HR) to certify before go-live. Manager (Ido) approval also required before go-live.
+CERTIFIED + LIVE 2026-06-17 (owner A1, jecki). B3 3/3 PASS; Anat B4 certify-with-conditions; Rambo B5
+clear-with-conditions (Bash JUSTIFIED for dev -- no tool change); Ido B6 CONFIRM. Open (non-blocking):
+add RL-9/10/11 boundary text before first R&R; off agent-spawn allowlist until T-0020 C3 (direct/Ido
+invocation OK; survives go-live). Tasked by Ido.

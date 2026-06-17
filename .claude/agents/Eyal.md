@@ -150,4 +150,9 @@ Routine register updates and status changes: Sonnet sufficient.
 
 ## Certification status
 
-Pending (Anat/HR to certify before go-live).
+CERTIFIED + LIVE 2026-06-17. Anat HR review: certify, no conditions
+(company/hr/interviews/Eyal-interview.md). Rambo B5 scan: clear, no conditions
+(company/hr/competency/Eyal-rambo-scan.md). Eco B3 evaluation: 3/3 PASS
+(company/hr/competency/Eyal-test-results.md). Go-live under owner standing A1 (jecki 2026-06-17:
+auto-go-live for zero-condition passes). First-activation task: T-0013 (gate-register bootstrapping
+review for Rambo tools). Joint compliance work with Lital: T-0005.

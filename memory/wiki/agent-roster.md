@@ -41,6 +41,15 @@ Source: company/roster.md
 ## Certification status
 
 - Eco: conditionally certified (Anat, 2026-06-12); 5 gaps -- see T-0002
-- Anat: certified + owner-approved (Eco cert + jecki A1, 2026-06-13); all 10 gaps resolved in v1.1 with 4 owner amendments
-- Shelly: pending certification (Anat; see S-0003)
-- All others: not yet active
+- Anat: certified + owner-approved (Eco cert + jecki A1, 2026-06-13); v1.1 all gaps resolved
+- Rambo: certified + owner A1 (2026-06-14); role file committed to .claude/agents/Rambo.md
+- Hila: role file in .claude/agents/Hila.md; competency spec written 2026-06-15 (company/hr/competency/Hila-spec.md); B3-B7 pending
+- Shelly: active in repo (decommission deferred per owner A1 2026-06-13); no formal HR cert; see decisions-log
+- Eyal (Legal): CERTIFIED + LIVE 2026-06-17. B3 3/3 PASS; Anat B4 certify (no conditions); Rambo B5 clear (no conditions). Auto-go-live under owner standing A1 (zero-condition pass). T-0013 auto-started.
+- Ido, Dalia, Noam, Lital, Assaf: B3-B7 + Stage C COMPLETE 2026-06-17; all 3/3 PASS; HELD for owner A1 batch (each has light conditions -- see company/hr/stage-c/<Name>-stage-c.md). Ido go-live needs Bash removed (A1); Dalia v0.1->v1.0; Noam RL3/RL6 + S3 re-run + T-0001; Lital T-0012 scope + GreenInvoice trigger; Assaf format discipline + T-0012.
+- Ido, Dalia, Noam (VP Product), Lital, Assaf, Luci, Erez: CERTIFIED + LIVE 2026-06-17 (owner A1 batch). All 3/3 PASS. Fixes applied at go-live: Ido Bash removed; Dalia v1.0; Noam VP title (T-0001 resolved); Luci+Erez model opus->sonnet; conditions in decisions-log + role files. With Eyal + Anat + Rambo + Eco, that is 11 P1 agents live.
+- Gal, Shir, Tim, Hila: ALL LIVE 2026-06-17 (owner A1). Tim built+certified this session. Hila LIGHT-TRACK only (ORG-001 full-track queued: A1 scope edit + re-test + Legal/Security gate for public posting). Bash justified for Gal/Shir.
+- TALLY 2026-06-17: 16 agents LIVE -- Eco, Anat, Rambo, Shelly, Eyal, Ido, Dalia, Noam (VP Product), Lital, Assaf, Luci, Erez, Gal, Shir, Tim, Hila. Full P1 set live.
+- REMAINING (later phases, own hiring): Alex (Sales, P3), Mike (VP CS, P3) + CS team (Jenny/Avner/Ella), Designer (P2, reports to Noam), Senior Dev (P2), Zvika (Research P2), Roman (Algorithm P2), Adi (QA P2), Sami (SME on-demand), Chronicler (HIRE-002), Knowledge/Doc-mgr (HIRE-001). Most need role file (B1) + spec (B2) built from scratch.
+- CROSS-AGENT FLAG: Luci + Erez frontmatter pins claude-opus-4-8 while body says Sonnet-default; reconcile (possible wider model-config audit).
+- Systemic at certification: RL-9/10/11 boundary-text gap across most role files (batch-fixable); Ido/Gal/Shir share a Bash over-permission flag (T-0020).

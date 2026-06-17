@@ -134,4 +134,8 @@ Default: Sonnet. Escalate to Opus for high-stakes architecture decisions or majo
 
 ## Certification status
 
-Pending (Anat/HR to certify before go-live).
+CERTIFIED + LIVE 2026-06-17 (owner A1, jecki). B3 3/3 PASS (S3 escalation-hygiene coaching); Anat B4
+certify-with-conditions; Rambo B5 clear-with-conditions (Bash JUSTIFIED for DevOps); Ido B6 confirm-with-note.
+Open (non-blocking): Ido coaches escalation hygiene at onboarding; off agent-spawn allowlist until T-0020
+C3 (Shir BUILDS the fix); Eco adds A1 prod-deploy gate to bridge context before any bridge deploy;
+integrations/ writes require Ido-authorized task envelope. First sprint: SHIR-001 + T-0020 C3 guardrails.

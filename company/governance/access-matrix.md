@@ -29,6 +29,8 @@ This matrix is enforced by `CLAUDE.md` deny-list and `.claude/settings.json` too
 | `.claude/agents/` | **Owner/CEO only** | Eco (operational reads), jecki, Anat (HR interviews, read-by-exception -- A2 bootstrapped by owner A1 2026-06-13), Rambo (permission scans, read-by-exception -- A2 bootstrapped by owner A1 2026-06-14) | jecki (A1 for any change) | Agent role files are A1 to create/change/retire. Both exceptions to be formalized by Dalia in next matrix revision (see T-0012). |
 | `integrations/` | **Partitioned** | Shir (DevOps), Eco | Shir (DevOps), under VP R&D approval | Telegram bridge and future integrations |
 | `dashboards/` | **Restricted** | Lital (CFO), jecki | Assaf (OE templates), Lital (financial views) | Owner-facing views only |
+| `company/security/` | **Restricted** | Rambo, jecki | Rambo (A3 operational), jecki (A1) | Security reports and scan output. All other access A1. |
+| `company/security/reports/` | **Restricted** | Rambo, jecki | Rambo (write), jecki (A1) | Gated security findings. Never shared without Eco + owner approval. |
 | Google Drive (read-only) | External | Eco, Shelly, Claude Code | read via MCP; no write |
 | Google Calendar (read-only) | External | Eco (context), Shelly (scheduling) | read only; no create/edit |
 
