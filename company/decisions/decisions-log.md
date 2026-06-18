@@ -549,3 +549,19 @@ Format per entry:
 - **Gap:** Tim.md role file still reads "pending certification (B3-B7)" -- the role-file update was not applied (or was reverted in the merge). This is the ONLY remaining step before Tim is formally live. Role-file edit is owner A1 (red line 6; guard blocks agent writes to .claude/agents/).
 - **Owner action needed:** Update Tim.md "Approved by" line from "pending certification (B3-B7)" to "certified + LIVE 2026-06-17 (owner A1); re-confirmed 2026-06-18." Then Tim is formally active. Eco recommends doing this in the same A1 batch as T-0021 Phase B steps.
 - **Files affected:** memory/board.md (ONB-013 status updated to blocked-on-A1).
+
+## 2026-06-18 -- T-0014 full permission scan complete; 5 blocking flags; T-0023 cleared
+
+- **Author / gate:** Rambo (Security, A3 scan); Eco (CEO, A3 task creation); reported to owner for A1 role-file actions.
+- **T-0014 verdict:** Full scan of all 21 live agents. Report: company/processes/permission-scan-2026-06-18.md. Overall: 5 BLOCKING FLAGS, 14 CLEAR-WITH-NOTES, 11 CLEAR.
+- **FLAGS requiring owner A1 (role-file edits):**
+  1. Eco.md -- RL9/10/11 block absent (open cert condition from 2026-06-12). Add standard boundary text. (T-0025)
+  2. Shir.md -- RL9/10/11 block absent. Shir holds Bash and owns infra; RL9 is a real operational gap. (T-0026)
+  3. Erez.md -- RL9 (Israeli privacy law / personal data handling) not documented; holds WebSearch/WebFetch. (T-0027)
+- **FLAGS requiring Eco tasking (not A1):**
+  4. Shelly -- HR certification PENDING (Anat never ran B4); holds web tools. Certification deferred pending T-0010 (Shelly separation) owner decision. (T-0028)
+  5. MeetingPrep -- source repo NOT Rambo-scanned; HARD activation block until scan complete. (T-0029)
+- **Stale allowlist entry (A1):** Ido is on DENIED for Bash, but Bash was removed at go-live. Owner A1 to move Ido to PERMITTED. (T-0030)
+- **T-0023 (model-config audit) cleared:** Rambo confirmed during the scan -- NO opus-default leaks found across any role file. All 2026-06-18 files have Sonnet frontmatter matching body. T-0023 marked done.
+- **Non-blocking pattern (R&R):** RL12 (Shelly-cannot-task) absent by name from 12 agents; substance covered by chain-of-command text. Flag for next R&R cycle.
+- **Files affected:** memory/board.md (T-0014 done, T-0023 done, T-0025-T-0030 added), company/processes/permission-scan-2026-06-18.md (new, Rambo).
