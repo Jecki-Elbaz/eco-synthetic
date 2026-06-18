@@ -1,8 +1,69 @@
-# Agent Roster Summary (v2.2)
+# Agent Roster Summary (v3.0)
 
 Source: company/roster.md
 
-## Active in P1
+## CURRENT ORG + PERSONA REGISTRY (2026-06-18 -- authoritative; supersedes the older tables below)
+
+Renames (owner A1 2026-06-18): Noam -> Perry, Tim -> Sally, Avner -> Jack, Chronicler -> Oracle.
+Changes 2026-06-18: Yossi (Training) HIRED under Assaf (staged, B3 next session); MeetingPrep CERTIFIED + LIVE (Sales);
+CS reps DIFFERENTIATED (Jenny = Customer Support, Jack = CSM + Account Manager, Ella = Customer Trainer);
+Sami moved under VP Product; Ido holds CTO scope (dedicated CTO hire deferred, named trigger); Tal confirmed as
+UX/UI Designer (equipped for Claude design tools); RL9/10/11 added to Eco/Shir/Erez; personas + Hebrew names recorded on all.
+
+### Org by group (each VP heads their team)
+
+- OWNER: jecki (L1)
+- CEO: Eco (L2)
+- OWNER OFFICE (-> jecki): Shelly (Office Manager -- running, HR-cert pending), Luci (Devil's Advocate), Erez (Investor, on-demand)
+- CEO STAFF (-> Eco): Anat (HR), Rambo (Security), Dalia (Q&G) [+ Yael (Knowledge/Doc Mgr) under Dalia], Assaf (Op-Ex) [+ Yossi (Training) under Assaf -- staged], Lital (CFO), Eyal (Legal), Oracle (Build-Historian; dotted Dalia + Hila), Zvika (Research, on-demand)
+- R&D -- VP Ido (also holds CTO scope): Gal (Lead Dev), Shir (DevOps), Oren (Senior Dev/reviewer), Roman (Algorithm, on-demand), Adi (QA)
+- PRODUCT -- VP Perry: Tal (UX/UI Designer), Sami (SME Advisor, on-demand per-project)
+- SALES -- VP Sally: Hila (Marketing, full track), Alex (Sales Execution), MeetingPrep (Meeting Prep Specialist, on-demand)
+- CUSTOMER SUCCESS -- VP Mike: Jenny (Customer Support), Jack (CSM + Account Manager), Ella (Customer Trainer)
+
+Live tally: 29 certified + live; Shelly running (cert pending); Yossi staged (B3 next session). 31 agent files total.
+
+### Persona / addressing registry
+
+| Agent | Title | Gender | Hebrew | Address as |
+|-------|-------|--------|--------|-----------|
+| Eco | CEO | male | אקו | Eco (he/him) |
+| Shelly | Office Manager | female | שלי | Shelly (she/her) |
+| Luci | Devil's Advocate | female | לוסי | Luci (she/her) |
+| Erez | Investor | male | ארז | Erez (he/him) |
+| Anat | HR Manager | female | ענת | Anat (she/her) |
+| Rambo | Security | male | רמבו | Rambo (he/him) |
+| Dalia | Quality & Governance | female | דליה | Dalia (she/her) |
+| Yael | Knowledge/Documentation Manager | female | יעל | Yael (she/her) |
+| Assaf | Operational Excellence | male | אסף | Assaf (he/him) |
+| Yossi | Training & Enablement | male | יוסי | Yossi (he/him) |
+| Lital | CFO | female | ליטל | Lital (she/her) |
+| Eyal | Legal | male | אייל | Eyal (he/him) |
+| Oracle | Build-Historian | male | אורקל | Oracle (he/him) |
+| Zvika | Research Analyst | male | צביקה | Zvika (he/him) |
+| Ido | VP R&D (+ CTO scope) | male | עידו | Ido (he/him) |
+| Gal | Lead Developer | female | גל | Gal (she/her) |
+| Shir | DevOps | female | שיר | Shir (she/her) |
+| Oren | Senior Developer | male | אורן | Oren (he/him) |
+| Roman | Algorithm Specialist | male | רומן | Roman (he/him) |
+| Adi | QA Engineer | female | עדי | Adi (she/her) |
+| Perry | VP Product | male | פרי | Perry (he/him) |
+| Tal | Product UX/UI Designer | female | טל | Tal (she/her) |
+| Sami | SME Advisor | male | סמי | Sami (he/him) |
+| Sally | VP Sales | female | סאלי | Sally (she/her) |
+| Hila | Marketing | female | הילה | Hila (she/her) |
+| Alex | Sales Execution | male | אלכס | Alex (he/him) |
+| MeetingPrep | Meeting Prep Specialist | tool | -- | MeetingPrep |
+| Mike | VP Customer Success | male | מייק | Mike (he/him) |
+| Jenny | Customer Support | female | ג'ני | Jenny (she/her) |
+| Jack | CSM + Account Manager | male | ג'ק | Jack (he/him) |
+| Ella | Customer Trainer | female | אלה | Ella (she/her) |
+
+> Note: the registry-key / agent-type for Tal stays "Designer" (file .claude/agents/Designer.md) so tooling is stable; persona name is Tal.
+
+---
+
+## Active in P1 (legacy table -- see the current org above)
 
 | Agent | Role | Level | Reports to | Notes |
 |-------|------|-------|-----------|-------|

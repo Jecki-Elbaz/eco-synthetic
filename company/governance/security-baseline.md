@@ -200,3 +200,34 @@ Rules:
 
 Reference implementation: company/security/reports/T-0020-2026-06-15.md
 (Recommended mitigation / solution section).
+
+---
+
+## Standing standard: sources/ tool library -- ownership + NO auto-update
+
+Effective: 2026-06-18 | Owner: Rambo (Security) | Authority: owner A1 (jecki)
+
+The `sources/` folder is the company tool library (~100 IL skills, ~14 IL MCP servers,
+catalogs, methodology guides). Ownership: Yossi (Training) + Assaf (OE) curate it and
+train other agents to use its tools. Rambo owns the security posture of every tool in it.
+
+Rules:
+1. NO tool in `sources/` (or anywhere) is used by any agent before it passes the gate
+   (Rambo risk + Eyal terms) and is granted in `gate-register.md`. [red line 4]
+2. NO AUTO-UPDATE. No adopted tool may be updated to a new version/commit without Rambo's
+   ADVANCE approval. An unreviewed update can inject harmful behavior.
+   - Skills (skills-il): install as a STATIC SKILL.md copy via `npx skills-il add ...`.
+     They do not auto-update; an update only happens if someone re-runs install. Do not
+     re-run an install/update without Rambo approval + a fresh content scan.
+   - MCP servers: `npx @scope/pkg`, `git`, or `uvx` CAN pull newer code if unpinned. ALL
+     MCP installs MUST pin an exact version or commit SHA. Bare/unpinned install strings
+     (e.g. `npx -y pkg`, `uvx --from git+...HEAD`) are prohibited -- they are auto-update.
+3. On any Rambo-approved update: re-scan the new version for injection/egress, then re-pin.
+4. Trust scores on skills-il items are a triage signal only, never a substitute for a
+   Rambo content scan -- the SKILL.md is executable instruction.
+
+## Scan log (continued)
+
+| date | scope | result | notes |
+|------|-------|--------|-------|
+| 2026-06-18 | Shelly shortlist batch (8 tools): 5 skills-il skills + Kol Zchut/Hebcal/Sefaria MCPs | CLEAR-WITH-CONDITIONS | Skills 1-5 CLEAR (SKILL.md scanned, clean). MCPs PARTIAL-CLEAR with mandatory pins: Kol Zchut @1.0.1, Hebcal @0.10.3 (BSD-2, fully local, zero egress), Sefaria SHA b8ceef7 (no tags -- SHA pin is a hard blocker; CC-BY-NC content = owner personal/orientation use only + attribution). Full report: company/governance/gate-review-shelly-shortlist-rambo.md |

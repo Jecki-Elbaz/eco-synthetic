@@ -75,6 +75,25 @@ Items flagged by the owner or agents; blocked until Rambo (Security) + Eyal (Leg
 | caveman skill (JuliusBrussee) -- GRANTED A2 2026-06-17 (owner-approved adoption, red line 7) | Claude Code skill (SKILL.md, MIT) | https://github.com/JuliusBrussee/caveman | Eco/jecki (2026-06-17) | PARTIAL-CLEAR (Rambo, 2026-06-17) -- A2 sufficient (free, MIT); 4 conditions C1-C4; full findings: company/governance/gate-review-caveman-rambo.md | CLEAR 2026-06-17 -- MIT (Rambo-confirmed); no external service, no vendor ToS, no data egress, no telemetry; Israeli PPL not triggered (no personal data). Recommends A2 once owner approves adoption (red line 7) | R1 HIGH (structural): official install curl|bash / irm|iex is red line 4 violation -- blocked. Safe path: manual copy of SKILL.md from pinned commit SHA only (C1). R2 MEDIUM-HIGH: bin/install.js writes hooks to ~/.claude/settings.json system-wide -- entirely avoided by C1. R3 MEDIUM: must pin to specific commit SHA (C2). R4 MEDIUM: scope discipline -- /caveman not permitted in owner-facing or Telegram bridge sessions (C3, C4). Skill content (SKILL.md): CLEAN -- no telemetry, no external calls, no injection vectors, no safety overrides. .cursorrules: does not exist. License: MIT confirmed (Julius Brussee, 2026). Steward: Assaf. Proposed scope: internal + agent-to-agent sessions only. Caveman-shrink MCP middleware NOT included -- requires separate gate. |
 | hebrew-rtl-best-practices (skills-il) -- GRANTED A2 2026-06-17 (owner-approved adoption, red line 7) | AI agent skill (Claude Code) | https://github.com/skills-il/localization/tree/master/hebrew-rtl-best-practices ; CLI: https://github.com/skills-il/skills-il-cli | Eco (2026-06-17) | PARTIAL-CLEAR (Rambo, 2026-06-17) -- A2 sufficient; 4 conditions C1-C4; findings: company/governance/gate-review-hebrew-rtl-rambo.md | CLEAR 2026-06-17 -- per Eyal's stated conditional rule (permissive license + ToS allows commercial use), both triggers now met: Rambo confirmed MIT; agentskills.co.il/he/terms explicitly permits commercial use of individual MIT SKILL.md files (verified via WebFetch by gate coordinator); platform-curation commercial restriction does not apply to a single MIT skill. No personal data. Recommends A2 once owner approves adoption (red line 7). Conditions: pin skills-il@1.10.0 + skill v1.3.0, CI=true at install, post-install content check (C1) | Skill content: clean (no injection vectors, MIT license). CLI: no postinstall hooks, zero runtime deps. R1 LOW, R2-R5 MEDIUM, R6 LOW. Install command must include: CLI version pin `skills-il@1.10.0`, `--skill hebrew-rtl-best-practices -a claude-code`, and `CI=true`. Post-install content check required (C1). Full findings: company/governance/gate-review-hebrew-rtl-rambo.md. |
 
+## Adopted -- Shelly preliminary-knowledge shortlist (GRANTED 2026-06-18, owner A1-directed)
+
+Gate: Rambo batch scan (CLEAR/PARTIAL-CLEAR) + Eyal terms; owner directed adoption for
+Shelly (preliminary orientation for jecki). Reviews: company/governance/gate-review-shelly-shortlist-rambo.md.
+NO auto-update without Rambo approval (security-baseline). Install pending (npx/MCP setup).
+
+| Tool | Type | Pinned install | Tier | Conditions |
+|------|------|----------------|------|-----------|
+| Financial statements | skills-il skill | `skills-il/accounting@v1.2.0-israeli-financial-reports` | free | orientation-only; not authoritative (Lital owns) |
+| VAT reporting | skills-il skill | `skills-il/tax-and-finance@v1.4.0-israeli-vat-reporting` | free | orientation-only; not authoritative (Lital owns) |
+| Employee tax refund | skills-il skill | `skills-il/tax-and-finance@v1.1.1-israeli-employee-tax-refund` | free | jecki's OWN data only; PPL+DPA before third-party data |
+| LinkedIn strategy | skills-il skill | `skills-il/marketing-growth@v1.1.0-israeli-linkedin-strategy` | free | internal draft only; no public posting without A1 + Eyal |
+| Fact checker | skills-il skill | `skills-il/government-services@v1.0.0-israeli-fact-checker` | free | if it calls an external API, that endpoint needs its own gate row |
+| Kol Zchut / All Rights | MCP (skills-il) | `@skills-il/kolzchut-mcp@1.0.1` | free | pin @1.0.1; surface kolzchut attribution; orientation-only |
+| Hebrew calendar (Hebcal) | MCP (3rd-party) | `@hebcal/mcp@0.10.3` | free | BSD-2; fully local, zero egress; pin @0.10.3 |
+| Sefaria | MCP (3rd-party) | `git+https://github.com/Sivan22/mcp-sefaria-server@b8ceef78b42c9330f7b62afc020b2bc6e616b986` | free | SHA-pin mandatory (no tags); CC-BY-NC = owner personal use only + attribution |
+
+---
+
 ## Rejected / reference-only (external repos)
 
 | Tool / Service | Type | Source | Reason | Status |
@@ -103,6 +122,25 @@ Rationale:
 - Use-case scope: Rambo uses these tools for security review (scanning repos, reading files, writing scan results, fetching public URLs). All within the approved runtime scope.
 
 T-0013 is closed. Gate-register row for Rambo tools is confirmed with no legal gap. Eyal sign-off complete.
+
+---
+
+---
+
+## Shelly tools batch -- pending Eyal review + Eco A2 grant (2026-06-18)
+
+Full Rambo findings: company/governance/gate-review-shelly-shortlist-rambo.md
+
+| Tool / Service | Type | Source | Flagged by | Rambo | Eyal | Notes |
+|----------------|------|--------|------------|-------|------|-------|
+| israeli-financial-reports (skills-il) | AI skill (SKILL.md, MIT) | skills-il/accounting@v1.2.0-israeli-financial-reports | jecki (owner, 2026-06-18) | CLEAR (Rambo 2026-06-18) -- static file, no egress, SKILL.md scan clean | Not required (platform pre-cleared 2026-06-17; MIT; no new terms) | Pin: `skills-il/accounting@v1.2.0-israeli-financial-reports`. No auto-update. |
+| israeli-vat-reporting (skills-il) | AI skill (SKILL.md, MIT) | skills-il/tax-and-finance@v1.4.0-israeli-vat-reporting | jecki (owner, 2026-06-18) | CLEAR (Rambo 2026-06-18) -- static file, no egress, SKILL.md scan clean | Not required (same as above) | Pin: `skills-il/tax-and-finance@v1.4.0-israeli-vat-reporting`. No auto-update. |
+| israeli-employee-tax-refund (skills-il) | AI skill (SKILL.md, MIT) | skills-il/tax-and-finance@v1.1.1-israeli-employee-tax-refund | jecki (owner, 2026-06-18) | CLEAR (Rambo 2026-06-18) -- static file, no egress, SKILL.md scan clean | Not required (same as above) | Pin: `skills-il/tax-and-finance@v1.1.1-israeli-employee-tax-refund`. Privacy note: Shelly session-only handling of any personal tax data (no logging to tracked files). |
+| israeli-linkedin-strategy (skills-il) | AI skill (SKILL.md, MIT) | skills-il/marketing-growth@v1.1.0-israeli-linkedin-strategy | jecki (owner, 2026-06-18) | CLEAR (Rambo 2026-06-18) -- static file, no egress, SKILL.md scan clean; repo CLAUDE.md confirmed benign | Not required (same as above) | Pin: `skills-il/marketing-growth@v1.1.0-israeli-linkedin-strategy`. No auto-update. |
+| israeli-fact-checker (skills-il) | AI skill (SKILL.md, MIT) | skills-il/government-services@v1.0.0-israeli-fact-checker | jecki (owner, 2026-06-18) | CLEAR (Rambo 2026-06-18) -- static file, no egress, SKILL.md scan clean | Not required (same as above) | Pin: `skills-il/government-services@v1.0.0-israeli-fact-checker`. No auto-update. |
+| @skills-il/kolzchut-mcp | MCP server (TypeScript, stdio) | github.com/skills-il/mcps dir:kolzchut-mcp | jecki (owner, 2026-06-18) | PARTIAL-CLEAR (Rambo 2026-06-18) -- no .claude/CLAUDE.md/.cursorrules, no postinstall scripts; calls kolzchut.org.il only | PENDING (skills-il pre-cleared platform; confirm MIT extends to this npm package) | C1: pin @1.0.1 in mcp.json. C2: no bump without Rambo advance. C3: no personal data in queries. |
+| @hebcal/mcp | MCP server (TypeScript, stdio) | github.com/hebcal/hebcal-mcp | jecki (owner, 2026-06-18) | PARTIAL-CLEAR (Rambo 2026-06-18) -- no .claude/CLAUDE.md/.cursorrules, no postinstall scripts; FULLY LOCAL computation, zero external egress at runtime | PENDING -- BSD-2-Clause commercial use confirm | C1: pin @0.10.3. C2: no bump without Rambo advance. C3: Eyal BSD-2-Clause confirm (expected fast clear). |
+| mcp-sefaria-server (Sivan22) | MCP server (Python, stdio) | github.com/Sivan22/mcp-sefaria-server | jecki (owner, 2026-06-18) | PARTIAL-CLEAR (Rambo 2026-06-18) -- no .clone/CLAUDE.md/.cursorrules, no postinstall; calls sefaria.org API only; NO releases/tags -- C1 is MANDATORY before install | PENDING -- (a) confirm license type; (b) confirm Sefaria.org public API terms permit use in commercial assistant | C1 MANDATORY: SHA-pin `git+https://github.com/Sivan22/mcp-sefaria-server@b8ceef78b42c9330f7b62afc020b2bc6e616b986` before any install. C2: re-pin on any update (Rambo advance). C3: Eyal (a)+(b). C4: no personal data in queries. |
 
 ---
 

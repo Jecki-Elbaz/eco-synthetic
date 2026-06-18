@@ -11,7 +11,7 @@ This matrix is enforced by `CLAUDE.md` deny-list and `.claude/settings.json` too
 | Path | Access tier | Who may read | Who may write | Notes |
 |------|-------------|--------------|---------------|-------|
 | `.env` | **Blocked** | Runtime only (no agent reads this directly) | Never (jecki only, manually) | Red line 5; gitignored |
-| `sources/` | **Read-only** | Any agent (context) | Nobody | Archived originals; gitignored; never edit |
+| `sources/` | **Read-only** | Any agent (context) | Nobody | Archived originals; gitignored; never edit. Curated by Yossi (Training) + Assaf (OE): they own the tool-library index and train agents on its tools. Adopted tools are tracked in `gate-register.md`; no tool is used until gated. |
 | `company/decisions/decisions-log.md` | **Append-only** | All agents | Append: all agents logging decisions | Never retroactively edit; immutable audit trail |
 | `company/` (other) | **Restricted** | Eco, Dalia (Q&G), Anat (HR), Rambo (Security), Eyal (Legal), Lital (CFO) + role-relevant reads | Eco (A2), Dalia, Anat, Rambo, Eyal, Lital in their domains | All other agents: read-only, need-to-know context |
 | `company/governance/` | **Restricted** | Eco, Dalia, Rambo, Eyal | Dalia (access-matrix), Eyal (gate-register), Rambo (security baseline) | |
