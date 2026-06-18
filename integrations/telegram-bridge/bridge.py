@@ -1,9 +1,9 @@
-"""Eco-Synthetic Telegram bridge — OAuth via Claude Max subscription.
+"""Eco-Synthetic Telegram bridge -- OAuth via Claude Max subscription.
 
 Authentication model
 --------------------
 Calls Claude through the `claude` CLI, which reads CLAUDE_CODE_OAUTH_TOKEN
-and bills your Claude Max subscription — NOT the paid API.
+and bills your Claude Max subscription -- NOT the paid API.
 
 This script REFUSES TO START if ANTHROPIC_API_KEY is present in the
 environment: that key would silently route every call through the paid API
@@ -13,10 +13,21 @@ Headless setup (one-time, on any machine that will run the bridge):
 
     claude setup-token          # opens OAuth in browser, prints a long-lived token
     setx CLAUDE_CODE_OAUTH_TOKEN "<token>"   # Windows (permanent, current user)
-    # — or add to .env (never commit .env):
+    # -- or add to .env (never commit .env):
     #   CLAUDE_CODE_OAUTH_TOKEN=<token>
 
-TODO — CUSTOMER-FACING AUTH SWITCH
+Async ack + two-message pattern (SHIR-001, 2026-06-18)
+-------------------------------------------------------
+Every inbound message now gets an immediate ack ("On it, Jecki...") sent
+before the Claude subprocess starts. When Claude replies, that reply is
+sent as a separate second message. This eliminates the user-visible gap
+between sending a message and seeing any feedback, regardless of how long
+Claude takes.
+
+See DEPLOY.md in this folder for architecture notes, timeout rationale,
+and the streaming / partial-delivery evaluation.
+
+TODO -- CUSTOMER-FACING AUTH SWITCH
 ------------------------------------
 OWNER_ONLY_MODE = True means the bots serve jecki only via personal OAuth.
 
@@ -25,7 +36,7 @@ When bots are ever exposed to external customers, you MUST:
   2. Remove CLAUDE_CODE_OAUTH_TOKEN; provision a scoped Console API key
   3. Set ANTHROPIC_API_KEY to that key (and remove the guard below)
   4. Switch call_claude_cli() to use the anthropic Python SDK
-  5. Review Anthropic usage-policy terms — personal OAuth is for internal use only
+  5. Review Anthropic usage-policy terms -- personal OAuth is for internal use only
 """
 
 from __future__ import annotations
@@ -103,7 +114,18 @@ SHELLY_ESCALATED_MODEL = "claude-sonnet-4-6"
 # ── Limits ────────────────────────────────────────────────────────────────────
 MAX_HISTORY_MESSAGES = 20
 MAX_HISTORY_CHARS = 40_000
-CLAUDE_TIMEOUT = 120
+# SHIR-001 (2026-06-18): raised from 120s to 300s.
+# Rationale: Opus on complex tasks (long context, multi-tool) regularly takes
+# 90-180s. The old 120s caused spurious timeout errors. 300s gives a safe
+# ceiling without risking runaway processes. The async-ack pattern means
+# jecki sees "On it..." immediately, so the longer timeout is invisible UX-wise.
+# This bridge uses long-polling (not webhook) so there is no Telegram server
+# timeout imposed on the response window.
+CLAUDE_TIMEOUT = 300
+
+# Ack message sent immediately on every inbound user message, before Claude
+# is invoked. Keeps jecki from staring at a blank chat while Claude works.
+ACK_MESSAGE = "On it, Jecki..."
 
 
 # ── Claude CLI path ───────────────────────────────────────────────────────────
@@ -510,12 +532,41 @@ def make_handlers(bot_name: str, system_prompt: str):
         history: list[dict],
         model: str,
         action: str,
+        send_ack: bool = True,
     ) -> None:
+        """Invoke Claude and deliver its response as a Telegram message.
+
+        Pattern (SHIR-001):
+          1. If send_ack is True, immediately send ACK_MESSAGE so jecki sees
+             feedback before any Claude latency begins.
+          2. Start the typing indicator loop (keeps the "typing..." bubble alive
+             every 4s for the full duration of the Claude call).
+          3. Run the blocking claude CLI call in a thread-pool executor so the
+             asyncio event loop stays responsive.
+          4. Send Claude's response as a second Telegram message (or send an
+             error message if the CLI call fails).
+
+        send_ack=False is used for scheduled wake-ups and /start, where sending
+        "On it, Jecki..." would be jarring -- those flows are bot-initiated, not
+        triggered by a user message.
+        """
         chat_id = update.effective_chat.id  # type: ignore[union-attr]
+
+        # Step 1: immediate ack -- send before any blocking work begins.
+        if send_ack:
+            try:
+                await update.message.reply_text(ACK_MESSAGE)  # type: ignore[union-attr]
+            except Exception as ack_exc:
+                # Non-fatal: log and continue. The Claude call is more important.
+                log.warning("Failed to send ack message (%s/%s): %s", bot_name, action, ack_exc)
+
+        # Step 2: typing indicator loop.
         loop = asyncio.get_running_loop()
         typing_task = asyncio.create_task(
             _typing_loop(chat_id, update.get_bot())
         )
+
+        # Step 3: blocking Claude call, offloaded to thread pool.
         try:
             agent_tools = _AGENT_TOOLS.get(bot_name, ["Read"])
             reply, tokens_in, tokens_out = await loop.run_in_executor(
@@ -544,6 +595,8 @@ def make_handlers(bot_name: str, system_prompt: str):
             return
         finally:
             typing_task.cancel()
+
+        # Step 4: deliver Claude's response as a second message.
         history.append({"role": "assistant", "content": reply})
         save_history(bot_name, chat_id, history)
         append_log(agent_display, chat_id, action, model, tokens_in, tokens_out)
@@ -570,7 +623,8 @@ def make_handlers(bot_name: str, system_prompt: str):
             f"session, say so. Then ask jecki which task to begin."
         )
         history: list[dict] = [{"role": "user", "content": trigger}]
-        await _call_and_reply(update, history, default_model, "start_session")
+        # No ack for /start: the bot initiates this exchange, not the user.
+        await _call_and_reply(update, history, default_model, "start_session", send_ack=False)
 
     async def on_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         if update.effective_chat is None or update.message is None:
@@ -592,7 +646,8 @@ def make_handlers(bot_name: str, system_prompt: str):
         history = load_history(bot_name, chat_id)
         history.append({"role": "user", "content": trigger})
         history = trim_history(history)
-        await _call_and_reply(update, history, default_model, "tasks_cmd")
+        # /tasks is a user-initiated command: send ack.
+        await _call_and_reply(update, history, default_model, "tasks_cmd", send_ack=True)
 
     async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         if (
@@ -607,7 +662,8 @@ def make_handlers(bot_name: str, system_prompt: str):
         history.append({"role": "user", "content": user_text})
         history = trim_history(history)
         model = choose_model(bot_name, user_text)
-        await _call_and_reply(update, history, model, "message")
+        # Regular user message: always send ack first.
+        await _call_and_reply(update, history, model, "message", send_ack=True)
 
     return on_start, on_tasks, on_message
 

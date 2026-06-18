@@ -102,7 +102,7 @@ agent live / on 2nd use). Each agent proposes skills for its own repeated tasks;
 | ONB-010 | Bring up Shir (DevOps) | done | B3-B7 complete. CERTIFIED + LIVE 2026-06-17 (owner A1). Ido B6 confirmed. Bash justified. | T-0019 | Eco/Ido | 2026-06-15 | done 2026-06-17 | P1 |
 | ONB-011 | Bring up Luci (Devil's Advocate) | done | B3-B7 complete. CERTIFIED + LIVE 2026-06-17 (owner A1 batch). Model corrected opus->sonnet. | T-0019 | Eco | 2026-06-15 | done 2026-06-17 | P1 |
 | ONB-012 | Bring up Erez (Investor, on-demand) | done | B3-B7 complete. CERTIFIED + LIVE 2026-06-17 (owner A1 batch). WebSearch+WebFetch gate-registered. Model corrected opus->sonnet. | T-0019 | Eco | 2026-06-15 | done 2026-06-17 | P1 |
-| ONB-013 | Bring up Tim (VP Sales) | in-progress | B1 done (Tim.md built). B2 spec at company/hr/competency/Tim-spec.md. B3 approved owner A1 2026-06-18; 3 scenarios running this session. B4 (Anat) + B5 (Rambo) + B6/B7 (Eco) + Stage C owner A1 to follow. | jecki 2026-06-17 | Eco/Anat | 2026-06-17 | this session | P1 |
+| ONB-013 | Bring up Tim (VP Sales) | blocked | B1-B7 complete (all done 2026-06-17 per Tim-test-results.md: 3/3 PASS, Anat certify, Rambo clear-with-2-conditions, Eco B6/B7 GO). B3 re-confirmed 2026-06-18 (3 isolated worktree runs, 3/3 PASS, zero conditions). BLOCKED on A1: Tim.md still reads "pending certification" -- role file update is owner A1. Owner must update Tim.md cert-status and go-live line. Board ORG-002 rows says done but role file disagrees. | jecki 2026-06-17 | Eco | 2026-06-18 | owner A1 needed | P1 |
 
 ---
 

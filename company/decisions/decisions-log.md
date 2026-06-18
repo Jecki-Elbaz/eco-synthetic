@@ -541,3 +541,11 @@ Format per entry:
 - **Tim (VP Sales) B3:** Owner A1 granted to run B3 competency test this session. Spec: company/hr/competency/Tim-spec.md. Three fresh isolated Tim sub-agents running scenarios in parallel. Evaluator: Eco (CEO). B4 (Anat) + B5 (Rambo, combined with T-0014 full scan) + B6/B7 (Eco) + Stage C owner A1 to follow.
 - **Rationale:** Owner replied "I approve all" to three decision items in the morning brief.
 - **Files affected:** memory/board.md (T-0012 done, T-0013 done, T-0024 due updated, DASH-001 in-progress, SHIR-001 in-progress, T-0014 in-progress, ONB-013 added).
+
+## 2026-06-18 -- Correction: Tim (VP Sales) B3 was already complete; role-file update needed (A1)
+
+- **Author / gate:** Eco (CEO, A3 self-correction).
+- **Correction:** The prior entry ("Tim B3 approved, running this session") was based on stale board narrative. Tim's B3-B7 pipeline was completed 2026-06-17 (company/hr/competency/Tim-test-results.md, B7 go-recommendation GO, "ACTIVATED 2026-06-17"). Today's isolated B3 re-run (3 worktree instances) re-confirmed 3/3 PASS with zero conditions -- consistent with prior results.
+- **Gap:** Tim.md role file still reads "pending certification (B3-B7)" -- the role-file update was not applied (or was reverted in the merge). This is the ONLY remaining step before Tim is formally live. Role-file edit is owner A1 (red line 6; guard blocks agent writes to .claude/agents/).
+- **Owner action needed:** Update Tim.md "Approved by" line from "pending certification (B3-B7)" to "certified + LIVE 2026-06-17 (owner A1); re-confirmed 2026-06-18." Then Tim is formally active. Eco recommends doing this in the same A1 batch as T-0021 Phase B steps.
+- **Files affected:** memory/board.md (ONB-013 status updated to blocked-on-A1).
