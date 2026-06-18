@@ -25,6 +25,10 @@ Source: company/roster.md
 
 ## On-demand or later phases
 
+> NOTE 2026-06-18: this table is a planning snapshot and is now STALE. As of 2026-06-18 all agents below
+> (Zvika, Roman, Adi, Jenny/Avner/Ella, Mike, Alex, Sami) plus the Designer are CERTIFIED + LIVE -- see the
+> Certification status section for the authoritative state. Full table rebuild is a wiki-maintenance task (T-0016/Yael).
+
 | Agent | Role | Phase | Notes |
 |-------|------|-------|-------|
 | Zvika | Research | P2 gated | Must be triggered (A2) |
@@ -52,6 +56,7 @@ Source: company/roster.md
 - TALLY 2026-06-17: 16 agents LIVE -- Eco, Anat, Rambo, Shelly, Eyal, Ido, Dalia, Noam (VP Product), Lital, Assaf, Luci, Erez, Gal, Shir, Tim, Hila. Full P1 set live.
 - Designer (persona Tal): CERTIFIED + LIVE 2026-06-18 (owner A1). B3 3/3 PASS; Anat certify-with-conditions + Rambo clear-with-conditions, all resolved in Designer.md v1.1. Reports to Noam. Registry key stays "Designer". Off spawn-allowlist until T-0020 C3. TALLY now 17 LIVE.
 - WAVE 1 (session reloaded; B3 ran): Mike (VP CS), Oren (Senior Dev), Roman (Algorithm), Adi (QA) -- CERTIFIED + LIVE 2026-06-18 (owner A1). All B3 3/3 + Anat certify + Rambo clear + manager B6. TALLY now 21 LIVE. Mike unblocks CS reps' B6. All off spawn-allowlist until T-0020 C3 (Adi = Bash agent, hard).
-- REMAINING (B1+B2 built 2026-06-18, B3 now runnable -- session reloaded): Jenny/Avner/Ella (CS reps, B6 = Mike, now unblocked), Alex (Sales, reports to Tim), Zvika (Research, reports to Eco), Sami (SME on-demand), Yael (Knowledge/Doc-mgr, reports to Dalia, HIRE-001), Chronicler (HIRE-002, reports to Eco). Run B3 -> Stage C -> owner A1 next.
+- WAVE 2 (B3 ran same session): Jenny, Avner, Ella (CS reps -> Mike), Alex (Sales -> Tim), Yael (Knowledge mgr -> Dalia), Zvika (Research -> Eco), Sami (SME -> Eco), Chronicler (build-historian -> Eco) -- ALL CERTIFIED + LIVE 2026-06-18 (owner A1). B3 3/3 each (incl. injection/partition/confidentiality hard-blocks held); Anat certify; Rambo clear; manager B6. Zvika gate-register web-tools row added (jecki A1). TALLY now 29 LIVE. All off spawn-allowlist until T-0020 C3.
+- REMAINING staged hires: NONE. The full 2026-06-18 remaining-agent run is complete -- all 12 staged agents (Wave 1 + Wave 2) are live, plus Designer (Tal) and Hila full-track earlier the same day. Next agents are future-phase only (none currently approved to hire).
 - CROSS-AGENT FLAG: Luci + Erez frontmatter pins claude-opus-4-8 while body says Sonnet-default; reconcile (possible wider model-config audit).
 - Systemic at certification: RL-9/10/11 boundary-text gap across most role files (batch-fixable); Ido/Gal/Shir share a Bash over-permission flag (T-0020).
