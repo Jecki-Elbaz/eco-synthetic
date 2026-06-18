@@ -73,15 +73,27 @@ Create `.env` in the project (gitignored from step 1):
 - `CLAUDE_CODE_OAUTH_TOKEN=` (if running headless / the bridge).
 Never paste these anywhere tracked.
 
-## 8. Google account + delegated access (no login sharing)
+## 8. Google account + delegated access (no login sharing) -- email INCLUDED in phase 1
 1. Confirm/create `shelly.synthetic.org@gmail.com`.
 2. From your PERSONAL Google account, SHARE into Shelly's account:
-   - Calendar: share with `shelly.synthetic.org@gmail.com`, permission "Make changes to events"
-     (needed for calendar optimization).
+   - Calendar: share with `shelly.synthetic.org@gmail.com`, permission "Make changes to events".
    - Drive: share only the specific folders she needs (Viewer, or Editor where she must write).
-3. In the project, connect the Google Calendar / Drive MCP connectors authenticating AS
-   `shelly.synthetic.org@gmail.com` (OAuth) -- so she sees only what you shared.
-4. Do NOT share your password or log her in as you. Sending email stays a later, separately-gated step.
+3. Email access (phase 1) -- path depends on your account type:
+   - CONSUMER Gmail (@gmail.com): delegation does not grant programmatic API access to a delegate,
+     so use the automation-friendly equivalent:
+     (a) READ: your Gmail -> Settings -> Forwarding and POP/IMAP -> add forwarding to
+         `shelly.synthetic.org@gmail.com` -> confirm the code. (Optional: a filter so only relevant
+         mail forwards.)
+     (b) SEND AS YOU: in Shelly's Gmail -> Settings -> Accounts -> "Send mail as" -> add your
+         address -> verify. Shelly then reads via her own mailbox API and can send as you (gated).
+     (c) Browser delegation (optional, human-in-loop only): your Gmail -> Settings -> Accounts and
+         Import -> "Grant access to your account" -> add Shelly's account.
+   - GOOGLE WORKSPACE: real delegation/API is available -- use mailbox delegation or domain-wide
+     delegation with Gmail scopes so Shelly's runtime reads/sends on your mailbox via API.
+4. In the project, connect Google Calendar / Drive / Gmail MCP connectors authenticating AS
+   `shelly.synthetic.org@gmail.com` (OAuth) -- she sees only what you shared/forwarded.
+5. Do NOT share your password or log her in as you. READING is set up now; every SEND stays a
+   per-action owner-gated step (no autonomous sending until you grant it via the earned-autonomy ledger).
 
 ## 9. Telegram bot
 - Reuse the existing Shelly bot: put its token in the project `.env` (step 7). After B3 verifies the
