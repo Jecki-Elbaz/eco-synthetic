@@ -17,7 +17,8 @@ non-shell agents named below. Every spawn is logged to memory/log.md.
 - Dalia (Q&G)          -- Read, Write, Edit
 - Lital (CFO)          -- Read, Write, Edit
 - Eyal (Legal)         -- Read, Write, Edit
-- Noam (Product)       -- Read, Write, Edit
+- Perry (Product)      -- Read, Write, Edit
+- Ido (VP R&D)         -- Read, Write, Edit (no Bash; removed at go-live 2026-06-17). Moved DENIED -> PERMITTED, owner A1 2026-06-18 (T-0030).
 - Assaf (Op-Ex)        -- Read, Write, Edit
 - Luci (Devil's Adv.)  -- Read, Write, Edit
 - Erez (Investor)      -- Read, Write, Edit, WebSearch, WebFetch
@@ -25,7 +26,6 @@ non-shell agents named below. Every spawn is logged to memory/log.md.
 - Rambo (Security)     -- Read, Write, Edit, Grep, Glob, WebFetch
 
 ## DENIED (hold Bash -- shell risk)
-- Ido (VP R&D)         -- Bash. NOTE: bash may be excess for a planning role; flagged to Rambo for trim review.
 - Gal (Lead Dev)       -- Bash required (code execution, tests, build).
 - Shir (DevOps)        -- Bash required (pipeline, deploy/rollback, infra).
 
