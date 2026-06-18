@@ -73,27 +73,34 @@ Create `.env` in the project (gitignored from step 1):
 - `CLAUDE_CODE_OAUTH_TOKEN=` (if running headless / the bridge).
 Never paste these anywhere tracked.
 
-## 8. Google account + delegated access (no login sharing) -- email INCLUDED in phase 1
-1. Confirm/create `shelly.synthetic.org@gmail.com`.
-2. From your PERSONAL Google account, SHARE into Shelly's account:
-   - Calendar: share with `shelly.synthetic.org@gmail.com`, permission "Make changes to events".
-   - Drive: share only the specific folders she needs (Viewer, or Editor where she must write).
-3. Email access (phase 1) -- path depends on your account type:
-   - CONSUMER Gmail (@gmail.com): delegation does not grant programmatic API access to a delegate,
-     so use the automation-friendly equivalent:
-     (a) READ: your Gmail -> Settings -> Forwarding and POP/IMAP -> add forwarding to
-         `shelly.synthetic.org@gmail.com` -> confirm the code. (Optional: a filter so only relevant
-         mail forwards.)
-     (b) SEND AS YOU: in Shelly's Gmail -> Settings -> Accounts -> "Send mail as" -> add your
-         address -> verify. Shelly then reads via her own mailbox API and can send as you (gated).
-     (c) Browser delegation (optional, human-in-loop only): your Gmail -> Settings -> Accounts and
-         Import -> "Grant access to your account" -> add Shelly's account.
-   - GOOGLE WORKSPACE: real delegation/API is available -- use mailbox delegation or domain-wide
-     delegation with Gmail scopes so Shelly's runtime reads/sends on your mailbox via API.
-4. In the project, connect Google Calendar / Drive / Gmail MCP connectors authenticating AS
-   `shelly.synthetic.org@gmail.com` (OAuth) -- she sees only what you shared/forwarded.
-5. Do NOT share your password or log her in as you. READING is set up now; every SEND stays a
-   per-action owner-gated step (no autonomous sending until you grant it via the earned-autonomy ledger).
+## 8. Google access -- project-scoped self-hosted connector (Option 1), email INCLUDED in phase 1
+
+The built-in claude.ai Google connector is tied to your Anthropic account and holds ONE Google
+account at a time -- so Eco's company Google account would collide with Shelly's. Option 1 (owner
+A1 2026-06-18) uses a PROJECT-SCOPED self-hosted MCP server signed in as Shelly's own account,
+keeping you on a single Claude plan. Server: `taylorwilsdon/google_workspace_mcp` (MIT;
+Rambo gate review 2026-06-18 CLEARED-WITH-CONDITIONS; Eyal legal PENDING).
+
+8a. From your PERSONAL Google account, SHARE into `shelly.synthetic.org@gmail.com`:
+    - Calendar: share with "Make changes to events".
+    - Drive: share only the specific folders she needs (Viewer, or Editor where she must write).
+8b. Email (consumer Gmail): (a) forward your Gmail to `shelly.synthetic.org@gmail.com` (Settings ->
+    Forwarding and POP/IMAP -> add + confirm); (b) in Shelly's Gmail add your address under
+    "Send mail as" -> verify. She reads forwarded mail and drafts replies; SENDING is owner-gated.
+8c. Create a free Google Cloud OAuth client (signed in as Shelly's account):
+    - console.cloud.google.com -> new project "Shelly Assistant".
+    - APIs & Services -> Library -> enable Google Calendar API, Google Drive API, Gmail API.
+    - OAuth consent screen -> External -> add `shelly.synthetic.org@gmail.com` as a Test user.
+    - Credentials -> Create -> OAuth client ID -> Application type "Desktop app" -> download JSON.
+8d. Put the client id/secret in `.env` AND set them as system env vars so Claude Code sees them:
+    `setx GOOGLE_OAUTH_CLIENT_ID "..."` and `setx GOOGLE_OAUTH_CLIENT_SECRET "..."` (restart terminal).
+8e. The project ships `.mcp.json` (server `google_workspace`, services gmail+calendar+drive) and a
+    `.claude/settings.json` deny-list that BLOCKS every write/send tool and ALLOWS reads +
+    `draft_gmail_message`. Run `/mcp` in Claude Code in the project to complete the OAuth sign-in
+    as Shelly's account. Verify with a read ("list my next calendar events").
+8f. Do NOT share your password. READ + DRAFT are enabled; every SEND/write stays owner-gated.
+    Residual (tighten later): because drafting needs a compose scope, granted OAuth scopes are
+    broader than strict-read; the tool deny-list is what enforces no-send/no-write in Claude Code.
 
 ## 9. Telegram bot
 - Reuse the existing Shelly bot: put its token in the project `.env` (step 7). After B3 verifies the
