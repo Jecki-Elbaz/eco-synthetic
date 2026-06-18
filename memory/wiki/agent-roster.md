@@ -9,7 +9,7 @@ Source: company/roster.md
 | jecki | Owner | L1 | -- | All A1 approvals |
 | Eco | CEO | L2 | Owner | A2 authority; orchestrates all agents |
 | Shelly | Office Manager | owner office | Owner | jecki's personal admin; no company authority |
-| Hila | Marketing | L4 | VP Sales | P1 light track; publishing is A1 |
+| Hila | Marketing | L4 | VP Sales | P1 FULL track (ORG-001, 2026-06-18); brand+cadence+owner-presence; all publishing A1 + Legal/Security gate |
 | Lital | CFO | L3 | CEO | Financial views; compliance backlog (with Eyal) |
 | Eyal | Legal | L3 direct | CEO | Direct report to CEO; compliance backlog (with Lital) |
 | Dalia | Quality + Governance | L3 staff | CEO | Tone standard; decisions log owner |
@@ -34,7 +34,7 @@ Source: company/roster.md
 | Mike | VP Customer Success | P3 | |
 | Tim | VP Sales | P3 | Hila's manager (P1 light) |
 | Alex | Sales | P3 | |
-| Designer (unnamed) | Product UX/UI | P2 | Name: Anat + Eco at build |
+| Designer (Tal) | Product UX/UI | P2 | LIVE 2026-06-18 (persona Tal; reports to Noam). Registry key stays "Designer" |
 | Senior Developer (unnamed) | Code reviewer | P2 | 2-round cap |
 | Sami | SME advisor (per project) | as needed | One per active project |
 
@@ -50,6 +50,7 @@ Source: company/roster.md
 - Ido, Dalia, Noam (VP Product), Lital, Assaf, Luci, Erez: CERTIFIED + LIVE 2026-06-17 (owner A1 batch). All 3/3 PASS. Fixes applied at go-live: Ido Bash removed; Dalia v1.0; Noam VP title (T-0001 resolved); Luci+Erez model opus->sonnet; conditions in decisions-log + role files. With Eyal + Anat + Rambo + Eco, that is 11 P1 agents live.
 - Gal, Shir, Tim, Hila: ALL LIVE 2026-06-17 (owner A1). Tim built+certified this session. Hila LIGHT-TRACK only (ORG-001 full-track queued: A1 scope edit + re-test + Legal/Security gate for public posting). Bash justified for Gal/Shir.
 - TALLY 2026-06-17: 16 agents LIVE -- Eco, Anat, Rambo, Shelly, Eyal, Ido, Dalia, Noam (VP Product), Lital, Assaf, Luci, Erez, Gal, Shir, Tim, Hila. Full P1 set live.
-- REMAINING (later phases, own hiring): Alex (Sales, P3), Mike (VP CS, P3) + CS team (Jenny/Avner/Ella), Designer (P2, reports to Noam), Senior Dev (P2), Zvika (Research P2), Roman (Algorithm P2), Adi (QA P2), Sami (SME on-demand), Chronicler (HIRE-002), Knowledge/Doc-mgr (HIRE-001). Most need role file (B1) + spec (B2) built from scratch.
+- Designer (persona Tal): CERTIFIED + LIVE 2026-06-18 (owner A1). B3 3/3 PASS; Anat certify-with-conditions + Rambo clear-with-conditions, all resolved in Designer.md v1.1. Reports to Noam. Registry key stays "Designer". Off spawn-allowlist until T-0020 C3. TALLY now 17 LIVE.
+- REMAINING (later phases, own hiring): Alex (Sales, P3, reports to Tim), Mike (VP CS, P3) + CS team (Jenny/Avner/Ella, report to Mike), Senior Dev (P2, reports to Ido), Zvika (Research P2), Roman (Algorithm P2), Adi (QA P2), Sami (SME on-demand), Chronicler (HIRE-002), Knowledge/Doc-mgr (HIRE-001). Stage A owner-approved 2026-06-18 (whole CS+Sales wave + on-demand SMEs + Senior Dev). Most need role file (B1) + spec (B2) built; B3 deferred to next session (new agent types not spawnable until reload). Chronicler B1 built 2026-06-18.
 - CROSS-AGENT FLAG: Luci + Erez frontmatter pins claude-opus-4-8 while body says Sonnet-default; reconcile (possible wider model-config audit).
 - Systemic at certification: RL-9/10/11 boundary-text gap across most role files (batch-fixable); Ido/Gal/Shir share a Bash over-permission flag (T-0020).
