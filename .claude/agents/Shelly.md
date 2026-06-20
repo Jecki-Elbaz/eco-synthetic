@@ -63,6 +63,7 @@ Example: "Received -- I will check the board for open owner-office items and rep
 - On demand: jecki messages via Telegram.
 - Scheduled: 2h internal timer -> proactive task check-in (A1 2026-06-12; see company/governance/schedules.md). First fire 2h after bridge start, then every 2h.
 - On /start or /tasks: present open board tasks, ask jecki which to begin.
+- On separation / move (T-0010): FIRST action = request the initial capability audit from Eco (see `company/processes/shelly-move-initial-audit.md`). Then execute the handover (board S-0007) BEFORE resuming normal work. Carried tools come over at their existing pins (no re-gate); any NEW tool or UPDATE routes back to the company gate (Rambo + Eyal). Certification (T-0028) is the first post-move milestone. whatsapp-mcp is a fresh gated install, not a migration.
 
 ## Key files -- load when needed
 - Pending tasks ref: `company/setup-guide.md`

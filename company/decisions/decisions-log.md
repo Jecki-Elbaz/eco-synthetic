@@ -605,3 +605,92 @@ Format per entry:
 - **Phase 1 dependency:** Phase 1 (internal security audit = Rambo + the certified Red Team) requires Boaz live, so Phase 1 does NOT run this session. Eco emits a continuation prompt for the next session to reload-certify Boaz, then run Phase 1.
 - **Rationale:** Owner's baked-in decision (audit plan) to hire a permanent red team FIRST, before the internal security audit, so the audit has an adversarial leg. Least-privilege + the load-bearing hard boundary keep an adversarial agent safe to hold.
 - **Files affected:** .claude/agents/RedTeam.md (new, v0.1, PENDING), company/hr/competency/RedTeam-spec.md (new), company/processes/red-team-charter.md (new), company/audits/redteam/README.md (new, write-path anchor), company/decisions/decisions-log.md (this entry). No activations.
+
+## 2026-06-18 -- Shelly move: initial audit accepted, handover, cert sequencing, cross-repo channel (A1)
+
+- **Author / gate:** jecki (A1, 2026-06-18); Eco produced the audit.
+- **Decision:**
+  1. **Initial audit accepted** as the handover plan: company/processes/shelly-move-initial-audit.md. Model = ONE-TIME MIGRATION (static assets ported once, then Shelly self-hosts) vs STANDING CROSS-PROJECT SERVICES (Security gate/Rambo, Legal/Eyal, HR cert/Anat, spend A1 -- never self-hosted, requested back from the company).
+  2. **Handover tracked:** board S-0007 (Eco/Shelly, due on move, T-0010). Shelly's role file now triggers the audit as her FIRST action on move.
+  3. **Certification sequencing (A1):** T-0028 (Anat B4 + Rambo B5) is Shelly's FIRST post-move milestone, run in the destination repo right after the audit + handover.
+  4. **Communication + cross-repo execution (A1):** Claude Code agents are repo-scoped -- there is NO native cross-repo agent messaging. Approved channel: (a) owner-relay + a shared async drop-folder under C:\Users\Jecki\DEV\shared\ (no build) for requests/verdicts; (b) BEHAVIORAL cert/audit (B3/B5) runs with the company auditor agents operating INSIDE Shelly's destination repo (visiting auditors -- a session opened in her repo with their role files available), since an agent can only be behaviorally tested in its own runtime; (c) STATIC reviews (Legal terms, gate paperwork) run on snapshots Shelly exports to the shared folder. A real-time inter-bridge channel (two bots sharing an owner group / relay queue) is a later Shir build (P2). Eco "coordinates"; the owner (or a session opened in her repo) is the execution vehicle.
+- **Rationale:** Separation must keep company security/legal/HR oversight Shelly cannot self-host; the transport had to be made explicit (owner question) because nothing crosses repos automatically.
+- **Files affected:** company/processes/shelly-move-initial-audit.md (added communication-channel section), memory/board.md (S-0007, T-0028 sequenced), .claude/agents/Shelly.md (on-move trigger), company/decisions/decisions-log.md (this entry).
+
+## 2026-06-20 -- Shelly separation EXECUTED (owner-reported); eco-synthetic-side records closed (mirror)
+
+- **Author / gate:** jecki (owner, A1) reported the migration complete; Eco records the eco-synthetic side. This is the company-side half of the dual-log requirement (the founding entry lives in the Shelly repo's own log).
+- **Decision / event:** Shelly's migration to her standalone repo C:\Users\Jecki\DEV\projects\Shelly is COMPLETE (T-0010 executed). S-0007 (handover) and T-0010 (separation assessment) marked done. Owner-office board rows + memory are migrated to the Shelly repo; eco-synthetic no longer hosts owner-office.
+- **Verify-before-claim caveat:** this eco-synthetic session is project-scoped and CANNOT read the Shelly repo. The following are owner-reported but NOT verifiable from here, flagged on the board for confirmation in a Shelly-repo session: (1) whether her 8 shortlist tools actually installed in her repo at their pins; (2) whether T-0028 certification (Anat B4 + Rambo B5) actually ran there. If cert did not run, it remains her first milestone.
+- **Standing services unchanged:** Security (Rambo) / Legal (Eyal) / HR cert (Anat) / spend (jecki A1) still route back to eco-synthetic via owner-relay + shared/ drop-folder (no native cross-repo messaging).
+- **Files affected:** memory/board.md (owner-office migration note; S-0007 + T-0010 done; T-0028 confirm-in-Shelly-repo), company/governance/gate-register.md (Shelly shortlist marked migrated), company/decisions/decisions-log.md (this entry).
+
+## 2026-06-20 -- Globalize 3 tools to workspace scope (A1); governance G1-G5 applied
+
+- **Author / gate:** jecki (owner A1); Rambo security opinion 2026-06-20; Eco coordination.
+- **Decision:** Promote caveman (SHA 25d22f8), hebrew-rtl-best-practices (skills-il v1.3.0), and
+  Hebcal MCP (@hebcal/mcp@0.10.3, fully local) from eco-synthetic project scope to GLOBAL
+  (workspace/user) scope -- available to all projects under C:\Users\Jecki\DEV\. The Shelly repo now
+  inherits caveman + hebrew-rtl without a per-repo copy.
+- **Stays scoped (NOT global):** finance/VAT/employee-refund skills, LinkedIn strategy, fact-checker,
+  Kol Zchut MCP (external), Sefaria MCP (CC-BY-NC personal-use), whatsapp-mcp (unofficial/A1).
+- **Why only these 3 (Rambo):** benign static skills + a fully-local MCP. The scoped ones either
+  lose an enforceable boundary at global scope (finance/legal orientation), widen the network attack
+  surface (external MCPs), or violate license/conditions (Sefaria NC, whatsapp unofficial).
+- **A-level:** A1 -- promoting tool scope to global is a blast-radius increase (every project incl.
+  future ones), structurally like re-scoping an agent.
+- **Governance preconditions applied (G1-G5):** global CLAUDE.md (C:\Users\Jecki\DEV\.claude\) gained
+  a "Global Tools & Security" section (gate-first; pin-everything; no-auto-update; project-overrides-
+  global; caveman scope-bleed rule). eco-synthetic gate-register gained a "Global-scope tools"
+  section; security-baseline gained a "Global tool registry" section.
+- **Install (PENDING, owner terminal, byte-exact into ~/.claude):** caveman manual SKILL.md copy at
+  the pinned SHA; hebrew-rtl pinned skills-il CLI at global scope; Hebcal MCP pinned @0.10.3 in
+  user-level settings. No-auto-update; any version bump = fresh Rambo review.
+- **Files affected:** C:\Users\Jecki\DEV\.claude\CLAUDE.md (Global Tools & Security section),
+  company/governance/gate-register.md (Global-scope tools section), company/governance/security-baseline.md
+  (Global tool registry), company/decisions/decisions-log.md (this entry).
+
+## 2026-06-21 -- Global tools INSTALLED + verified (completes the 2026-06-20 A1)
+
+- **Author / gate:** jecki (owner ran the installs); Eco verified on the filesystem.
+- **Event:** all 3 globally-scoped tools installed and verified at user scope:
+  caveman (~/.claude/skills/caveman/SKILL.md, 5009 bytes, byte-exact from pinned SHA via curl.exe);
+  hebrew-rtl-best-practices (~/.claude/skills/hebrew-rtl-best-practices/, via pinned skills-il CLI);
+  Hebcal MCP (~/.claude.json user config, npx -y @hebcal/mcp@0.10.3, pinned). caveman +
+  hebrew-rtl now appear as available skills harness-wide.
+- **Install notes (lessons):** the first attempt failed because bash syntax was run in PowerShell
+  (`curl` alias != curl.exe; `CI=true X` inline-env not valid; `--`/`-y` eaten by PowerShell). Fixes:
+  curl.exe for the download; `$env:CI="true"` then npx; `claude mcp add-json` to avoid the `--`/`-y`
+  parsing. The optional find-skills helper auto-suggested by the CLI failed to clone (auth) and was
+  correctly NOT adopted.
+- **Standing:** no-auto-update holds -- any version bump to these is a fresh Rambo review (global scope
+  = hits every project). gate-register "Global-scope tools" status line updated to INSTALLED.
+- **Files affected:** company/governance/gate-register.md (status -> installed); ~/.claude/skills/*
+  + ~/.claude.json (outside the repo; owner machine).
+
+## 2026-06-21 -- Tool-library catalog created + formation/compliance batch gated (A2)
+
+- **Author / gate:** jecki (owner -- "register + a starter batch"); Eco coordination; Rambo + Eyal reviews.
+- **Decision:**
+  1. **Tool-library catalog** created at company/governance/tool-library-catalog.md -- a living index of
+     the whole sources/ library (~14 MCPs + ~100 skills + catalogs + guides) with per-item status
+     (GLOBAL / ADOPTED / GRANTED / STAGED / SHELF / PAID / REJECTED) and target agent. Curated by
+     Yossi (Training) + Assaf (OE); gate-register stays the adoption record of truth. The rest of the
+     library remains SHELF (pre-vetted, needs-driven adoption) -- NOT bulk-adopted, by design.
+  2. **Starter batch GRANTED (A2)** for the live company-formation + compliance workstream
+     (Eyal/Lital/Eco): Startup Toolkit (developer-tools@v1.2.0-israeli-startup-toolkit), Legal research
+     (security-compliance@v1.3.0-hebrew-legal-research), Privacy shield (security-compliance@v1.4.1-
+     israeli-privacy-shield, PARTIAL -- confirm install cmd). Rambo CLEAR (gate-review-formation-batch-
+     rambo.md); Eyal CLEAR via skills-il pre-clearance. eco-synthetic-scoped; install PENDING (owner
+     terminal, project scope).
+- **Boundary (all 3, non-negotiable):** ORIENTATION / RESEARCH SUPPORT ONLY -- not authoritative
+  legal/financial advice; entity formation, IIA filings, sec.102 plans, privacy determinations need
+  qualified counsel/accountant sign-off (Eyal=legal, Lital=finance). Verify AI citations vs primary
+  sources; version-currency re-checked at use (IIA/tax/Amendment-13 rules change); DPA before any real
+  personal-data use of Privacy shield.
+- **Rationale:** batch was chosen by live need (company formation + active compliance backlog), not by
+  trust score -- consistent with the needs-driven shelf policy. The catalog closes the gap where the
+  library was evaluated but not durably tracked.
+- **Files affected:** company/governance/tool-library-catalog.md (new), company/governance/gate-register.md
+  (formation-batch section), company/governance/gate-review-formation-batch-rambo.md (new, Rambo),
+  memory/board.md (catalog-ownership task).

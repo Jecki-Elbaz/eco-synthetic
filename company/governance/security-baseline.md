@@ -231,3 +231,21 @@ Rules:
 | date | scope | result | notes |
 |------|-------|--------|-------|
 | 2026-06-18 | Shelly shortlist batch (8 tools): 5 skills-il skills + Kol Zchut/Hebcal/Sefaria MCPs | CLEAR-WITH-CONDITIONS | Skills 1-5 CLEAR (SKILL.md scanned, clean). MCPs PARTIAL-CLEAR with mandatory pins: Kol Zchut @1.0.1, Hebcal @0.10.3 (BSD-2, fully local, zero egress), Sefaria SHA b8ceef7 (no tags -- SHA pin is a hard blocker; CC-BY-NC content = owner personal/orientation use only + attribution). Full report: company/governance/gate-review-shelly-shortlist-rambo.md |
+
+---
+
+## Global tool registry (workspace/user scope)
+
+Owner A1 2026-06-20. Rambo owns the security of globally-installed tools (available to all projects
+under C:\Users\Jecki\DEV\, installed at user/global scope, e.g. ~/.claude). The no-auto-update + pin
+standard above applies with HIGHER force at global scope: an unreviewed update affects every project
+simultaneously. Source of truth for the rows: gate-register.md "Global-scope tools" section.
+
+Currently global (A1 2026-06-20):
+- caveman (skill, SHA 25d22f8) -- scope-bleed rule documented in the global CLAUDE.md.
+- hebrew-rtl-best-practices (skill, skills-il v1.3.0).
+- Hebcal MCP (@hebcal/mcp@0.10.3, fully local).
+
+Rule: promoting any further tool to global scope is an A1 decision + a Rambo blast-radius review.
+Externally-hosted MCPs are NOT cleared for global scope by default (widened network attack surface).
+Per-project red lines override global tools.
