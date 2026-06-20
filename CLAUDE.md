@@ -82,4 +82,4 @@ Rules:
   model without A1 + privacy review.
 - Drive: use for meeting transcripts, proposals, spec docs flowing into /ingest.
 - Calendar: read schedule context for task timing and meeting prep only.
-- Gmail: not connected to this project. Shelly Gmail monitoring is deferred.
+- Gmail: not connected to this project.
