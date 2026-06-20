@@ -43,9 +43,9 @@ Status (2026-06-12): initial stub. Eyal and Lital to fill in detail.
 
 - Status: pending -- account created (eco.synthetic.org@gmail.com, 2026-06-12); migration blocked on domain approval
 - Required by: before first external email or client contact
-- Owner: Shelly (execution, S-0002) + Eco (coordination)
-- Notes: When domain is approved and purchased by Shelly (S-0002), migrate eco.synthetic.org@gmail.com to eco@eco-synthetic.[tld]; update all MCP connector auth and the gate-register.
-- Action: Shelly tracks domain purchase in S-0002; Eco flags this item when domain is confirmed.
+- Owner: Eco (coordination + execution; was Shelly via S-0002, but Shelly separated 2026-06-20 -- now an external customer, see company/customers/shelly/profile.md -- so reassign execution via Eco/owner)
+- Notes: When domain is approved and purchased, migrate eco.synthetic.org@gmail.com to eco@eco-synthetic.[tld]; update all MCP connector auth and the gate-register.
+- Action: Eco tracks domain purchase (formerly S-0002) and flags this item when domain is confirmed.
 
 ## Open items (Eyal + Lital to resolve)
 

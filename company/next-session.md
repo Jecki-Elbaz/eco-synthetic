@@ -16,7 +16,7 @@ Download all `eco-synthetic-*.md` files and the `agents/` role files, then add t
 - eco-synthetic-setup-guide.md
 - eco-synthetic-build-log.md
 - eco-synthetic-next-session.md (this file)
-- agents/Eco.md, agents/Shelly.md, agents/Hila.md
+- agents/Eco.md, agents/Hila.md (agents/Shelly.md was in the original package; Shelly separated 2026-06-20, now an external customer -- see company/customers/shelly/profile.md)
 
 ---
 
