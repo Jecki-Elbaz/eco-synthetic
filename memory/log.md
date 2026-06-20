@@ -8,6 +8,8 @@ Format per entry:
 YYYY-MM-DD HH:MM | agent | action | detail | tokens (if known)
 ```
 
+2026-06-21 | Rambo | gate-review batch | 3 skills-il formation+compliance skills reviewed (startup-toolkit, hebrew-legal-research, israeli-privacy-shield). CLEAR x2, PARTIAL-CLEAR x1. Files: company/governance/gate-review-formation-batch-rambo.md; gate-register.md updated with Rambo verdicts.
+
 ---
 
 2026-06-12 | Claude Code (jecki session) | scaffold | Repo scaffolded per company/repo-structure.md. All folders, infrastructure files, company docs, agent role files placed. See company/build-log.md Phase 1 entry for full details. | --
