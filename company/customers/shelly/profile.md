@@ -14,8 +14,8 @@ ASCII only. No raw owner-personal data in this file.
 - Primary contact / account: shelly.synthetic.org@gmail.com
 - Entity type: internal-spinout -> external customer (owner office), separated from the company repo/runtime
 - Relationship owner (Eco-Synthetic side): Eco (CEO orchestrator); Lital (CFO) for financials; Mike (VP CS) when active
-- Status: prospect (relationship scaffolded; activates when the separation executes -- see B3/B4 of the plan)
-- Onboarded: pending (provision Shelly's Google account when calendar management goes live)
+- Status: active (separation executed 2026-06-20; Shelly runs in her own standalone project)
+- Onboarded: 2026-06-20 (standalone project live on her own Telegram bot; Google connector in setup)
 
 ## Entitled services
 Shelly may consume the following from Eco-Synthetic (each request logged; gates below apply):
@@ -66,3 +66,6 @@ Routine, pre-cleared service types flow over the agreed channel without per-call
 ## Change history (append-only)
 - 2026-06-17 -- created -- owner (A1, via approved Shelly-separation plan). Relationship scaffolded
   while Shelly is still live in-repo; status stays "prospect" until the separation executes.
+- 2026-06-20 -- activated -- owner (A1). Separation executed (Phase B4): Shelly decommissioned from
+  the eco-synthetic repo/bridge and now runs in her own standalone project on her own Telegram bot.
+  Status -> active.

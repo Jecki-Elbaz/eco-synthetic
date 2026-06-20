@@ -10,7 +10,6 @@ Decision logged: decisions-log.md 2026-06-12 -- scheduled wake-ups approved (A1:
 | Agent | Task | Cadence | Status | Approved by | Approved date | Last run |
 |-------|------|---------|--------|-------------|---------------|----------|
 | Eco | Queue review + dispatch follow-up + wiki update on task progress/completion | Every 2h | APPROVED | jecki (A1) | 2026-06-12 | - |
-| Shelly | Owner queue triage + reminders sweep | Every 2h | APPROVED | jecki (A1) | 2026-06-12 | - |
 
 ---
 

@@ -52,8 +52,8 @@ Same governance concepts across all three surfaces (gates, logging, A1 triggers,
 the measures differ between a company and a personal assistant.
 
 - ECO (company): all T-/HIL-/RD-/RAM- queues below; A2 by Eco, A1 to owner. Token cost = company ops.
-- SHELLY (owner office -> customer): S- queues below; her sub-agent builds are S-0007..S-0014.
-  Customer file: company/customers/shelly/profile.md. Status: prospect (activates on separation).
+- SHELLY (external customer, separated 2026-06-20): her work + S- queues now live in her own
+  standalone project, not this repo. Customer file: company/customers/shelly/profile.md. Status: active.
 - INTERFACE (Shelly <-> Eco): logged service requests; gates on budget/security/risk = A1.
   Request log: company/customers/shelly/requests-log.md. No requests yet.
 
@@ -61,22 +61,10 @@ the measures differ between a company and a personal assistant.
 ALL TASK QUEUES (by group)
 =====================================================================
 
-OWNER-OFFICE (Shelly)
-- S-0001 in-progress  Operate owner Telegram channel        due recurring
-- S-0002 open         Domain check + recommendation         due ASAP
-- S-0003 blocked      Company email + drive after domain    due after S-0002
-- S-0004 in-progress  Owner queue triage + reminders        due recurring
-- S-0005 open         WhatsApp adoption evaluation          due later
-- S-0006 in-progress  Owner dashboard surfacing (full)      due see DASH-001
-- S-0006a in-progress Surface pending approvals in dash     due with dash build
-- S-0007 open         Adopt meeting-prep sub-agent (cleared) due pre-migration
-- S-0008 open         Build inbox-triage sub-agent          due pre-migration
-- S-0009 open         Build social-scan sub-agent           due pre-migration
-- S-0010 open         Build research sub-agent              due pre-migration
-- S-0011 open         Build calendar-optimizer sub-agent    due pre-migration
-- S-0012 open         Build morning-brief sub-agent         due pre-migration
-- S-0013 open         Build meeting-summary sub-agent       due pre-migration
-- S-0014 open         Build action-item-follow-up sub-agent due pre-migration
+OWNER-OFFICE (Shelly) -- SEPARATED 2026-06-20
+- Shelly is now an external Eco-Synthetic customer running in her own standalone project.
+  Her task queue (S-0001..S-0014) moved with her and is no longer tracked here.
+  Interface requests (if any) appear under company/customers/shelly/requests-log.md.
 
 COMPANY (Eco)
 - T-0001 in-progress  Go-live structure + R&R review        due immediate

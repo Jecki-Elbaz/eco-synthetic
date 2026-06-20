@@ -1,6 +1,6 @@
 # Eco-Synthetic: Roster and Consolidation (v2.2)
 
-Current source of truth for structure. Full per-agent role files regenerate from the template as each agent is built; Eco, Shelly, Hila, and Designer are drafted in `.claude/agents/`.
+Current source of truth for structure. Full per-agent role files regenerate from the template as each agent is built; Eco, Hila, and Designer are drafted in `.claude/agents/`. (Shelly separated into her own standalone project 2026-06-20 -- she is now an external party; see company/customers/shelly/profile.md.)
 
 > v2.2 changes: Hila reconciled to P1 (light track); Designer added to the table (role file drafted); Pending Additions refreshed.
 
@@ -34,7 +34,6 @@ Current source of truth for structure. Full per-agent role files regenerate from
 | Ella | Customer Training | L4 | P3 | VP CS |
 | Alex | Sales | L4 | P3 | VP Sales |
 | Hila | Marketing | L4 | P1 (light) | VP Sales |
-| Shelly | Office Manager | owner office | P1 | Owner |
 | Luci | Devil's Advocate | owner office | P1 | Owner |
 | Erez | Investor (on-demand) | owner office | P1 created | Owner |
 | Sami | SME advisor (on-demand, per project) | advisory | as needed | invoking function |

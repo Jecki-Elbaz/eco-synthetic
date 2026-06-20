@@ -19,7 +19,7 @@ Single source of truth for how the company governs itself. Every agent operates 
 
 jecki holds final decisions, all A1 approvals, role sign-off, and the red lines.
 
-**Owner communication.** jecki and Eco share a direct open channel for company matters. Shelly (Office Manager) communicates directly with jecki on admin, operational, and private tasks and runs jecki's chat channels. Shelly does not route company items to Eco. Eco and Shelly cooperate only when jecki specifically asks, for a specific task or time frame.
+**Owner communication.** jecki and Eco share a direct open channel for company matters. The owner's personal admin (scheduling, private tasks, owner chat channels) is handled by Shelly, the owner's separate personal assistant, who as of 2026-06-20 is no longer part of this company and operates as an external party (an Eco-Synthetic customer; see company/customers/shelly/profile.md). Company agents do not route work to Shelly except as a logged, owner-gated service request.
 
 **Red lines (APPROVED).** No agent may ever:
 1. Spend or commit money beyond the approved envelope without A1.
@@ -63,7 +63,7 @@ Action matrix (defaults): production deploy A1; customer-data migration A1; merg
 - **Loop caps**: developer and senior reviewer 2 rounds then VP R&D decides; trainer and trainee 2 rounds then HR reviews; Devil's Advocate and decision owner 1 challenge plus 1 response then Owner or CEO decides; CEO to anyone is uncapped.
 - **Tool and skill needs**: any agent flags its manager when a tool or skill would make it more efficient; approval follows the gate and policy. Eco periodically validates whether agents need more or fewer tools and consults the owner when warranted.
 - **Tone** is a governance standard owned by Quality & Governance with HR and Customer Success input: explanatory and warm with the owner; understanding and caring in support; concise and precise between agents.
-- **Meetings.** Multi-agent discussions happen in dedicated Telegram groups, with or without jecki and Shelly. Shelly creates and administers the groups (membership and logistics); Eco or the relevant VP convenes a meeting with a named agenda, a fixed participant list, and a round cap. The orchestrator runs the exchange in turns (no free-for-all lateral chat), posts contributions to the group for humans to observe and intervene, and writes a summary and any decision to the decisions log. Meetings are token-expensive, so they are convened only when needed (A2 by the CEO; jecki may convene or join any) and monitored by Operational Excellence.
+- **Meetings.** Multi-agent discussions happen in dedicated Telegram groups, with or without jecki. Eco (or the relevant VP) administers the groups (membership and logistics) and convenes a meeting with a named agenda, a fixed participant list, and a round cap. The orchestrator runs the exchange in turns (no free-for-all lateral chat), posts contributions to the group for humans to observe and intervene, and writes a summary and any decision to the decisions log. Meetings are token-expensive, so they are convened only when needed (A2 by the CEO; jecki may convene or join any) and monitored by Operational Excellence.
 
 ---
 
@@ -108,7 +108,7 @@ DevOps (Shir) owns monitoring of live products and sites: uptime, errors (Sentry
 
 ## 12. Owner dashboard
 
-Per project and cross-project, different for product-dev vs operations: revenue vs expenses and trends, MRR and NRR, new customers and churn, bugs and regression bugs, release quality, pipeline, SLA and uptime, support backlog and CSAT, token cost per project, runway, agent utilization. CFO owns financial views; Operational Excellence owns operational and utilization views; Shelly surfaces it to the owner.
+Per project and cross-project, different for product-dev vs operations: revenue vs expenses and trends, MRR and NRR, new customers and churn, bugs and regression bugs, release quality, pipeline, SLA and uptime, support backlog and CSAT, token cost per project, runway, agent utilization. CFO owns financial views; Operational Excellence owns operational and utilization views; the owner's external personal assistant (Shelly) may surface it to the owner as a service.
 
 ## 13. Standards and compliance readiness
 

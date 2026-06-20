@@ -7,7 +7,6 @@ flowchart TD
     ECO["Eco - CEO - L2 - P1"]
 
     subgraph OFFICE["Owner office"]
-      SHELLY["Shelly - Office Manager - P1"]
       LUCI["Luci - Devil's Advocate - P1"]
       EREZ["Erez - Investor - on-demand"]
     end
@@ -49,7 +48,6 @@ flowchart TD
     HUB[("Shared memory: board + log + KB")]
 
     OWNER --> ECO
-    OWNER --> SHELLY
     OWNER --> LUCI
     OWNER --> EREZ
     ECO --> DALIA
@@ -74,7 +72,6 @@ flowchart TD
     TIM --> ALEX
     TIM --> HILA
 
-    SHELLY <-.->|"owner admin"| OWNER
     OWNER <-.->|"company matters"| ECO
     LUCI -.->|"challenge (capped)"| ECO
     IDO <-.->|"requirements / feasibility"| NOAM

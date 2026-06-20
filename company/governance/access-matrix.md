@@ -16,7 +16,7 @@ This matrix is enforced by `CLAUDE.md` deny-list and `.claude/settings.json` too
 | `company/` (other) | **Restricted** | Eco, Dalia (Q&G), Anat (HR), Rambo (Security), Eyal (Legal), Lital (CFO) + role-relevant reads | Eco (A2), Dalia, Anat, Rambo, Eyal, Lital in their domains | All other agents: read-only, need-to-know context |
 | `company/governance/` | **Restricted** | Eco, Dalia, Rambo, Eyal | Dalia (access-matrix), Eyal (gate-register), Rambo (security baseline) | |
 | `memory/global/` | **Restricted** | Need-to-know only; Eco + relevant staff | Eco, relevant VP or staff with context | Never shared broadly without Eco approval |
-| `memory/owner-office/` | **Owner-only** | Shelly, jecki | Shelly only | Personal-task data; gitignored; all company agents (incl. Eco) denied read -- A3 hardening 2026-06-12 |
+| `memory/owner-office/` | **Retired** | jecki | -- | Migrated to Shelly's standalone project on her separation (2026-06-20); no longer used in this repo |
 | `memory/board.md` | **Company-shared** | All agents | Each agent writes to its own task rows | Cross-company task board |
 | `memory/log.md` | **Company-shared** | All agents | Each agent appends its own entries | Running activity log; append-only in practice |
 | `memory/wiki/` | **Company-shared** | All agents (need-to-know) | Eco (read/write, A3 autonomous -- no owner trigger for routine updates), Dalia, designated knowledge owners | Knowledge base; Obsidian-compatible |
@@ -31,8 +31,8 @@ This matrix is enforced by `CLAUDE.md` deny-list and `.claude/settings.json` too
 | `reports/daily-summaries/` | **Owner + CEO only** | jecki (owner), Eco | Eco (writes on each summary run) | Daily end-of-day summaries; filename format daily-summary-YYYY-MM-DD-HHMM.md; A1 required to grant any other agent read access |
 | `dashboards/` | **Restricted** | Lital (CFO), jecki | Assaf (OE templates), Lital (financial views) | Owner-facing views only |
 | `company/customers/` | **Restricted** | Eco, Lital (CFO), Mike (VP CS, when active), jecki | Eco, Mike (VP CS) in domain; Lital (financial fields) | Customer records + interface logs; serving agents read the specific record on demand to fulfil a logged request. Shelly is the first/reference customer (owner-office spinout). Added owner A1 2026-06-17 via the approved Shelly-separation plan. |
-| Google Drive (read-only) | External | Eco, Shelly, Claude Code | read via MCP; no write |
-| Google Calendar (read-only) | External | Eco (context), Shelly (scheduling) | read only; no create/edit |
+| Google Drive (read-only) | External | Eco, Claude Code | read via MCP; no write |
+| Google Calendar (read-only) | External | Eco (context) | read only; no create/edit |
 
 ---
 
