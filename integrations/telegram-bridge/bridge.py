@@ -103,13 +103,11 @@ if "ANTHROPIC_API_KEY" in os.environ:
 
 # ── Telegram tokens ───────────────────────────────────────────────────────────
 ECO_TOKEN: str = os.environ["ECO_TELEGRAM_BOT_TOKEN"]
-SHELLY_TOKEN: str = os.environ["SHELLY_TELEGRAM_BOT_TOKEN"]
+# Shelly has moved to her own project (projects/Shelly). Her token is not used here.
 
 # ── Models ────────────────────────────────────────────────────────────────────
 ECO_DEFAULT_MODEL = "claude-sonnet-4-6"
 ECO_ESCALATED_MODEL = "claude-opus-4-8"
-SHELLY_DEFAULT_MODEL = "claude-sonnet-4-6"
-SHELLY_ESCALATED_MODEL = "claude-sonnet-4-6"
 
 # ── Limits ────────────────────────────────────────────────────────────────────
 MAX_HISTORY_MESSAGES = 20
@@ -732,57 +730,35 @@ async def main() -> None:
     log.info("claude CLI detected: %s", check.stdout.strip())
 
     eco_prompt = load_agent_prompt("Eco")
-    shelly_prompt = load_agent_prompt("Shelly")
 
     eco_start, eco_tasks, eco_msg = make_handlers("eco", eco_prompt)
-    shelly_start, shelly_tasks, shelly_msg = make_handlers("shelly", shelly_prompt)
 
     eco_app: Application = ApplicationBuilder().token(ECO_TOKEN).build()
-    shelly_app: Application = ApplicationBuilder().token(SHELLY_TOKEN).build()
-
     eco_app.add_handler(CommandHandler("start", eco_start))
     eco_app.add_handler(CommandHandler("tasks", eco_tasks))
     eco_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, eco_msg))
 
-    shelly_app.add_handler(CommandHandler("start", shelly_start))
-    shelly_app.add_handler(CommandHandler("tasks", shelly_tasks))
-    shelly_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, shelly_msg))
-
     log.info(
-        "Starting Eco (default=%s, escalated=%s) and Shelly (default=%s, escalated=%s)...",
+        "Starting Eco (default=%s, escalated=%s)...",
         ECO_DEFAULT_MODEL, ECO_ESCALATED_MODEL,
-        SHELLY_DEFAULT_MODEL, SHELLY_ESCALATED_MODEL,
     )
 
     async with eco_app:
-        async with shelly_app:
-            await eco_app.updater.start_polling(drop_pending_updates=True)
-            await shelly_app.updater.start_polling(drop_pending_updates=True)
-            await eco_app.start()
-            await shelly_app.start()
-
-            eco_wakeup = asyncio.create_task(
-                _wakeup_task("eco", eco_app, eco_prompt), name="eco-wakeup"
-            )
-            shelly_wakeup = asyncio.create_task(
-                _wakeup_task("shelly", shelly_app, shelly_prompt), name="shelly-wakeup"
-            )
-            log.info(
-                "Both bots online. Wake-ups scheduled every %ds (~%.0fh). Press Ctrl+C to stop.",
-                WAKEUP_INTERVAL, WAKEUP_INTERVAL / 3600,
-            )
-            try:
-                await asyncio.Event().wait()
-            except (KeyboardInterrupt, asyncio.CancelledError):
-                pass
-            finally:
-                eco_wakeup.cancel()
-                shelly_wakeup.cancel()
-                log.info("Shutting down...")
-                await eco_app.updater.stop()
-                await shelly_app.updater.stop()
-                await eco_app.stop()
-                await shelly_app.stop()
+        await eco_app.updater.start_polling(drop_pending_updates=True)
+        await eco_app.start()
+        eco_wakeup = asyncio.create_task(
+            _wakeup_task("eco", eco_app, eco_prompt), name="eco-wakeup"
+        )
+        log.info("Eco online. Wake-ups every %ds. Press Ctrl+C to stop.", WAKEUP_INTERVAL)
+        try:
+            await asyncio.Event().wait()
+        except (KeyboardInterrupt, asyncio.CancelledError):
+            pass
+        finally:
+            eco_wakeup.cancel()
+            log.info("Shutting down...")
+            await eco_app.updater.stop()
+            await eco_app.stop()
 
 
 if __name__ == "__main__":
