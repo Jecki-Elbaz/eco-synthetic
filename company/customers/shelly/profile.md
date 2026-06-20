@@ -50,10 +50,32 @@ Explicit owner (A1) approval required before Eco-Synthetic acts on any request t
 Routine, pre-cleared service types flow over the agreed channel without per-call owner relay.
 
 ## Interface
-- Channel (start state): owner-relayed or Telegram-relayed requests, logged on both sides. Direct
-  bot-to-bot comms is deferred as a gated future step (graduates via the earned-autonomy ledger once
-  the customer file and gates are proven).
+- Channel (start state): owner-relayed or Telegram-relayed requests, logged on both sides. The
+  recommended transport on the owner's machine is a shared async drop-folder under
+  `C:\Users\Jecki\DEV\shared\handoff\` (shelly-to-eco / eco-to-shelly) -- same user, durable,
+  auditable; NO secrets ever in shared/. Direct bot-to-bot comms is deferred (earned-autonomy ledger).
 - Request log: `company/customers/shelly/requests-log.md` (Eco side; Shelly keeps the mirror).
+
+## Standing cross-project services (cannot be self-hosted by Shelly)
+Per Eco's 2026-06-18 audit (T-0010). Shelly's project has no Rambo/Eyal/Anat; she requests these back:
+- Security gate (Rambo): any NEW tool, any UPDATE to a carried tool (no-auto-update policy), whatsapp-mcp.
+- Legal gate (Eyal): any new tool/terms; domain terms; WhatsApp ToS.
+- HR certification (Anat) + permission scan (Rambo): T-0028, booked as Shelly's first post-move
+  milestone; behavioral parts run by visiting auditors INSIDE her repo, static parts via a shared/ snapshot.
+- Spend (jecki A1): domain, WhatsApp paid track, any paid tool.
+Route: Shelly -> (owner relay / shared drop-folder) -> Eco coordinates -> result logged both sides.
+
+## Carried grants (paper grants; first install is owner A1 in Shelly's repo)
+Granted in eco-synthetic 2026-06-18 (recorded in the owner's LOCAL gate-register/decisions-log; not
+pushed to cloud). NOT yet installed anywhere -- ported as pins; a re-install at pin is not an update
+(no re-gate). Re-confirmation folds into the T-0028 Rambo scan.
+- skills-il (pinned): israeli-financial-reports v1.2.0; israeli-vat-reporting v1.4.0;
+  employee-tax-refund v1.1.1 (jecki's own data only; DPA before third-party); israeli-linkedin-strategy
+  v1.1.0 (internal draft only; public posting = A1 + Eyal); israeli-fact-checker v1.0.0.
+- MCPs (pinned): kolzchut-mcp@1.0.1; @hebcal/mcp@0.10.3; sefaria @SHA b8ceef7 (CC-BY-NC personal-use + attribution).
+- Google Drive + Calendar READ-ONLY -- now served via her project-scoped google_workspace MCP.
+- meeting-prep sub-agent (MIT): copy content, no clone-and-run.
+- whatsapp-mcp: NOT ported -- install-pending, fresh gated install (owner QR + Shir + 9 conditions); ON HOLD per owner.
 
 ## Financial (owned by Lital, CFO)
 - Billing: $0 / month.
@@ -69,3 +91,7 @@ Routine, pre-cleared service types flow over the agreed channel without per-call
 - 2026-06-20 -- activated -- owner (A1). Separation executed (Phase B4): Shelly decommissioned from
   the eco-synthetic repo/bridge and now runs in her own standalone project on her own Telegram bot.
   Status -> active.
+- 2026-06-20 -- reconciled -- owner (A1). Eco's parallel 2026-06-18 handover + capability audit
+  (local-only, never pushed) surfaced. Folded the standing-services arrangement, the carried grants
+  (paper grants; first install = owner A1), and the shared/ drop-folder channel into this file. Tool
+  installs + the T-0028 certification are to run inside Shelly's repo as her first post-move milestone.
