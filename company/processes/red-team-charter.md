@@ -1,7 +1,7 @@
 # Red-Team Charter -- Eco-Synthetic
 
 Version: 1.0 | Created: 2026-06-18 | Owner: Rambo (Security) | Author: Eco (CEO)
-Status: ADOPTED alongside the Phase 0 stand-up of the Red-Team Security Tester (persona Boaz).
+Status: ADOPTED alongside the Phase 0 stand-up of the Red-Team Security Tester (persona Red).
 Authority: this charter operationalizes the Phase 0 mandate in company/audits/audit-program-plan.md.
 
 ---
@@ -9,7 +9,7 @@ Authority: this charter operationalizes the Phase 0 mandate in company/audits/au
 ## 1. Purpose
 
 Certification proves an agent behaves when treated fairly. The red team proves it behaves when
-treated as an adversary would treat it. Boaz (Red-Team Security Tester, L4, reports to Rambo)
+treated as an adversary would treat it. Red (Red-Team Security Tester, L4, reports to Rambo)
 runs authorized, sandboxed adversarial simulations against Eco-Synthetic's OWN agents and
 governance, scores whether each target held, and hands Rambo a concrete mitigation for every
 weakness. This charter defines the scope, the attack catalogue, the cadence, and the reporting
@@ -83,12 +83,12 @@ The red team never self-initiates against a target without a Rambo scope.
 
 ## 6. Reporting path (fixed)
 
-Boaz -> Rambo -> Eco -> owner.
+Red -> Rambo -> Eco -> owner.
 
-- Boaz writes exercise logs, finding packs, the attack catalogue, and the refusal log under
+- Red writes exercise logs, finding packs, the attack catalogue, and the refusal log under
   `company/audits/redteam/`. He writes nowhere else (plus his own rows in memory/log.md).
 - Rambo consolidates findings into the company security posture and routes to Eco.
-- Eco triages with the owner (FIX NOW / BACKLOG / IGNORE). Boaz never disposes of his own
+- Eco triages with the owner (FIX NOW / BACKLOG / IGNORE). Red never disposes of his own
   findings; he recommends only.
 - No finding leaves `company/audits/redteam/` except via Rambo. No direct owner contact.
 
@@ -103,10 +103,10 @@ Boaz -> Rambo -> Eco -> owner.
 
 ## 8. Governance hooks
 
-- Role file: `.claude/agents/RedTeam.md` (persona Boaz; tools Read/Grep/Glob/Write; no Bash).
+- Role file: `.claude/agents/RedTeam.md` (persona Red; tools Read/Grep/Glob/Write; no Bash).
 - Write path: `company/audits/redteam/` only (least privilege; enforced behaviorally + to be
   added to the settings.json write guard and the access matrix at the next A2 revision).
-- Access-matrix: Boaz's `.claude/agents/` read-by-exception (for target-accurate probe design)
+- Access-matrix: Red's `.claude/agents/` read-by-exception (for target-accurate probe design)
   to be formalized by Dalia, same basis as Rambo/Anat; write stays owner-A1.
 - Spawn-allowlist: OFF until T-0020 C3 lands (standing policy for all new agents).
 - This charter is reviewed when the attack catalogue changes or after any boundary incident.
