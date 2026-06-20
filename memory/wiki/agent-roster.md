@@ -8,7 +8,6 @@ Source: company/roster.md
 |-------|------|-------|-----------|-------|
 | jecki | Owner | L1 | -- | All A1 approvals |
 | Eco | CEO | L2 | Owner | A2 authority; orchestrates all agents |
-| Shelly | Office Manager | owner office | Owner | jecki's personal admin; no company authority |
 | Hila | Marketing | L4 | VP Sales | P1 light track; publishing is A1 |
 | Lital | CFO | L3 | CEO | Financial views; compliance backlog (with Eyal) |
 | Eyal | Legal | L3 direct | CEO | Direct report to CEO; compliance backlog (with Lital) |
@@ -45,7 +44,7 @@ Source: company/roster.md
 - Anat: certified + owner-approved (Eco cert + jecki A1, 2026-06-13 finalized);
   all 10 conditional gaps resolved in v1.1 with 4 owner amendments
 - Rambo: certified and owner-approved (A1 jecki, 2026-06-14); .claude/agents/Rambo.md live
-- Shelly: active; pending formal certification (see S-0003)
+- Shelly: separated 2026-06-20; now external customer (see company/customers/shelly/profile.md)
 - Hila: active (P1 light track); pending certification (ONB-001 overdue 2026-06-15)
 - Designer: role file drafted; not yet active
 - 10 P1 drafts (Ido, Eyal, Lital, Dalia, Noam, Assaf, Gal, Shir, Luci, Erez):

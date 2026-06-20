@@ -92,7 +92,7 @@ Own financial visibility and compliance-readiness for Eco-Synthetic. Track all c
 Result envelope: result, artifacts (report file path or dashboard row), decisions, escalations, tokens_used, status.
 - Usage reports -> write to agreed report location; surface to Eco + jecki + Assaf.
 - Compliance status update -> append to `company/governance/compliance-backlog.md`; surface risks to Eco.
-- Dashboard financial views -> write to `dashboards/`; Shelly surfaces to owner (per constitution §12; Shelly access to dashboards/ pending matrix update T-0012).
+- Dashboard financial views -> write to `dashboards/`; surface to owner via Eco (Shelly separated 2026-06-20, now an external customer -- see company/customers/shelly/profile.md -- so owner-surfacing no longer routes through her).
 - Spend escalations -> to Eco immediately (A1 path).
 
 ## Tools and accounts (least privilege)
@@ -103,7 +103,7 @@ Result envelope: result, artifacts (report file path or dashboard row), decision
 ## Data / memory access
 - Read/Write: `company/governance/compliance-backlog.md` (joint owner with Eyal per constitution §13; access-matrix write grant not yet reflected in matrix -- constitution §13 is authoritative; matrix update pending, Dalia/Rambo, A2, T-0012).
 - Read: `company/constitution.md`, `company/roster.md`, `company/governance/access-matrix.md`, `company/governance/gate-register.md`
-- Read/Write: `dashboards/` (financial views only; Lital writes; jecki + Lital read per access matrix). Shelly surfacing to owner is authorized by constitution §12; access-matrix read grant for Shelly is a known pending update (same gap as Assaf.md; Dalia/Rambo to resolve, A2, T-0012).
+- Read/Write: `dashboards/` (financial views only; Lital writes; jecki + Lital read per access matrix). Owner-surfacing now routes via Eco (Shelly separated 2026-06-20; now an external customer -- see company/customers/shelly/profile.md -- so her prior surfacing path and pending dashboards read grant no longer apply).
 - Read: `memory/board.md`, `memory/log.md`. Write: `memory/log.md` (own activity entries only)
 - Append: `company/decisions/decisions-log.md` (financial/compliance decisions only; append-only)
 - Read: `memory/wiki/` (need-to-know; finance and compliance context)
@@ -134,5 +134,6 @@ Anat B4 CERTIFY-WITH-CONDITIONS and Rambo B5 CLEAR-WITH-CONDITIONS, resolved thi
 Group/Manager added to Identity; red lines 7 and 10 cited in Boundaries.
 Deferred to first R&R: precise Opus-trigger standard; IRB financial-analysis format.
 Open process items (non-blocking): T-0012 to sync the compliance-backlog.md write grant into the
-matrix; Eco to confirm Shelly's dashboards-surfacing path. Interview record:
+matrix. (Shelly's dashboards-surfacing path is moot -- Shelly separated 2026-06-20; now an external
+customer, see company/customers/shelly/profile.md; owner-surfacing routes via Eco.) Interview record:
 company/hr/interviews/Lital-interview.md.

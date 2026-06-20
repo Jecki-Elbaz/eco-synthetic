@@ -151,7 +151,9 @@ Approved and taken live 2026-06-13. What ran:
    - the Telegram bridge wakeup instruction in `bridge.py`
    - each live agent's role file (the old emoji bar removed; Core Block rule 5 now owns it)
 2. **Core Block propagation -- DONE for live agents.** Core Block + Voice block applied to
-   `Shelly`, `Eco`, `Anat`, `Hila`, `Designer` -- all live and on the same convention.
+   `Eco`, `Anat`, `Hila`, `Designer` -- all live and on the same convention.
+   (`Shelly` was included at the time but separated 2026-06-20; now an external customer --
+   see company/customers/shelly/profile.md.)
    `MeetingPrep` is excluded -- it is pending the Security + Legal gate and not live; it
    gets the Core Block via `/new-agent` when it clears the gate.
 3. **Decisions log -- DONE.** Approval entry appended to
@@ -160,8 +162,8 @@ Approved and taken live 2026-06-13. What ran:
    achievable" ack with each live agent on this change (constitution §10), folded into the
    next certification pass.
 
-> Shelly note: a separate, parallel session ("Shelly agent migration plan") logged the
-> 2026-06-13 decommission decision. Per owner direction in this session, Shelly STAYS active
-> in eco-synthetic for now and is fully on the soul convention like every other agent. The
-> decommission / move to her own project is deferred and will be executed later from that
-> dedicated session. See the decisions log clarification entry (2026-06-13).
+> Shelly note (updated 2026-06-20): the deferred decommission has now been executed. Shelly
+> was separated from eco-synthetic on 2026-06-20 and now runs as an independent external
+> Eco-Synthetic customer in her own standalone project. She is no longer a company agent.
+> See company/customers/shelly/profile.md and the decisions log entries (2026-06-13 deferral;
+> 2026-06-20 separation).

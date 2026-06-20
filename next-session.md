@@ -1,6 +1,6 @@
 # Eco-Synthetic: Next Session Agenda
 
-**State as of 2026-06-12:** Repo scaffolded. Eco and Shelly built as Claude Code subagents. Ready to go live pending Telegram tokens and company account from jecki.
+**State as of 2026-06-12:** Repo scaffolded. Eco built as a Claude Code subagent. Ready to go live pending Telegram tokens and company account from jecki. (Shelly was also built then but separated 2026-06-20; now an external customer -- see company/customers/shelly/profile.md.)
 
 ---
 

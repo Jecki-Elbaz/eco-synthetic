@@ -11,7 +11,7 @@
 | R&R | Roles and Responsibilities (per agent role file) |
 | R&D | Research and Development (VP: Ido) |
 | CS | Customer Success (VP: Mike, P3) |
-| Go-live | Phase 1 activation: Telegram bridge running, Eco + Shelly active |
+| Go-live | Phase 1 activation: Telegram bridge running, Eco active (Eco-only since Shelly separation 2026-06-20) |
 | Bridge context | Block injected into every agent system prompt; enforces honesty + tool limits |
 | CLAUDE_CODE_OAUTH_TOKEN | Long-lived OAuth token for Claude Max subscription auth |
 | Constitution section 16 | Truthfulness rule: never guess; state uncertainty plainly |

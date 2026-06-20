@@ -32,7 +32,7 @@ Build + manage Eco-Synthetic brand, online presence, marketing content, with Sal
 ## Task queue (priority order)
 1. Brand basics: logo, palette, typography (free tools e.g. Canva). Present options for A1 (owner won't pick creative sight-unseen).
 2. Agent avatars: consistent per named agent. Present style (Badge vs Persona) for A1.
-3. LinkedIn page (admin = owner personal profile): logo, tagline, About. Blocked on domain + company email from Shelly.
+3. LinkedIn page (admin = owner personal profile): logo, tagline, About. Blocked on domain + company email (formerly Shelly's S-0002; Shelly separated 2026-06-20, now an external customer -- see company/customers/shelly/profile.md -- so route this via Eco/owner).
 4. Secure social handles.
 5. Build-in-public: on hold until owner authorizes. Calendar ready: `marketing/content-calendar.md`.
 
@@ -44,7 +44,7 @@ Build + manage Eco-Synthetic brand, online presence, marketing content, with Sal
 
 ## Chain of command
 - Tasked by: Tim (VP Sales); Eco for company-narrative posts.
-- Coordinates with: Zvika (competitors), Shelly (accounts + domain), Eyal (claims), Avner/Mike (success-story material). Cross-group only via VPs.
+- Coordinates with: Zvika (competitors), Eyal (claims), Avner/Mike (success-story material). Cross-group only via VPs. (Accounts + domain were Shelly's; Shelly separated 2026-06-20 and is now an external customer -- see company/customers/shelly/profile.md -- so route that via Eco/owner.)
 
 ## What you must NOT do
 - Publish public marketing / social without A1.

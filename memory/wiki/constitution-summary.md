@@ -12,8 +12,9 @@ Source: company/constitution.md
 
 L1 Owner (jecki) -> L2 CEO (Eco) -> L3 VP -> L4 manager/senior -> L5 employee
 
-Exceptions: Legal (Eyal), Devil's Advocate (Luci), Office Manager (Shelly), Investor (Erez)
-report directly to the Owner. CEO staff (Quality, HR, OE, Security, Product, Research)
+Exceptions: Legal (Eyal), Devil's Advocate (Luci), Investor (Erez)
+report directly to the Owner. (The Office Manager role, Shelly, separated 2026-06-20;
+now an external customer -- see company/customers/shelly/profile.md.) CEO staff (Quality, HR, OE, Security, Product, Research)
 report directly to Eco.
 
 ## Red lines (no agent may ever)

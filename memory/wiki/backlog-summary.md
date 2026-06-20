@@ -15,10 +15,10 @@ different task numbering scheme -- the old entries are now superseded.
 - T-0016 in-progress: Wiki + dashboard refresh (this task)
 - T-0019 open: Competency testing for all 10 P1 agent drafts (blocks all go-lives)
 
-### Owner-Office (Shelly)
-- S-0001 in-progress: Operate owner Telegram channel
-- S-0002 open: Domain check (eco-synthetic.com vs .ai + variants); A1 before purchase
-- S-0004 in-progress: Owner queue triage + reminders
+### Owner-Office (Shelly -- separated 2026-06-20; now external customer, see company/customers/shelly/profile.md)
+- S-0001 closed (Shelly separated): Operate owner Telegram channel
+- S-0002 open: Domain check (eco-synthetic.com vs .ai + variants); A1 before purchase (reassign owner)
+- S-0004 closed (Shelly separated): Owner queue triage + reminders
 
 ---
 
@@ -34,13 +34,13 @@ different task numbering scheme -- the old entries are now superseded.
 - T-0007 open: Owner presentations intake (waiting on owner to share files)
 - T-0008 open: LLM wiki seed + maintenance (ongoing)
 - T-0009 open: Monthly on-demand agent review (recurring; transfer to Assaf when live)
-- T-0010 open: Shelly separation assessment
+- T-0010 done: Shelly separation assessment (separated 2026-06-20; now external customer)
 - T-0017 open: Israeli law + finance domain tools (on-need; owner provides candidate tools)
 - T-0018 open: Assaf .claude/agents/ access (with T-0012)
 
-### Owner-Office (Shelly)
+### Owner-Office (Shelly -- separated 2026-06-20; now external customer, see company/customers/shelly/profile.md)
 - S-0003 blocked: Company email + drive (blocked on S-0002 domain purchase)
-- S-0005 open: WhatsApp adoption evaluation
+- S-0005 closed (Shelly separated): WhatsApp adoption evaluation
 - S-0006 open: Owner dashboard surfacing (when dashboards exist)
 - S-0006a open: Surface pending approvals in owner dashboard (owner-requested 2026-06-13)
 

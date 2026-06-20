@@ -16,7 +16,6 @@ eco-synthetic/
 |-- .claude/
 |   |-- agents/                    # live agent role files (Claude Code subagents)
 |   |   |-- Eco.md
-|   |   |-- Shelly.md
 |   |   |-- Hila.md
 |   |   |-- Designer.md
 |   |   `-- ...                    # the rest, added as each agent is built
@@ -64,7 +63,7 @@ eco-synthetic/
 |   `-- content-calendar.md        # build-in-public queue (on hold)
 |
 |-- integrations/
-|   `-- telegram-bridge/           # connects the two bots to Eco and Shelly
+|   `-- telegram-bridge/           # connects the Eco bot (Eco-only since Shelly separation 2026-06-20)
 |
 `-- dashboards/                    # owner dashboard views (CFO + OE), later
 ```
@@ -83,7 +82,7 @@ eco-synthetic/
 | `marketing/` | Group (Sales) | Hila, Tim; Eco for narrative | read/write own assets |
 | `dashboards/` financial views | Restricted | Lital (CFO), Owner | read |
 | `.env` / secrets | Restricted | runtime only, vaulted | never in repo/outputs/logs (red line 5) |
-| Owner-office items (Shelly/Luci/Erez) | Owner-office | Owner + delegated | separate from company-restricted |
+| Owner-office items (Luci/Erez) | Owner-office | Owner + delegated | separate from company-restricted (Shelly separated 2026-06-20; now external customer, see company/customers/shelly/profile.md) |
 
 Per-agent working memory is each agent's own scratch space, not shared by default.
 
@@ -91,11 +90,11 @@ Per-agent working memory is each agent's own scratch space, not shared by defaul
 
 ## 3. Secrets and tokens
 
-- The two Telegram bot tokens go in `/.env` at the repo root, as:
+- The Telegram bot token goes in `/.env` at the repo root, as:
   ```
   ECO_TELEGRAM_BOT_TOKEN=...
-  SHELLY_TELEGRAM_BOT_TOKEN=...
   ```
+  (Eco-only since Shelly separated 2026-06-20; the former Shelly bot token is retired.)
 - `.env` is listed in `.gitignore` from the first commit; `.env.example` holds only the variable names. The Telegram bridge reads the tokens at runtime. Tokens are never committed, never pasted into chat, never logged (red line 5; Rambo owns the vault and policy).
 
 ---
@@ -104,4 +103,4 @@ Per-agent working memory is each agent's own scratch space, not shared by defaul
 
 - Agent role files are the live `.claude/agents/*.md` (older docs that reference `agents/Eco.md` map to this path).
 - This is the proposed structure for owner approval; Eco assesses and refines it on go-live as part of the structure review.
-- Scaffolding instruction for Claude Code: "Scaffold the repo per `company/repo-structure.md`, create `.gitignore` (excluding `.env`) and `.env.example`, then build agents Eco and Shelly from `.claude/agents/*.md`."
+- Scaffolding instruction for Claude Code: "Scaffold the repo per `company/repo-structure.md`, create `.gitignore` (excluding `.env`) and `.env.example`, then build agent Eco from `.claude/agents/*.md`." (Shelly separated 2026-06-20; now an external customer -- see company/customers/shelly/profile.md.)

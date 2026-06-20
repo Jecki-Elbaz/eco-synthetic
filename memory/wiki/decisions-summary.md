@@ -21,4 +21,4 @@ Key decisions to date. Full log (append-only): company/decisions/decisions-log.m
 
 - VP Product question: is Noam confirmed as VP Product? (T-0003, Eco to decide + report)
 - Ido scope additions: Eco to assign and Ido to propose (T-0004)
-- Shelly certification: Anat to certify (T-0005 / S-0003)
+- Shelly certification: moot -- Shelly separated 2026-06-20 (now external customer; see company/customers/shelly/profile.md)
