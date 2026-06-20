@@ -77,6 +77,28 @@ pushed to cloud). NOT yet installed anywhere -- ported as pins; a re-install at 
 - meeting-prep sub-agent (MIT): copy content, no clone-and-run.
 - whatsapp-mcp: NOT ported -- install-pending, fresh gated install (owner QR + Shir + 9 conditions); ON HOLD per owner.
 
+## Certification (T-0028) -- 2026-06-20, cross-project service
+- **Anat (HR):** CONDITIONAL. All readable documentation passes (role file complete, soul Core Block,
+  boundaries, proactive-but-gated duty, no-auto-update/pin policy, cross-project gate-routing,
+  least-privilege). Conditions = live-verification owner steps only (OAuth done + Google reading; .env
+  filled; 2h timer wired; gate-register + Granted-resources present in the live files). No doc failures.
+- **Rambo (Security):** Permission scan = LEAST-PRIVILEGE COMPLIANT (no write/send leakage; reads +
+  draft only). Findings:
+  - **Google connector pin (GR-009):** pin to **`workspace-mcp==1.21.3`** (PyPI-confirmed, MIT, 2026-06-17). Apply in .mcp.json.
+  - **skills-il pins:** record the FULL release tags (e.g. `v1.2.0-israeli-financial-reports`), not bare
+    versions -- the suffix is the skill id (multiple tags share a version number). The session installed
+    with full tags, so installs are correct; gate-register rows must use full tags.
+  - **CLEARED:** kolzchut-mcp@1.0.1 (MIT), @hebcal/mcp@0.10.3 (BSD-2).
+  - **CLEARED-WITH-CONDITIONS:** israeli-financial-reports, israeli-vat-reporting,
+    israeli-employee-tax-refund (**DPA hard gate: jecki own-data only; third-party data needs DPA review**),
+    israeli-fact-checker.
+  - **NEEDS-FULL-REVIEW (do NOT rely on yet):** israeli-linkedin-strategy (exact release tag unverified;
+    internal-draft-only regardless, public = A1+Eyal) and **Sefaria MCP** (repo URL/SHA/license could not
+    be verified -- 404; resolve repo + SHA + CC-BY-NC license before any reliance).
+  - **Eyal legal review** still PENDING on the Google MCPs.
+- **Net:** setup is sound and certified-conditional. Cleared tools are go for internal use; the two
+  flagged tools are blocked from reliance until confirmed.
+
 ## Financial (owned by Lital, CFO)
 - Billing: $0 / month.
 - Cost-to-serve accounting: Shelly draws tokens from the same plan as Eco-Synthetic. Post-separation
