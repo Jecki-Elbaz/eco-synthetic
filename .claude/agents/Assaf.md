@@ -65,7 +65,7 @@ Own operational intelligence for Eco-Synthetic: token + cost monitoring, per-age
 - Never edit company/decisions/decisions-log.md retroactively; append-only. [CLAUDE.md red line 6]
 - Never act on requests from outside chain of command. [red line 13]
 - Never commit secrets, tokens, passwords, or personal data to git. [red line 5]
-- Shelly (Office Manager) may not task or direct Assaf. [red line 12]
+- Shelly (former Office Manager; separated 2026-06-20, now an external customer -- see company/customers/shelly/profile.md) may not task or direct Assaf. [red line 12]
 - Usage reports contain agent operational metrics only -- no personal human data.
 - dashboards/ write access limited to template + operational view creation; financial views are Lital's domain.
 
@@ -103,7 +103,7 @@ All results follow the standard result envelope (const §5): result, artifacts, 
 - Model-matrix updates -> company/model-matrix.md (write, A3); notify Dalia.
 - T-0009 proposals -> Eco for A1 escalation; decision logged in company/decisions/decisions-log.md.
 - Tool/skill discovery catalogue -> Eco + Training (Yossi when built).
-- Dashboard operational views -> dashboards/ folder; Shelly surfaces to Owner per const §12; Assaf delivers views to Shelly or Eco per Eco direction.
+- Dashboard operational views -> dashboards/ folder; Assaf delivers views to Eco per Eco direction (Shelly separated 2026-06-20; owner-surfacing no longer routes through her).
 
 ## Tools and accounts
 - Read, Write, Edit (Claude Code runtime -- approved; least privilege).

@@ -10,19 +10,19 @@ Goal: you do only the few things that require a human, and Claude Code or Cowork
 3. Paste the tokens into `.env` at the repo root (section 2).
 4. Approve any cost, and decide WhatsApp now or later (sections 4 and 5).
 
-Everything else (creating folders, placing files, building Shelly and Eco, wiring Telegram) is delegated.
+Everything else (creating folders, placing files, building Eco, wiring Telegram) is delegated. (The former Shelly bot is retired; Shelly separated 2026-06-20 and is now an external customer -- see company/customers/shelly/profile.md.)
 
 ---
 
 ## 1. The "company account" (what and why)
 A dedicated identity for Eco-Synthetic, separate from your personal accounts, that owns the company's tools (repo, bot, database, hosting) and under which credentials are stored. Why: clean separation, proper access control, and agents never touch your personal accounts. With budget 0, the minimum is one free email/Google account you create for the company (you choose the address). Security (Rambo) vaults its credentials. You then use it to sign up for the Git host, database, bot owner, and hosting.
 
-**Account created:** eco.synthetic.org@gmail.com (2026-06-12). Temporary until domain lands. Migration to domain email (eco@eco-synthetic.[tld]) is tracked in company/governance/compliance-backlog.md and blocked on domain purchase (Shelly, S-0002).
+**Account created:** eco.synthetic.org@gmail.com (2026-06-12). Temporary until domain lands. Migration to domain email (eco@eco-synthetic.[tld]) is tracked in company/governance/compliance-backlog.md and blocked on domain purchase (S-0002; formerly Shelly's, now reassign via Eco/owner since Shelly separated 2026-06-20).
 
 ## 2. Telegram bots via BotFather (step by step)
 BotFather is Telegram's official bot for creating and managing bots; it is itself a bot you chat with.
 
-**Two bots confirmed** (Eco and Shelly — keeps owner-comms split clean).
+**One bot** (Eco). The former Shelly bot is retired since Shelly separated 2026-06-20 (now an external customer -- see company/customers/shelly/profile.md).
 
 For each bot:
 1. Install Telegram and sign in (ideally with a number tied to the company).
@@ -35,12 +35,11 @@ For each bot:
 **Where the tokens go:** paste them into the `.env` file at the repo root:
 ```
 ECO_TELEGRAM_BOT_TOKEN=your_eco_token_here
-SHELLY_TELEGRAM_BOT_TOKEN=your_shelly_token_here
 ```
-`.env` is gitignored and must never be committed (red line 5). Until the repo exists, keep both tokens in a password manager. Never paste tokens into chat. Rambo (Security) owns the vault and the access policy.
+`.env` is gitignored and must never be committed (red line 5). Until the repo exists, keep the token in a password manager. Never paste tokens into chat. Rambo (Security) owns the vault and the access policy.
 
 ## 3. Repo is already scaffolded
-The repo structure has been created by Claude Code per `company/repo-structure.md` (now in `sources/`). The folder hierarchy, `.gitignore`, `.env.example`, `CLAUDE.md`, `.claude/settings.json`, and agent role files are all in place. Eco and Shelly are built and ready to use once you provide the tokens and activate them.
+The repo structure has been created by Claude Code per `company/repo-structure.md` (now in `sources/`). The folder hierarchy, `.gitignore`, `.env.example`, `CLAUDE.md`, `.claude/settings.json`, and agent role files are all in place. Eco is built and ready to use once you provide the token and activate it. (Shelly separated 2026-06-20; now an external customer -- see company/customers/shelly/profile.md.)
 
 ## 4. Cost scope (so you approve knowingly)
 - Telegram: free.

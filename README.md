@@ -10,11 +10,11 @@ A company fully operated by AI agents, owned by jecki. Governance is at v2.2 (ap
 |------|--------|
 | Design and governance | Done — v2.2 approved |
 | Repo scaffolded | Done — 2026-06-12 |
-| Eco and Shelly agents built | Done — `.claude/agents/` |
+| Eco agent built | Done — `.claude/agents/` (Shelly separated 2026-06-20; now external customer, see `company/customers/shelly/profile.md`) |
 | Telegram tokens | **Blocking** — jecki to paste into `.env` |
 | Company account | **Blocking** — jecki to create |
 | Agent certification (HR/Anat) | Pending — after agents are live |
-| Domain (.com vs .ai) | Pending — Shelly decides after go-live |
+| Domain (.com vs .ai) | Pending — reassign via Eco/owner (was Shelly, separated 2026-06-20) |
 | Two owner presentations | Pending — jecki to share |
 
 **Immediate next steps:** see `next-session.md`.
@@ -23,7 +23,7 @@ A company fully operated by AI agents, owned by jecki. Governance is at v2.2 (ap
 
 ## B. What is urgent now
 
-Three things needed to switch on Eco and Shelly:
+Three things needed to switch on Eco (Eco-only since Shelly separated 2026-06-20):
 1. **Telegram bot tokens** — create via BotFather; see `company/setup-guide.md` §2. Paste into `.env`.
 2. **Company account** — a dedicated email/Google account for Eco-Synthetic. See `company/setup-guide.md` §1.
 3. **Activate Eco** — once tokens and account are in place, open this project in Claude Code and task Eco to run his go-live assessment.
@@ -48,7 +48,6 @@ Everything else Eco manages after that.
 |------|---------|-------------|
 | `.claude/settings.json` | 1.0 | Claude Code project config — allow/deny tool permissions |
 | `.claude/agents/Eco.md` | 0.1 | CEO subagent — Sonnet/Opus |
-| `.claude/agents/Shelly.md` | 0.2 | Office Manager subagent — Haiku/Sonnet |
 | `.claude/agents/Hila.md` | 0.1 | Marketing subagent draft — Sonnet |
 | `.claude/agents/Designer.md` | 0.1 | Product UX/UI subagent draft — Sonnet |
 

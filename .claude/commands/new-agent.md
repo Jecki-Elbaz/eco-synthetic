@@ -8,7 +8,7 @@ inherited soul plus per-agent voice plus all register updates. This command DRAF
 stops at the A1 gate. Creating, re-scoping, or retiring an agent is A1 (constitution red
 line 6); the `.claude/agents/` folder is owner/CEO only. Nothing here goes live on its own.
 
-The output shape must match the reference implementation in `.claude/agents/Shelly.md`.
+The output shape must match the reference implementation in `.claude/agents/Eco.md`.
 
 ## Refuse conditions (check first)
 - Refuse if the requester is not the owner (jecki) or Eco (CEO). Agent creation is
@@ -43,7 +43,7 @@ The output shape must match the reference implementation in `.claude/agents/Shel
      "Tools pending gate" note. Never self-grant (red line 7).
 
 4. Build the role file at `.claude/agents/<Name>.md`, mapping `company/role-file-template.md`
-   into the Shelly reference shape, in this order:
+   into the current role-file shape (e.g. .claude/agents/Eco.md), in this order:
    - Frontmatter: `name`, `description` (third person, when-to-use), `model`, `tools`
      (cleared tools only).
    - One intro line, then the inheritance note pointing to `company/soul.md`.

@@ -48,7 +48,7 @@ The full hiring process. No owner action required until Stage C package is compl
 ### Steps
 
 **B1. Role file build** (via /new-agent)
-- Draft role file following company standard (Shelly.md shape, md-style.md rules).
+- Draft role file following company standard (any current role file shape, e.g. Eco.md, md-style.md rules). (Shelly.md is retired -- Shelly separated 2026-06-20, now an external customer, see company/customers/shelly/profile.md.)
 - Soul Core Block verbatim from company/soul.md.
 - All template sections complete: Identity, Purpose, Responsibilities, KPIs, Authority, Boundaries, Chain of command, Triggers, Inputs, Outputs, Tools, Data access, Red lines, Loop caps, Escalation path, Voice, AI model, Certification status.
 - File: .claude/agents/<Name>.md

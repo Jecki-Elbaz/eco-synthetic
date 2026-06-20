@@ -2,7 +2,7 @@
 
 **Owner:** jecki (L1)
 **Phase:** P1 (foundation and infrastructure)
-**Status (2026-06-12):** Telegram bridge live; Eco + Shelly active; scheduled wake-ups running.
+**Status (2026-06-20):** Telegram bridge live (Eco-only); Eco active; scheduled wake-ups running. Shelly separated 2026-06-20 (now external customer; see company/customers/shelly/profile.md).
 
 ## Mission
 
@@ -13,8 +13,9 @@ Each active project backed by an on-demand SME (Sami pattern).
 ## Active agents in P1
 
 - Eco (CEO, L2) -- company orchestration, all company tasks
-- Shelly (Office Manager, owner office) -- jecki's admin and Telegram channel
 - Hila (Marketing, P1 light track) -- brand basics, LinkedIn, social
+
+(Shelly, formerly Office Manager, separated 2026-06-20; now an external customer -- see company/customers/shelly/profile.md.)
 
 ## Key constraints (P1)
 
@@ -25,9 +26,8 @@ Each active project backed by an on-demand SME (Sami pattern).
 
 ## Current bridge
 
-- Both bots running via python-telegram-bot long-polling.
+- Eco bot running via python-telegram-bot long-polling (Eco-only since Shelly separation 2026-06-20).
 - Eco: claude-sonnet-4-6 default, claude-opus-4-8 escalation (decisions/approval or >500 chars).
-- Shelly: claude-haiku-4-5 default, claude-sonnet-4-6 escalation (drafting or >300 chars).
 - Scheduled 2h wake-ups active (see company/governance/schedules.md).
-- History per chat: memory/chats/{eco,shelly}/{chat_id}.json.
+- History per chat: memory/chats/eco/{chat_id}.json.
 - Event log: memory/log.jsonl.

@@ -1,7 +1,7 @@
 # Eco-Synthetic: Telegram Bridge
 
-Runs the Eco (CEO) and Shelly (Office Manager) bots concurrently via long-polling.
-No public URL or webhook required.
+Runs the Eco (CEO) bot via long-polling. No public URL or webhook required.
+(Eco-only since Shelly separated 2026-06-20; the former Shelly bot is retired.)
 
 **Auth model:** Claude Max subscription via OAuth (`CLAUDE_CODE_OAUTH_TOKEN`).
 No `ANTHROPIC_API_KEY` — the bridge refuses to start if one is present (it would
@@ -33,7 +33,7 @@ CLAUDE_CODE_OAUTH_TOKEN=<token>
 
 - Python 3.11+
 - Claude Code CLI (`claude`) in PATH and authenticated (see above)
-- Two Telegram bot tokens from BotFather — see `company/setup-guide.md` §2
+- One Telegram bot token from BotFather (Eco) — see `company/setup-guide.md` §2
 
 ## Setup
 
@@ -49,7 +49,6 @@ Add to your `.env` at the repo root:
 ```
 CLAUDE_CODE_OAUTH_TOKEN=<long-lived token from claude setup-token>
 ECO_TELEGRAM_BOT_TOKEN=<from BotFather>
-SHELLY_TELEGRAM_BOT_TOKEN=<from BotFather>
 ```
 
 **Do NOT add `ANTHROPIC_API_KEY`** — the bridge will refuse to start if it finds one.
@@ -61,17 +60,15 @@ SHELLY_TELEGRAM_BOT_TOKEN=<from BotFather>
 python bridge.py
 ```
 
-Both bots start polling. Stop with **Ctrl+C**.
+The Eco bot starts polling. Stop with **Ctrl+C**.
 
 ## How to test
 
 1. In Telegram, open your Eco bot by username → send `/start` → receive Eco's greeting.
 2. Send any message → routed to Claude Sonnet by default.
 3. Send a message containing decision/approval keywords (e.g. "I need you to approve this strategy") → automatically escalated to Claude Opus.
-4. Repeat for your Shelly bot: `/start`, then any message (Haiku default), or a drafting request (Sonnet escalation).
-5. After a conversation, inspect:
+4. After a conversation, inspect:
    - `memory/chats/eco/<chat_id>.json` — full conversation history
-   - `memory/chats/shelly/<chat_id>.json`
    - `memory/log.jsonl` — one JSON line per `/start` or message, with `ts`, `agent`, `chat_id`, `model`, `tokens_in`, `tokens_out`
 
 ## Architecture
@@ -82,10 +79,8 @@ Both bots start polling. Stop with **Ctrl+C**.
 | Claude auth | `CLAUDE_CODE_OAUTH_TOKEN` via `claude --print` subprocess (Claude Max subscription) |
 | Eco default model | `claude-sonnet-4-6` |
 | Eco escalated model | `claude-opus-4-8` (triggers on decision/approval keywords or message > 500 chars) |
-| Shelly default model | `claude-haiku-4-5` |
-| Shelly escalated model | `claude-sonnet-4-6` (triggers on draft/write keywords or message > 300 chars) |
-| System prompts | Loaded from `.claude/agents/Eco.md` and `Shelly.md`; YAML frontmatter stripped at startup |
-| Conversation history | Formatted as XML and passed to each `claude --print` call; persisted at `memory/chats/{eco,shelly}/{chat_id}.json`; capped at 20 messages / 40 000 chars |
+| System prompts | Loaded from `.claude/agents/Eco.md`; YAML frontmatter stripped at startup |
+| Conversation history | Formatted as XML and passed to each `claude --print` call; persisted at `memory/chats/eco/{chat_id}.json`; capped at 20 messages / 40 000 chars |
 | Event log | `memory/log.jsonl` — one line per event |
 | Subprocess threading | Blocking `claude` calls run in a thread-pool executor so the asyncio event loop stays responsive |
 
