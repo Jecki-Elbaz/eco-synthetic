@@ -557,18 +557,41 @@ def make_handlers(bot_name: str, system_prompt: str):
             err = str(exc)
             log.error("Claude CLI error (%s/%s): %s", bot_name, action, err)
             append_log(agent_display, chat_id, f"error:{action}", "none", None, None)
+            # exit1: with empty detail = claude CLI failed silently, almost
+            # always an expired CLAUDE_CODE_OAUTH_TOKEN.
+            _is_silent_exit1 = re.match(r"exit1:?\s*$", err) is not None
+            _has_auth_hint = re.search(
+                r"\b(auth|token|login|credential|unauthori[sz]ed|forbidden|expired)\b",
+                err, re.IGNORECASE,
+            ) is not None
             if "timeout" in err.lower():
                 user_msg = (
-                    f"[{agent_display}] Timed out ({CLAUDE_TIMEOUT}s) after retry. "
-                    "Please resend your message."
+                    f"⚠️ [{agent_display}] Timed out after {CLAUDE_TIMEOUT}s "
+                    f"({len(_RETRY_DELAYS) + 1} attempts exhausted).\n"
+                    f"Your message may be too long, or the model is under heavy load.\n"
+                    f"Please resend — shorter messages process faster."
                 )
             elif "notfound" in err.lower() or "not found" in err.lower():
                 user_msg = (
-                    f"[{agent_display}] Claude CLI not found. Bridge needs restart."
+                    f"❌ [{agent_display}] Claude CLI not found on PATH.\n"
+                    f"The bridge process needs a restart with the correct venv active.\n"
+                    f"On the bridge machine: activate the venv, then run: python bridge.py"
+                )
+            elif _is_silent_exit1 or _has_auth_hint:
+                user_msg = (
+                    f"\U0001f512 [{agent_display}] Auth error — Claude CLI rejected the "
+                    f"request silently (exit 1, no detail).\n\n"
+                    f"Your OAuth token has almost certainly expired. Fix:\n"
+                    f"1. On the bridge machine run: claude setup-token\n"
+                    f"2. Copy the new token into .env as CLAUDE_CODE_OAUTH_TOKEN\n"
+                    f"3. Restart bridge.py\n\n"
+                    f"(This has been failing for multiple days — re-auth is overdue.)"
                 )
             else:
                 user_msg = (
-                    f"[{agent_display}] Error (all retries failed): {err[:80]}. Please resend."
+                    f"❌ [{agent_display}] Unexpected error after all retries:\n"
+                    f"{err[:200]}\n\n"
+                    f"Check the bridge console log for the full trace. Please resend."
                 )
             await update.message.reply_text(user_msg)  # type: ignore[union-attr]
             return
