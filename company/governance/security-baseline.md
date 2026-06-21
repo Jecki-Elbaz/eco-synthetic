@@ -231,6 +231,7 @@ Rules:
 | date | scope | result | notes |
 |------|-------|--------|-------|
 | 2026-06-18 | Shelly shortlist batch (8 tools): 5 skills-il skills + Kol Zchut/Hebcal/Sefaria MCPs | CLEAR-WITH-CONDITIONS | Skills 1-5 CLEAR (SKILL.md scanned, clean). MCPs PARTIAL-CLEAR with mandatory pins: Kol Zchut @1.0.1, Hebcal @0.10.3 (BSD-2, fully local, zero egress), Sefaria SHA b8ceef7 (no tags -- SHA pin is a hard blocker; CC-BY-NC content = owner personal/orientation use only + attribution). Full report: company/governance/gate-review-shelly-shortlist-rambo.md |
+| 2026-06-21 | Shelly T-0028 cross-project flags: GR-008 (Sefaria MCP), GR-004 (linkedin skill tag), GR-009 (google_workspace MCP v1.21.3) | BLOCKED/MISMATCH/FLAG | GR-008: Sivan22 SHA b8ceef7 unresolvable -- Sivan22 shelved. Official Sefaria/sefaria-mcp v1.7.1 is candidate but 5 conditions must close before adopt. GR-004: tag v1.1.0-israeli-linkedin-strategy does not exist; correct tag is v1.0.2 (commit da2a48e); eco-synthetic gate-register row also needs correction. GR-009: taylorwilsdon/google_workspace_mcp v1.21.3 confirmed (commit f974a12); FLAG -- 6 conditions (C1-C6) before go-live; write blast-radius high; Eyal review pending; scope broader than eco-synthetic connectors. Full report: company/governance/gate-review-shelly-flags-rambo.md |
 
 ---
 

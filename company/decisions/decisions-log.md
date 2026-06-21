@@ -750,3 +750,24 @@ Format per entry:
   deleting the two merged REMOTE branches; decide on untracked Clippings/ + "To Sort/".
 - **Files affected:** company/governance/gate-register.md (C1 resolved), memory/board.md (T-0032 cmds,
   SHIR-004), company/processes/shelly-repo-sync-checklist.md (new), company/decisions/decisions-log.md (this entry).
+
+## 2026-06-21 -- Shelly T-0028 CERT-PARTIAL (mirror) + 3 cross-project flags processed
+
+- **Author / gate:** Shelly-repo session ran T-0028 (owner-reported); Eco mirrors the eco-synthetic side;
+  Rambo + Eyal processed the flags routed back via the shared/ channel.
+- **T-0028 = CERT-PARTIAL** (mirror of the Shelly repo): 3/4 conditions confirmed (Telegram token + bridge
+  live; 2h check-in wired at WAKEUP_INTERVAL=7200; granted-resources + gate-register rows present in live
+  files). Remaining condition: owner verifies google_workspace READ works -- closes once GR-009 C1 is in place.
+- **Cross-project channel WORKS both ways:** read Shelly's flags from C:\Users\Jecki\DEV\shared\handoff\
+  shelly-eco-flags-2026-06-21.md; wrote responses to shared/handoff/eco-shelly-flag-responses-2026-06-21.md.
+- **Flag verdicts (Rambo + Eyal; full: company/governance/gate-review-shelly-flags-rambo.md):**
+  - GR-004 LinkedIn skill: TAG MISMATCH -- real git tag is v1.0.2-israeli-linkedin-strategy (v1.1.0 was the
+    skill metadata version). Corrected in gate-register; Shelly to reinstall/confirm at v1.0.2. CLEAR after fix.
+  - GR-008 Sefaria: Sivan22 repo unresolvable + unmaintained -> SHELVE. Official Sefaria/sefaria-mcp is only a
+    candidate (SSRF vector, server-mode not stdio, license unconfirmed) -> fresh gate, 5 conditions. Stays
+    BLOCKED; recommendation: drop Sefaria for now. CC-BY-NC = owner personal-use + attribution if ever adopted.
+  - GR-009 google_workspace MCP (taylorwilsdon/google_workspace_mcp v1.21.3): PARTIAL-CLEAR. Shelly's instance
+    is broader than needed (10 services incl Gmail send/Drive delete). 6 conditions: C1 write/send/delete
+    deny-list (CRITICAL -- high injection-to-write risk), C2 scope-limit, C3 Rambo MIT+egress confirm, C4 owner-
+    own-data-only until DPA, C5 owner A1 on --single-user, C6 uv.lock. draft-only, no send without A1.
+- **Files affected:** company/governance/gate-register.md (GR-004 tag fix), company/governance/gate-review-shelly-flags-rambo.md (new, Rambo), company/governance/security-baseline.md (scan log), memory/board.md (T-0028 CERT-PARTIAL), shared/handoff/eco-shelly-flag-responses-2026-06-21.md (channel reply), company/decisions/decisions-log.md (this entry).

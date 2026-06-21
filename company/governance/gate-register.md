@@ -108,7 +108,7 @@ NO auto-update without Rambo approval (security-baseline). MIGRATED 2026-06-20: 
 | Financial statements | skills-il skill | `skills-il/accounting@v1.2.0-israeli-financial-reports` | free | orientation-only; not authoritative (Lital owns) |
 | VAT reporting | skills-il skill | `skills-il/tax-and-finance@v1.4.0-israeli-vat-reporting` | free | orientation-only; not authoritative (Lital owns) |
 | Employee tax refund | skills-il skill | `skills-il/tax-and-finance@v1.1.1-israeli-employee-tax-refund` | free | jecki's OWN data only; PPL+DPA before third-party data |
-| LinkedIn strategy | skills-il skill | `skills-il/marketing-growth@v1.1.0-israeli-linkedin-strategy` | free | internal draft only; no public posting without A1 + Eyal |
+| LinkedIn strategy | skills-il skill | `skills-il/marketing-growth@v1.0.2-israeli-linkedin-strategy` | free | TAG CORRECTED 2026-06-21 (Rambo GR-004): real git tag is v1.0.2 (v1.1.0 was the skill's metadata version, not a tag); slug israeli-linkedin-strategy. internal draft only; no public posting without A1 + Eyal |
 | Fact checker | skills-il skill | `skills-il/government-services@v1.0.0-israeli-fact-checker` | free | if it calls an external API, that endpoint needs its own gate row |
 | Kol Zchut / All Rights | MCP (skills-il) | `@skills-il/kolzchut-mcp@1.0.1` | free | pin @1.0.1; surface kolzchut attribution; orientation-only |
 | Hebrew calendar (Hebcal) | MCP (3rd-party) | `@hebcal/mcp@0.10.3` | free | BSD-2; fully local, zero egress; pin @0.10.3 |
