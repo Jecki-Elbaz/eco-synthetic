@@ -49,7 +49,7 @@ import re
 import shutil
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -385,6 +385,22 @@ def _build_prompt(history: list[dict]) -> str:
 
 _RETRY_DELAYS = (1, 2, 4, 8)  # exponential backoff delays in seconds (4 retries, 5 attempts)
 
+# ── Bridge health tracking ─────────────────────────────────────────────────────
+
+_bridge_start_ts: datetime = datetime.now(timezone.utc)
+_consecutive_failures: dict[str, int] = {}
+_last_success_ts: dict[str, datetime | None] = {}
+
+
+def _fmt_duration(td: timedelta) -> str:
+    total = int(td.total_seconds())
+    if total < 60:
+        return f"{total}s"
+    if total < 3600:
+        return f"{total // 60}m {total % 60}s"
+    h, m = total // 3600, (total % 3600) // 60
+    return f"{h}h {m}m"
+
 
 def call_claude_cli(
     system: str, history: list[dict], model: str, allowed_tools: list[str] | None = None
@@ -438,9 +454,19 @@ def call_claude_cli(
             stderr = result.stderr.decode("utf-8", errors="replace")
 
             if result.returncode != 0:
+                stderr_detail = stderr[:200].strip()
                 last_exc = RuntimeError(
-                    f"exit{result.returncode}:{stderr[:200].strip()}"
+                    f"exit{result.returncode}:{stderr_detail}"
                 )
+                # Auth failure: exit 1 with no stderr output is unrecoverable —
+                # the CLI fails silently when CLAUDE_CODE_OAUTH_TOKEN is expired.
+                # CLI not found (127) is also unrecoverable. Skip all retries.
+                if (result.returncode == 1 and not stderr_detail) or result.returncode == 127:
+                    log.error(
+                        "claude CLI unrecoverable exit %d — skipping retries",
+                        result.returncode,
+                    )
+                    raise last_exc
                 if attempt < len(_RETRY_DELAYS):
                     delay = _RETRY_DELAYS[attempt]
                     log.warning(
@@ -555,7 +581,9 @@ def make_handlers(bot_name: str, system_prompt: str):
         except Exception as exc:
             typing_task.cancel()
             err = str(exc)
-            log.error("Claude CLI error (%s/%s): %s", bot_name, action, err)
+            fail_count = _consecutive_failures.get(bot_name, 0) + 1
+            _consecutive_failures[bot_name] = fail_count
+            log.error("Claude CLI error (%s/%s) [failure #%d]: %s", bot_name, action, fail_count, err)
             append_log(agent_display, chat_id, f"error:{action}", "none", None, None)
             # exit1: with empty detail = claude CLI failed silently, almost
             # always an expired CLAUDE_CODE_OAUTH_TOKEN.
@@ -564,18 +592,21 @@ def make_handlers(bot_name: str, system_prompt: str):
                 r"\b(auth|token|login|credential|unauthori[sz]ed|forbidden|expired)\b",
                 err, re.IGNORECASE,
             ) is not None
+            _fail_suffix = f"\n(Failure #{fail_count} in a row — /status for bridge health)" if fail_count >= 3 else ""
             if "timeout" in err.lower():
                 user_msg = (
                     f"⚠️ [{agent_display}] Timed out after {CLAUDE_TIMEOUT}s "
                     f"({len(_RETRY_DELAYS) + 1} attempts exhausted).\n"
                     f"Your message may be too long, or the model is under heavy load.\n"
                     f"Please resend — shorter messages process faster."
+                    + _fail_suffix
                 )
             elif "notfound" in err.lower() or "not found" in err.lower():
                 user_msg = (
                     f"❌ [{agent_display}] Claude CLI not found on PATH.\n"
                     f"The bridge process needs a restart with the correct venv active.\n"
                     f"On the bridge machine: activate the venv, then run: python bridge.py"
+                    + _fail_suffix
                 )
             elif _is_silent_exit1 or _has_auth_hint:
                 user_msg = (
@@ -584,14 +615,15 @@ def make_handlers(bot_name: str, system_prompt: str):
                     f"Your OAuth token has almost certainly expired. Fix:\n"
                     f"1. On the bridge machine run: claude setup-token\n"
                     f"2. Copy the new token into .env as CLAUDE_CODE_OAUTH_TOKEN\n"
-                    f"3. Restart bridge.py\n\n"
-                    f"(This has been failing for multiple days — re-auth is overdue.)"
+                    f"3. Restart bridge.py"
+                    + _fail_suffix
                 )
             else:
                 user_msg = (
                     f"❌ [{agent_display}] Unexpected error after all retries:\n"
                     f"{err[:200]}\n\n"
                     f"Check the bridge console log for the full trace. Please resend."
+                    + _fail_suffix
                 )
             await update.message.reply_text(user_msg)  # type: ignore[union-attr]
             return
@@ -599,6 +631,8 @@ def make_handlers(bot_name: str, system_prompt: str):
             typing_task.cancel()
 
         # Step 4: deliver Claude's response as a second message.
+        _consecutive_failures[bot_name] = 0
+        _last_success_ts[bot_name] = datetime.now(timezone.utc)
         history.append({"role": "assistant", "content": reply})
         save_history(bot_name, chat_id, history)
         append_log(agent_display, chat_id, action, model, tokens_in, tokens_out)
@@ -667,7 +701,33 @@ def make_handlers(bot_name: str, system_prompt: str):
         # Regular user message: always send ack first.
         await _call_and_reply(update, history, model, "message", send_ack=True)
 
-    return on_start, on_tasks, on_message
+    async def on_status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        if update.effective_chat is None or update.message is None:
+            return
+        now = datetime.now(timezone.utc)
+        uptime = _fmt_duration(now - _bridge_start_ts)
+        failures = _consecutive_failures.get(bot_name, 0)
+        last_ok = _last_success_ts.get(bot_name)
+        if last_ok:
+            since_ok = f"{_fmt_duration(now - last_ok)} ago"
+        else:
+            since_ok = "none this session"
+        fail_line = f"Consecutive failures: {failures}"
+        if failures >= 3:
+            fail_line += " ⚠️  — auth likely expired"
+        lines = [
+            f"[{agent_display}] Bridge status",
+            f"Uptime: {uptime}",
+            f"Last success: {since_ok}",
+            fail_line,
+            f"Model (default): {ECO_DEFAULT_MODEL}",
+            f"Model (escalated): {ECO_ESCALATED_MODEL}",
+        ]
+        if failures >= 3:
+            lines.append("\nFix: claude setup-token → update .env → restart bridge.py")
+        await update.message.reply_text("\n".join(lines))
+
+    return on_start, on_tasks, on_message, on_status
 
 
 # ── Scheduled wake-up ─────────────────────────────────────────────────────────
@@ -733,14 +793,33 @@ async def main() -> None:
         sys.exit(1)
     log.info("claude CLI detected: %s", check.stdout.strip())
 
+    # Auth probe: verify the OAuth token is valid before accepting any messages.
+    # `--version` only checks the binary exists; it doesn't test auth.
+    log.info("Probing Claude auth (this may take ~10s)...")
+    auth_probe = subprocess.run(
+        [CLAUDE_CMD, "--print", "--model", ECO_DEFAULT_MODEL,
+         "--output-format", "json", "--allowedTools", "none", "ping"],
+        capture_output=True, text=True, timeout=30, check=False,
+    )
+    if auth_probe.returncode != 0 and not auth_probe.stdout.strip():
+        log.error(
+            "Claude auth probe FAILED (exit %d, stderr=%r). "
+            "Token is likely expired. Run: claude setup-token, "
+            "update CLAUDE_CODE_OAUTH_TOKEN in .env, then restart.",
+            auth_probe.returncode, auth_probe.stderr[:200],
+        )
+        sys.exit(1)
+    log.info("Claude auth probe OK.")
+
     eco_prompt = load_agent_prompt("Eco")
 
-    eco_start, eco_tasks, eco_msg = make_handlers("eco", eco_prompt)
+    eco_start, eco_tasks, eco_msg, eco_status = make_handlers("eco", eco_prompt)
 
     eco_app: Application = ApplicationBuilder().token(ECO_TOKEN).build()
 
     eco_app.add_handler(CommandHandler("start", eco_start))
     eco_app.add_handler(CommandHandler("tasks", eco_tasks))
+    eco_app.add_handler(CommandHandler("status", eco_status))
     eco_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, eco_msg))
 
     log.info(
