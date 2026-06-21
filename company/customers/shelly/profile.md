@@ -77,27 +77,22 @@ pushed to cloud). NOT yet installed anywhere -- ported as pins; a re-install at 
 - meeting-prep sub-agent (MIT): copy content, no clone-and-run.
 - whatsapp-mcp: NOT ported -- install-pending, fresh gated install (owner QR + Shir + 9 conditions); ON HOLD per owner.
 
-## Certification (T-0028) -- 2026-06-20, cross-project service
-- **Anat (HR):** CONDITIONAL. All readable documentation passes (role file complete, soul Core Block,
-  boundaries, proactive-but-gated duty, no-auto-update/pin policy, cross-project gate-routing,
-  least-privilege). Conditions = live-verification owner steps only (OAuth done + Google reading; .env
-  filled; 2h timer wired; gate-register + Granted-resources present in the live files). No doc failures.
-- **Rambo (Security):** Permission scan = LEAST-PRIVILEGE COMPLIANT (no write/send leakage; reads +
-  draft only). Findings:
-  - **Google connector pin (GR-009):** pin to **`workspace-mcp==1.21.3`** (PyPI-confirmed, MIT, 2026-06-17). Apply in .mcp.json.
-  - **skills-il pins:** record the FULL release tags (e.g. `v1.2.0-israeli-financial-reports`), not bare
-    versions -- the suffix is the skill id (multiple tags share a version number). The session installed
-    with full tags, so installs are correct; gate-register rows must use full tags.
-  - **CLEARED:** kolzchut-mcp@1.0.1 (MIT), @hebcal/mcp@0.10.3 (BSD-2).
-  - **CLEARED-WITH-CONDITIONS:** israeli-financial-reports, israeli-vat-reporting,
-    israeli-employee-tax-refund (**DPA hard gate: jecki own-data only; third-party data needs DPA review**),
-    israeli-fact-checker.
-  - **NEEDS-FULL-REVIEW (do NOT rely on yet):** israeli-linkedin-strategy (exact release tag unverified;
-    internal-draft-only regardless, public = A1+Eyal) and **Sefaria MCP** (repo URL/SHA/license could not
-    be verified -- 404; resolve repo + SHA + CC-BY-NC license before any reliance).
-  - **Eyal legal review** still PENDING on the Google MCPs.
-- **Net:** setup is sound and certified-conditional. Cleared tools are go for internal use; the two
-  flagged tools are blocked from reliance until confirmed.
+## Certification (T-0028) -- CERTIFIED 2026-06-21/22
+
+- **Status: CERTIFIED** (owner A1, jecki, 2026-06-21). All 4 conditions confirmed.
+- **Condition 1:** Telegram token present; bridge ran (HTTP 200 at startup). CONFIRMED.
+- **Condition 2:** 2h check-in wired (WAKEUP_INTERVAL=7200 in bridge.py). CONFIRMED.
+- **Condition 3:** Granted-resources section + gate-register rows present in live files. CONFIRMED.
+- **Condition 4:** google_workspace READ confirmed -- list_calendars returned 3 calendars including
+  delegated owner account (jecki.elbaz@gmail.com), --single-user transport. CONFIRMED 2026-06-22.
+
+- **Anat (HR):** CERTIFIED. All documentation passed; all live-verification conditions met.
+- **Rambo (Security):** LEAST-PRIVILEGE COMPLIANT. GR-009 write/send deny-list (C1-C6) in place;
+  GR-008 Sefaria SHELVED (Sivan22 dead); GR-004 tag corrected (v1.0.2); skills-il full tags recorded.
+  Eyal legal: GR-009 MIT confirmed; read-only personal-use scope cleared.
+- **Remaining open items (non-blocking):** DPA required before GR-003 processes third-party data;
+  GR-008 Sefaria needs fresh gate if ever re-opened; GR-004 LinkedIn internal-draft-only until public A1+Eyal.
+- **Full cross-project flag record:** company/governance/gate-review-shelly-flags-rambo.md
 
 ## Financial (owned by Lital, CFO)
 - Billing: $0 / month.
@@ -117,3 +112,6 @@ pushed to cloud). NOT yet installed anywhere -- ported as pins; a re-install at 
   (local-only, never pushed) surfaced. Folded the standing-services arrangement, the carried grants
   (paper grants; first install = owner A1), and the shared/ drop-folder channel into this file. Tool
   installs + the T-0028 certification are to run inside Shelly's repo as her first post-move milestone.
+- 2026-06-21/22 -- T-0028 CERTIFIED -- owner (A1). All 4 conditions confirmed. google_workspace
+  (workspace-mcp==1.21.3, --single-user) reading live; delegation to jecki.elbaz@gmail.com active.
+  GR-009 C1-C6 enforced; GR-008 shelved; GR-004 tag corrected. Shelly fully operational.
