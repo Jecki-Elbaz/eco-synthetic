@@ -132,7 +132,7 @@ pin; re-check version-currency at point of use (IIA/tax/Amendment-13 rules chang
 |------|----------------|---------|-----------|
 | Startup Toolkit | `skills-il/developer-tools@v1.2.0-israeli-startup-toolkit` | CLEAR | orientation-only; version-currency at use; filings need counsel + accountant |
 | Legal research | `skills-il/security-compliance@v1.3.0-hebrew-legal-research` | CLEAR | verify AI citations vs primary sources before reliance; no privileged data in session |
-| Privacy shield (Amendment 13) | `skills-il/security-compliance@v1.4.1-israeli-privacy-shield` | PARTIAL-CLEAR | C1: confirm exact install command before running (clipping lacked it); DPA before any real personal-data use |
+| Privacy shield (Amendment 13) | `skills-il/security-compliance@v1.4.1-israeli-privacy-shield` | CLEAR | C1 RESOLVED 2026-06-21: slug confirmed `israeli-privacy-shield` -> `CI=true npx skills-il@1.10.0 add skills-il/security-compliance@v1.4.1-israeli-privacy-shield --skill israeli-privacy-shield -a claude-code`. DPA before any real personal-data use |
 
 ---
 

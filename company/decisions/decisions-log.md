@@ -727,3 +727,26 @@ Format per entry:
 - **Files affected:** company/governance/tool-library-catalog.md (new), company/governance/gate-register.md
   (formation-batch section), company/governance/gate-review-formation-batch-rambo.md (new, Rambo),
   memory/board.md (catalog-ownership task).
+
+## 2026-06-21 -- Branch reconciliation to master + open-issue sweep
+
+- **Author / gate:** jecki (owner asked to sync sessions/branches cleanly, no data loss) + Eco (execution).
+- **Decision / actions:**
+  1. **Reconciled to master (d7a1740, pushed):** merged the tool-governance session branch + the
+     shelly-separation-plan branch (Shelly executed: decommission, customers/ scaffolding, T-0028 cert
+     record) into master via an integration branch. Conflicts resolved: Shelly role file removed (moved);
+     ALL log/decision entries unioned (no loss); derived summaries kept current. bridge.py auto-merged.
+  2. **Preserved, not merged:** wip/bridge-status-done = the alternate bridge.py from the "bridge status
+     done" session (differs from master's). PR #5 opened for Shir to reconcile (SHIR-004).
+  3. **Privacy-shield C1 RESOLVED:** slug confirmed `israeli-privacy-shield`; full install command recorded
+     (gate-register + board T-0032). Formation batch now fully ready for owner install.
+  4. **T-0028 cert** read from the merged company/customers/shelly/profile.md: CERTIFIED-CONDITIONAL
+     (Anat docs pass; remaining = owner live-steps in HER repo + Sefaria repo/SHA fix + Eyal Google-MCP
+     review). Captured in the Shelly-repo sync checklist.
+  5. **Tidy:** deleted merged LOCAL branches (chore, integration); kept master + wip + remotes. eco-hr-flags
+     left as-is (its CHANGELOG already on master).
+- **Still owner/cross-repo (cannot do from eco-synthetic):** install the formation batch + whatsapp-mcp
+  (owner terminal); sync the Shelly repo per company/processes/shelly-repo-sync-checklist.md; decide on
+  deleting the two merged REMOTE branches; decide on untracked Clippings/ + "To Sort/".
+- **Files affected:** company/governance/gate-register.md (C1 resolved), memory/board.md (T-0032 cmds,
+  SHIR-004), company/processes/shelly-repo-sync-checklist.md (new), company/decisions/decisions-log.md (this entry).
