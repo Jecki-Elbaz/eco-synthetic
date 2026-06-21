@@ -568,7 +568,7 @@ def make_handlers(bot_name: str, system_prompt: str):
                 )
             else:
                 user_msg = (
-                    f"[{agent_display}] Error (attempt 2/2): {err[:80]}. Please resend."
+                    f"[{agent_display}] Error (all retries failed): {err[:80]}. Please resend."
                 )
             await update.message.reply_text(user_msg)  # type: ignore[union-attr]
             return
