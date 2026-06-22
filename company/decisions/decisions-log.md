@@ -835,3 +835,85 @@ Owner (jecki) A1 this session, in an authenticated Claude Code session.
   delete 124 lines of the now-canonical error handling -> SUPERSEDED; PR #5 to be closed. No content lost
   (branch preserved in git history). Shelly-removal already on master.
 - Net version state after this: ONE canonical bridge.py on master; dmsgfw merged; PR #5 closed.
+
+---
+
+## 2026-06-22 -- DAL-003: Decisions-log reconciliation audit (Q&G, Dalia)
+
+- **Author / gate:** Dalia (Q&G, A3 -- audit finding; no existing entries edited; append only).
+- **Purpose:** Flag near-duplicate and conflicting entries so readers know which entry governs.
+  No entries are removed or modified; this note provides "see also" / "supersedes" pointers only.
+
+**Pair 1 -- Ido double-certification (2026-06-16)**
+- Entry A: "Ido (VP R&D) created and certified; go-live approved (A1)" (2026-06-16, R&D-wave session).
+- Entry B: "Five P1 agents certified and go-live approved; .claude/agents/ read grant (A1)" (2026-06-16, bridge-config session).
+- Resolution documented in: "Merge reconciliation: Ido double-certification incident" (2026-06-16).
+  Entry A is the canonical Ido cert record (master; more detailed competency artifacts).
+  Entry B's Ido portion is superseded by Entry A for the role file; Noam/Lital/Dalia/Assaf/Eyal portions of Entry B are net-new and remain authoritative.
+- See also: T-0002 file-locking decision (permanent fix for concurrent-session collisions).
+
+**Pair 2 -- Eyal certification: two authoritative-looking entries**
+- Entry A: "Eyal (Legal) certified and go-live approved (A1)" (2026-06-16) -- standalone, detailed.
+- Entry B: "Full hiring run launched; Eyal go-live" (2026-06-17) -- references Eyal as activated in that run.
+- No conflict: Entry A is the primary Eyal certification record (full Stage B detail). Entry B's Eyal reference confirms zero-condition auto-go-live under the standing pre-authorization -- it is a status confirmation, not a second certification.
+  Entry A is canonical for Eyal's cert. Entry B is a run-status log.
+
+**Pair 3 -- Shelly separation: four entries with apparent contradictions**
+- Entry A: "Shelly separated into standalone personal-assistant project" (2026-06-13) -- logged; NOT executed.
+- Entry B: "Shelly stays in eco-synthetic for now; decommission deferred" (2026-06-13) -- same-day reversal; Entry A deferred.
+- Entry C: "Shelly separation: customer-relationship scaffolding established (Phase B1)" (2026-06-17) -- additive pre-separation scaffold; not the decommission.
+- Entry D: "Shelly separation EXECUTED (Phase B4/B5)" (2026-06-20) -- actual decommission.
+- Entry E: "Shelly migration reconciled with Eco's 2026-06-18 handover/audit" (2026-06-20) -- reconciliation addendum to Entry D.
+- Entry F: "Shelly separation EXECUTED (owner-reported); eco-synthetic-side records closed (mirror)" (2026-06-20) -- company-side mirror log of the same event.
+- Reading order: B supersedes the execution intent of A; C is additive preparation; D is the actual execution; E and F are addenda to D.
+  Canonical sequence for understanding the separation: B -> C -> D -> E+F.
+  Entry A's logged-but-not-executed status is explicitly resolved by Entry B.
+
+**Pair 4 -- Dalia go-live: two entries both claim to activate Dalia**
+- Entry A: "Five P1 agents certified and go-live approved" (2026-06-16) -- lists Dalia as one of the five.
+- Entry B: "GO-LIVE: 7 P1 agents activated (owner A1 batch)" (2026-06-17) -- also lists Dalia as going live in the batch.
+- Resolution: Entry A (2026-06-16) was produced by the bridge-config branch session and was not on master at the time Entry B ran (2026-06-17). Entry B is the canonical go-live event (master, owner A1 reviewed per-item, conditions resolved). Entry A's Dalia portion is superseded by Entry B as the operational go-live record. Both entries are retained in full per the append-only rule; Entry A's Dalia cert documentation supplements but does not replace Entry B.
+
+**Pair 5 -- T-0028 (Shelly post-move certification): CERTIFIED vs CERT-PARTIAL conflict**
+- Entry A: "ONB-013 closed: Sally go-live; T-0028 closed: Shelly CERTIFIED" (2026-06-21) -- owner A1 closes all 4 conditions; Shelly = CERTIFIED.
+- Entry B: "Shelly T-0028 CERT-PARTIAL (mirror) + 3 cross-project flags processed" (2026-06-21) -- records CERT-PARTIAL status from the Shelly-repo session (only 3/4 conditions confirmed at that point).
+- Resolution: Entry B describes the Shelly-repo session state at the time of the mirror; Entry A records the owner's subsequent A1 confirmation closing the 4th condition (google_workspace READ verified). Entry A is the final status. Shelly is CERTIFIED (all 4 conditions met). Entry B is the interim process record; Entry A supersedes it on final status.
+  See also: company/customers/shelly/profile.md (authoritative cert record).
+
+- **Files affected:** company/decisions/decisions-log.md (this note appended; no existing entries modified).
+
+## 2026-06-22 -- T-0005 compliance backlog legal-leg review (Eyal, A3)
+
+- **Author / gate:** Eyal (Legal, A3 -- compliance-backlog write is Eyal's domain per role file).
+- **Decision / action:** Completed the legal-leg review pass across all compliance-backlog items as T-0005
+  (first Eyal activation task, joint with Lital/CFO). Restructured compliance-backlog.md: each item now has
+  a LEGAL LEG block (Eyal) and a FINANCE LEG block (Lital). All 5 existing items reviewed; 1 new item added.
+- **Per-item findings summary:**
+  - Item 1 (Israeli registration): Ltd recommended; est. 1-3 days; est. ILS 2,600 fee; Rasham online.
+    A1 required for filing. 30-day flag trigger added. FINANCE leg for Lital (bank, share structure).
+  - Item 2 (VAT / invoicing): blocked on Item 1; Israeli Maam 18%; Osek Murshe recommended from day one;
+    digital invoice reporting obligations to confirm. No independent legal action until Item 1 complete.
+    FINANCE leg for Lital (GreenInvoice, template, series).
+  - Item 3 (Privacy / DPA): HIGH RISK. DPA template not drafted; privacy notice not drafted. Amendment 13
+    obligations confirmed (72h breach notification; enhanced consent; DPO threshold TBC). GDPR exposure if
+    EU customers targeted. Israeli adequacy decision noted. DPA template required before any customer data
+    intake; A1 to issue to a customer. privacy-shield skill confirmed orientation-only. DPA-with-Anthropic
+    flag carried from whatsapp-mcp C6. FINANCE leg for Lital (insurance, DPO cost if triggered).
+  - Item 4 (ISO readiness): no legal action required now. ISO 9001/27001 voluntary; no Israeli mandate.
+    Certification is A1 if triggered by a customer contract. Trigger monitoring assigned to Dalia.
+  - Item 5 (Google account migration): no legal blocker on migration. Domain purchase is A1 (cost). Anti-spam
+    compliance required before first marketing email. Gate-register rows update needed on auth change (owner A1
+    for .env). FINANCE leg for Lital (Workspace subscription cost, domain cost).
+  - Item 6 NEW (Anthropic DPA): BLOCKED -- Eyal cannot review Anthropic terms without WebFetch or the owner
+    providing the terms text. MEDIUM-HIGH risk. Must resolve before WhatsApp bridge or any customer-data
+    LLM workflow goes live. Escalation to Eco/jecki required (see escalation section below).
+- **Escalations to Eco (two items):**
+  1. ESCALATION -- Anthropic DPA (Item 6): Eyal needs one of (a) owner provides Anthropic terms/DPA text,
+     (b) Eyal granted WebFetch via the tool gate, or (c) legal-research skill installed (T-0032) and used
+     to locate the terms. Owner decision required; any DPA execution is A1.
+  2. ESCALATION -- privacy/DPA blocking gate: no third-party personal data may enter any LLM workflow
+     until Item 3 DPA template + privacy notice are A1-approved. Eco to ensure this gate is enforced.
+- **Finance-leg status:** all FINANCE LEG blocks in the backlog file are marked for Lital (CFO) review.
+  No finance-leg content was authored by Eyal. Lital's pass is the next step on T-0005.
+- **Files affected:** company/governance/compliance-backlog.md (full restructure + legal-leg review),
+  memory/board.md (T-0005 -> in-progress), company/decisions/decisions-log.md (this entry).
