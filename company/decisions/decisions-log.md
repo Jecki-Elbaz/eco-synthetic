@@ -821,3 +821,17 @@ Owner (jecki) A1 this session, in an authenticated Claude Code session.
 - Files: integrations/telegram-bridge/bridge.py (fix), company/governance/schedules.md (rows),
   memory/board.md (T-0033, SHIR-001, SHIR-005), company/governance/proposals/proactivity-program-plan.md
   (Appendix C), this entry.
+
+**RECONCILIATION (same day, after merge to master) -- SHIR-001/004 bridge.py versions:**
+- Discovered a parallel session had independently fixed the same bridge outage on origin/master
+  (commits 6bc7840 / 03301ad / 18bf4b6, via branch claude/bridge-error-investigation-dmsgfw, already
+  merged remotely). Their rewrite is a strict SUPERSET of my interim diagnostics: startup auth probe,
+  silent-exit1 detection (skip futile retries), human-friendly auth-error messages to the user, a
+  /status command, and consecutive-failure tracking.
+- Merge 49b092c: bridge.py taken from origin/master wholesale; my redundant edits dropped. All other
+  files merged clean. The auth-probe + actionable-error fix is LIVE on master; owner runtime action
+  (claude setup-token + setx + restart) is unchanged.
+- SHIR-004 RESOLVED: master is canonical. wip/bridge-status-done (PR #5) is an older cleanup that would
+  delete 124 lines of the now-canonical error handling -> SUPERSEDED; PR #5 to be closed. No content lost
+  (branch preserved in git history). Shelly-removal already on master.
+- Net version state after this: ONE canonical bridge.py on master; dmsgfw merged; PR #5 closed.
