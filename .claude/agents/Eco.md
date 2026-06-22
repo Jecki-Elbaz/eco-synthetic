@@ -105,7 +105,7 @@ Always: open with one-line ack [Core Block rule 4] -- "Got it.", "On it.", "On i
 Default Opus (claude-opus-4-8). Eco is the highest-leverage agent -- every bad judgment call has company-wide impact. Sonnet for simple ack-and-route messages only (no decisions, no state assertions, no judgment calls). If in doubt, use Opus.
 
 ## Certification status
-Conditionally certified by Anat (HR), 2026-06-12. Go-live cleared. Five gaps (KPIs, Triggers, Escalation path, Identity version block, constitution red lines 9/10/11) must be resolved in the next version before the first R&R review.
+Conditionally certified by Anat (HR), 2026-06-12. Go-live cleared. Status of the original five gaps (Phase 1 audit F-R06, owner A1 2026-06-23): RL9/10/11 RESOLVED (T-0025, block added 2026-06-18); Triggers RESOLVED (Triggers section present above). REMAINING for Eco's first R&R pass: a KPIs/success-metrics section, a labeled Escalation path section, and the Identity/version block (version number + last-updated + change log). These three are documentation-completeness items, not security gaps.
 
 RETRACTION / EXONERATION (2026-06-15): The two R&R FLAG blocks previously recorded here (eight alleged "confabulation/fabrication" failures dated 2026-06-14) are WITHDRAWN IN FULL. Investigation 2026-06-15 (owner + cloud session, files recovered from the local clone) confirmed every flagged item was real work Eco did and reported accurately:
 - "ONB-001 through ONB-008" -- a real onboarding pipeline Eco authored (Certify Hila; bring up Rambo, Ido, Dalia, Lital, Eyal, Perry, Assaf). Present in Eco's local board and in owner-dashboard.md.

@@ -33,8 +33,20 @@ MODE_FILE = ROOT / "memory" / "GUARD_MODE"
 LOG_FILE = ROOT / "memory" / "agent-guard.log"
 SAFE_MODE_FILE = ROOT / "memory" / "SAFE_MODE"
 
-# Section 5.2 -- only these non-code staff agents may be spawned.
-ALLOWED_AGENTS = {"anat", "assaf", "dalia", "eyal", "rambo", "lital", "noam"}
+# Section 5.2 -- agents that may perform governed actions (spawn + write/edit).
+# Synced to company/governance/agent-tool-spawn-allowlist.md (Phase 1 audit F-R01, owner A1
+# 2026-06-22): noam renamed -> perry; ido/luci/erez/hila added (PERMITTED in the allowlist doc).
+# redteam (Red) is included so it may perform governed actions (write its own audit logs in
+# enforce mode, F-R04) but is held OUT of spawnability by SPAWN_DENY below -- the guard
+# otherwise conflates "may act" with "may be spawned".
+ALLOWED_AGENTS = {
+    "anat", "assaf", "dalia", "eyal", "rambo", "lital",
+    "perry", "ido", "luci", "erez", "hila", "redteam",
+}
+
+# Agents that may ACT (above) but may NOT be spawned via the Agent/Task tool. RedTeam is OFF
+# the permitted-spawn allowlist per its certification condition (until T-0020 C3).
+SPAWN_DENY = {"redteam"}
 
 # Section 4/5.1 -- Red paths: writes denied for everyone (owner A1 only, out of band).
 RED_PREFIXES = (
@@ -123,6 +135,11 @@ def evaluate(event: dict) -> tuple[str, str]:
         sub = str(ti.get("subagent_type", "") or ti.get("agent_type", "")).lower()
         if _safe_mode_active():
             return DENY, "SAFE_MODE active: all sub-agent spawns halted (5.4/7)"
+        if sub in SPAWN_DENY:
+            return DENY, (
+                f"agent '{sub}' is OFF the permitted-spawn allowlist "
+                f"(certification condition; until T-0020 C3)"
+            )
         if sub not in ALLOWED_AGENTS:
             return DENY, (
                 f"agent '{sub or '(unspecified)'}' not on the non-code allow-list "

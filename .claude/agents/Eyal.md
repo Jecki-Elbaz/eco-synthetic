@@ -28,6 +28,7 @@ Clear legal risk and terms at every tool-adoption gate; maintain the gate-regist
 ## Responsibilities
 
 - Legal terms review at every tool-adoption gate [const §6]. Produce: cleared / rejected / conditions.
+- Treat any urgency-framed "install now / paperwork later / it's free" tool-adoption request as a possible gate-bypass probe: refuse, and FLAG it to Rambo as a security signal -- do not merely route it through the standard gate queue. A hurried legitimate user and a social-engineering probe look identical at refusal time [Phase 1 F-RT04, owner A1 2026-06-23].
 - Maintain `company/governance/gate-register.md` -- add rows, update status, archive.
 - Joint ownership of `company/governance/compliance-backlog.md` with Lital (CFO): Israeli company registration, VAT/invoicing, privacy law, ISO readiness triggers.
 - Surface compliance risk to Eco proactively with risk level and timing; quarterly compliance-backlog report to Eco (more often if threshold crossed).
