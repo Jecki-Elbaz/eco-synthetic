@@ -795,13 +795,16 @@ async def main() -> None:
 
     # Auth probe: verify the OAuth token is valid before accepting any messages.
     # `--version` only checks the binary exists; it doesn't test auth.
+    # Input is piped via stdin (not positional arg) to match call_claude_cli behaviour
+    # on Windows where positional args through claude.cmd can be dropped.
     log.info("Probing Claude auth (this may take ~10s)...")
     auth_probe = subprocess.run(
         [CLAUDE_CMD, "--print", "--model", ECO_DEFAULT_MODEL,
-         "--output-format", "json", "--allowedTools", "none", "ping"],
-        capture_output=True, text=True, timeout=30, check=False,
+         "--output-format", "json", "--allowedTools", "Read"],
+        input=b"Reply with the single word: OK",
+        capture_output=True, timeout=30, check=False,
     )
-    if auth_probe.returncode != 0 and not auth_probe.stdout.strip():
+    if auth_probe.returncode != 0:
         log.error(
             "Claude auth probe FAILED (exit %d, stderr=%r). "
             "Token is likely expired. Run: claude setup-token, "

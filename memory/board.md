@@ -130,8 +130,8 @@ agent live / on 2nd use). Each agent proposes skills for its own repeated tasks;
 
 | task_id | short_desc | status | detailed_desc | triggered_by | assigned_to | created | due | priority |
 |---------|------------|--------|---------------|--------------|-------------|---------|-----|----------|
-| HIL-001 | Brand basics (logo, palette, type) | blocked | Brand basics: logo, palette, typography -- present options for A1. Blocked on Hila certification. | Hila role file | Hila | 2026-06-12 | after certification | P2 |
-| HIL-002 | Agent avatars style choice | blocked | Agent avatars: present style choice (Badge vs Persona) for A1. Blocked on Hila certification. | Hila role file | Hila | 2026-06-12 | after certification | P2 |
+| HIL-001 | Brand basics (logo, palette, type) | in-progress | Brand direction options (A/B/C) drafted 2026-06-22. File: marketing/brand/brand-draft-2026-06-22.md. Awaiting owner A1 on chosen direction before visual mockup. | Hila role file | Hila | 2026-06-12 | awaiting A1 | P2 |
+| HIL-002 | Agent avatars style choice | in-progress | Badge vs Persona comparison + draft recommendation (Badge-with-color-coding) drafted 2026-06-22. File: marketing/brand/brand-draft-2026-06-22.md. Awaiting owner A1. | Hila role file | Hila | 2026-06-12 | awaiting A1 | P2 |
 | HIL-003 | LinkedIn page setup | blocked | LinkedIn page: set up once domain + company email available. Blocked on S-0002, S-0003. | Hila role file | Hila | 2026-06-12 | after S-0002+S-0003 | P2 |
 | HIL-004 | Secure social handles | blocked | Secure social handles for Eco-Synthetic. Blocked on domain. | Hila role file | Hila | 2026-06-12 | after domain | P3 |
 
