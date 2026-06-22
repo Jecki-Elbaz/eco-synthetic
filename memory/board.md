@@ -190,7 +190,7 @@ until T-0020 C3. B5 flags: Adi has Bash (QA); Zvika has WebSearch/WebFetch (gate
 
 | task_id | short_desc | status | detailed_desc | triggered_by | assigned_to | created | due | priority |
 |---------|------------|--------|---------------|--------------|-------------|---------|-----|----------|
-| IDO-001 | Open Shir sprint -- SHIR-004 then SHIR-001 | open | URGENT -- owner escalated 2026-06-22: do this NOW, not tomorrow. Ido to open Shir's first sprint immediately. Priority: (1) SHIR-004 first -- reconcile the two bridge.py versions (prerequisite -- Shir must know which file to touch before writing code); (2) SHIR-001 immediately after -- bridge async ack + direct Telegram push for scheduled messages (fixes the missing briefings). Target: SHIR-004 within hours, SHIR-001 today. Briefings have not arrived for 4+ days (outbound Telegram push broken) -- owner is waiting. Eco cannot reach Ido or Shir directly from the bridge session -- Ido must pick this up in next Claude Code session. | jecki 2026-06-22 | Ido | 2026-06-21 | TODAY 2026-06-22 | P1 |
+| IDO-001 | Open Shir sprint -- SHIR-004 then SHIR-001 | done | DONE 2026-06-22 (Ido). Sprint plan written: company/r-and-d/shir-sprint-001.md. SHIR-004: resolved (master canonical, PR #5 superseded -- Shir to close via Bash/web). SHIR-001: async ack + auth probe code already on master; blocked on owner runtime action (claude setup-token + setx + restart fresh shell), then Shir verification pass. No code work remains for SHIR-001 -- only owner token action + Shir's post-restart verification. | jecki 2026-06-22 | Ido | 2026-06-21 | done 2026-06-22 | P1 |
 
 ---
 
