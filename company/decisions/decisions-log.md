@@ -751,6 +751,13 @@ Format per entry:
 - **Files affected:** company/governance/gate-register.md (C1 resolved), memory/board.md (T-0032 cmds,
   SHIR-004), company/processes/shelly-repo-sync-checklist.md (new), company/decisions/decisions-log.md (this entry).
 
+## 2026-06-21 -- ONB-013 closed: Sally (VP Sales) formally live; T-0028 closed: Shelly CERTIFIED
+
+- **Author / gate:** jecki (owner, A1) -- role-file identity-block correction is A1 [red line 6]; cert completion is A1.
+- **ONB-013 (Sally / VP Sales go-live):** Owner A1 granted 2026-06-21. Sally.md certification-status block already read "CERTIFIED + LIVE 2026-06-17 (owner A1, jecki)" -- the functional go-live was 2026-06-17 (same session as Gal, Shir, Hila, then role file was renamed Tim -> Sally 2026-06-18). Gap closed: the Identity "Approved by" line still read "pending certification (B3-B7)" -- stale text carried through the rename. This A1 authorizes correcting that line. Identity-block update requires a Claude Code session (bridge read-only gate for .claude/agents/); board ONB-013 marked done. Sally is operationally LIVE with full Sales authority (Hila manager, Alex manager) -- the identity-block correction is cosmetic.
+- **T-0028 (Shelly post-move certification):** Owner A1 granted 2026-06-21 -- jecki confirmed google_workspace READ works and GR-009 C1 (write/send deny-list) is in place. This closes the 4th and final condition. Shelly is now CERTIFIED. All conditions met: (1) Telegram token + bridge live; (2) 2h check-in wired; (3) granted-resources + gate-register rows present; (4) google_workspace READ confirmed by owner. Full cert record in company/customers/shelly/profile.md.
+- **Files affected:** memory/board.md (ONB-013 -> done; T-0028 -> done), company/decisions/decisions-log.md (this entry). Pending (Claude Code): Sally.md Identity "Approved by" line correction.
+
 ## 2026-06-21 -- Shelly T-0028 CERT-PARTIAL (mirror) + 3 cross-project flags processed
 
 - **Author / gate:** Shelly-repo session ran T-0028 (owner-reported); Eco mirrors the eco-synthetic side;
@@ -771,3 +778,46 @@ Format per entry:
     deny-list (CRITICAL -- high injection-to-write risk), C2 scope-limit, C3 Rambo MIT+egress confirm, C4 owner-
     own-data-only until DPA, C5 owner A1 on --single-user, C6 uv.lock. draft-only, no send without A1.
 - **Files affected:** company/governance/gate-register.md (GR-004 tag fix), company/governance/gate-review-shelly-flags-rambo.md (new, Rambo), company/governance/security-baseline.md (scan log), memory/board.md (T-0028 CERT-PARTIAL), shared/handoff/eco-shelly-flag-responses-2026-06-21.md (channel reply), company/decisions/decisions-log.md (this entry).
+
+---
+
+## 2026-06-22 -- Proactivity Program (P2 approved, P3 proceed) + Telegram bridge auth root-cause + diagnostic fix
+
+Owner (jecki) A1 this session, in an authenticated Claude Code session.
+
+**Proactivity Program (board T-0033; plan: company/governance/proposals/proactivity-program-plan.md):**
+- P2 APPROVED (A1): Tier-1 interval triggers -- Eco morning brief + evening summary (formalize; already
+  running), Assaf daily cost snapshot + weekly fitness/usage + monthly on-demand review (T-0009), Rambo
+  weekly permission-drift scan. Rows added to schedules.md (Assaf owns; status APPROVED; ACTIVATE once
+  bridge delivery is restored). Oracle daily chronicle sweep stays BLOCKED on T-0020 C3 (off spawn-allowlist).
+- P3 PROCEED (A1): event-trigger build (Shir, new SHIR-005) + Tier-2 interval triggers (Lital+Eyal weekly
+  compliance, Dalia weekly quality audit, Ido dashboard refresh). Shir uptime monitor + MeetingPrep event
+  trigger remain gated on the event build + T-0020 C3.
+- OWNERSHIP (owner directive): Assaf owns the program + the trigger-cost budget; Eco OVERSEES -- every
+  evening summary carries a per-trigger health block (last-run vs cadence); a missed fire = process miss,
+  escalate to owner before slip. Template = plan Appendix C.
+- Gated/on-demand agents (Zvika/Roman/Erez/Luci/Sami) get NO auto-trigger by design (red line 9).
+- All triggers run inside the autonomy-supervision regime (SAFE_MODE, hooks, agent-runs.jsonl).
+
+**Telegram bridge delivery outage (SHIR-001) -- ROOT CAUSE FOUND 2026-06-22:**
+- Symptom (~7 days): every message + scheduled briefing failed; board/log read "Telegram delivery broken."
+- Actual cause: inbound Telegram is FINE (getUpdates / sendChatAction return 200 OK). The `claude` CLI
+  subprocess exits 1 fast with EMPTY stderr, so Eco never produces a reply and nothing is sent. NOT a
+  Telegram problem -- a Claude-CLI auth problem inside the bridge process.
+- Why it was opaque: with --output-format json, auth errors print to STDOUT, but the bridge logged only
+  stderr[:200] (blank). And the startup --version check returns 0 even when auth is dead, so the bridge
+  booted "healthy" then failed silently on every message.
+- Auth state verified this session: CLAUDE_CODE_OAUTH_TOKEN UNSET at user+machine scope;
+  ~/.claude/.credentials.json present and WORKING (a reproduced --print call succeeded and billed normally).
+  Highest-probability cause: the live bridge process runs with broken auth in its own launch environment
+  (stale/expired token from launch, or token removed after launch). The new auth probe confirms on restart.
+- CODE FIX LANDED (master, integrations/telegram-bridge/bridge.py, compiles clean): (1) on non-zero exit,
+  log stdout too -- not just stderr; (2) startup AUTH PROBE -- a real --print call; the bridge now refuses
+  to boot with a clear remediation message if auth fails, instead of failing per-message forever. MUST be
+  carried into the SHIR-004 reconciliation (PR #5).
+- REMAINING OWNER ACTION (not automatable -- interactive OAuth + credentials handling, red line 1): mint/
+  refresh the token (`claude setup-token`), `setx CLAUDE_CODE_OAUTH_TOKEN "<token>"`, then restart the
+  bridge in a FRESH shell. The approved triggers activate once this is done.
+- Files: integrations/telegram-bridge/bridge.py (fix), company/governance/schedules.md (rows),
+  memory/board.md (T-0033, SHIR-001, SHIR-005), company/governance/proposals/proactivity-program-plan.md
+  (Appendix C), this entry.

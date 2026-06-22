@@ -14,14 +14,14 @@ UX/UI Designer (equipped for Claude design tools); RL9/10/11 added to Eco/Shir/E
 
 - OWNER: jecki (L1)
 - CEO: Eco (L2)
-- OWNER OFFICE (-> jecki): Shelly (Office Manager -- running, HR-cert pending), Luci (Devil's Advocate), Erez (Investor, on-demand)
+- OWNER OFFICE (-> jecki): Shelly (SEPARATED 2026-06-20 -- now external customer in company/customers/shelly/; CERTIFIED 2026-06-21 via T-0028 cross-project service), Luci (Devil's Advocate), Erez (Investor, on-demand)
 - CEO STAFF (-> Eco): Anat (HR), Rambo (Security), Dalia (Q&G) [+ Yael (Knowledge/Doc Mgr) under Dalia], Assaf (Op-Ex) [+ Yossi (Training) under Assaf -- staged], Lital (CFO), Eyal (Legal), Oracle (Build-Historian; dotted Dalia + Hila), Zvika (Research, on-demand)
 - R&D -- VP Ido (also holds CTO scope): Gal (Lead Dev), Shir (DevOps), Oren (Senior Dev/reviewer), Roman (Algorithm, on-demand), Adi (QA)
 - PRODUCT -- VP Perry: Tal (UX/UI Designer), Sami (SME Advisor, on-demand per-project)
 - SALES -- VP Sally: Hila (Marketing, full track), Alex (Sales Execution), MeetingPrep (Meeting Prep Specialist, on-demand)
 - CUSTOMER SUCCESS -- VP Mike: Jenny (Customer Support), Jack (CSM + Account Manager), Ella (Customer Trainer)
 
-Live tally: 29 certified + live; Shelly running (cert pending); Yossi staged (B3 next session). 31 agent files total.
+Live tally: 29 certified + live (internal); Shelly CERTIFIED (external customer, T-0028 done 2026-06-21); Yossi staged (B3 next session). 30 agent files (Shelly separated). ONB-013 done 2026-06-21 (Sally VP Sales formally closed).
 
 ### Persona / addressing registry
 

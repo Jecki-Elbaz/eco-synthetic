@@ -438,9 +438,15 @@ def call_claude_cli(
             stderr = result.stderr.decode("utf-8", errors="replace")
 
             if result.returncode != 0:
-                last_exc = RuntimeError(
-                    f"exit{result.returncode}:{stderr[:200].strip()}"
+                # Auth failures (missing/expired CLAUDE_CODE_OAUTH_TOKEN) exit 1 with the
+                # error body on STDOUT (json) and an EMPTY stderr. Logging stderr alone made
+                # this opaque for days -- capture both streams. (SHIR-001 diagnostics)
+                detail = (
+                    stderr[:300].strip()
+                    or stdout[:300].strip()
+                    or "(no output on stderr or stdout)"
                 )
+                last_exc = RuntimeError(f"exit{result.returncode}:{detail}")
                 if attempt < len(_RETRY_DELAYS):
                     delay = _RETRY_DELAYS[attempt]
                     log.warning(
@@ -709,6 +715,35 @@ async def main() -> None:
         log.error("'claude' CLI not found or not authenticated. Run: claude setup-token")
         sys.exit(1)
     log.info("claude CLI detected: %s", check.stdout.strip())
+
+    # SHIR-001: --version does NOT validate auth, so a dead/expired
+    # CLAUDE_CODE_OAUTH_TOKEN sails past the check above and every message then fails
+    # exit-1 at runtime (silent for 7 days, 2026-06-15..22). Probe real auth at boot and
+    # refuse to start with a clear remediation rather than failing per-message forever.
+    auth = subprocess.run(
+        [CLAUDE_CMD, "--print", "--model", ECO_DEFAULT_MODEL, "--output-format", "json"],
+        input=b"reply with the single word: ok",
+        capture_output=True,
+        cwd=str(ROOT),
+        timeout=CLAUDE_TIMEOUT,
+        check=False,
+    )
+    if auth.returncode != 0:
+        detail = (
+            auth.stderr.decode("utf-8", errors="replace")[:300].strip()
+            or auth.stdout.decode("utf-8", errors="replace")[:300].strip()
+            or "(no output)"
+        )
+        log.error(
+            "AUTH PROBE FAILED (exit %d): %s\n"
+            "The claude CLI is installed but cannot authenticate. Most likely the "
+            "CLAUDE_CODE_OAUTH_TOKEN is missing/expired. Fix: run `claude setup-token`, "
+            "`setx CLAUDE_CODE_OAUTH_TOKEN \"<token>\"`, then restart this bridge in a "
+            "FRESH shell so it picks up the new token.",
+            auth.returncode, detail,
+        )
+        sys.exit(1)
+    log.info("claude CLI auth probe OK")
 
     eco_prompt = load_agent_prompt("Eco")
 
