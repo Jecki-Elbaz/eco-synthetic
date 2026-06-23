@@ -72,3 +72,8 @@ memory/wiki/.obsidian/workspace-mobile.json
 memory/wiki/.obsidian/cache
 memory/wiki/.obsidian/*.log
 
+
+# Obsidian clippings + unsorted personal scratch -- local only, never commit
+/Clippings/
+"/To Sort/"
+/To Sort/

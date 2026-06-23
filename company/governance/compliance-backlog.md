@@ -107,7 +107,8 @@ bank account for payment receipt, accounting setup.
 
 ## ITEM 3 -- Privacy and data protection
 
-**Status:** baseline only (no customer data collected yet); DPA template not yet drafted
+**Status:** DPA template DRAFTED 2026-06-23 (company/legal/dpa-template.md, v0.1-DRAFT);
+awaiting owner A1 review before activation. No customer data collected yet.
 **Required by:** any customer data collected or processed -- before, not after
 **Owner:** Eyal (Legal)
 **Applicable law:** Israeli Privacy Protection Law 5741-1981 + Amendment 13 (2023,
@@ -326,7 +327,7 @@ only; confirm whether current subscription tier covers it or an upgrade is neede
 | # | Owner | Item | Trigger / Deadline | A1 needed? |
 |---|-------|------|--------------------|------------|
 | 1 | Eyal | Confirm Ltd registration type, current Rasham fee, document list | 30 days before first contract | YES (filing) |
-| 2 | Eyal | Draft DPA template | Before first customer data intake | YES (to issue to customer) |
+| 2 | Eyal | DPA template DRAFTED (v0.1-DRAFT, 2026-06-23; company/legal/dpa-template.md) -- awaiting owner A1 review | Before first customer data intake | YES (to issue to customer) |
 | 3 | Eyal | Draft privacy notice / policy | Before first customer data intake | YES (public-facing document) |
 | 4 | Eyal | Confirm DPO obligation threshold (Amendment 13) | Before first customer data intake | NO (research); YES if DPO appointed |
 | 5 | Eyal | Review Anthropic DPA / subscription terms | Before whatsapp-mcp goes live; before any personal data in LLM | YES (if executing addendum) |
