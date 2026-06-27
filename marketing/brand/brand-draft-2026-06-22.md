@@ -31,6 +31,8 @@ Key themes translated:
 
 ## TASK 1 -- Brand Direction (HIL-001)
 
+### STATUS: COMPLETE -- guidelines written 2026-06-27 (marketing/brand/brand-guidelines-v1.md)
+
 ### DECISION: Owner A1 -- Merged direction A + C (2026-06-23)
 
 Owner selected a combination of Option A ("Living System") and Option C ("Clean Signal"):
@@ -96,6 +98,8 @@ Nature's intelligence, engineering's discipline -- a living system that runs cle
 ---
 
 ## TASK 2 -- Agent Avatar Style (HIL-002)
+
+### STATUS: COMPLETE -- avatar system spec written 2026-06-27 (marketing/brand/brand-guidelines-v1.md, Section 5)
 
 ### DECISION: Owner A1 -- Persona style CONFIRMED (2026-06-23)
 

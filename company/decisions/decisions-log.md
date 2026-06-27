@@ -940,3 +940,36 @@ Owner (jecki) A1 this session, in an authenticated Claude Code session.
   - **IGNORE:** none.
 - **Note on guard.py edit:** changing .claude/hooks/guard.py is a governance-control change; applied under explicit owner A1 (FIX-NOW disposition this session). Guard remains in SHADOW mode -- the allow-list fix is staged for when enforce mode is turned on (F-R02/SEC-0001).
 - **Files affected:** .claude/hooks/guard.py (ALLOWED_AGENTS sync + SPAWN_DENY), company/governance/access-matrix.md (.claude/agents/ row -- Red read), .claude/agents/Dalia.md + Eyal.md + Jenny.md + Eco.md (Phase 1 fixes), memory/board.md (T-0020 Noam->Perry; SEC-0001 added), company/audits/2026-06/phase1-security-audit.md + findings-register.md (new), company/decisions/decisions-log.md (this entry). Phase 1 COMPLETE; Phase 2 (Internal Audit -- Assaf + Dalia) is the next session.
+
+## 2026-06-24 -- Open-task triage: CS-0001 unblock, DAL-002 reassign, SHIR-001 steer, T-0033 activation greenlit
+
+- **Author / gate:** jecki (owner, A1) triaged the open-task list with Eco; Eco executed the board edits. T-0033 activation is an A1 decision (proactive auto-triggers); the rest are board hygiene / reassignment reflecting already-certified facts.
+- **Decision:**
+  - **CS-0001 -> open (was blocked):** the "blocked on Mike (VP CS) go-live" reason is stale -- Mike went live 2026-06-18 (HIRE-004). Mike owns the customer-communication-policy draft. Hard gate preserved: no customer contact until CS-0001 is approved AND a product is live.
+  - **DAL-002 reassigned Dalia -> Yael:** HIRE-001 (Yael, Knowledge/Documentation manager, certified + live 2026-06-18) owns the documentation standard going forward, indexer-not-rewriter under Dalia. Board assignee corrected to reflect this.
+  - **SHIR-001 priority steer:** delivery restored 2026-06-23; remaining work re-ordered to do LOOSE ENDS FIRST -- (a) locate + shut down the rogue eco-bridge host (now on the rotated/dead token), (b) httpx token-leak -> WARNING (SHIR-002) -- BEFORE the async-ack/streaming enhancement. Routed to Ido for the next Shir sprint.
+  - **T-0033 activation GREENLIT (A1):** bridge delivery restore (the activation gate) is cleared, so Assaf brings up the Tier-1 + Tier-2-interval proactivity triggers per the plan (rows already APPROVED in schedules.md). Oracle stays blocked (T-0020 C3); Shir-uptime + MeetingPrep stay pending the event build (SHIR-005). Eco reports per-trigger health in the evening summary; a missed fire is a process miss, escalate before slip.
+- **Rationale:** Two stale board states corrected against verified facts (Mike live, Yael live). Delivery being restored unblocks the proactivity program the owner approved 2026-06-22 and re-prioritizes the bridge loose ends ahead of a non-urgent enhancement.
+- **Alternatives considered:** Cancel the void T-0032/T-0035 rows (owner left them as blocked, not cancelled, this pass); resolve the T-0011 wiki block (deferred). Hold T-0033 activation (rejected -- gate is now cleared).
+- **Files affected:** memory/board.md (CS-0001, DAL-002, SHIR-001, T-0033), company/decisions/decisions-log.md (this entry). Follow-on tasking: Assaf (T-0033 activation), Ido+Lital (DASH-001 / T-0005 advance) this session.
+
+## 2026-06-27 -- POL-001 (Human-Communication Policy) HR sign-off -- Section 2 cleared (A3)
+
+- **Author / gate:** Anat (HR, A3 -- certification-domain decisions within the HR interview and policy-input process).
+- **Decision:** HR sign-off recorded on POL-001 v0.3 (company/policies/human-communication-policy.md), Section 2 (agent-to-human rules). Two gaps resolved:
+  1. "Ask for preference" -- changed from optional ("may ask") to MANDATORY ("must ask") at first contact with each human manager, unless a standing preference is already recorded in the section 4 table. Rationale: baseline professional behavior required of all certified agents; inconsistent behavior at first human impression conflicts with the certification standard.
+  2. Standing-preference record location -- section 4 standing-preferences table is the canonical record. The "memory/wiki/" placeholder is withdrawn pending that convention being established. Agents flag new preferences to Anat or Eco for addition; they do not write to the table directly.
+- **No red-line conflicts found.** Existing section 2 and 2a rules are consistent with soul.md Core Block rules 1, 5, and 6. Section 3 (customer-facing) not reviewed -- Mike's domain.
+- **HR gate status:** CLEARED. POL-001 Section 2 HR gate is now satisfied. Remaining activation gates: Mike/CS-0001 (section 3; separate track) and owner A1.
+- **Files affected:** company/policies/human-communication-policy.md (v0.2 -> v0.3; section 2 rule change + HR sign-off note; section 4 placeholder resolved; version history and header updated).
+
+## 2026-06-27 -- DAL-004 back-merge: Gal.md RL9/10/11 added (owner A1)
+
+- **Author / gate:** jecki (owner, A1 -- role-file edits are A1).
+- **Decision:** Back-merge audit (DAL-004) run by Eco using Bash git diff against merge commit 24d4846. Finding: Gal.md was the only role file with a substantive governance gap -- const red lines 9, 10, 11 not yet in the Boundaries section (deferred at go-live with a note "add before first R&R"). All other affected files (Assaf, Dalia, Eyal, Ido, Lital, Noam, Shir) confirmed complete in current state. Owner A1 approved 2026-06-27. Changes applied:
+  1. Boundaries item 13: const RL9 -- personal data / Israeli privacy law.
+  2. Boundaries item 14: const RL10 -- no unlawful third-party proprietary data.
+  3. Boundaries item 15: const RL11 -- no legal/public representation without owner A1 via Ido/Eco.
+  4. Version bumped 1.0 -> 1.1; open condition "add RL-9/10/11 before first R&R" resolved.
+- **DAL-004 status:** DONE. No further back-merge edits required.
+- **Files affected:** .claude/agents/Gal.md (v1.0 -> v1.1), company/governance/dal-004-back-merge-audit.md (status update pending), memory/board.md (DAL-004 row -> done).

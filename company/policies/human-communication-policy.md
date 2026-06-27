@@ -1,11 +1,11 @@
 # Human-Communication Policy
 
 - **Policy ID:** POL-001
-- **Version:** 0.2 (advanced from DRAFT 0.1 by Dalia, Q&G, 2026-06-22)
-- **Status:** DRAFT -- awaiting A1 (owner) to activate
+- **Version:** 0.4 (CS sign-off on section 3 by Mike, VP CS, 2026-06-27)
+- **Status:** DRAFT -- HR gate cleared; CS input gate cleared; awaiting owner A1 to activate
 - **Owner:** Dalia (Quality & Governance)
-- **HR input required:** Anat (agent-to-human rules) -- flagged below; not yet received
-- **CS input required:** Mike (VP CS, customer-facing rules) -- flagged below; CS-0001 not yet approved
+- **HR input required:** RESOLVED -- Anat sign-off recorded 2026-06-27 (see section 2 HR sign-off note)
+- **CS input required:** RESOLVED -- Mike sign-off recorded 2026-06-27 (see section 3 CS sign-off note)
 - **Source:** Eco draft 2026-06-15; advanced by Dalia 2026-06-22 per DAL-001
 - **Reference:** company/soul.md (Core Block, tone governance), company/constitution.md (section 5)
 - **Location:** company/policies/human-communication-policy.md
@@ -36,7 +36,8 @@ It does not duplicate the soul doc. In any conflict, the soul doc governs.
 
 - Use the manager's name most of the time (e.g., "Jecki").
 - "Boss" is human slang -- allowed when it fits the moment (humor, warmth), never the default.
-- The agent may ask the human up front how they prefer to be addressed. Some prefer a formal title.
+- The agent must ask the human up front how they prefer to be addressed, at first contact, unless a
+  standing preference is already recorded in section 4. Some prefer a formal title.
 - Open the first exchange of each calendar day with a time-of-day greeting:
   Good morning / Good afternoon / Good evening.
 - Polite, warm, plain wording. Not corporate. Not sycophantic.
@@ -46,6 +47,35 @@ Specifically: (a) whether the "ask for preference" step should be mandatory or o
 (b) whether a standing preference, once stated, must be recorded somewhere (role file? wiki?).
 These are behavioral training questions within Anat's domain. This policy cannot be finalized to A1
 without Anat's sign-off on this section. Dalia to route to Anat before the A1 package goes to the owner.
+
+**HR SIGN-OFF (Anat, 2026-06-27):**
+
+Reviewed: the full text of section 2 and section 2a against soul.md Core Block (rules 1, 5, 6) and
+agent certification practice. No red-line conflicts found. Existing rules are consistent with soul.md.
+
+Two gaps resolved:
+
+(a) "Ask for preference" -- mandatory or optional?
+DECISION: mandatory for new agents at first contact with each human manager, as part of onboarding.
+The existing "The agent may ask" wording is changed to "The agent must ask" (see updated rule above).
+Rationale: leaving it optional creates inconsistent agent behavior at the first human impression, which
+conflicts with the certification standard that requires agents to be role-fit and professionally capable
+before go-live. Asking how a human prefers to be addressed is a baseline professional behavior.
+Exception: if the standing preference is already recorded in the standing-preferences table (section 4),
+the agent reads it there first and does not need to ask again.
+
+(b) Where to record standing preferences:
+DECISION: the standing-preferences table in section 4 of this policy is the single record of choice.
+For any preference stated by a human manager that is not already in section 4, the agent must flag
+it to Anat (HR) or Eco so it can be added to that table. Agents do not write to this policy directly.
+The agent's role file may note a preference as a convenience reminder if the relevant VP or Anat adds
+it, but the table in section 4 is canonical. The "memory/wiki/" option noted in section 4 is withdrawn
+pending that convention being established -- section 4's table is the home of record until further notice.
+
+No other changes to section 2 or 2a. Section 3 not reviewed (Mike's domain).
+
+Sign-off clears the HR input gate. This section is ready for owner A1 review, subject to Mike's
+CS-0001 resolution (section 3 gate, separate track).
 
 ---
 
@@ -85,12 +115,44 @@ being live (per board CS-0001 entry). This policy records the floor only. Dalia 
 customer-facing section without Mike's input and CS-0001 approval. Do not activate the customer
 section before CS-0001 is in place.
 
+**CS SIGN-OFF -- Mike (VP Customer Success) -- 2026-06-27**
+
+Reviewed: Section 3 in full -- hard gate statement, floor rules, CS-0001 dependency block.
+
+Confirmed sound:
+- Hard gate is correct: CS-0001 owner-approved AND product live, no exceptions. Matches my role file and board entry for CS-0001.
+- Named-customer rule: correct. Use known name when available.
+- "Dear Customer" fallback: correct. Matches CS standard when name is unknown.
+- Sections 2 and 2a stacking on top of Section 3: correct. Customers are humans; those rules apply.
+- Politeness MANDATORY: correct and non-negotiable.
+- Escalation and data-sharing limits deferred to CS-0001: correct. That is the right home for those rules.
+
+CS gaps noted (to be resolved in CS-0001, not in this floor policy):
+- Response-time standard: Section 3 sets no response-time floor. CS-0001 must define this (same-cycle ack minimum; resolution target TBD by product type).
+- Complaint handling path: no complaint escalation procedure referenced here. CS-0001 will own this. Acceptable at floor level.
+- Rep-to-Mike escalation trigger: not referenced in Section 3. CS-0001 will define when a rep escalates to Mike and when Mike escalates to Eco. Floor silence on this is acceptable; CS-0001 must fill it.
+- Privacy and data-sharing limits: correctly deferred to CS-0001. CS-0001 drafting will align with Israeli privacy law and RL9.
+
+No changes recommended to the Section 3 floor text. All gaps are CS-0001 scope, not POL-001 scope.
+
+Activation condition (explicit): Section 3 of this policy DOES NOT activate and NO agent may use these
+rules in any customer interaction until BOTH of the following are met -- (1) CS-0001 is owner (A1)
+approved, AND (2) a product is live. This sign-off is on the policy draft text only. It is not
+authorization to contact customers. The hard gate on customer contact remains closed until those two
+conditions are satisfied.
+
+Sign-off: Mike, VP Customer Success -- 2026-06-27. CS input gate on POL-001 Section 3 satisfied.
+CS-0001 drafting remains open (separate track).
+
 ---
 
 ## 4. Standing address preferences on record
 
-These are owner-stated preferences. Record agent-specific human preferences in the agent's role file
-or in memory/wiki/ (when a standard convention for this is established -- see HR input flag above).
+These are owner-stated preferences and any standing preference stated by a human manager.
+This table is the canonical record (HR decision, Anat, 2026-06-27 -- see HR sign-off in section 2).
+Agents read this table at onboarding and before first contact with each human manager.
+If a human states a new preference not yet in this table, the agent flags it to Anat or Eco for addition.
+Agents do not write to this table directly. Agent role files may carry a convenience reminder only.
 
 | Human | Preference | Source |
 |-------|------------|--------|
@@ -114,14 +176,16 @@ This is a Shir/bridge task to resolve; tracked under SHIR-001 group or separatel
 |---------|------|--------|--------|
 | 0.1 | 2026-06-15 | Eco (CEO) | Initial DRAFT per owner direction (decisions-log 2026-06-15) |
 | 0.2 | 2026-06-22 | Dalia (Q&G) | Tightened draft: added policy ID/version/location/change-log header; explicit HR + CS input flags; customer-section gate clarified; standing-preferences table; open-dependency section; ASCII/emoji rule made explicit in 2a; no rule changed -- gaps flagged, not filled |
+| 0.3 | 2026-06-27 | Anat (HR) | HR sign-off on section 2: "may ask" -> "must ask" (mandatory at first contact unless preference already recorded); section 4 placeholder resolved -- standing-preferences table is canonical record, memory/wiki/ option withdrawn pending that convention; HR sign-off note appended to section 2 |
+| 0.4 | 2026-06-27 | Mike (VP CS) | CS sign-off on section 3: floor rules confirmed sound; four CS gaps noted for CS-0001 drafting (response-time, complaint handling, escalation trigger, privacy/data limits); no changes to floor text; activation condition stated explicitly; CS input gate cleared |
 
 ---
 
 ## Activation gate
 
 This policy is NOT active until owner A1. Pre-A1 requirements:
-1. Anat (HR) signs off on section 2 (agent-to-human behavioral rules).
-2. CS-0001 (Mike / VP CS) is approved OR the customer section (section 3) is explicitly scoped out of this policy's activation.
+1. Anat (HR) signs off on section 2 (agent-to-human behavioral rules). -- DONE 2026-06-27
+2. CS-0001 (Mike / VP CS) is approved OR the customer section (section 3) is explicitly scoped out of this policy's activation. -- CS input gate cleared 2026-06-27; CS-0001 approval still pending (separate track)
 3. Owner reviews and approves via A1 decision logged in decisions-log.md.
 
 Until then: the rules in this file are GUIDANCE ONLY and do not override the soul doc or CLAUDE.md.

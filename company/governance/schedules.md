@@ -10,16 +10,16 @@ Decision logged: decisions-log.md 2026-06-12 -- scheduled wake-ups approved (A1:
 | Agent | Task | Cadence | Status | Approved by | Approved date | Last run |
 |-------|------|---------|--------|-------------|---------------|----------|
 | Eco | Queue review + dispatch follow-up + wiki update on task progress/completion | Every 2h | APPROVED | jecki (A1) | 2026-06-12 | - |
-| Eco | Morning brief (queue + overnight + day plan) | Daily AM | APPROVED (activates on delivery restore) | jecki (A1) | 2026-06-22 | - |
-| Eco | Evening summary + proactivity health block | Daily PM | APPROVED (activates on delivery restore) | jecki (A1) | 2026-06-22 | - |
-| Assaf | Cost/token snapshot + threshold alert | Daily | APPROVED (activates on delivery restore) | jecki (A1) | 2026-06-22 | - |
-| Assaf | Fitness loop + usage report | Weekly (Mon) | APPROVED | jecki (A1) | 2026-06-22 | - |
-| Assaf | On-demand agent review (T-0009) | Monthly | APPROVED | jecki (A1) | 2026-06-22 | - |
-| Rambo | Permission-drift scan | Weekly (Mon) | APPROVED | jecki (A1) | 2026-06-22 | - |
+| Eco | Morning brief (queue + overnight + day plan) | Daily AM | ACTIVE | jecki (A1) | 2026-06-22 | - |
+| Eco | Evening summary + proactivity health block | Daily PM | ACTIVE | jecki (A1) | 2026-06-22 | - |
+| Assaf | Cost/token snapshot + threshold alert | Daily | ACTIVE | jecki (A1) | 2026-06-22 | - |
+| Assaf | Fitness loop + usage report | Weekly (Mon) | ACTIVE | jecki (A1) | 2026-06-22 | - |
+| Assaf | On-demand agent review (T-0009) | Monthly | ACTIVE | jecki (A1) | 2026-06-22 | - |
+| Rambo | Permission-drift scan | Weekly (Mon) | ACTIVE | jecki (A1) | 2026-06-22 | - |
 | Oracle | Chronicle sweep (capture day's decisions) | Daily | BLOCKED -- T-0020 C3 (off spawn-allowlist) | jecki (A1 intent) | 2026-06-22 | - |
-| Lital + Eyal | Compliance-deadline check (IL reg/invoicing/privacy) | Weekly | APPROVED (P3) | jecki (A1) | 2026-06-22 | - |
-| Dalia | Quality/tone audit sample | Weekly | APPROVED (P3) | jecki (A1) | 2026-06-22 | - |
-| Ido | DASH-001 dashboard refresh | Hourly / fold into Eco 2h | APPROVED (P3) | jecki (A1) | 2026-06-22 | - |
+| Lital + Eyal | Compliance-deadline check (IL reg/invoicing/privacy) | Weekly | ACTIVE | jecki (A1) | 2026-06-22 | - |
+| Dalia | Quality/tone audit sample | Weekly | ACTIVE | jecki (A1) | 2026-06-22 | - |
+| Ido | DASH-001 dashboard refresh | Hourly / fold into Eco 2h | ACTIVE | jecki (A1) | 2026-06-22 | - |
 | Shir | Bridge + uptime health check | Every 15-30 min | PENDING BUILD -- event trigger + T-0020 C3 + Bash | jecki (A1 intent) | 2026-06-22 | - |
 | MeetingPrep | Pre-meeting prep | Event: T-Xh before external meeting | PENDING BUILD -- event trigger (SHIR-005) | jecki (A1 intent) | 2026-06-22 | - |
 
