@@ -82,6 +82,8 @@ logging.basicConfig(
     stream=sys.stdout,
 )
 log = logging.getLogger("bridge")
+# SHIR-002: suppress httpx INFO logs -- they include the bot token in request URLs.
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 # ── Load .env before guard ────────────────────────────────────────────────────
 load_dotenv(ROOT / ".env")
