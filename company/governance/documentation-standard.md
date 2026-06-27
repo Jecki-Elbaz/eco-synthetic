@@ -98,7 +98,7 @@ Subfolders:
 **Content**: Role file for each certified agent.
 **Owner**: jecki (A1 edits), agent manager (propose R&R changes).
 **Write**: jecki (A1 only). Manager + Anat propose via memo or board row, never direct edit.
-**Access**: Eco (operational), jecki (owner), Anat (HR cert), Rambo (security scans), Dalia (Q&G), Assaf (fitness loop).
+**Access**: Eco (operational), jecki (owner), Anat (HR cert), Rambo (security scans), Dalia (Q&G), Assaf (fitness loop), Red (RedTeam -- adversarial probe design; owner A1 2026-06-23).
 
 ---
 
