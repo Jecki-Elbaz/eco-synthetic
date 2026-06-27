@@ -973,3 +973,25 @@ Owner (jecki) A1 this session, in an authenticated Claude Code session.
   4. Version bumped 1.0 -> 1.1; open condition "add RL-9/10/11 before first R&R" resolved.
 - **DAL-004 status:** DONE. No further back-merge edits required.
 - **Files affected:** .claude/agents/Gal.md (v1.0 -> v1.1), company/governance/dal-004-back-merge-audit.md (status update pending), memory/board.md (DAL-004 row -> done).
+
+## 2026-06-27 -- DAL-002: Documentation Standard v1.0 activated (A2, Dalia)
+
+- **Author / gate:** Dalia (Q&G, A2 -- policy-framework standard; owner notified per constitution §3).
+- **Decision:** company/governance/documentation-standard.md v1.0 is ACTIVATED. Status moves from draft (Yael-delivered) to live. Applies to all agents.
+- **Policy framework bar check (four criteria):**
+  1. Real need: CONFIRMED. No prior documentation standard existed. File naming was ad hoc; no versioning convention; governance audits were harder without a canonical structure rule.
+  2. No contradiction: CONFIRMED after cross-check against CLAUDE.md, constitution.md, access-matrix.md, soul.md, and decisions-log red lines. All gate references (A1/A2/A3), red-line citations, and append-only rules are correctly stated. One accuracy gap found and corrected at activation (see below).
+  3. No overload: CONFIRMED. The standard consolidates implied rules from CLAUDE.md, soul.md, constitution, and md-style.md without replacing or duplicating those sources. Related-documents section (section 11) correctly points back to each.
+  4. Identified owner: CONFIRMED. Yael (Knowledge/Documentation Manager, L4, certified + live HIRE-001 2026-06-18), under Dalia (Q&G). Appropriate and verified.
+- **Gap corrected at activation:** Section 2.6 (.claude/agents/ access list) omitted Red (RedTeam), who was added to the read-exception row by owner A1 2026-06-23 (Phase 1 audit F-R03, recorded in access-matrix.md and decisions-log 2026-06-23). Red added to the access list. This is a documentation accuracy correction, not a policy change -- the access grant itself was already an owner A1 decision.
+- **No red-line conflicts found.** No escalation to Eco required.
+- **Files affected:** company/governance/documentation-standard.md (status -> live v1.0; section 2.6 Red added), company/decisions/decisions-log.md (this entry).
+
+## 2026-06-28 -- T-0020 C3 RESOLVED + Proactivity Runner v1 (A1, jecki)
+
+- **Author / gate:** owner (jecki) A1, executed via Claude Code session.
+- **C3 resolved by architecture (shell-tool stripping):** Per T-0020 R2/C3, the binding risk is an auto-spawned Bash-capable agent. Resolution: a dedicated SCHEDULED RUNNER (shared/scripts/agent-runner.py) launches agents as separate headless `claude` processes with an explicit allowed-tools whitelist that NEVER includes Bash/WebFetch/WebSearch. Bash is never granted on this path, so the deny-cascade unknown (C3) is moot; the runner is timer-triggered (no external/Telegram input) so R1/R5 do not apply as on the bridge. Memo: company/security/reports/T-0020-C3-resolution-2026-06-28.md.
+- **Scope:** reports off the bridge Agent-tool list (Gal, Shir, Adi, Senior Dev, Roman; Mike/Tim/Noam; Yael; CS/Sales ICs) become RUNNER-SPAWNABLE (stripped). The bridge Agent-tool PERMITTED list and guard.py ALLOWED_AGENTS are UNCHANGED (stays conservative; no R2 hole on the bridge path).
+- **Autonomous Bash stays gated:** runner spawns get NO Bash; autonomous shell (tests/deploy) BLOCKED until deny-cascade confirmed or a sandbox is built (separate later phase, separate A1).
+- **Runner v1 + validation:** v1 launches manager Eco on cadence, stripped tools, SAFE_MODE-aware, every run logged to memory/agent-runs.jsonl. GUARD_MODE stays SHADOW during validation (SEC-0001 -- no enforce flip yet). v1 runs READ-ONLY (proposes/surfaces); flipping to write-enabled (act) + GUARD_MODE=enforce is a separate A1 after a clean validation window.
+- **Files affected:** company/security/reports/T-0020-C3-resolution-2026-06-28.md (new), company/governance/agent-tool-spawn-allowlist.md (runner-spawn section added), company/decisions/decisions-log.md (this entry). Runner code: shared/scripts/agent-runner.py (outside repo).

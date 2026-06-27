@@ -36,3 +36,21 @@ non-shell agents named below. Every spawn is logged to memory/log.md.
   tasks only; Anat must not be used to reach Bash agents indirectly.
 - This allowlist is the single source of truth. Eco spawns no agent not on
   the PERMITTED list. Any change to this list is A1.
+
+## Runner-spawn (stripped) -- SEPARATE PATH (owner A1 2026-06-28, T-0020 C3 resolved)
+
+This section governs the SCHEDULED RUNNER (shared/scripts/agent-runner.py) ONLY -- a
+different mechanism from the bridge Agent-tool list above. The runner launches each agent
+as a separate headless `claude` process with an explicit allowed-tools whitelist that
+NEVER includes Bash/WebFetch/WebSearch (shell-tool stripping). See
+company/security/reports/T-0020-C3-resolution-2026-06-28.md.
+
+- RUNNER-SPAWNABLE (stripped: Read, or Read/Write/Edit to own scope; never Bash/Web):
+  all roster agents, INCLUDING the Bash-holding reports that are DENIED on the bridge path
+  above -- Gal, Shir, Adi, Senior Dev, Roman -- plus Mike, Tim, Noam, Yael and the CS/Sales
+  ICs. Bash is stripped at launch, so the bridge-path Bash risk (R2) does not apply here.
+- The bridge Agent-tool PERMITTED/DENIED lists above are UNCHANGED. guard.py ALLOWED_AGENTS
+  is NOT loosened. A Bash agent remains off the bridge path; it is only reachable, stripped,
+  via the runner.
+- AUTONOMOUS BASH is NOT granted on this path (tests/deploy stay gated -- separate A1).
+- Every runner launch is logged to memory/agent-runs.jsonl; SAFE_MODE halts all launches.
