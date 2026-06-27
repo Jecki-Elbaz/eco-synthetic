@@ -1,13 +1,16 @@
 flowchart TD
     %% Solid = reporting. Dashed = communication (arrowheads show direction).
-    %% Cross-group comms only via the two VPs. CEO may reach anyone but defaults to chain of command.
-    %% Sami (SME) is on-demand per project, advisory; not drawn as a fixed node.
+    %% Cross-group comms only via the VPs. CEO may reach anyone but defaults to chain of command.
+    %% Maintained by Anat (HR/Agent-Ops): update after EACH agent add/retire/rename/re-scope A1.
+    %% Last updated 2026-06-28 (owner A1): Noam->Perry, Tim->Sally, Avner->Jack, Senior Dev->Oren;
+    %% added Oracle, Yael, Yossi, Red (RedTeam), Designer, Sami, MeetingPrep. Shelly = separated (customer).
 
     OWNER(["jecki - Owner - L1"])
     ECO["Eco - CEO - L2 - P1"]
+    SHELLY_X["Shelly - Office Mgr - SEPARATED to own repo (Eco customer)"]
 
     subgraph OFFICE["Owner office"]
-      LUCI["Luci - Devil's Advocate - P1"]
+      LUCI["Luci - Devil's Advocate - P1 - on-demand"]
       EREZ["Erez - Investor - on-demand"]
     end
 
@@ -18,8 +21,14 @@ flowchart TD
       RAMBO["Rambo - Security - L3 - P1"]
       EYAL["Eyal - Legal - L3 - P1"]
       LITAL["Lital - CFO - L3 - P1"]
-      NOAM["Noam - Product - L3 - P1"]
-      ZVIKA["Zvika - Research - L3 - P2 - gated"]
+      PERRY["Perry - VP Product - L3 - P1 (was Noam)"]
+      ORACLE["Oracle - Build-historian - L3 - pulled-fwd"]
+      ZVIKA["Zvika - Research - L3 - P2 - gated/on-demand"]
+      YAEL["Yael - Knowledge/Doc - L4 - P2 (under Dalia)"]
+      YOSSI["Yossi - Training/Enablement - L4 - P2 (under Assaf)"]
+      RED["Red - RedTeam Security Tester - L4 - P1 - on-demand, no Bash (under Rambo)"]
+      DESIGNER["Designer (Tal) - Product UX/UI - L4 - P2 (under Perry)"]
+      SAMI["Sami - SME advisor - L4 - on-demand per-project (under Perry)"]
     end
 
     subgraph RND["VP R&D group"]
@@ -27,21 +36,22 @@ flowchart TD
       GAL["Gal - Lead Developer - L4 - P1"]
       SHIR["Shir - DevOps - L4 - P1"]
       ADI["Adi - QA - L4 - P2"]
-      SENIOR["Senior Developer - L4 - P2"]
+      OREN["Oren - Senior Developer - L4 - P2"]
       ROMAN["Roman - Algorithm Spec - L4 - P2 - on-demand"]
     end
 
     subgraph CSG["VP Customer Success group"]
       MIKE["Mike - VP CS - L3 - P3"]
       JENNY["Jenny - Support - L4 - P3"]
-      AVNER["Avner - Customer Success - L4 - P3"]
+      JACK["Jack - CS Manager + Account Mgr - L4 - P3 (was Avner)"]
       ELLA["Ella - Customer Training - L4 - P3"]
     end
 
     subgraph SALESG["VP Sales group"]
-      TIM["Tim - VP Sales - L3 - P3"]
+      SALLY["Sally - VP Sales - L3 - P3 (was Tim)"]
       ALEX["Alex - Sales - L4 - P3"]
       HILA["Hila - Marketing - L4 - P1 light"]
+      MEETINGPREP["MeetingPrep - Meeting-prep Specialist - L4 - P3 - on-demand"]
     end
 
     GATE{{"Tool adoption gate"}}
@@ -50,35 +60,45 @@ flowchart TD
     OWNER --> ECO
     OWNER --> LUCI
     OWNER --> EREZ
+    OWNER -.->|"separated; now a customer"| SHELLY_X
     ECO --> DALIA
     ECO --> ANAT
     ECO --> ASSAF
     ECO --> RAMBO
     ECO --> EYAL
     ECO --> LITAL
-    ECO --> NOAM
+    ECO --> PERRY
+    ECO --> ORACLE
     ECO --> ZVIKA
     ECO --> IDO
     ECO --> MIKE
-    ECO --> TIM
+    ECO --> SALLY
+    DALIA --> YAEL
+    ASSAF --> YOSSI
+    RAMBO --> RED
+    PERRY --> DESIGNER
+    PERRY --> SAMI
     IDO --> GAL
     IDO --> SHIR
     IDO --> ADI
-    IDO --> SENIOR
+    IDO --> OREN
     IDO --> ROMAN
     MIKE --> JENNY
-    MIKE --> AVNER
+    MIKE --> JACK
     MIKE --> ELLA
-    TIM --> ALEX
-    TIM --> HILA
+    SALLY --> ALEX
+    SALLY --> HILA
+    SALLY --> MEETINGPREP
 
     OWNER <-.->|"company matters"| ECO
     LUCI -.->|"challenge (capped)"| ECO
-    IDO <-.->|"requirements / feasibility"| NOAM
-    MIKE <-.->|"customer feedback / roadmap"| NOAM
-    GAL <-.->|"code review (max 2 rounds)"| SENIOR
+    IDO <-.->|"requirements / feasibility"| PERRY
+    MIKE <-.->|"customer feedback / roadmap"| PERRY
+    GAL <-.->|"code review (max 2 rounds)"| OREN
     ADI -.->|"recurring-bug pattern"| GAL
     ADI -.->|"quality trends"| DALIA
+    ORACLE -.->|"chronicle (dotted)"| DALIA
+    YOSSI -.->|"dotted"| ANAT
     RAMBO -.->|"risk"| GATE
     EYAL -.->|"terms"| GATE
     GATE -.->|"borderline = A1"| OWNER

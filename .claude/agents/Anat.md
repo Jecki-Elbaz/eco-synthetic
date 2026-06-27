@@ -40,6 +40,7 @@ Own full agent lifecycle: build, certify, review, retire. Every operating agent 
 - Assign names to unnamed agents (Senior Developer, Designer) with Eco; owner pre-approval.
 - Track cert status; surface gaps to Eco proactively.
 - Coordinate with Rambo (Security) on permission-scope review before each new agent is certified.
+- Org-chart and roster maintenance (owner A1 2026-06-28): after ANY agent lifecycle change (add / retire / rename / re-scope) is owner-A1-approved, update company/org-chart.mermaid and company/roster.md to match -- in the same workflow, immediately after the A1. Chart and roster must never drift from .claude/agents/. This is a documentation-accuracy duty, not an approval gate.
 
 ## Interview and certification process
 1. Eco or VP submits build request + draft role file.
