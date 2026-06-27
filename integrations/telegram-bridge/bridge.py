@@ -836,19 +836,15 @@ async def main() -> None:
         await eco_app.updater.start_polling(drop_pending_updates=True)
         await eco_app.start()
 
-        eco_wakeup = asyncio.create_task(
-            _wakeup_task("eco", eco_app, eco_prompt), name="eco-wakeup"
-        )
-        log.info(
-            "Eco online. Wake-up scheduled every %ds (~%.0fh). Press Ctrl+C to stop.",
-            WAKEUP_INTERVAL, WAKEUP_INTERVAL / 3600,
-        )
+        # In-bridge 2h wake-up RETIRED 2026-06-28 (owner A1): proactivity is now handled by
+        # the scheduled runner (shared/scripts/agent-runner.py), which has an actionability
+        # cost gate. This avoids double-firing Eco. See decisions-log 2026-06-28.
+        log.info("Eco online. (In-bridge 2h wake-up retired; runner handles proactivity.) "
+                 "Press Ctrl+C to stop.")
         try:
             await asyncio.Event().wait()
         except (KeyboardInterrupt, asyncio.CancelledError):
             pass
-        finally:
-            eco_wakeup.cancel()
             log.info("Shutting down...")
             await eco_app.updater.stop()
             await eco_app.stop()
