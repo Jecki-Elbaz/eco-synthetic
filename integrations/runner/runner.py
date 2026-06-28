@@ -37,6 +37,18 @@ HOLD = ("on hold", "on-hold", "blocked on", "blocked-until", "waiting on",
         "waiting-on", "pending owner", "queued until")
 CLAUDE_TIMEOUT = 300
 
+# Path safety (2026-06-28): Claude Code reserves a bare relative "memory/" path as its own
+# MANAGED per-project store (~/.claude/projects/<hash>/memory/). A runner agent writing a NEW
+# file via a bare "memory/..." path lands THERE, not in the repo (verified: Assaf's cost
+# snapshots were misrouted). Force agents onto absolute repo paths so writes reach the repo.
+PATH_DIRECTIVE = (
+    f"FILE PATHS (critical): this project's root is {ROOT}. Whenever a task names a file "
+    "under memory/, company/, dashboards/, projects/, marketing/ or .claude/, read and WRITE "
+    f"it at its ABSOLUTE path under the root -- e.g. {ROOT}\\memory\\wiki\\cost-snapshots\\<date>.md, "
+    "NOT a bare 'memory/...' path. Claude Code reserves a bare relative 'memory/' path as a "
+    "managed store, so a bare memory/ path will NOT reach this repo. Always use the absolute form."
+)
+
 
 def now():
     return datetime.now(timezone.utc)
@@ -204,7 +216,7 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
     if dry:
         print(f"  WOULD RUN {key} | cadence={job['cadence']} | tg={job['tg']} | model={model} | tools={tools}")
         return {"ran": False, "reason": "dry"}
-    prompt = f"[Scheduled run: {now().isoformat()}]\n\n{job['prompt']}"
+    prompt = f"[Scheduled run: {now().isoformat()}]\n\n{PATH_DIRECTIVE}\n\n{job['prompt']}"
     log({"key": key, "event": "start", "mode": mode, "model": model, "tg": job["tg"]})
     try:
         # Tag the spawned agent so the PreToolUse guard can enforce the runner
