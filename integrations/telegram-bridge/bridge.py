@@ -73,6 +73,7 @@ AGENTS_DIR = ROOT / ".claude" / "agents"
 MEMORY_DIR = ROOT / "memory"
 CHATS_DIR = MEMORY_DIR / "chats"
 BOARD_FILE = MEMORY_DIR / "board.md"
+SAFE_MODE_FILE = MEMORY_DIR / "SAFE_MODE"  # kill switch (runner + guard read this)
 LOG_FILE = MEMORY_DIR / "log.jsonl"
 
 # ── Logging ───────────────────────────────────────────────────────────────────
@@ -200,6 +201,33 @@ def _strip_frontmatter(text: str) -> str:
 
 # ── Bridge context (per-agent, injected into system prompt) ───────────────────
 
+# Always-on emergency-halt directive, injected for any agent that has the Write tool.
+# Pairs with the deterministic /halt command and the safe-mode skill
+# (.claude/skills/safe-mode/SKILL.md). Hebrew trigger words are intentionally literal.
+_SAFE_MODE_DIRECTIVE = """
+
+## EMERGENCY HALT -- SAFE_MODE kill switch (highest priority)
+
+If the owner (jecki) tells you to halt, stop, freeze, pause, or kill the runner / the
+agents / autonomous activity -- in English or Hebrew (e.g. "SAFE_MODE", "halt", "kill
+switch", "stop the runner", "freeze everything", "עצור",
+"הקפא", "כיבוי חירום")
+-- treat it as an emergency and act immediately, before anything else:
+
+1. Use the Write tool (NOT Edit) on path `memory/SAFE_MODE` with NON-EMPTY ASCII content,
+   e.g. one line: "HALT set by Eco on owner request via Telegram. Reason: <reason>." This
+   is the only form the guard allows -- Edit and empty writes are denied by design.
+2. Confirm to the owner ONLY after the Write tool returns success (never say done
+   otherwise). Then state: the runner will skip its next cycle and autonomous writes are
+   frozen; to resume, the owner deletes memory/SAFE_MODE or runs /resume. Resume is
+   owner-only -- you must NOT clear the flag yourself.
+3. The fastest path is the deterministic /halt command (pure code, no model). Mention it
+   if your Write ever fails.
+
+Only the owner may trigger this (red line 8). Full procedure: the safe-mode skill.
+"""
+
+
 def _build_bridge_context(agent_name: str) -> str:
     access = _AGENT_ACCESS.get(agent_name.lower(), ["memory/board.md"])
     tools = _AGENT_TOOLS.get(agent_name.lower(), ["Read"])
@@ -207,6 +235,7 @@ def _build_bridge_context(agent_name: str) -> str:
     tools_str = ", ".join(tools)
     unavailable = [t for t in ["Write", "Edit", "Bash", "WebSearch", "WebFetch"] if t not in tools]
     unavailable_str = ", ".join(unavailable) if unavailable else "none"
+    halt_block = _SAFE_MODE_DIRECTIVE if "Write" in tools else ""
     return f"""
 ---
 
@@ -234,7 +263,7 @@ If a request needs a capability you lack here, surface it plainly:
 - WRONG: "Done." / "Noted." — if no file was written
 
 Accuracy over comfort, always. If uncertain: try, report the result honestly.
-"""
+{halt_block}"""
 
 
 def load_agent_prompt(agent_name: str) -> str:
@@ -782,6 +811,78 @@ async def _wakeup_task(
         await asyncio.sleep(WAKEUP_INTERVAL)
 
 
+# ── Deterministic kill switch (pure code, no model) ───────────────────────────
+# /halt writes memory/SAFE_MODE; /resume removes it. These bypass the LLM entirely
+# so the kill switch works even if claude is down or the token is expired. Gated to
+# the registered owner chat (same trust model as the private bot token).
+
+def _is_owner_chat(bot_name: str, chat_id: int) -> bool:
+    _register_owner_chat(bot_name, chat_id)  # first chat to interact becomes owner
+    return _owner_chat.get(bot_name) == chat_id
+
+
+async def on_halt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.effective_chat is None or update.message is None:
+        return
+    chat_id = update.effective_chat.id
+    if not _is_owner_chat("eco", chat_id):
+        await update.message.reply_text("Not authorized.")
+        return
+    try:
+        ts = datetime.now(timezone.utc).isoformat()
+        SAFE_MODE_FILE.parent.mkdir(parents=True, exist_ok=True)
+        SAFE_MODE_FILE.write_text(f"HALT set via /halt by owner on {ts}.\n", encoding="utf-8")
+        ok = SAFE_MODE_FILE.exists() and SAFE_MODE_FILE.read_text(encoding="utf-8").strip() != ""
+        append_log("Eco", chat_id, "halt_command", "none", None, None)
+        if ok:
+            await update.message.reply_text(
+                "\U0001f6d1 SAFE_MODE set. The runner will skip its next cycle and all "
+                "autonomous writes are frozen.\nTo resume, run /resume (owner-only)."
+            )
+        else:
+            await update.message.reply_text(
+                "Tried to set SAFE_MODE but could not confirm the file. "
+                "Create memory/SAFE_MODE manually with any text."
+            )
+    except Exception as exc:  # noqa: BLE001 -- always give the owner a fallback
+        log.error("/halt failed: %s", exc)
+        await update.message.reply_text(
+            f"Failed to set SAFE_MODE: {exc}.\n"
+            "Fallback: create memory/SAFE_MODE manually with any text."
+        )
+
+
+async def on_resume(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.effective_chat is None or update.message is None:
+        return
+    chat_id = update.effective_chat.id
+    if not _is_owner_chat("eco", chat_id):
+        await update.message.reply_text("Not authorized.")
+        return
+    try:
+        existed = SAFE_MODE_FILE.exists()
+        if existed:
+            SAFE_MODE_FILE.unlink()
+        append_log("Eco", chat_id, "resume_command", "none", None, None)
+        if SAFE_MODE_FILE.exists():
+            await update.message.reply_text(
+                "Could not remove SAFE_MODE. Delete memory/SAFE_MODE manually."
+            )
+        elif existed:
+            await update.message.reply_text(
+                "✅ SAFE_MODE cleared. The runner re-arms on its next cycle."
+            )
+        else:
+            await update.message.reply_text(
+                "SAFE_MODE was not set -- nothing to clear. The runner is already armed."
+            )
+    except Exception as exc:  # noqa: BLE001
+        log.error("/resume failed: %s", exc)
+        await update.message.reply_text(
+            f"Failed to clear SAFE_MODE: {exc}.\nFallback: delete memory/SAFE_MODE manually."
+        )
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 async def main() -> None:
@@ -825,6 +926,8 @@ async def main() -> None:
     eco_app.add_handler(CommandHandler("start", eco_start))
     eco_app.add_handler(CommandHandler("tasks", eco_tasks))
     eco_app.add_handler(CommandHandler("status", eco_status))
+    eco_app.add_handler(CommandHandler("halt", on_halt))
+    eco_app.add_handler(CommandHandler("resume", on_resume))
     eco_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, eco_msg))
 
     log.info(

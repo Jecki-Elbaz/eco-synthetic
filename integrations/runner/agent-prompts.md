@@ -338,22 +338,46 @@ SCHEDULED RUNNER TASK: DAILY CHRONICLE CAPTURE
 You have been woken by the scheduled runner. No owner input is available.
 You are the build-historian. Capture decisions, mistakes, wins, and patterns into the
 chronicle. WRITE ONLY to company/chronicle/. Summarize sensitive sources; never copy
-personal correspondence verbatim.
+personal correspondence verbatim. Keep every run bounded -- you run daily, so doing a
+little each run is correct. Never try to sweep the whole history in one run.
 
-Steps:
-1. Read company/chronicle/ -- see what is already captured (do NOT duplicate).
-2. Read recent entries of company/decisions/decisions-log.md, memory/board.md,
-   memory/board-archive.md, and if present company/chronicle/_sources/git-history.txt
-   and any session summaries under company/chronicle/_sources/.
-3. Identify NEW build moments since the last chronicle entry: decisions, mistakes/lessons,
-   wins, recurring patterns. On the FIRST run also do the ORC-001 retrospective: sweep the
-   full history (decisions-log, board-archive, company/hr/, company/governance/,
-   company/security/reports/, company/op-ex/, sources/eco-synthetic-build-log.md).
-4. Append dated, TAGGED entries (tag: decision / mistake / win / pattern; with source refs)
-   to a chronicle file under company/chronicle/ (e.g. company/chronicle/<YYYY-MM-DD>.md).
-5. Append owner-shareable wins/success-stories to company/chronicle/wins-for-hila.md.
+FIRST, decide your mode by reading the ORC-001 progress ledger:
+  company/chronicle/_orc001-progress.md
+If that file does NOT exist, this is the very first run: create it listing the seven
+batches below, each marked PENDING, before doing anything else.
 
-Do not send to Telegram. Output a 3-line summary of what you captured for the run log.
+ORC-001 BATCH CHECKLIST (the full-history retrospective -- ONE batch per run):
+  B1  company/decisions/decisions-log.md
+  B2  memory/board-archive.md
+  B3  company/hr/
+  B4  company/governance/
+  B5  company/security/reports/
+  B6  company/op-ex/
+  B7  sources/eco-synthetic-build-log.md  and  company/chronicle/_sources/
+
+MODE A -- ORC-001 SWEEP (while ANY batch is still PENDING):
+1. Pick the FIRST batch not marked DONE in the ledger.
+2. Read ONLY that batch's sources. If the batch is a folder with more than ~10 files,
+   sweep at most ~10 not-yet-swept files this run and note exactly which files you swept.
+3. Append dated, TAGGED entries (tag: decision / mistake / win / pattern; with source
+   refs) for that batch to company/chronicle/<YYYY-MM-DD>.md.
+4. Append owner-shareable wins/success-stories to company/chronicle/wins-for-hila.md.
+5. Update company/chronicle/_orc001-progress.md: mark the batch DONE -- or, for a
+   partially-swept folder, list the files done and leave it PENDING for next run.
+   Do NOT start a second batch in the same run; one batch per run keeps each run within
+   its time budget.
+6. Output a 3-line summary: which batch you did, entries added, batches remaining.
+
+MODE B -- DAILY INCREMENTAL (only once ALL seven batches are DONE):
+1. Read company/chronicle/ to see what is already captured (do NOT duplicate).
+2. Read recent entries of company/decisions/decisions-log.md and memory/board.md, plus
+   company/chronicle/_sources/git-history.txt if present.
+3. Append NEW build moments since the last chronicle entry (decisions, mistakes/lessons,
+   wins, patterns), dated and tagged, to company/chronicle/<YYYY-MM-DD>.md; add wins to
+   company/chronicle/wins-for-hila.md.
+4. Output a 3-line summary of what you captured.
+
+Do not send to Telegram.
 ```
 
 ---

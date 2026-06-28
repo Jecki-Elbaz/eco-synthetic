@@ -207,11 +207,17 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
     prompt = f"[Scheduled run: {now().isoformat()}]\n\n{job['prompt']}"
     log({"key": key, "event": "start", "mode": mode, "model": model, "tg": job["tg"]})
     try:
+        # Tag the spawned agent so the PreToolUse guard can enforce the runner
+        # policy (no Bash, no sub-agent spawns; in readonly, no writes at all).
+        # This is the real enforcement layer -- --allowedTools alone does NOT
+        # strip Bash and does NOT guarantee read-only (verified 2026-06-28).
+        env = {**os.environ, "RUNNER_CONTEXT": "1", "RUNNER_MODE": mode}
         r = subprocess.run(
             [find_claude(), "--print", "--model", model, "--allowedTools", tools,
              "--append-system-prompt", role_text(agent)],
             input=prompt.encode("utf-8"),
             capture_output=True, timeout=CLAUDE_TIMEOUT, cwd=str(ROOT), check=False,
+            env=env,
         )
         out = r.stdout.decode("utf-8", "replace").strip()
     except Exception as e:

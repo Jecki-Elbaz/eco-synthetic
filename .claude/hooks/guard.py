@@ -24,6 +24,7 @@ read the exit code instead of the JSON).
 from __future__ import annotations
 
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -118,6 +119,24 @@ def evaluate(event: dict) -> tuple[str, str]:
         raise ValueError("tool_input is not an object")
 
     governed = tool in ("write", "edit", "multiedit", "task", "agent")
+
+    # --- Autonomous runner path (real tool-stripping enforcement) ---
+    # The scheduled runner (integrations/runner/runner.py) sets RUNNER_CONTEXT=1 and
+    # RUNNER_MODE on every spawned agent. --allowedTools is NOT a reliable boundary
+    # (verified 2026-06-28: it does not strip Bash, and readonly still allowed writes
+    # to non-sensitive paths), so the guard is the enforcement layer for that path.
+    if os.environ.get("RUNNER_CONTEXT") == "1":
+        runner_mode = os.environ.get("RUNNER_MODE", "").lower()
+        # No shell and no recursive sub-agent spawning from a scheduled agent, ever.
+        if tool == "bash":
+            return DENY, "autonomous runner: Bash is disabled on the scheduled path"
+        if tool in ("task", "agent"):
+            return DENY, "autonomous runner: sub-agent spawning is disabled"
+        # Readonly cycle = genuinely zero writes, regardless of path.
+        if runner_mode == "readonly" and tool in ("write", "edit", "multiedit"):
+            return DENY, "readonly runner cycle: all writes blocked"
+        # act cycle falls through to the path rules below (Red paths / SAFE_MODE /
+        # append-only). Own-scope is not hard-enforced here (path rules only).
 
     # Origin enforcement (5.2, verified C2/C5): Claude Code populates a top-level
     # agent_type when a tool call is made from inside a sub-agent. A governed action
