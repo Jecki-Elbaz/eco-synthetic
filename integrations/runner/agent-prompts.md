@@ -88,8 +88,11 @@ Read memory/board.md. Check only for these conditions:
 If ANY condition is true: produce a brief message (max 80 words) describing the specific issue
 and what jecki needs to do or decide. Start with the most urgent item.
 
-If NO condition is true: produce the exact string "NO_ACTIONABLE_CONTENT" and nothing else.
-The runner will suppress the Telegram send on that string.
+If NO condition is true: your reply must END with the exact line NO_ACTIONABLE_CONTENT
+(ideally that IS your entire reply, with no preamble). The runner suppresses the Telegram
+send whenever the last line is NO_ACTIONABLE_CONTENT -- so never add any text after it.
+NOTE: repeating a still-pending OWNER ACTION every cycle is correct and wanted (keep pushing
+until the owner acts) -- that is an actionable condition, not "no content".
 
 Format: plain prose. No ack line. No "all clear" message. Silence is correct when nothing is wrong.
 ```
@@ -110,15 +113,27 @@ Steps:
 2. Read memory/wiki/ for any cost-snapshot files from previous days.
 3. Estimate token usage in the last 24h. Break down by agent if the data supports it.
 4. Compare to the prior 7-day average if calculable.
+5. RUNNER HEALTH CHECK (Op-Ex ownership of the proactivity runner): read
+   memory/agent-runs.jsonl (last 24h) and memory/agent-guard.log (last 24h). Tally: total
+   agent runs; any event=error or TimeoutExpired; any rc != 0; Eco Telegram sent-vs-suppressed.
+   Flag anomalies: a timeout, an error, an agent that wrote OUTSIDE the repo (guard target under
+   .claude/projects/... instead of the project root), or a guard deny that looks like a real
+   misconfiguration (not the expected readonly/red-path blocks).
+6. Judge runner health: HEALTHY = every run event=done rc=0, no timeouts, writes landing in
+   the repo. DEGRADED = any error/timeout/rc!=0/out-of-repo write.
 
-Write your snapshot to memory/wiki/cost-snapshots/<YYYY-MM-DD>.md using today's date.
-If any agent consumed >2x its normal daily baseline, prefix the filename with ALERT-.
-Append a one-line summary to memory/wiki/cost-snapshots/index.md (create if missing).
+Write your snapshot to memory/wiki/cost-snapshots/<YYYY-MM-DD>.md using today's date. Include a
+one-line "RUNNER HEALTH:" summary (e.g. "6 runs, 0 errors, 0 timeouts -- HEALTHY" or
+"Oracle TimeoutExpired x1 -- DEGRADED"). If any agent consumed >2x its baseline, OR the runner
+is DEGRADED, prefix the filename with ALERT-.
+Append a one-line summary (cost + runner health) to memory/wiki/cost-snapshots/index.md (create if missing).
 
 If you cannot read token data from the log (data absent or log missing), write the snapshot
-with a note: "Token data not available from log. Manual review required."
+with a note: "Token data not available from log. Manual review required." -- but STILL do the
+runner-health check, which reads agent-runs.jsonl, not the token log.
 
 Do not send to Telegram. Eco will surface ALERT- files in the next AM/PM brief.
+If the runner is DEGRADED, write "ESCALATE_TO_ECO" on the last line so Eco surfaces it this cycle.
 ```
 
 ---

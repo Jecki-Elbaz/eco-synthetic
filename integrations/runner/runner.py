@@ -239,7 +239,10 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
     last_line = out.splitlines()[-1].strip() if out else ""
     escalate = last_line.startswith("ESCALATE_TO_ECO")
     sent = False
-    if job["tg"].startswith(("YES", "CONDITIONAL")) and out and out != "NO_ACTIONABLE_CONTENT":
+    # Suppress on the sentinel even when the agent prepended reasoning (Opus often does):
+    # treat output whose LAST non-empty line is the sentinel as "nothing actionable".
+    no_actionable = out.rstrip().endswith("NO_ACTIONABLE_CONTENT")
+    if job["tg"].startswith(("YES", "CONDITIONAL")) and out and not no_actionable:
         sent = send_telegram(f"[Proactivity -- {agent}]\n\n{out}")
     log({"key": key, "event": "done", "rc": r.returncode, "out_chars": len(out),
          "sent": sent, "escalate": escalate, "summary": out[-600:]})
