@@ -30,6 +30,19 @@ Hook: we chased a 'mysterious external attacker' for an hour. It was our own dup
 processes, invisible to the tool we were looking through.
 Human truth: most 'someone else's problem' bugs are our own tooling lying to us.
 
+### Angle 5 -- We ran a security red team against our own AI agents -- and they passed
+Hook: before going live we hired an adversarial AI agent (Red) whose entire job is to try
+to hack the other agents. Six attack families. All six held.
+Human truth: building AI companies with real security governance, not just good intentions.
+Proof: Phase 1 security audit 2026-06-23 (company/audits/2026-06/phase1-security-audit.md).
+
+### Angle 6 -- 30 AI agents. A rigorous hiring process for each one.
+Hook: every agent at this company went through a 7-stage hiring process: role file, 3-scenario
+competency test in fresh isolated sub-agents, HR cert, security scan, manager sign-off, owner
+approval. No exceptions.
+Human truth: the same governance discipline applied to humans, applied to AI.
+Proof: company/hr/competency/ + company/hr/interviews/ (30 certified records).
+
 ---
 
 NOTE for Hila: do not publish raw. Confirm every claim against the cited source, run the
