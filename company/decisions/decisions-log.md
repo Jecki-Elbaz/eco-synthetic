@@ -995,3 +995,76 @@ Owner (jecki) A1 this session, in an authenticated Claude Code session.
 - **Autonomous Bash stays gated:** runner spawns get NO Bash; autonomous shell (tests/deploy) BLOCKED until deny-cascade confirmed or a sandbox is built (separate later phase, separate A1).
 - **Runner v1 + validation:** v1 launches manager Eco on cadence, stripped tools, SAFE_MODE-aware, every run logged to memory/agent-runs.jsonl. GUARD_MODE stays SHADOW during validation (SEC-0001 -- no enforce flip yet). v1 runs READ-ONLY (proposes/surfaces); flipping to write-enabled (act) + GUARD_MODE=enforce is a separate A1 after a clean validation window.
 - **Files affected:** company/security/reports/T-0020-C3-resolution-2026-06-28.md (new), company/governance/agent-tool-spawn-allowlist.md (runner-spawn section added), company/decisions/decisions-log.md (this entry). Runner code: shared/scripts/agent-runner.py (outside repo).
+
+## 2026-06-28 -- New customer engagement: AI Patient Simulator (Adam) -- design-partner intake
+
+- **Author / gate:** jecki (owner, A1 -- new initiative / new customer engagement). Orchestrated by Eco.
+- **Context:** Owner brought in a new external customer, Adam, with two source documents (a
+  71-page High-Level Design + a RAG/persona architecture deck) for an AI Patient Simulator: a
+  multilingual, LMS-integrated clinical-skills simulation platform for psychotherapy / LI-CBT /
+  ACT training. Customer has a clear vision but unsettled requirements.
+- **Decision:**
+  1. **Take the engagement on** as an Eco-Synthetic project. **Engagement model = design
+     partner / strategic** (owner A1): Adam becomes first reference customer + co-shaper;
+     reduced-fee / equity / IP terms TBD (A1 + Legal, not committed now).
+  2. **Mobilize now = discovery + viability** (owner A1): run product discovery and
+     investment-grade viability in parallel before any build commitment.
+  3. **Project partition created:** projects/ai-patient-simulator/ (intake/ read-only archive,
+     docs/, memory/), mirroring the delivery-saas layout. Adam's originals archived in intake/.
+  4. **Team mobilized:** Perry (VP Product) -- requirements baseline + clarifying-questions
+     for Adam; Sami (SME) -- clinical/EdTech domain + safety read; Erez (Investor/IRB) --
+     viability + design-partner structure + stage-gate go/no-go.
+- **Guardrails preserved:** No agent contacts Adam -- owner is sole interface until an
+  engagement is signed AND CS-0001 clears (hard gate). No external tool/API/LMS connector
+  adopted without the Rambo + Eyal gate. Clinical content + student PII flagged
+  high-sensitivity -> Eyal + Lital privacy pre-read before data decisions finalize. Final
+  commercial terms (equity/fee/IP) are A1 + Legal.
+- **Rationale:** Customer is pre-requirements, so we scope before quoting a build. A
+  discovery-first posture de-risks both sides and plays to Eco-Synthetic strengths (incl.
+  Hebrew/Arabic RTL). Design-partner model chosen by owner for upside + a reference logo.
+- **Alternatives considered:** Paid discovery-only client engagement (owner chose the
+  design-partner structure instead); adopt-as-our-own-product (deferred -- revisit if Erez's
+  viability favors it); quoting a build now (rejected -- requirements not settled).
+- **Files affected:** projects/ai-patient-simulator/README.md (new), .../intake/ (Adam's docs
+  + README, new), .../docs/discovery-brief.md (new), memory/board.md (APS-001/002/003 added),
+  company/decisions/decisions-log.md (this entry). Follow-on: Perry/Sami/Erez discovery
+  outputs into projects/ai-patient-simulator/docs/.
+
+## 2026-06-28 -- AI Patient Simulator: committed pilot site + new reqs + timeline finding
+
+- **Author / gate:** Eco (CEO, A2 orchestration), recording customer inputs relayed by jecki.
+  No A1 commitment made here; commercial terms + build commitment remain owner A1 + Legal.
+- **Customer inputs (archived intake, read-only):** Adam sent (1) an appendix adding two
+  required modules -- internal Credit/Token Management (admin usage governance by college +
+  course; soft/hard limits; admin adjust/override/audit; hidden from students; no billing) and
+  Continuing Persona / Therapeutic History (shared base persona branching per student;
+  structured 12-month longitudinal history; persona development driven by student behaviour;
+  lecturer review; reset/fork); and (2) answers to the 5 pilot questions.
+- **Locked pilot facts:** Committed site = Gome Gevim College. Pilot start = 1 Sep 2026.
+  Students Israel-based (Israeli Privacy Protection Law applies, not GDPR, unless international
+  added later). v1 = secure invite link (no LTI day one); Hebrew required, English desirable,
+  Arabic later; FORMATIVE only (not graded). This satisfies Erez viability Condition 1
+  (committed pilot site) -> recommendation moves toward GO, pending a signed pilot agreement.
+- **Storage tension resolved:** the appendix confirms persona-branching/longitudinal history as
+  a real requirement. Recommendation (Perry): PostgreSQL + Prisma + JSONB for the pilot; defer
+  vector/RAG to Phase 2. Pending Ido feasibility sign-off.
+- **DOMINANT NEW RISK -- timeline:** 1 Sep 2026 is ~9 weeks out; the credible pilot build is
+  16-28 weeks. Perry's plan: a "pilot-minimal" formative scope (single-session) targetable at
+  1 Sep, with continuing-personas DEFERRED to Phase 1b (~4-6 weeks post-Sep), credits IN (thin
+  layer over existing usage events), and a hard 15 Aug internal rehearsal go/no-go; if not
+  ready, advise Adam of a slip to ~15 Oct rather than launch weak. NEW P1 question to Adam
+  (Q9.1): does the Sep cohort require multi-session continuity, or is single-session acceptable
+  for the pilot? Answer needed this week -- it can reverse the defer decision.
+- **SME flags (Sami):** continuing personas credible for a formative pilot only as short, capped
+  arcs (2-3 sessions); top realism risk = formulation drift across sessions (needs structured
+  anchoring); top privacy risk = the "notable student mistakes" field retained 12 months is the
+  highest-sensitivity personal data in the platform and is NOT insulated by the
+  "not-a-real-clinical-record" label -> Eyal must review before the history schema is finalized.
+  Named clinician-educator remains a build precondition (now with rate-of-change calibration of
+  the development model as a critical task).
+- **Files affected:** projects/ai-patient-simulator/intake/ (2 new customer files + README +
+  resolved storage note), .../docs/requirements-baseline.md + clarifying-questions-for-adam.md +
+  sme-domain-assessment.md (updated), memory/board.md (APS rows updated; APS-005 Ido feasibility
+  added), company/decisions/decisions-log.md (this entry). Open owner decisions: partner
+  structure (equity vs reduced-fee+LOI); mobilize Ido + Eyal/Lital now; timeline stance + relay
+  Q9.1 to Adam.

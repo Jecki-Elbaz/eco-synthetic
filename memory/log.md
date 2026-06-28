@@ -8,6 +8,8 @@ Format per entry:
 YYYY-MM-DD HH:MM | agent | action | detail | tokens (if known)
 ```
 
+2026-06-28 | Erez | viability memo produced | APS-003 AI Patient Simulator; CONDITIONAL-GO recommendation; memo at projects/ai-patient-simulator/docs/viability-assessment-erez.md | ~8000 tokens (est)
+
 2026-06-21 | Rambo | gate-review batch | 3 skills-il formation+compliance skills reviewed (startup-toolkit, hebrew-legal-research, israeli-privacy-shield). CLEAR x2, PARTIAL-CLEAR x1. Files: company/governance/gate-review-formation-batch-rambo.md; gate-register.md updated with Rambo verdicts.
 
 ---

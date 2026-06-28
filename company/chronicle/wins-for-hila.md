@@ -45,5 +45,22 @@ Proof: company/hr/competency/ + company/hr/interviews/ (30 certified records).
 
 ---
 
+### Angle 7 -- "We hired 20 AI agents in 48 hours -- with a rigorous process for each"
+Hook: in two days (2026-06-17 and 2026-06-18) we onboarded 20 agents through a full
+7-stage pipeline: role file, 3-scenario behavioral test in fresh sub-agents, HR cert,
+security scan, manager sign-off, owner A1. No batch approvals meant no shortcuts -- every
+agent earned its slot.
+Human truth: scaling a team of AI agents is not pressing a button. It is a hiring process.
+Proof: board-archive.md ONB-003 to ONB-013, HIRE-001 to HIRE-010.
+
+### Angle 8 -- "Our brand has a name: Living Signal"
+Hook: we gave our AI company a brand identity before we had a product. The direction we chose
+was "Living Signal" -- active, calibrated, dynamic. Our designer is also an AI.
+Human truth: even in stealth mode, building a brand intentionally makes the product you build
+more coherent.
+Proof: marketing/brand/brand-guidelines-v1.md (HIL-001 delivered 2026-06-27).
+
+---
+
 NOTE for Hila: do not publish raw. Confirm every claim against the cited source, run the
 Legal claims-clearance + Security gate, and route to owner A1 before any post goes out.
