@@ -213,14 +213,22 @@ def _mode() -> str:
 
 
 def decide(event: dict, mode: str) -> tuple[str, str]:
-    """Apply mode. In shadow, always allow but record what enforce would do."""
+    """Apply mode. In shadow, always allow but record what enforce would do.
+
+    EXCEPTION: the autonomous runner path (RUNNER_CONTEXT=1) is ALWAYS
+    hard-enforced, regardless of GUARD_MODE. shadow/enforce governs only the
+    broader interactive + live-bridge rules (Red paths, append-only, allow-list)
+    while they are validated; the runner's no-Bash / no-spawn / readonly-no-write
+    guarantees must bite immediately and unconditionally.
+    """
+    runner = os.environ.get("RUNNER_CONTEXT") == "1"
     try:
         decision, reason = evaluate(event)
     except Exception as exc:  # noqa: BLE001 -- fail-closed
-        if mode == "enforce":
+        if mode == "enforce" or runner:
             return DENY, f"fail-closed: guard could not evaluate ({exc})"
         return ALLOW, f"[shadow] eval-error (would fail-closed): {exc}"
-    if mode == "enforce":
+    if runner or mode == "enforce":
         return decision, reason
     if decision == DENY:
         return ALLOW, f"[shadow] would-DENY: {reason}"
