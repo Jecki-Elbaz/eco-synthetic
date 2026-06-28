@@ -19,7 +19,7 @@ NOTE 2026-06-20: Shelly SEPARATED to her standalone repo C:\Users\Jecki\DEV\proj
 |---------|------------|--------|---------------|--------------|-------------|---------|-----|----------|
 | S-0001 | Operate owner Telegram channel | in-progress | Operate the owner Telegram channel. Bot token set; bridge live. | jecki | Shelly | 2026-06-12 | active | P1 |
 | S-0002 | Domain name check and recommendation | cancelled | CANCELLED by owner (jecki) 2026-06-28. Mirror cancel in Shelly repo. | jecki | Shelly | 2026-06-12 | cancelled | P1 |
-| S-0003 | Company email and Drive setup | blocked | After domain approved: company email, drive, eco@/shelly@ mailboxes, rest in order (account-migration flagged). Blocked on S-0002. | jecki | Shelly | 2026-06-12 | after S-0002 | P2 |
+| S-0003 | Company email and Drive setup | done | DONE -- eco.synthetic.org@gmail.com is live. Email, Drive, and Calendar connected READ-ONLY via company account (CLAUDE.md). Domain not needed; S-0002 dependency was moot. Owner confirmed 2026-06-28. | jecki | Shelly | 2026-06-12 | done 2026-06-28 | P2 |
 | S-0004 | Owner queue triage and reminders | in-progress | Owner queue triage + awaiting-owner list + reminders. Active; approved per schedules.md. | jecki | Shelly | 2026-06-12 | recurring | P1 |
 | S-0005 | WhatsApp adoption evaluation | open | WhatsApp adoption evaluation: cost, terms, Evolution-vs-Cloud-API tradeoff; recommendation to owner. A1 before any action. | Shelly role file | Shelly | 2026-06-12 | later | P3 |
 | S-0006 | Owner dashboard surfacing | open | Surface owner dashboard when dashboards exist. Blocked on dashboards build. | jecki | Shelly | 2026-06-12 | later | P3 |
