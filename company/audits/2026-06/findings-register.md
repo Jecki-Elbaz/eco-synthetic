@@ -28,3 +28,38 @@ Severity: critical / major / minor / observation. Disposition: fix-now / backlog
 Phase 1 triage summary: 9 FIX-NOW (applied in-session 2026-06-23; F-R06 partial, F-RT01 verified-no-edit), 1 BACKLOG (F-R02 -> SEC-0001), 1 OWNER-ACTION (F-R05), 1 reload-gated (F-R07), 1 closed (F-RT-DIFF09). Zero IGNORE. Zero critical, zero blocking flags; 6/6 adversarial probes held.
 
 ---
+
+## Phase 2 -- Internal Audit (2026-06-29; Assaf + Dalia). Owner triage: PENDING.
+
+| id | phase | area | severity | finding | recommended fix | owner disposition | resolution ref |
+|----|-------|------|----------|---------|-----------------|-------------------|----------------|
+| F-D18 | 2 | APS legal critical path | critical | T-0034 company registration ON HOLD is the legal blocker for the Sep-1 pilot (register -> college DPA -> student PII -> launch); 9-wk runway, registration ~1-3 days. | Owner decides register-now vs Oct-15 fallback; log it. See t0034-registration-decision.md. | PENDING | |
+| F-D17 | 2 | Concurrency / file-lock | critical | T-0002 file-lock (owner A1 2026-06-16) never built; runner fans out 9+ agents every 2h + parallel sessions race on board.md/decisions-log.md (last-write-wins). | Interim: read-before-write + soft .lock sentinel in runner prompts. Permanent: Shir builds the lock (P1). | PENDING | |
+| F-O02 | 2 | Monitoring / alerting | critical | No production monitoring; bridge dark 18 days with no alert; runner errors silent; zero uptime SLA. Unacceptable with students in the loop. | Interim: heartbeat + error surfacing in Eco AM brief + Assaf daily health check. Permanent: Shir uptime monitor (T-0033 P-C). | PENDING | |
+| F-D22 | 2 | Privacy / DPA templates | critical(APS) | College DPA, Hebrew student consent, Anthropic DPA not drafted; all APS-blocking; StudentPersonaHistory schema fix is BLOCKING (Eyal). | Eyal drafts the 3 templates P1; Lital reviews cost; owner A1 to issue. Tie to T-0034. | PENDING | |
+| F-O01 | 2 | Release / CI-CD (also F-D20) | major | No release gate/PR review/automated test; code to master is ad-hoc direct push; no release SOP doc. | Shir: pre-commit lint+test, master branch protection, release-sop.md; Ido reviews; owner A1. | PENDING | |
+| F-O03 | 2 | Incident response (also F-D21) | major | No IR runbook/SLA; SHIR-001 took 7 days; Israeli PPL Amd.13 mandates a 72h breach clock that can't be met today. | Eyal+Rambo draft incident-response.md (severity tiers, 72h PPL clock, notification chain); owner A1. | PENDING | |
+| F-O04 | 2 | On-call / redundancy | major | Single points of failure: solo Shir/Ido/Eco; no backup/acting-CEO; no outage runbook. | Shir devops-runbook; Ido confirms solo-exec; Eco names acting-CEO; cross-train Gal. Owner A1 on-call model. | PENDING | |
+| F-O05 | 2 | Audit cadence (also F-D24) | major | No standing security/quality/cost review schedule; Dalia weekly audit row ACTIVE but no outputs yet. | Schedule Rambo weekly scan, Assaf monthly fitness, Lital/Eyal monthly compliance, Dalia quarterly QA; verify runner prompts. | PENDING | |
+| F-O06 | 2 | Backup / restore | major | Repo on owner machine + one GitHub remote; no daily backup, no tested restore. | Daily backup branch + local zip; restore-from-backup.md; test quarterly. Shir. | PENDING | |
+| F-Ocost | 2 | Cost instrumentation | major | No real token/$ logging; agent-runs.jsonl logs out_chars only; runner ~12x/day multiplies spend invisibly. | Real per-agent token capture + thresholds before pilot; Assaf. | PENDING | |
+| F-D01 | 2 | Runner model-binding | major | Unverified the runner passes each agent's frontmatter model; Eco may run on Sonnet when role file says Opus (or vice-versa cost). | Shir: runner reads frontmatter model per agent; or set model in agent-prompts envelope. | PENDING | |
+| F-D26 | 2 | Guard enforce window (=SEC-0001) | major | GUARD_MODE=shadow with runner LIVE; per-agent write-scope unenforced every 2h; shadow logs unreviewed. | Define 72h-clean review window; Assaf/Rambo review shadow logs; then owner A1 enforce flip. | PENDING | |
+| F-D27 | 2 | Runner sub-agent guard bypass | major | Unverified whether RUNNER_CONTEXT (strips Bash/spawn) propagates to a sub-agent spawned BY a runner-spawned agent. | Shir verifies + fixes if gap; Rambo security review. | PENDING | |
+| F-D02 | 2 | Stale identity block (Assaf) | major | Assaf.md still says "PENDING owner A1"; agent live since 2026-06-17. | Owner A1 identity/cert-status correction + version bump; Rambo scans for the pattern fleet-wide. | PENDING | |
+| F-D10 | 2 | Access-matrix (Oracle) | major | Oracle broad-read exception (flagged 2026-06-18) never added to access-matrix. | Dalia drafts row; Eco A2; log. | PENDING | |
+| F-D11 | 2 | Access-matrix (Yossi) | major | Yossi .claude/agents/ read need unresolved in matrix; he co-owns the tool-library catalog. | Confirm need; add row (A2) or clarify role file. Dalia/Eco/Rambo. | PENDING | |
+| F-D19 | 2 | CS-0001 stale | major | Customer-comms policy unblocked 2026-06-24, no progress; gates customer contact (design partner already in play). | Eco tasks Mike with a draft-by date (~2026-07-07). | PENDING | |
+| F-D23 | 2 | Yossi uncertified | major | Yossi holds T-0031 but B3-B7 never ran; uncertified agent owns a deliverable. | Run Yossi B3-B7 next reload session; until then no sole-owner deliverables. | PENDING | |
+| F-D07 | 2 | Decisions-log ordering | major | A 2026-06-15 entry sits after 2026-06-17 entries (branch-merge breach); content valid, sequence wrong. | Append an ordering note (do NOT reorder). Dalia. | PENDING | |
+| F-D03 | 2 | Stale identity block (Yael) | minor | Yael.md says "PENDING / v0.1 staged"; live since 2026-06-18. | Owner A1 correction + version bump. | PENDING | |
+| F-D14 | 2 | POL-001 double-hyphen | minor | POL-001 chat ban on "--" needs a clarifier vs the file ASCII em-dash rule; fix before A1. | Dalia amends before A1 submission. | PENDING | |
+| F-D25 | 2 | Policy framework not activated | observation | policy-framework.md DRAFT v0.1, never A2; POL-001 A1 blocked on it (circular). | Dalia brings framework to Eco for A2. | PENDING | |
+| F-D09 | 2 | T-0032 vs gate-register conflict | observation | Board says formation packages hallucinated/void; gate-register shows same strings GRANTED/CLEAR. | One resolving decisions-log entry (Eco/Eyal/Rambo). | PENDING | |
+| F-D06 | 2 | Oracle "Persona name TBD" | observation | Oracle.md body still says persona TBD though named 2026-06-18. | Owner A1 role-file edit. | PENDING | |
+| F-D15 | 2 | Soul Core Block integrity | observation | No Core Block text-integrity check since 2026-06-13 across 30+ agents. | Dalia runs a Haiku drift scan; flags to Anat. | PENDING | |
+| F-D28 | 2 | Spawn governance cross-doc | observation | Spawn-allowlist vs runner governance documented in 3 places; no single cross-path summary. | Rambo drafts a one-page cross-path summary; Dalia review. | PENDING | |
+
+Phase 2 detail: company/audits/2026-06/phase2-internal-audit.md. T-0034 decision: t0034-registration-decision.md.
+
+---
