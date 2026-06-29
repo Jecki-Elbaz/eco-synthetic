@@ -1068,3 +1068,79 @@ Owner (jecki) A1 this session, in an authenticated Claude Code session.
   added), company/decisions/decisions-log.md (this entry). Open owner decisions: partner
   structure (equity vs reduced-fee+LOI); mobilize Ido + Eyal/Lital now; timeline stance + relay
   Q9.1 to Adam.
+
+## 2026-06-29 -- Shelly customer channel: direct outbox write (relay SPOF removed)
+
+- **Author / gate:** recorded for jecki (Owner, A1). Security gate: Rambo CLEAR (re-scan, risk
+  LOW). C5 (the owner-decision condition) accepted by jecki in-session 2026-06-29. The
+  pre-authorization ("if Rambo approves 100%, my A1 fires in advance") therefore applies.
+- **Problem:** Shelly (Eco-Synthetic's external customer) could not write to shared/handoff/ (it
+  is outside her project path), so every outbound request depended on the owner manually relaying
+  her file. Single point of failure -- board S-0005 was blocked on exactly this.
+- **Change:** Shelly granted WRITE scoped to shared/handoff/shelly-outbox/ ONLY, plus READ over
+  shared/handoff/ (to read Eco's replies). In projects/Shelly/.claude/settings.json allow:
+  Write(//c/Users/Jecki/DEV/shared/handoff/shelly-outbox/**), Read(//c/Users/Jecki/DEV/shared/handoff/**).
+- **Controls (Rambo C1-C4, verified by EXECUTING the live guard):** guard.py now (C1) scans every
+  outbox write for secret/credential patterns and DENIES on a hit; (C2) decides on the RESOLVED
+  path so `..` traversal cannot escape the outbox; (C3) hard-enforces the cross-project write
+  boundary regardless of GUARD_MODE (scoped enforce -- no global flip; the rest of Shelly's guard
+  stays in shadow); (C4) the settings.json allow is outbox-only and every other out-of-root write
+  is denied. 16-case unit harness passes: secret payloads (API keys, telegram/OAuth/Bearer/JWT/
+  URL-creds) denied; commit-SHA/pin governance prose allowed (no false-positive lockout).
+- **C5 (owner-accepted residual):** the code catches secrets-by-pattern only, NOT free-form
+  personal data; that boundary stays behavioral (Shelly CLAUDE.md: bounded asks/summaries only,
+  no raw owner-personal data). Low actual risk: shared/ and DEV/ are NOT git repos -- nothing here
+  is pushed to any remote.
+- **Scope:** project-scoped only; NOT promoted to global. No new third-party tool, no network
+  egress, no spend.
+- **Files affected:** projects/Shelly/.claude/hooks/guard.py, projects/Shelly/.claude/settings.json,
+  shared/handoff/shelly-outbox/ (created + README), projects/Shelly/company/governance/gate-register.md
+  (GR-014), company/customers/shelly/profile.md + requests-log.md (channel mechanics),
+  projects/Shelly/CLAUDE.md + board S-0005 (unblocked). Hardening backlog (non-blocking, Rambo):
+  the secret scan is patterns-only; raw high-entropy blobs are intentionally NOT flagged to avoid
+  commit-SHA false-positives.
+
+## 2026-06-29 -- Yael added to the proactivity runner (weekly doc-hygiene)
+
+- **Author / gate:** jecki (A1)
+- **Decision:** Yael (Knowledge/Documentation Manager) joins the autonomous runner with a weekly
+  Monday doc-hygiene audit. First run SEEDS company/governance/file-index.md; thereafter she
+  re-verifies a bounded batch (<=8 oldest/missing entries) for purpose drift, ASCII/md-style,
+  naming-convention, and version compliance, updates last-reviewed dates, and writes a QC report
+  to company/governance/doc-hygiene-<date>.md for Dalia. File-output only (no Telegram). Flags
+  route to Dalia; ESCALATE_TO_ECO_FLAG only for governance-level issues. Cadence aligns with the
+  existing Monday governance sweep (Rambo, Assaf fitness, Dalia).
+- **Rationale:** Owner directive to extend autonomy to Yael. Real recurring value as repo file
+  count grows; the file-index did not yet exist, so the first scheduled run also closes that gap.
+  Yael's role-file minimum is monthly QC; weekly index-hygiene exceeds the minimum and is bounded
+  to stay within run budget.
+- **Constraints respected:** Yael has Read/Write/Edit only (no Glob/Bash), so the task works from
+  known paths and her own index -- no repo enumeration. Indexer-not-rewriter boundary preserved:
+  she proposes, Dalia approves any rename/merge/reorg; decisions-log stays append-only; role files
+  stay A1; chronicle stays Oracle-owned.
+- **Alternatives considered:** Monthly cadence (her role minimum -- chose weekly to consolidate the
+  Monday governance sweep and because the index needs an initial build); leaving the loop as-is
+  (rejected per owner directive).
+- **Open / parallel:** Anat (HR agent-health sweep) NOT added -- referred to Eco for an if/when call.
+- **Files affected:** integrations/runner/agent-prompts.md (Yael envelope),
+  company/governance/schedules.md (new ACTIVE row), company/decisions/decisions-log.md (this entry).
+
+## 2026-06-29 -- Anat runner add DEFERRED to a trigger (HR cert-drift lens)
+
+- **Author / gate:** jecki (A1), on Eco (CEO) recommendation.
+- **Decision:** Do NOT add Anat to the proactivity runner now. Add her on a trigger: the FIRST
+  of either (a) next agent hire / re-scope (roster grows past current count), or (b) Rambo's
+  weekly permission-drift scan producing its first "role file changed since last scan -> REVIEW"
+  flag. When triggered, add as a MONTHLY (1st-of-month Monday) cert-drift sweep, file-output to
+  company/hr/cert-drift-<YYYY-MM-DD>.md, ESCALATE_TO_ECO on any finding, NOT Telegram-facing.
+- **Rationale:** The HR cert-freshness lens is distinct from Assaf (board activity / fitness) and
+  Rambo (tool/permission drift) -- it checks cert-status currency, version/change-log blocks,
+  unclosed conditional-cert conditions, and re-assesses role files Rambo flags REVIEW. But it is
+  slow-moving; on a small, freshly-certified roster a standing job would mostly report "all clear".
+  A trigger-gated monthly slot earns its cadence only once real cert work exists.
+- **Watcher:** Eco surfaces the trigger when met (next hire or first Rambo REVIEW flag), then drafts
+  the schedule row + prompt envelope for owner A1. Adding the row remains A1 + a decisions-log entry.
+- **Alternatives considered:** Add now (rejected -- would mostly emit no-change noise on a stable
+  roster); never add (rejected -- the cert lens is genuinely uncovered and will matter as the
+  company grows).
+- **Files affected:** none yet (deferral record only). Pairs with the 2026-06-29 Yael-added entry.

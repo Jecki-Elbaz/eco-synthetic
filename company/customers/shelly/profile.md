@@ -50,11 +50,15 @@ Explicit owner (A1) approval required before Eco-Synthetic acts on any request t
 Routine, pre-cleared service types flow over the agreed channel without per-call owner relay.
 
 ## Interface
-- Channel (start state): owner-relayed or Telegram-relayed requests, logged on both sides. The
-  recommended transport on the owner's machine is a shared async drop-folder under
-  `C:\Users\Jecki\DEV\shared\handoff\` (shelly-to-eco / eco-to-shelly) -- same user, durable,
-  auditable; NO secrets ever in shared/. Direct bot-to-bot comms is deferred (earned-autonomy ledger).
-- Request log: `company/customers/shelly/requests-log.md` (Eco side; Shelly keeps the mirror).
+- Channel (since GR-014, 2026-06-29): Shelly writes requests DIRECTLY into her outbox
+  `C:\Users\Jecki\DEV\shared\handoff\shelly-outbox\` (scoped write grant; her guard.py scans each
+  write for secrets and denies on a hit). Eco reads the outbox and replies in `shared/handoff/`;
+  Shelly reads the reply there. Same user, durable, auditable; NO secrets ever in shared/; bounded
+  asks/summaries only. No owner relay needed. Direct bot-to-bot comms is still deferred
+  (earned-autonomy ledger). (Before GR-014: owner-relayed -- Shelly wrote to her `memory/`, jecki
+  copied into `shared/handoff/`.)
+- Request log: `company/customers/shelly/requests-log.md` (Eco side); mirror:
+  `projects/Shelly/memory/eco-requests-log.md` (Shelly side).
 
 ## Standing cross-project services (cannot be self-hosted by Shelly)
 Per Eco's 2026-06-18 audit (T-0010). Shelly's project has no Rambo/Eyal/Anat; she requests these back:
