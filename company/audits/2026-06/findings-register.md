@@ -62,4 +62,11 @@ Phase 1 triage summary: 9 FIX-NOW (applied in-session 2026-06-23; F-R06 partial,
 
 Phase 2 detail: company/audits/2026-06/phase2-internal-audit.md. T-0034 decision: t0034-registration-decision.md.
 
+### Phase 2 triage outcome (owner A1 2026-06-29)
+- **FIX-NOW (applied in-session):** F-D02/D03/D06 stale status blocks corrected (Assaf v1.1, Yael v1.0, Oracle persona). F-D07 decisions-log ordering note appended (authentic entry, not reordered). F-D09 T-0032 vs gate-register reconciled in the triage entry (canonical: T-0032 VOID; gate-register batch rows read as PENDING-T-0032; Eyal/Rambo to fix the gate-register text).
+- **VERIFIED non-issue (no change needed):** F-D01 (runner binds per-agent frontmatter model), F-D27 (guard hard-denies Bash + sub-agent spawn on the RUNNER_CONTEXT path regardless of GUARD_MODE; runner grants no Agent tool). F-D26/SEC-0001 narrowed: runner path enforced; only interactive/bridge path is shadow -> SEC-0001.
+- **BACKLOG (board rows):** F-D17 -> AUD-001 (P1). F-O01..O06 + F-Ocost + F-D20/D21/D24 -> AUD-002 (target 2026-08-15). F-D22 -> AUD-003 (T-0034-gated). F-D19 -> AUD-004 (draft-by 2026-07-07). F-D23 -> AUD-005 (next reload). F-D10/D11/D12/D13/D14/D15/D16/D25/D28 -> AUD-006 (next A2 cycle).
+- **OWNER HOLD:** F-D18 / T-0034 -- owner chose "not required for now"; registration on hold; APS legal chain tracked-not-urgent; Sep-1 at risk by this choice (recorded as deliberate, decisions-log 2026-06-29).
+- **IGNORE:** none.
+
 ---

@@ -1069,6 +1069,80 @@ Owner (jecki) A1 this session, in an authenticated Claude Code session.
   structure (equity vs reduced-fee+LOI); mobilize Ido + Eyal/Lital now; timeline stance + relay
   Q9.1 to Adam.
 
+## 2026-06-28 -- AI Patient Simulator: owner decisions (equity, Ido-only, go-fast spike)
+
+- **Author / gate:** jecki (owner, A1) decided; Eco recording + executing.
+- **Decisions:**
+  1. **Partner structure = EQUITY / design-partner** (owner A1, overriding Erez's reduced-fee+LOI
+     recommendation). Erez's caution (giving away upside in a niche where we may be the only
+     player) is on file in viability-assessment-erez.md; owner's call stands. Equity terms are
+     still A1 + Legal (Eyal) to paper when legal is engaged -- not committed yet.
+  2. **Mobilize = Ido only** this round. Eyal + Lital (privacy pre-read + equity terms) are HELD
+     per owner, but remain REQUIRED before any student data is handled / before launch -- the
+     12-month "notable student mistakes" store (Sami flag) cannot ship without Eyal review.
+  3. **Timeline = go much faster; settle the estimate by building, not arguing.** Owner pushed
+     back that the prior 16-28 week estimate was wrong and this is far less work. Eco concedes
+     over-anchoring on Erez's traditional (non-AI-accelerated) estimate. New approach: Ido + Gal
+     build the core-loop VERTICAL SLICE now and report ACTUAL velocity within days; re-estimate
+     pilot-minimal from measured fact, not a textbook number.
+- **Scope clarification recorded:** "core-loop demo" (secure link -> seeded bounded AI patient
+  with state -> rubric eval -> feedback/debrief) is days-scale and AI-accelerated; the full
+  hardened HLD (hierarchy, RBAC, dashboards, credits, continuing-personas, support module) is
+  not days but is NOT required for a formative pilot.
+- **Rationale:** Estimate disputes are best resolved by building the riskiest slice and
+  measuring. Respects owner's go-fast mandate while keeping honesty about what cannot compress
+  (AI-patient engine quality, Hebrew clinical nuance).
+- **Files affected:** memory/board.md (APS-005 reframed to fast spike; APS-004 held; partner =
+  equity), projects/ai-patient-simulator/README.md (engagement line), company/decisions/
+  decisions-log.md (this entry). Mobilizing: Ido (fast-track feasibility + core-loop spike).
+
+## 2026-06-29 -- AI Patient Simulator: Sprint-1 design kickoff delivered (autonomous, A2)
+
+- **Author / gate:** Eco (CEO, A2 orchestration). Owner (jecki) directed Eco to run the build
+  with high company independence ("make this project fly"). No A1 actions taken; all A1 items
+  are surfaced below for the owner, not executed.
+- **What the company did autonomously:** Eco ran a coordinated Sprint-1 DESIGN phase across R&D
+  and Product in parallel (design only -- no deploys, no spend, no provisioning, no customer
+  contact). Deliverables (all in projects/ai-patient-simulator/docs/):
+  - Gal: engine-architecture-gal.md -- Turborepo (Next.js + NestJS + packages/engine + Prisma/
+    PostgreSQL + Redis + S3); Prisma schema v1 incl. PersonaBranch + StudentPersonaHistory JSONB
+    stubs; AI-patient runtime pipeline with HARD-PERSIST PatientStateLog + structured
+    re-injection, deterministic delta-cap state updater, separate guard-model ground-truth pass,
+    hard-coded "I am a simulated training patient" off-ramp, provider-agnostic LLMProvider
+    interface (StubProvider default for CI; vendor gated by APS-004).
+  - Tal (Designer): ux-flows-designer.md -- student + teacher journeys, key screen wireframes,
+    Hebrew RTL/bilingual requirements, non-dismissable welfare signpost, mandatory teacher
+    action on the risk-awareness criterion (no save without it).
+  - Adi (QA): qa-plan-adi.md -- test strategy + cases; concrete 15 Aug rehearsal PASS/FAIL bar
+    (state coherence zero violations; ground-truth guard 3/3; analyser >=70% advisor-rated;
+    no data loss; credit hard-limit block; support/engine isolation proven via DB access log).
+  - Shir (DevOps): devops-infra-shir.md -- lean pilot infra; Israel-residency provider OPTIONS
+    (AWS il-central-1 / GCP me-west1) for the gate (NOT chosen); APS-004 clearance checklist;
+    nothing provisioned.
+- **Review gate (not rubber-stamped):** Ido reviewed Gal's engine design --
+  engine-architecture-review-ido.md. Verdict APPROVED-WITH-CONDITIONS (Sprint 2 cleared).
+  Decisions made: guard runs in PARALLEL and gates delivery on PASS (buffered stream; a
+  guarded-out response never reaches the student); delta-cap table stays deterministic + becomes
+  an advisor-editable config (no deploy to retune); two fixes folded into Sprint 2 (delta value
+  must be config not magic number; add PatientStateLog read to the teacher-review API).
+- **Gates treated as standing:** APS-004 (Rambo/Eyal/Lital draft reviews already in repo) is the
+  active gate; engine implementation can proceed on StubProvider, but a cleared LLM provider is
+  required by Sprint 2 start to validate Hebrew analyser accuracy. This reconciles the earlier
+  "hold Eyal/Lital" note -- the privacy/tool gate stays ON (esp. the 12-month
+  "notable mistakes" PII store).
+- **A1 ITEMS ESCALATED TO OWNER (dated, on the critical path):**
+  1. Gal + Shir B6 activation -- by 2026-06-30 (today) or the 9-week plan slips immediately.
+  2. Senior Dev hire confirmed -- by 2026-07-07 (Sprint 2 is not a 1-engineer sprint).
+  3. Named clinical advisor (LI-CBT/ACT) -- by 2026-07-11 (calibrates the delta-cap table +
+     reviews the analyser sample; Ido calls NO-GO on that date if absent, not on 15 Aug).
+  4. APS-004 provider clearance verdict -- by 2026-07-11/07-14 (gates Hebrew validation + Shir
+     staging). Relay to Adam (via owner): Q9.1 single-vs-multi-session; advisor nomination;
+     a real distress/welfare contact resource for the UI.
+- **Files affected:** projects/ai-patient-simulator/docs/ (engine-architecture-gal.md,
+  ux-flows-designer.md, qa-plan-adi.md, devops-infra-shir.md, engine-architecture-review-ido.md
+  -- new), memory/board.md (APS-006/007 + owner-actions), company/decisions/decisions-log.md
+  (this entry).
+
 ## 2026-06-29 -- Shelly customer channel: direct outbox write (relay SPOF removed)
 
 - **Author / gate:** recorded for jecki (Owner, A1). Security gate: Rambo CLEAR (re-scan, risk
@@ -1154,3 +1228,17 @@ Owner (jecki) A1 this session, in an authenticated Claude Code session.
 - **Standing guardrails (unchanged):** HARD GATE -- no agent contacts Adam; owner relays all questions. No external tool/LMS adopted without the Rambo+Eyal gate passing AND owner A1. Commercial/design-partner terms are A1 + Legal. Work stays in the projects/ai-patient-simulator/ partition.
 - **Rationale:** Discovery delivered a coherent baseline + a viability go recommendation; the pilot clock (1 Sep target, 15 Aug internal go/no-go) makes the gate + feasibility the time-sensitive next step. Owner greenlit proceeding.
 - **Files affected:** memory/board.md (APS-004 + APS-005 -> in-progress, greenlit), company/decisions/decisions-log.md (this entry). Deliverables to land in projects/ai-patient-simulator/docs/.
+
+## 2026-06-29 -- Audit Phase 2 (Internal Audit) complete + owner triage; T-0034 held; re-scope of Phases 3-4 (A1)
+
+- **Author / gate:** jecki (owner, A1) triaged; Eco executed; Assaf (Op-Ex) + Dalia (Q&G) produced the findings. Audit-program-plan.md Phase 2. Reports: company/audits/2026-06/phase2-internal-audit.md + findings-register.md (Phase 2 section).
+- **Result:** No critical agent-behaviour failures; the company is sound but operationally immature for a real launch. 3 critical (T-0034 registration on the APS legal critical path; the T-0002 file-lock never built; no production monitoring), ~14 major, rest minor/observation. Read through the new reality: the autonomous runner (SHIR-005) is live and a real product (AI Patient Simulator) is heading to a 1-Sep pilot.
+- **T-0034 (company registration) -- OWNER DECISION:** owner reviewed the decision brief (company/audits/2026-06/t0034-registration-decision.md) and chose "NOT REQUIRED FOR NOW" -- registration stays on hold by deliberate owner choice. Consequence recorded so it is a choice, not a drift: the Sep-1 APS pilot's legal chain (register -> college DPA -> student PII) cannot start while this holds, so Sep-1 is at risk and the ~15-Oct fallback becomes the likely path by default. The APS legal templates (DPA, consent, IR/PPL) are therefore TRACKED, not urgent (board AUD-003, T-0034-gated). Eco will re-surface only if the owner signals Sep-1 is firm.
+- **Re-scope of the back half (owner A1 2026-06-29):** Phase 2 stays as run. Phase 4 ("dry run") is FOLDED into the live APS retro -- every agent is already being exercised on a real project, so a separate hypothetical dry run is redundant. Phase 3 (external ISO 9001/27001 + AI-best-practice audit) is HELD until after the 2026-08-15 APS engine go/no-go. The audit program is no longer the company's gating activity; the APS pilot is.
+- **Phase 2 triage dispositions (per finding group):**
+  - **Group A -- governance hygiene -- FIX-NOW (applied in-session under A1):** corrected stale role-file status blocks on three LIVE agents whose files still said PENDING/staged -- Assaf.md (-> CERTIFIED+LIVE 2026-06-17, v1.1; F-D02), Yael.md (-> CERTIFIED+LIVE 2026-06-18, v1.0; F-D03), Oracle.md (persona "Oracle" confirmed, not "TBD"; F-D06). F-D07 (decisions-log ordering): the 2026-06-15 "daily summary" entry sits after 2026-06-17 entries due to a branch-merge sequence -- it is AUTHENTIC and is NOT reordered (append-only); this note is the record of that ordering artifact. F-D09 (T-0032 vs gate-register): the board calls the formation packages "hallucinated/void" while the gate-register shows the same strings GRANTED -- both are partially true (skills-il CLI install strings exist but the named repos do not); the canonical status is T-0032 = VOID until real sources are identified, and the gate-register "GRANTED" rows for that batch should be read as PENDING-T-0032; Eyal/Rambo to reconcile the gate-register text at next pass. F-D10/D11/D14 routed to the access-matrix A2 process + POL-001 activation (board AUD-006), which is their correct change-process, not an ad-hoc edit.
+  - **Group B -- live-runner enforcement -- FIX-NOW verify + backlog builds:** VERIFIED by reading integrations/runner/runner.py + the current .claude/hooks/guard.py -- F-D01 (model-binding) is a NON-ISSUE (the runner reads each agent's frontmatter model: and passes --model per agent); F-D27 (runner sub-agent guard-bypass) is a NON-ISSUE (the guard hard-denies Bash AND sub-agent spawning on the RUNNER_CONTEXT path regardless of GUARD_MODE, runner.py grants no Agent/Task tool, and the Phase 1 ALLOWED_AGENTS+SPAWN_DENY patch survived the runner-guard merge intact). F-D26/SEC-0001 narrows: the RUNNER path is hard-enforced; only the interactive/bridge path is still shadow-mode. F-D17 (file-lock) -> board AUD-001 (P1, Shir).
+  - **Group C -- production SOPs -- BACKLOG:** board AUD-002 (monitoring/release/incident/on-call/backup/cadence/cost), target the 2026-08-15 APS rehearsal; monitoring (F-O02) P1.
+  - **Group D -- APS legal + people -- BACKLOG (registration-gated):** board AUD-003 (DPA/IR, T-0034-gated), AUD-004 (CS-0001 draft-by 2026-07-07, Mike), AUD-005 (Yossi B3-B7 next reload).
+  - **IGNORE:** none.
+- **Files affected:** .claude/agents/Assaf.md + Yael.md + Oracle.md (status/persona corrections); memory/board.md (AUD-001..006 added); company/audits/2026-06/phase2-internal-audit.md + findings-register.md + t0034-registration-decision.md (committed earlier this session); company/decisions/decisions-log.md (this entry). Phase 2 COMPLETE. Phase 3 held (post 15-Aug); Phase 4 folded into APS retro.
