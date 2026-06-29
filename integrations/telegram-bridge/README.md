@@ -71,6 +71,25 @@ The Eco bot starts polling. Stop with **Ctrl+C**.
    - `memory/chats/eco/<chat_id>.json` — full conversation history
    - `memory/log.jsonl` — one JSON line per `/start` or message, with `ts`, `agent`, `chat_id`, `model`, `tokens_in`, `tokens_out`
 
+## Owner commands
+
+These run over the same private bot token and are gated to the registered owner
+chat (the first chat to `/start` the bot becomes the owner).
+
+| Command | Effect |
+|---------|--------|
+| `/start` | Register owner chat; receive Eco's greeting |
+| `/tasks` | Eco presents open items from `memory/board.md` |
+| `/status` | Bridge health + **autonomy state** (HALTED / armed) at a glance |
+| `/halt` | **Kill switch.** Writes `memory/SAFE_MODE` — runner skips its next cycle and the guard freezes all autonomous writes + sub-agent spawns. Pure code, no model, so it works even if Claude is down or the token expired. |
+| `/resume` | Owner-only. Removes `memory/SAFE_MODE`; the runner re-arms on its next cycle. |
+
+`/halt` and `/resume` bypass the LLM entirely (see "Deterministic kill switch"
+in `bridge.py`). The LLM/skill path (`safe-mode` skill + injected directive) is
+a fallback for natural-language halt requests; the deterministic command is the
+primary path. Resume is owner-only by design: an agent may stop the world, but
+only the owner restarts it.
+
 ## Architecture
 
 | What | Detail |
