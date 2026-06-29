@@ -206,5 +206,51 @@ Status: LEGAL CLEARED (all 3); PENDING Rambo scan + A2 grant. Do not install unt
 
 ---
 
+---
+
+## APS-004 Pre-Read: External-Surface Tools (legal terms posture, 2026-06-29)
+
+Status: PRE-READ ONLY. No tool is adopted by these rows. Each requires Rambo security review
++ Eyal live terms review + A2 or A1 before any adoption. Rows added by Eyal per APS-004
+task scope. Full legal analysis: projects/ai-patient-simulator/docs/gate-legal-privacy-eyal.md.
+
+| Tool / Service | Type | Eyal terms posture | Rambo | A1/A2 required | Blocking issues |
+|----------------|------|--------------------|-------|----------------|-----------------|
+| OpenAI API (LLM provider) | LLM / hosted API | PRE-READ. Expected-workable IF: (a) business-tier DPA confirmed; (b) training-use opt-out confirmed in current API terms. Live fetch of platform.openai.com/legal required before gate. Training-opt-out is a hard requirement -- student transcripts must not train any external model. | PENDING | YES -- paid (A1); data egress | Training-use opt-out must be confirmed. DPA tier must be confirmed. Not blocking today (not adopted). |
+| AWS S3 (or equiv object storage) | Cloud object storage | PRE-READ. Expected-workable. AWS publishes a DPA that covers processor obligations; must be confirmed against current text and confirm it covers student personal data in the specific AWS region chosen. Standard sub-processor arrangement. | PENDING | YES -- A1 (paid; entity must be registered first) | Data residency region must be chosen; existing AWS DPA (if any) must cover Eco-Synthetic as registered entity. Not blocking today (not adopted). |
+| Transactional email sender (SendGrid / Postmark / SES / Mailgun -- TBD) | Email delivery | PRE-READ. Standard transactional email terms; expected-workable. Provider DPA must cover deletion and prohibit use of student email addresses for provider's own marketing. Israeli anti-spam law applies to any marketing content (not transactional notifications). | PENDING | A2 (if free tier); A1 (if paid) | No current blocker anticipated. Provider not yet chosen. Gate when chosen. |
+
+Note: LTI / Canvas / Moodle integration is DEFERRED from v1 pilot per requirements-baseline.md.
+No LTI tool gate row needed for the September pilot.
+
+---
+
+## APS-004: Security Column -- Rambo Risk Verdicts (2026-06-29)
+
+Rambo security leg of APS-004. Owner A1 greenlight: 2026-06-29 (jecki).
+Full findings: projects/ai-patient-simulator/docs/gate-security-rambo.md.
+Status: IN GATE REVIEW. Not adopted. Gate posture: CLEAR-WITH-CONDITIONS (all surfaces).
+No tool is approved for use. Eyal DPA items are co-blocking (Rambo cannot close them).
+
+| Tool / Service | Rambo Risk Verdict | Key Risks | Must-Fix Before Pilot | Eyal-Gate Items |
+|----------------|--------------------|-----------|----------------------|-----------------|
+| OpenAI API (LLM / AI patient engine) | CLEAR-WITH-CONDITIONS | HIGH: full transcript (clinical-adjacent student PII) egress on eval + debrief calls; prompt injection via student input; hidden-fact exposure if ground-truth in generation context. MEDIUM: debrief chat scope creep. | M1 (DPA -- Eyal); M3 input sanitisation filter on student msgs; M4 hidden-fact NOT in generation context (pattern b or c); M5 debrief structural isolation (no ground-truth in debrief call). | M1: LLM provider DPA must confirm Israeli PPL processor obligations + training-use opt-out. Rambo cannot close without Eyal confirmation. |
+| AWS S3 (object storage -- transcripts, media) | CLEAR-WITH-CONDITIONS | HIGH: public bucket misconfiguration = all transcripts exposed; over-permissioned IAM; no encryption at rest. MEDIUM: transcript retention without defined policy. | M12 bucket private + Block Public Access; M13 pre-signed URLs (max 15 min TTL); M14 least-privilege IAM (bucket-scoped, no delete for app role); M15 encryption at rest. | M16: retention period (Eyal + Lital -- PPL minimisation); M21: data residency (Israeli region preference -- Eyal + Lital + owner to confirm). |
+| Transactional email service (provider TBD) | CLEAR-WITH-CONDITIONS | HIGH: no SPF/DKIM/DMARC = student phishing via domain spoofing. MEDIUM: student email addresses sent to third-party processor. LOW (pilot): support email abuse (no LLM in support path for pilot). | M2 (DPA -- Eyal); M17 SPF + DKIM + DMARC on sending domain before any invite email; M18 confirmation flow (protect token from email scanner prefetch); M19 no clinical transcript content in support email body. | M2: email service DPA must cover Israeli PPL processor obligations. Rambo cannot close without Eyal confirmation. |
+| PostgreSQL (database -- transcripts, patient state, student PII) | CLEAR-WITH-CONDITIONS | HIGH: no encryption at rest; no server-side RBAC = frontend-only access control. MEDIUM: token/code in logs if APS-REQ-106 not implemented. Phase 1b: "notable student mistakes" field is highest-sensitivity PII. | M9 server-side RBAC on every transcript/eval/debrief endpoint; M10 no session token or invite code in any log; M15 encryption at rest; M20 synthetic data only in dev/test. | M16: retention policy (Eyal + Lital); notable_mistakes field Phase 1b: Eyal must review 12-month retention + PPL student correction/deletion rights before Phase 1b goes live. |
+
+Rambo overall gate posture: CLEAR-WITH-CONDITIONS.
+No surface is BLOCKING for the formative pilot provided the M-series must-fix items are resolved.
+The two items that are co-blocked on Eyal: M1 (LLM DPA) and M2 (email DPA).
+The two items that require Eyal + Lital + owner: M16 (retention) and M21 (data residency).
+Gate cannot be fully closed by Rambo alone until Eyal clears M1, M2, M16, and M21.
+
+Cross-cutting must-fix items (not surface-specific):
+- M6 cryptographically random invite tokens (128-bit min); M7 token expiry; M8 access code rate-limit + hash.
+- M11 JWT / session library (no custom crypto).
+- M20 synthetic / anonymised data only in dev/test environments.
+
+---
+
 ## Adding a new tool
 Any agent that identifies a tool need flags its manager. The manager escalates to Eco. Eco routes it to Rambo (Security risk review) and Eyal (Legal terms review). Once both clear it, A2 grant (or A1 if borderline or paid). The tool then gets a row here. Free-first is mandatory while budget is 0; any paid tool is A1.

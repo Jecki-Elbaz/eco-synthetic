@@ -8,6 +8,8 @@ Format per entry:
 YYYY-MM-DD HH:MM | agent | action | detail | tokens (if known)
 ```
 
+2026-06-29 | Rambo | APS-004 security gate -- external surface | Gate posture: CLEAR-WITH-CONDITIONS on all four surfaces (LLM/OpenAI, secure-link auth, S3 object storage, transactional email). 21 must-fix items (M1-M21). 4 co-blocked on Eyal (M1 LLM DPA, M2 email DPA, M16 retention, M21 data residency). Full findings: projects/ai-patient-simulator/docs/gate-security-rambo.md. Gate-register updated (APS-004 Rambo security column). Board APS-004 row updated. Output to Eco per task scope. | est ~6000 tokens
+
 2026-06-28 | Erez | viability memo produced | APS-003 AI Patient Simulator; CONDITIONAL-GO recommendation; memo at projects/ai-patient-simulator/docs/viability-assessment-erez.md | ~8000 tokens (est)
 
 2026-06-21 | Rambo | gate-review batch | 3 skills-il formation+compliance skills reviewed (startup-toolkit, hebrew-legal-research, israeli-privacy-shield). CLEAR x2, PARTIAL-CLEAR x1. Files: company/governance/gate-review-formation-batch-rambo.md; gate-register.md updated with Rambo verdicts.

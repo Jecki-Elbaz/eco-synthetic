@@ -1144,3 +1144,13 @@ Owner (jecki) A1 this session, in an authenticated Claude Code session.
   roster); never add (rejected -- the cert lens is genuinely uncovered and will matter as the
   company grows).
 - **Files affected:** none yet (deferral record only). Pairs with the 2026-06-29 Yael-added entry.
+
+## 2026-06-29 -- AI Patient Simulator: owner greenlight to start gate + feasibility phase (A1)
+
+- **Author / gate:** jecki (owner, A1). New-project phase-gate; engagement is design-partner (A1 2026-06-28).
+- **Decision:** Owner gave go to proceed past discovery into the gate + feasibility phase. Discovery is complete (APS-001 Perry requirements baseline, APS-002 Sami SME/safety, APS-003 Erez viability + design-partner structure -- all done, docs in projects/ai-patient-simulator/docs/). This greenlight UNBLOCKS APS-004 and APS-005, both previously held "pending owner greenlight."
+  - **APS-004 (gate, now in-progress):** Rambo (security gate on the external surface -- LLM/OpenAI API, secure-link auth, object storage, email sender; LTI/LMS deferred from v1) + Eyal (legal + Israeli Privacy Protection Law pre-read; the StudentPersonaHistory "notable student mistakes" field + 12-month retention is the highest-sensitivity PII per Sami's flag and must be reviewed before that schema is finalized) + Lital (privacy/finance cost pre-read; budget 0, tracks only). Register the external surface in gate-register.
+  - **APS-005 (feasibility, now in-progress):** Ido sign-off on PostgreSQL+Prisma+JSONB for the pilot (vector/RAG deferred to Phase 2), the pilot-minimal scope for 1 Sep 2026, and a sprint plan with a HARD 15 Aug internal go/no-go on the AI patient engine (~15 Oct fallback).
+- **Standing guardrails (unchanged):** HARD GATE -- no agent contacts Adam; owner relays all questions. No external tool/LMS adopted without the Rambo+Eyal gate passing AND owner A1. Commercial/design-partner terms are A1 + Legal. Work stays in the projects/ai-patient-simulator/ partition.
+- **Rationale:** Discovery delivered a coherent baseline + a viability go recommendation; the pilot clock (1 Sep target, 15 Aug internal go/no-go) makes the gate + feasibility the time-sensitive next step. Owner greenlit proceeding.
+- **Files affected:** memory/board.md (APS-004 + APS-005 -> in-progress, greenlit), company/decisions/decisions-log.md (this entry). Deliverables to land in projects/ai-patient-simulator/docs/.
