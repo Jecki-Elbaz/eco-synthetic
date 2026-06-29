@@ -21,6 +21,7 @@ Decision logged: decisions-log.md 2026-06-12 -- scheduled wake-ups approved (A1:
 | Oracle | Chronicle sweep (capture day's decisions) | Daily | ACTIVE (via SHIR-005 runner; T-0020 C3 resolved on runner path) | jecki (A1 intent) | 2026-06-22 | see runner-state.json |
 | Lital + Eyal | Compliance-deadline check (IL reg/invoicing/privacy) | Weekly | ACTIVE | jecki (A1) | 2026-06-22 | - |
 | Dalia | Quality/tone audit sample | Weekly | ACTIVE | jecki (A1) | 2026-06-22 | - |
+| Yael | Doc-hygiene audit (file-index + naming + near-dupe) | Weekly (Mon) | ACTIVE | jecki (A1) | 2026-06-29 | see runner-state.json |
 | Ido | DASH-001 dashboard refresh | Hourly / fold into Eco 2h | ACTIVE | jecki (A1) | 2026-06-22 | - |
 | Shir | Bridge + uptime health check | Every 15-30 min | PENDING BUILD -- event trigger + T-0020 C3 + Bash | jecki (A1 intent) | 2026-06-22 | - |
 | MeetingPrep | Pre-meeting prep | Event: T-Xh before external meeting | PENDING BUILD -- event trigger (SHIR-005) | jecki (A1 intent) | 2026-06-22 | - |
