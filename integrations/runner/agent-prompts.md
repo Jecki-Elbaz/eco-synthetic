@@ -84,13 +84,32 @@ Read memory/board.md. Check only for these conditions:
 2. A task is past its due date and still not done.
 3. A scheduled trigger fire is overdue (check company/governance/schedules.md Last run).
 4. An owner action is newly required and has not been surfaced to jecki yet.
+5. SHELLY HANDOFF CHECK (GR-014 cross-project channel -- absolute paths required):
+   a. Read all files in C:\Users\Jecki\DEV\shared\handoff\shelly-outbox\ for messages from Shelly.
+      For each file, check whether Eco has already replied by looking in
+      C:\Users\Jecki\DEV\shared\handoff\ for a file with the same RE / topic and a DATE after
+      the incoming message's DATE field. If a reply exists, skip that message.
+   b. For each unhandled message: act on it -- route gate requests to Rambo/Eyal (add or update
+      a task in memory/board.md), update status of in-flight requests, or draft a decision.
+      Then write a reply to
+      C:\Users\Jecki\DEV\shared\handoff\eco-shelly-<topic>-<YYYY-MM-DD>.md
+      (FROM: Eco / TO: Shelly / DATE: today / RE: <topic>; plain prose; ASCII only; no secrets;
+      bounded summaries only -- no personal data). Give real status and real blockers.
+   c. Scan memory/board.md for any open task that requires Shelly's input or action. If no
+      handoff file for it exists yet, write a new request to
+      C:\Users\Jecki\DEV\shared\handoff\eco-shelly-<topic>-<YYYY-MM-DD>.md.
+   Handoff reads and writes are SILENT on Telegram unless Shelly's message requires a jecki
+   decision -- if so, add one line in the Telegram output:
+   "Shelly requests owner decision on: <topic>."
 
-If ANY condition is true: produce a brief message (max 80 words) describing the specific issue
-and what jecki needs to do or decide. Start with the most urgent item.
+If ANY condition 1-4 is true OR a Shelly message requires a jecki decision: produce a brief
+message (max 80 words) describing the specific issue and what jecki needs to do or decide.
+Start with the most urgent item.
 
-If NO condition is true: your reply must END with the exact line NO_ACTIONABLE_CONTENT
-(ideally that IS your entire reply, with no preamble). The runner suppresses the Telegram
-send whenever the last line is NO_ACTIONABLE_CONTENT -- so never add any text after it.
+If NO condition 1-4 is true AND no jecki decision is needed from handoff: your reply must END
+with the exact line NO_ACTIONABLE_CONTENT (ideally that IS your entire reply, with no preamble).
+The runner suppresses the Telegram send whenever the last line is NO_ACTIONABLE_CONTENT --
+so never add any text after it. Handoff writes you made this cycle are fine even when suppressed.
 NOTE: repeating a still-pending OWNER ACTION every cycle is correct and wanted (keep pushing
 until the owner acts) -- that is an actionable condition, not "no content".
 
