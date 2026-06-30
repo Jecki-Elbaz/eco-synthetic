@@ -27,7 +27,8 @@ Current source of truth for structure. Full per-agent role files regenerate from
 | Shir | DevOps | L4 | P1 | VP R&D |
 | Adi | QA | L4 | P2 | VP R&D |
 | Roman | Algorithm Specialist (on-demand) | L4 | P2 | VP R&D |
-| (unnamed) | Senior Developer / Code Reviewer | L4 | P2 | VP R&D |
+| Oren | Senior Developer / Code Reviewer | L4 | P2 | VP R&D |
+| Noa | Senior Developer 2 (AI Patient Simulator) | L4 | P1 | VP R&D |
 | (unnamed) | Designer (Product UX/UI) | L4 | P2 | Product (Noam) |
 | Jenny | Support | L4 | P3 | VP CS |
 | Avner | Customer Success | L4 | P3 | VP CS |
@@ -38,7 +39,7 @@ Current source of truth for structure. Full per-agent role files regenerate from
 | Erez | Investor (on-demand) | owner office | P1 created | Owner |
 | Sami | SME advisor (on-demand, per project) | advisory | as needed | invoking function |
 
-The Senior Developer and the Designer still need names; Anat (HR) and Eco assign them during build, with the owner's pre-approval.
+The Designer still needs a name; Anat (HR) and Eco assign it during build, with the owner's pre-approval. Senior Developer is Oren (certified + live 2026-06-18).
 
 - **Eyal (Legal) + Lital (CFO)** jointly own a compliance-readiness backlog (Israeli registration, invoicing, privacy) and surface it to Eco proactively so it is prioritized and never a surprise.
 
@@ -48,7 +49,7 @@ The Senior Developer and the Designer still need names; Anat (HR) and Eco assign
 
 - **Adi (QA)**: owns test plans; feeds Gal when bugs repeat in a pattern; reports quality trends to Dalia. Independent escalation line to Dalia confirmed.
 - **Ido (VP R&D)**: manages Gal, Shir, Adi, Roman, and the Senior Developer; owns R&D efficiency, the requirements relationship with Noam, and release quality. Eco assigns Ido the task to consider the suggested scope additions (definition-of-done and release gate, technical-debt and architecture across projects, R&D capacity and prioritization, regression-prevention, when to invoke Roman or Sami) and to propose a course of action acceptable to both Eco and Ido.
-- **Shir (DevOps)**: reports to VP R&D, communicates only within his VP's group; owns R&D backend infrastructure, tools, and environments (config, availability, alternatives), plus release pipeline mechanics, deploy/rollback, internal IT, and live monitoring. Only VP R&D approves his plans; VP R&D is itself bound by policy and limits.
+- **Shir (DevOps)**: reports to VP R&D, communicates only within his VP's group; owns R&D backend infrastructure, tools, and environments (config, availability, alternatives), plus release pipeline mechanics, deploy/rollback, internal IT, and live monitoring. Only VP R&D approves his plans; VP R&D is itself bound by policy and limits. DOTTED LINE (owner A1 2026-06-30): Shir also owns the company-wide git/CI-CD hygiene function (monitor changes, find missing commit/push/pull + drift, flag procedure breaks, propose automation) and is tasked on THAT function by Eco/owner directly; Ido stays solid-line manager for all R&D work. Enforcement/automation switch-on stays gated. See decisions-log 2026-06-30 + SHIR-006.
 - **Mike (VP CS)**: owns the post-sale org and NRR; manages Jenny, Avner, Ella, account management, project management (if needed), and professional services (config-level; code escalates to R&D via the VPs). Absorbs the former Service-Operations Lead. Operations agent deferred.
 - **Eco (CEO)**: may reach any agent, respects the chain of command, validates agents' tool needs, and decides the VP Product question.
 - **Each VP or manager** owns the assessment of hiring or dismissing agents in its group for efficiency; create or retire is A1, executed with HR (Anat).
@@ -80,5 +81,5 @@ Cut into DevOps (Shir): Version/Release Manager, Delivery/Deployment, IT. Made o
 
 ## 6. Open naming / role notes
 
-- Senior Developer and Designer: names assigned at build by Anat + Eco, owner pre-approval.
+- Senior Developer: Oren (LIVE 2026-06-18, owner A1). Designer: name assigned at build by Anat + Eco, owner pre-approval.
 - Training & Certification (Yossi) is referenced in the constitution lifecycle (§10) but has no row above — add a roster entry/owner if Training becomes a standing agent rather than a function of HR + OE.

@@ -402,11 +402,14 @@ Steps:
 2. Read company/governance/schedules.md -- all ACTIVE schedule rows.
 3. Read memory/runner-state.json if it exists -- last-run timestamps per agent.
 4. Read company/roster.md -- all live agents.
+5. Read memory/run-queue.md -- the execution queue (pending actions by lane).
 
 Overwrite memory/owner-dashboard.md with a refreshed dashboard. Include:
 - Timestamp: "Last refreshed: <YYYY-MM-DD HH:MM>"
 - P1 tasks: task_id, short_desc, status, assigned_to, due
 - Pending owner actions (items waiting on jecki): task_id, what is needed, who is waiting
+- Run-Queue (pending actions by lane), from memory/run-queue.md: list each non-done row as
+  id, lane (runner/desktop), short request, status. Group by lane.
 - Per-trigger health: agent, task, cadence, last_run (from runner-state.json or "UNKNOWN")
   Flag rows where last_run is >1.5x the cadence as OVERDUE.
 - Quick agent roster: agent name, current assigned tasks count, any overdue tasks
@@ -467,6 +470,21 @@ MODE B -- DAILY INCREMENTAL (only once ALL seven batches are DONE):
 
 Do not send to Telegram.
 ```
+
+---
+
+## Shir -- Daily Git/CI-CD Hygiene Audit (DETERMINISTIC SCRIPT -- NOT AN LLM JOB)
+
+Telegram-facing: handled by the runner directly (alert on ATTENTION only).
+
+NOT an agent-prompts LLM job. Do NOT add a ``` prompt fence here, or parse_prompts would
+spawn a phantom claude job. The daily git/CI-CD hygiene audit is a DETERMINISTIC, ZERO-TOKEN
+Python script: integrations/git-hygiene/audit.py, invoked by runner.py run_git_hygiene() once
+per day as a plain subprocess (no claude, no tokens, no Bash-in-agent -- it sidesteps the guard
+Bash block by not being an LLM tool call). CLEAN = silent; ATTENTION = the runner sends a
+plain-language alert to the owner Telegram. Procedure + thresholds:
+integrations/git-hygiene/procedure.md. The LLM (Shir) is only invoked when the owner asks for a
+fix -- repeated deterministic work stays in code (owner token-management directive 2026-06-30).
 
 ---
 

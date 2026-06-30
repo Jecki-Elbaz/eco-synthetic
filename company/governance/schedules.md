@@ -24,6 +24,7 @@ Decision logged: decisions-log.md 2026-06-12 -- scheduled wake-ups approved (A1:
 | Yael | Doc-hygiene audit (file-index + naming + near-dupe) | Weekly (Mon) | ACTIVE | jecki (A1) | 2026-06-29 | see runner-state.json |
 | Ido | DASH-001 dashboard refresh | Hourly / fold into Eco 2h | ACTIVE | jecki (A1) | 2026-06-22 | - |
 | Shir | Bridge + uptime health check | Every 15-30 min | PENDING BUILD -- event trigger + T-0020 C3 + Bash | jecki (A1 intent) | 2026-06-22 | - |
+| Shir | Git/CI-CD hygiene audit (deterministic zero-token script; uncommitted/unpushed/unpulled + drift) | Daily | ACTIVE 2026-07-01 -- runs via runner.py run_git_hygiene() as a subprocess (no LLM/tokens, no Bash-in-agent). Rambo CLEAR-WITH-CONDITIONS (git-hygiene-review-2026-07-01.md). ATTENTION alerts owner Telegram; CLEAN silent. | jecki (A1) | 2026-07-01 | see runner-state.json |
 | MeetingPrep | Pre-meeting prep | Event: T-Xh before external meeting | PENDING BUILD -- event trigger (SHIR-005) | jecki (A1 intent) | 2026-06-22 | - |
 
 ---

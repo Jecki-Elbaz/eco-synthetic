@@ -26,6 +26,8 @@ from datetime import datetime, timezone
 
 ROOT = Path(r"C:\Users\Jecki\DEV\projects\eco-synthetic")
 PROMPTS = ROOT / "integrations" / "runner" / "agent-prompts.md"
+AUDIT_SCRIPT = ROOT / "integrations" / "git-hygiene" / "audit.py"
+GIT_HYGIENE_KEY = "Shir:git-hygiene-audit"
 BOARD = ROOT / "memory" / "board.md"
 RUNLOG = ROOT / "memory" / "agent-runs.jsonl"
 STATE = ROOT / "memory" / "runner-state.json"
@@ -249,6 +251,43 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
     return {"ran": True, "escalate": escalate}
 
 
+def run_git_hygiene(state: dict, t: datetime, dry: bool) -> None:
+    """Daily ZERO-TOKEN git/CI-CD hygiene audit (Shir's function, owner A1 2026-06-30).
+
+    Runs integrations/git-hygiene/audit.py as a plain subprocess -- NOT a claude/LLM
+    call -- so it costs no tokens and never enters the guard Bash path (the runner
+    deliberately blocks Bash inside agent sessions; this deterministic script sidesteps
+    that entirely). On ATTENTION (exit 1) it alerts the owner on Telegram. CLEAN is silent.
+    """
+    last = state.get(GIT_HYGIENE_KEY, {}).get("last")
+    if last:
+        try:
+            if datetime.fromisoformat(last).date() == t.date():
+                return  # already audited today
+        except ValueError:
+            pass
+    if dry:
+        print(f"  WOULD RUN {GIT_HYGIENE_KEY} (daily, zero-token git audit script)")
+        return
+    log({"key": GIT_HYGIENE_KEY, "event": "start", "mode": "script"})
+    try:
+        r = subprocess.run([sys.executable, str(AUDIT_SCRIPT)],
+                           capture_output=True, timeout=120, cwd=str(ROOT), check=False)
+        out = r.stdout.decode("utf-8", "replace").strip()
+    except Exception as e:
+        log({"key": GIT_HYGIENE_KEY, "event": "error", "err": f"{type(e).__name__}: {str(e)[:150]}"})
+        return
+    attention = r.returncode == 1
+    sent = False
+    if attention and out:
+        # audit.py prints a status line then the plain-language owner message; send the message.
+        msg = "\n".join(out.splitlines()[1:]).strip() or out
+        sent = send_telegram(f"[Git hygiene -- Shir]\n\n{msg}")
+    state.setdefault(GIT_HYGIENE_KEY, {})["last"] = t.isoformat()
+    log({"key": GIT_HYGIENE_KEY, "event": "done", "rc": r.returncode,
+         "attention": attention, "sent": sent})
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", choices=["readonly", "act"], default="readonly")
@@ -268,6 +307,11 @@ def main() -> int:
     state = load_state()
     t = now()
     print(f"[cycle {t.isoformat()}] mode={a.mode} jobs={len(jobs)}")
+
+    # Daily zero-token git/CI-CD hygiene audit (Shir's function). Runs on a full cycle
+    # or when explicitly targeted; independent of the LLM agent jobs below.
+    if not a.only or a.only.lower() in ("shir", "git", "git-hygiene"):
+        run_git_hygiene(state, t, a.dry_run)
 
     escalated = False
     for job in jobs:  # file order -> Lital before Eyal
