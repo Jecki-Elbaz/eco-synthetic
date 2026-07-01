@@ -25,11 +25,13 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+HANDOFF_PATH = Path("C:/Users/Jecki/DEV/shared/handoff")
 MODE_FILE = ROOT / "memory" / "GUARD_MODE"
 LOG_FILE = ROOT / "memory" / "agent-guard.log"
 SAFE_MODE_FILE = ROOT / "memory" / "SAFE_MODE"
@@ -42,12 +44,102 @@ SAFE_MODE_FILE = ROOT / "memory" / "SAFE_MODE"
 # otherwise conflates "may act" with "may be spawned".
 ALLOWED_AGENTS = {
     "anat", "assaf", "dalia", "eyal", "rambo", "lital",
-    "perry", "ido", "luci", "erez", "hila", "redteam",
+    "perry", "ido", "luci", "erez", "hila", "redteam", "noa",
+    # Code-builders (SEC-0001, 2026-06-30): added with PATH_SCOPE containment below so
+    # enforce mode does not block their legitimate project/infra writes. Design:
+    # company/security/reports/guard-write-scoping-design-2026-06-30.md (Rambo).
+    "gal", "shir", "adi", "oren",
 }
 
 # Agents that may ACT (above) but may NOT be spawned via the Agent/Task tool. RedTeam is OFF
 # the permitted-spawn allowlist per its certification condition (until T-0020 C3).
 SPAWN_DENY = {"redteam"}
+
+# Agents that may be launched ONLY from an owner/top-level session, never spawned by another
+# sub-agent (SEC-0001, owner directive 2026-06-30). The code-builders may ACT (PATH_SCOPE) and
+# may be launched by the owner's own Claude Code session (origin empty), but an allow-listed
+# sub-agent (e.g. anat) may NOT spawn them. The runner cannot spawn anyone (RUNNER_CONTEXT) and
+# the Telegram bridge has no Agent tool, so "origin empty" reliably means the owner's session.
+OWNER_SPAWN_ONLY = {"gal", "shir", "adi", "oren"}
+
+# Per-agent write-path scope (SEC-0001, 2026-06-30; Rambo design). For any KNOWN sub-agent
+# (origin set) that is in this map, a governed write whose repo-relative path does not start
+# with one of the agent's allowed prefixes is DENIED. Paths match _relpath() output (forward
+# slashes). memory/board.md and memory/log.md are listed individually (not bare "memory/") to
+# prevent drift into memory/GUARD_MODE / memory/SAFE_MODE / memory/owner-office/. The existing
+# Red-path, SAFE_MODE, and append-only rules still apply on top. Eco is intentionally ABSENT:
+# the CEO write scope is company-wide, so the path-scope check is skipped for eco (same as a
+# main/owner session). Agents not in this map but on ALLOWED_AGENTS (eco) are unconstrained here.
+PATH_SCOPE: dict[str, list[str]] = {
+    "anat": [
+        "company/hr/", "company/roster.md", "company/org-chart.mermaid",
+        "memory/board.md", "memory/log.md", "company/decisions/decisions-log.md",
+    ],
+    "dalia": [
+        "company/governance/access-matrix.md", "company/soul.md", "memory/wiki/",
+        "memory/board.md", "memory/log.md", "company/decisions/decisions-log.md",
+    ],
+    "assaf": [
+        "company/model-matrix.md", "dashboards/",
+        "memory/board.md", "memory/log.md", "company/decisions/decisions-log.md",
+    ],
+    "rambo": [
+        "company/governance/gate-register.md", "company/governance/security-baseline.md",
+        "company/security/", "memory/board.md", "memory/log.md",
+        "company/decisions/decisions-log.md",
+    ],
+    "eyal": [
+        "company/governance/gate-register.md", "company/governance/compliance-backlog.md",
+        "memory/board.md", "memory/log.md",
+    ],
+    "lital": [
+        "company/governance/compliance-backlog.md", "dashboards/",
+        "memory/board.md", "memory/log.md", "company/decisions/decisions-log.md",
+    ],
+    "perry": [
+        "projects/", "memory/board.md", "memory/log.md",
+        "company/decisions/decisions-log.md",
+    ],
+    "ido": [
+        "projects/", "memory/board.md", "memory/log.md",
+        "company/decisions/decisions-log.md",
+    ],
+    "hila": [
+        "marketing/", "memory/board.md", "memory/log.md",
+    ],
+    "luci": [
+        "memory/", "company/decisions/decisions-log.md",
+    ],
+    "erez": [
+        "projects/", "memory/log.md", "company/decisions/decisions-log.md",
+    ],
+    "oracle": [
+        "company/chronicle/", "memory/log.md",
+    ],
+    "yael": [
+        "company/governance/file-index.md", "memory/log.md",
+    ],
+    "gal": [
+        "projects/", "memory/board.md", "memory/log.md",
+        "company/decisions/decisions-log.md",
+    ],
+    "shir": [
+        "integrations/", "memory/board.md", "memory/log.md",
+        "company/decisions/decisions-log.md",
+    ],
+    "adi": [
+        "projects/delivery-saas/docs/qa/", "memory/log.md",
+    ],
+    "noa": [
+        "projects/ai-patient-simulator/", "memory/log.md",
+    ],
+    "oren": [
+        "projects/delivery-saas/docs/review/", "memory/log.md",
+    ],
+    "redteam": [
+        "company/audits/redteam/", "memory/log.md",
+    ],
+}
 
 # Section 4/5.1 -- Red paths: writes denied for everyone (owner A1 only, out of band).
 RED_PREFIXES = (
@@ -70,6 +162,18 @@ APPEND_ONLY = {
 
 SAFE_MODE_REL = "memory/SAFE_MODE"
 
+# Patterns for credential/secret scanning on shared/handoff/ writes.
+_SECRET_PATTERNS = [
+    re.compile(r"(?i)(password|passwd|secret|token|api[-_]?key)\s*[:=]\s*\S{6,}"),
+    re.compile(r"sk-[A-Za-z0-9]{20,}"),
+    re.compile(r"ghp_[A-Za-z0-9]{36}"),
+    re.compile(r"xox[bpoa]-[A-Za-z0-9\-]{10,}"),
+    re.compile(r"AIza[A-Za-z0-9\-_]{35}"),
+    re.compile(r"AKIA[A-Za-z0-9]{16}"),
+    re.compile(r"Bearer\s+[A-Za-z0-9\-_\.]{20,}"),
+    re.compile(r"eyJ[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+"),
+]
+
 ALLOW = "allow"
 DENY = "deny"
 
@@ -86,6 +190,27 @@ def _relpath(file_path: str) -> str:
         return str(rel).replace("\\", "/")
     except (ValueError, OSError):
         return file_path.replace("\\", "/")
+
+
+def _is_handoff(file_path: str) -> bool:
+    try:
+        return Path(file_path).resolve().is_relative_to(HANDOFF_PATH.resolve())
+    except (ValueError, OSError):
+        return False
+
+
+def _contains_secret(content: str) -> str | None:
+    content = content[:50_000]  # cap to limit regex exposure
+    for pat in _SECRET_PATTERNS:
+        m = pat.search(content)
+        if m:
+            return m.group(0)[:40]
+    return None
+
+
+def _targets_handoff(cmd: str) -> bool:
+    norm = cmd.replace("\\", "/")
+    return "shared/handoff" in norm
 
 
 def _is_red(rel: str) -> bool:
@@ -149,6 +274,23 @@ def evaluate(event: dict) -> tuple[str, str]:
             f"allowed: {', '.join(sorted(ALLOWED_AGENTS))}"
         )
 
+    # Per-agent write-path scope (SEC-0001 -- least-privilege path containment).
+    # Fires only for governed WRITE actions from a known sub-agent whose origin IS in
+    # PATH_SCOPE. eco is excluded from PATH_SCOPE by design (CEO scope is company-wide).
+    # Main/owner-session writes (origin empty) never enter this block. This can only ADD
+    # denials for out-of-scope paths; it never permits anything the rules below would deny.
+    # The SAFE_MODE kill-switch path is exempt so halting is never blocked for any agent.
+    if tool in ("write", "edit", "multiedit") and origin and origin in PATH_SCOPE:
+        fp_check = ti.get("file_path") or ti.get("path") or ""
+        rel_check = _relpath(str(fp_check))
+        if rel_check != SAFE_MODE_REL:
+            allowed_prefixes = PATH_SCOPE[origin]
+            if not any(rel_check == pfx or rel_check.startswith(pfx) for pfx in allowed_prefixes):
+                return DENY, (
+                    f"path-scope violation: agent '{origin}' may not write "
+                    f"'{rel_check}' (allowed prefixes: {', '.join(allowed_prefixes)})"
+                )
+
     # --- Sub-agent spawn (Agent tool; underlying tool name is "Task") ---
     if tool in ("task", "agent"):
         sub = str(ti.get("subagent_type", "") or ti.get("agent_type", "")).lower()
@@ -163,6 +305,13 @@ def evaluate(event: dict) -> tuple[str, str]:
             return DENY, (
                 f"agent '{sub or '(unspecified)'}' not on the non-code allow-list "
                 f"(5.2); allowed: {', '.join(sorted(ALLOWED_AGENTS))}"
+            )
+        # Owner-sessions-only launch: a restricted-spawn agent may be launched only from a
+        # top-level/owner session (origin empty), not spawned by another sub-agent.
+        if sub in OWNER_SPAWN_ONLY and origin:
+            return DENY, (
+                f"agent '{sub}' may be launched only from an owner/top-level session, "
+                f"not spawned by sub-agent '{origin}' (SEC-0001 owner-spawn restriction)"
             )
         return ALLOW, f"allow-listed sub-agent '{sub}'"
 
@@ -181,8 +330,15 @@ def evaluate(event: dict) -> tuple[str, str]:
             return ALLOW, "setting SAFE_MODE flag"
 
         # Red paths (5.1) -- owner-only A1, blocked regardless of SAFE_MODE.
+        # Exemption (B1, SEC-0001 2026-07-01): the owner's LIVE interactive session
+        # (origin empty AND not the scheduled runner) may write Red paths -- the out-of-band
+        # A1 channel for role-file edits. Sub-agents (origin set) and every runner-spawned
+        # agent (RUNNER_CONTEXT=1) are still denied unconditionally.
         if _is_red(rel):
-            return DENY, f"Red path '{rel}': owner-only A1 (section 4/5.1)"
+            if origin == "" and os.environ.get("RUNNER_CONTEXT") != "1":
+                pass  # owner interactive session -- allow (falls through to ungoverned ALLOW)
+            else:
+                return DENY, f"Red path '{rel}': owner-only A1 (section 4/5.1)"
 
         # SAFE_MODE halts all other writes (7).
         if _safe_mode_active():
@@ -198,7 +354,25 @@ def evaluate(event: dict) -> tuple[str, str]:
                 return DENY, f"append-only '{rel}': write is not a pure append (5.3)"
             return ALLOW, f"pure append to '{rel}'"
 
+        # shared/handoff/ writes: scan for secrets (hard-enforced, no shadow bypass).
+        if _is_handoff(str(fp)):
+            content = str(ti.get("content") or ti.get("new_string") or "")
+            hit = _contains_secret(content)
+            if hit:
+                return DENY, (
+                    f"secret pattern detected in handoff write ('{hit}...'); write blocked"
+                )
+
         return ALLOW, f"ungoverned path '{rel}'"
+
+    # Bash commands targeting the handoff path: scan command string for secrets.
+    # Hard-enforced (see decide() below) -- no shadow bypass for credential leakage.
+    if tool == "bash" and not os.environ.get("RUNNER_CONTEXT"):
+        cmd = str(ti.get("command") or "")
+        if _targets_handoff(cmd):
+            hit = _contains_secret(cmd)
+            if hit:
+                return DENY, f"secret pattern in Bash targeting handoff ('{hit}...'); blocked"
 
     # Any other tool is not governed by this guard.
     return ALLOW, f"ungoverned tool '{tool}'"
@@ -215,11 +389,11 @@ def _mode() -> str:
 def decide(event: dict, mode: str) -> tuple[str, str]:
     """Apply mode. In shadow, always allow but record what enforce would do.
 
-    EXCEPTION: the autonomous runner path (RUNNER_CONTEXT=1) is ALWAYS
-    hard-enforced, regardless of GUARD_MODE. shadow/enforce governs only the
-    broader interactive + live-bridge rules (Red paths, append-only, allow-list)
-    while they are validated; the runner's no-Bash / no-spawn / readonly-no-write
-    guarantees must bite immediately and unconditionally.
+    EXCEPTIONS (always hard-enforced regardless of GUARD_MODE):
+    - Autonomous runner path (RUNNER_CONTEXT=1): no-Bash / no-spawn /
+      readonly-no-write guarantees must bite immediately and unconditionally.
+    - shared/handoff/ secret scan: credential leakage into shared/ is a
+      hard security control, not a phase-in rule.
     """
     runner = os.environ.get("RUNNER_CONTEXT") == "1"
     try:
@@ -228,7 +402,8 @@ def decide(event: dict, mode: str) -> tuple[str, str]:
         if mode == "enforce" or runner:
             return DENY, f"fail-closed: guard could not evaluate ({exc})"
         return ALLOW, f"[shadow] eval-error (would fail-closed): {exc}"
-    if runner or mode == "enforce":
+    handoff_block = decision == DENY and "handoff write" in reason
+    if runner or mode == "enforce" or handoff_block:
         return decision, reason
     if decision == DENY:
         return ALLOW, f"[shadow] would-DENY: {reason}"
@@ -246,6 +421,10 @@ def _log(event: dict, mode: str, decision: str, reason: str) -> None:
             or (event.get("tool_input") or {}).get("subagent_type"),
             "decision": decision,
             "reason": reason,
+            # origin/runner added (SEC-0001 2026-07-01) so the enforce-readiness check can
+            # distinguish owner (origin empty, not runner) from sub-agents and runner agents.
+            "origin": str(event.get("agent_type", "") or ""),
+            "runner": os.environ.get("RUNNER_CONTEXT") == "1",
         }
         with LOG_FILE.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(rec) + "\n")

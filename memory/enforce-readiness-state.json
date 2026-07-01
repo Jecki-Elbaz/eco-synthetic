@@ -1,0 +1,23 @@
+{
+  "last_run": "2026-07-01T07:58:37.715076+00:00",
+  "green": false,
+  "checks": {
+    "B1_deployed": true,
+    "B2_deployed": false,
+    "false_blocks_0": false,
+    "C1_runner_starts": true,
+    "C2_owner_redpath": false,
+    "C3_subagent_writes": false,
+    "C4_pure_append": false
+  },
+  "metrics": {
+    "false_blocks": 41,
+    "C1": 97,
+    "C2": 0,
+    "C3": 0,
+    "C4": 0,
+    "guard_events_in_window": 881
+  },
+  "surfaced": false,
+  "first_green": null
+}

@@ -288,6 +288,29 @@ def run_git_hygiene(state: dict, t: datetime, dry: bool) -> None:
          "attention": attention, "sent": sent})
 
 
+def run_readiness_check(dry: bool):
+    """Enforce-readiness gate (SEC-0001) -- pure code, READ-ONLY, idempotent. Surfaces to the
+    owner ONLY on the first GREEN (safe to flip GUARD_MODE->enforce); silent otherwise. Never
+    flips anything. See integrations/runner/enforce_readiness_check.py + Rambo design."""
+    script = ROOT / "integrations" / "runner" / "enforce_readiness_check.py"
+    if dry:
+        print("  WOULD RUN enforce-readiness check")
+        return
+    try:
+        r = subprocess.run([sys.executable, str(script)],
+                           capture_output=True, text=True, cwd=str(ROOT), timeout=60)
+        out = (r.stdout or "").strip()
+    except Exception as e:
+        log({"event": "readiness_error", "err": f"{type(e).__name__}: {str(e)[:120]}"})
+        return
+    if out.startswith("READINESS_GREEN"):
+        msg = "\n".join(out.splitlines()[1:]).strip() or out
+        sent = send_telegram(msg)
+        log({"event": "readiness_green", "sent": sent})
+    else:
+        log({"event": "readiness_silent", "summary": out[:160]})
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", choices=["readonly", "act"], default="readonly")
@@ -332,6 +355,10 @@ def main() -> int:
             log({"event": "escalation_triggered_eco"})
             run_job(eco_2h, a.mode, False)
             state.setdefault(eco_2h["key"], {})["last"] = t.isoformat()
+
+    # Enforce-readiness gate (SEC-0001) -- silent until GREEN, then one owner surface.
+    if not a.only or a.only.lower() in ("readiness", "enforce"):
+        run_readiness_check(a.dry_run)
 
     if not a.dry_run:
         save_state(state)

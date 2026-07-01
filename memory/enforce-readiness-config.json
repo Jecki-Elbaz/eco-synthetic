@@ -1,0 +1,12 @@
+{
+  "_doc": "Enforce-readiness gate config (SEC-0001). Read by integrations/runner/enforce_readiness_check.py. Deploy dates gate the false-block boundary per Rambo design 2026-07-01. Set b2_deploy when the Write-append behavioral fix is propagated.",
+  "b1_deploy": "2026-06-30T21:45:00+00:00",
+  "b2_deploy": null,
+  "window_hours": 168,
+  "coverage": {
+    "C1_runner_starts": 14,
+    "C2_owner_redpath": 1,
+    "C3_subagent_writes": 5,
+    "C4_pure_append": 1
+  }
+}
