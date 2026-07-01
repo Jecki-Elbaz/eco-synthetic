@@ -1,61 +1,76 @@
 # Owner Dashboard -- Eco-Synthetic
-Last refreshed: 2026-06-28 02:05
+
+**Last refreshed: 2026-07-01 02:01**
 
 ---
 
-## P1 Tasks
+## P1 Tasks Open
 
-- **T-0001** Go-live R&R review | in-progress | Eco | due: immediate
-- **T-0020** Security gate (Agent tool / bridge) | in-progress | Rambo | interim live; Bash R&D pending C3
-- **SEC-0001** Guard enforce-mode flip | open | Shir + jecki A1 | backlog; shadow mode now
-- **DASH-001** Auto-refresh dashboard | in-progress | Ido | ASAP; blocked on SHIR-005
-- **SHIR-001** Bridge async ack + rogue-host close-out | in-progress | Shir | next sprint
-- **SHIR-005** Scheduled runner build | in-progress | Shir | ASAP -- blocks ALL triggers + DASH-001
+- DASH-001 | Dashboard refresh | in-progress | Ido | daily ACTIVE
+- T-0020 | Agent-tool security gate | in-progress | Rambo | bridge R&D path still pending
+- SEC-0001 | Guard enforce-mode flip | in-progress | Shir/Rambo | B2 behavioral fix + 7-clean-days pending
+- AUD-001 | File-lock (board/decisions-log) | open | Shir | backlog
+- AUD-002 | Production SOPs | open | Shir+Assaf | target 2026-08-15 rehearsal
+- APS-004 | APS tool/legal gate | in-progress | Eco | residual items moved to prod-go-live gate
+- APS-007 | APS Sprint-1 build | in-progress | Gal | owner must git-commit 78 files from own terminal
+- APS-010 | Relay Qs to Adam | open | Eco | due 2026-07-11 (clinical advisor needed same date)
+- SHIR-001 | Bridge async-ack fix | in-progress | Shir | rogue-host + async-ack still pending
+- T-0040 | Shelly comms check on wake-up | in-progress | Shir+Eco | recurring; runner wiring in progress
 
 ---
 
 ## Pending Owner Actions (waiting on jecki)
 
-- **Hiring A1 batch** -- activate Ido, Dalia, Noam, Lital, Assaf; Stage C packages ready in company/hr/stage-c/
-- **Gal + Shir go-live A1** -- B3-B6 done; Bash agents held for owner batch
-- **SEC-0001 guard flip A1** -- after shadow-log validation window clears; Shir will request
-- **SHIR-001 rogue-host** -- elevated PowerShell: Get-CimInstance Win32_Process | select ProcessId,CommandLine to ID 3rd python/Telegram PID; do NOT kill blind
-- **SHIR-001 bridge restart** -- restart eco bridge in fresh shell to activate httpx token-leak fix (SHIR-002 code applied 2026-06-27)
-- **HIL-003/004** -- create LinkedIn page + secure "ecosynthetic" handles; content at marketing/social/social-presence-draft-2026-06-23.md
-- **T-0034** -- IL company registration on hold (owner directive); Eco surfaces 30 days before first contract
-- **DAL-001** -- human-comms policy on hold; resume 2026-07-04 or after CS-0001 owner approval, whichever first
+- **APS-007**: git-commit 78-file APS monorepo from own terminal (agent scanner blocked the commit)
+- **RQ-003 / APS-009**: Commit Noa role file -> `.claude/agents/Noa.md` + session reload (Sprint-2 track blocked until live)
+- **APS-010**: Email Adam -- Q9.1 + clinical advisor framing; due 2026-07-11 (Ido NO-GO if absent)
+- **RQ-002 / T-0038**: Edit Eco role file with verify-before-forward guideline (next desktop session, A1 done)
+- **SEC-0001 B2**: Switch Edit->Write-append on decisions-log.md / memory/log.md (owner + all agents; unblocks enforce gate)
+- **AUD-004**: Mike CS-0001 draft due 2026-07-07 (Mike owns; review when ready)
+- **DAL-001 / POL-001**: Resume on 2026-07-04
+- **RQ-004 / T-0037**: Email-send gate (Rambo+Eyal) -- next desktop session
+- **RQ-005 / T-0039**: whatsapp-mcp gate (Rambo+Eyal) -- next desktop session
 
 ---
 
-## Trigger Health
+## Run-Queue (pending by lane)
 
-**Root issue: SHIR-005 (scheduled runner) not built. No trigger actually fires. runner-state.json does not exist.**
-Cadence clock from ACTIVE date 2026-06-22. All last_run = UNKNOWN.
+Runner lane: none queued.
 
-- Eco AM brief | Daily | UNKNOWN | **OVERDUE** (6d > 1.5d threshold)
-- Eco PM summary | Daily | UNKNOWN | **OVERDUE** (6d > 1.5d threshold)
-- Assaf cost snapshot | Daily | UNKNOWN | **OVERDUE** (6d > 1.5d threshold)
-- Assaf fitness loop | Weekly Mon | UNKNOWN | missed first fire 2026-06-23
-- Assaf on-demand review | Monthly | UNKNOWN | within window
-- Rambo permission scan | Weekly Mon | UNKNOWN | missed first fire 2026-06-23
-- Oracle chronicle sweep | Daily | BLOCKED | T-0020 C3 -- off spawn-allowlist
-- Lital+Eyal compliance check | Weekly | UNKNOWN | missed first fire week of 2026-06-22
-- Dalia quality audit | Weekly | UNKNOWN | missed first fire week of 2026-06-22
-- Ido DASH-001 refresh | Hourly | UNKNOWN | **OVERDUE** (this run = manual fill-in)
-- Shir bridge uptime | 15-30 min | PENDING BUILD | needs SHIR-005 + T-0020 C3 + Bash
-- MeetingPrep | Event-driven | PENDING BUILD | needs SHIR-005
+Desktop lane:
+- RQ-002 | Land Eco role-file verify-before-forward guideline | queued
+- RQ-003 | Commit Noa role file + session reload | queued
+- RQ-004 | Email-send gate (T-0037) | queued
+- RQ-005 | whatsapp-mcp gate (T-0039) | queued
+
+---
+
+## Per-Trigger Health
+
+- Eco 2h check-in: last 2026-06-30 23:57 UTC -- OK
+- Eco AM brief: last 2026-06-30 09:57 UTC -- OK (fires ~08:00 UTC today)
+- Eco PM summary: last 2026-06-30 21:57 UTC -- OK
+- Assaf daily cost snapshot: last 2026-06-30 01:57 UTC -- OK
+- Ido DASH-001 refresh: last 2026-06-30 01:57 UTC -- OK
+- Oracle daily chronicle: last 2026-06-30 01:57 UTC -- OK
+- Weekly triggers (Assaf/Rambo/Lital/Eyal/Dalia/Yael): last 2026-06-29 -- OK (within window)
+- Shir git-hygiene audit: last 2026-06-30 21:57 UTC -- OK
+
+No triggers OVERDUE (no row exceeds 1.5x cadence).
 
 ---
 
 ## Agent Roster
 
-- **Eco** -- ~10 tasks open/in-prog; heaviest queue in company
-- **Shir** -- 3 tasks (SHIR-001/003/005); 2x P1 in-prog; highest delivery pressure
-- **Rambo** -- T-0020 in-prog (P1); T-0035 blocked on void T-0032
-- **Ido** -- DASH-001 in-prog (P1); waiting on Shir/SHIR-005
-- **Oracle** -- ORC-001 open; due 2026-06-29 (background chronicle build)
-- **Hila** -- HIL-003/004 in-prog; awaiting owner action to publish
-- **Mike** -- CS-0001 open; unblocked 2026-06-24; draft in progress
-- **Dalia** -- DAL-001 on hold; resume 2026-07-04
-- **Assaf/Yossi** -- T-0031 ongoing (tool-library catalog)
-- **jecki** -- 8 pending actions above; T-0034 on hold
+- Eco: ~12 open (APS-004/010, T-0033/038/040, queue dispatch)
+- Gal: 1 active (APS-007 Sprint-1; awaiting owner terminal commit)
+- Shir: 4 open (AUD-001, SHIR-001, SHIR-006 daily, T-0040 wiring)
+- Rambo: 2 (T-0020 R&D path; RQ-004/005 gates queued)
+- Ido: 1 active (DASH-001 daily)
+- Mike: 1 open (AUD-004/CS-0001, due 2026-07-07)
+- Oracle: 1 active (ORC-001 chronicle sweep in progress)
+- Anat: 1 open (AUD-005 Yossi cert)
+- Dalia: 1 (DAL-001 on hold to 2026-07-04)
+- Assaf: 1 active (T-0033 event triggers pending)
+
+No agents with overdue tasks.

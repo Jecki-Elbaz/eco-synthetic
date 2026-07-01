@@ -1434,3 +1434,26 @@ Owner (jecki) A1 this session, in an authenticated Claude Code session.
   integrations/runner/runner.py, integrations/runner/agent-prompts.md,
   company/governance/schedules.md, company/security/reports/git-hygiene-review-2026-07-01.md
   (Rambo), memory/board.md (SHIR-006), this log.
+
+
+---
+
+## 2026-07-01 -- SEC-0001 enforce-readiness: guard hardening deployed + readiness gate LIVE
+
+Deployed to .claude/hooks/guard.py (GUARD_MODE still shadow -- behaviorally inert until the flip):
+per-agent PATH_SCOPE write-scoping; gal/shir/adi/oren added to ALLOWED_AGENTS with OWNER_SPAWN_ONLY
+launch restriction (only the owner top-level session may launch them); B1 owner Red-path exemption
+(owner live session may edit .claude/agents/; sub-agents + runner still denied). 36/36 guard
+validation cases pass.
+
+Enforce-readiness GATE built + LIVE: integrations/runner/enforce_readiness_check.py (pure code,
+read-only) runs every runner cycle, stays SILENT, and surfaces ONE owner A1 request the first time
+the KPI goes GREEN. Owner-approved KPI (jecki 2026-07-01): 7 clean days of zero false-blocks +
+coverage C1-C4 + B1/B2 deployed. b1_deploy ~2026-06-30T21:45Z; b2_deploy NULL (pending).
+
+REMAINING: B2 behavioral fix (agents+owner switch Edit->Write-append on decisions-log.md /
+memory/log.md; verify; set b2_deploy) -> accrue clean window -> gate GREEN -> owner A1 flip
+GUARD_MODE->enforce -> arm runner-lane queue. NO FLIP until the gate surfaces GREEN. Owner
+directive: do not rush; test properly; owner approves. Designs: guard-write-scoping-design-2026-06-30.md,
+enforce-readiness-gate-design-2026-07-01.md. Owners: Shir (B2/runner), Rambo (security), Eco (surface),
+jecki (A1 flip).
