@@ -1,0 +1,34 @@
+{
+  "name": "@aps/db",
+  "version": "0.1.0",
+  "private": true,
+  "description": "APS Prisma schema + generated client",
+  "main": "./src/generated/index.js",
+  "types": "./src/generated/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./src/generated/index.js",
+      "import": "./src/generated/index.js",
+      "types": "./src/generated/index.d.ts"
+    },
+    "./generated": {
+      "require": "./src/generated/index.js",
+      "import": "./src/generated/index.js",
+      "types": "./src/generated/index.d.ts"
+    }
+  },
+  "files": ["src/generated"],
+  "scripts": {
+    "generate": "dotenv -e ../../.env.local -- prisma generate",
+    "migrate": "dotenv -e ../../.env.local -- prisma migrate dev",
+    "migrate:deploy": "dotenv -e ../../.env.local -- prisma migrate deploy",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@prisma/client": "5.22.0"
+  },
+  "devDependencies": {
+    "prisma": "5.22.0",
+    "typescript": "5.4.5"
+  }
+}

@@ -1,0 +1,537 @@
+// APS -- Prisma Schema v1
+// Package: @aps/db
+// Sprint: 1 | Date: 2026-06-30
+// All pilot-minimal models + Phase 1b stubs (PersonaBranch, StudentPersonaHistory).
+// PostgreSQL 15.x dialect.
+// Timestamps createdAt/updatedAt on every model (not repeated in every block below for brevity
+// but included explicitly in all models).
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Org Hierarchy
+// ---------------------------------------------------------------------------
+
+model College {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  locale      String   @default("he")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  courses         Course[]
+  users           UserRoleAssignment[]
+  creditAlloc     CreditLedger[]
+}
+
+model Course {
+  id        String   @id @default(uuid())
+  collegeId String
+  college   College  @relation(fields: [collegeId], references: [id])
+  name      String
+  code      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assignments Assignment[]
+  users       UserRoleAssignment[]
+  creditAlloc CreditLedger[]
+}
+
+// Programme: DB stub only. No UI in pilot.
+model Programme {
+  id        String   @id @default(uuid())
+  collegeId String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Assignment {
+  id                   String   @id @default(uuid())
+  courseId             String
+  course               Course   @relation(fields: [courseId], references: [id])
+  simulationTemplateId String
+  simulationTemplate   SimulationTemplate @relation(fields: [simulationTemplateId], references: [id])
+  rubricVersionId      String
+  rubricVersion        RubricVersion @relation(fields: [rubricVersionId], references: [id])
+  challengeLevel       Int
+  languagesAllowed     String[]
+  maxAttempts          Int      @default(1)
+  timeLimitMinutes     Int?
+  maxTurns             Int      @default(75)
+  openAt               DateTime?
+  closeAt              DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  attempts Attempt[]
+}
+
+model Attempt {
+  id               String        @id @default(uuid())
+  assignmentId     String
+  assignment       Assignment    @relation(fields: [assignmentId], references: [id])
+  userId           String
+  user             User          @relation(fields: [userId], references: [id])
+  status           AttemptStatus @default(NOT_STARTED)
+  language         String
+  startedAt        DateTime?
+  finishedAt       DateTime?
+  turnCount        Int           @default(0)
+  tokenInputTotal  Int           @default(0)
+  tokenOutputTotal Int           @default(0)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  messages         Message[]
+  patientStateLogs PatientStateLog[]
+  evaluation       Evaluation?
+  debriefMessages  DebriefChat[]
+  usageLogs        UsageLog[]
+  supportTickets   SupportTicket[]
+}
+
+enum AttemptStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  ABANDONED
+  SUBMITTED
+  EVALUATED
+  TECHNICALLY_AFFECTED
+  TECHNICAL_FAILURE_CONFIRMED
+  RETRY_AUTHORISED
+}
+
+// ---------------------------------------------------------------------------
+// User + RBAC
+// ---------------------------------------------------------------------------
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  displayName  String
+  locale       String   @default("he")
+  inviteToken  String?  @unique
+  accessCode   String?
+  passwordHash String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  roleAssignments UserRoleAssignment[]
+  attempts        Attempt[]
+}
+
+model UserRoleAssignment {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  role      UserRole
+  scopeType ScopeType
+  scopeId   String
+  college   College?  @relation(fields: [scopeId], references: [id], map: "UserRoleAssignment_college_scopeId_fkey")
+  course    Course?   @relation(fields: [scopeId], references: [id], map: "UserRoleAssignment_course_scopeId_fkey")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([userId, role, scopeType, scopeId])
+}
+
+enum UserRole {
+  STUDENT
+  TEACHER
+  SYSTEM_ADMIN
+  // Stubs -- no UI in pilot
+  PROGRAMME_MANAGER
+  COLLEGE_MANAGER
+}
+
+enum ScopeType {
+  COLLEGE
+  COURSE
+}
+
+// ---------------------------------------------------------------------------
+// Competency Library
+// ---------------------------------------------------------------------------
+
+model Competency {
+  id          String           @id @default(uuid())
+  externalKey String           @unique
+  scope       CompetencyScope  @default(CORE)
+  parentId    String?
+  parent      Competency?      @relation("CompetencyHierarchy", fields: [parentId], references: [id])
+  children    Competency[]     @relation("CompetencyHierarchy")
+  labels      Json
+  status      CompetencyStatus @default(DRAFT)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  rubricCriteria RubricCriterion[]
+}
+
+enum CompetencyScope {
+  CORE
+  COLLEGE
+  PROGRAMME
+  COURSE
+  SIMULATION
+}
+
+enum CompetencyStatus {
+  DRAFT
+  LOCAL
+  SUBMITTED
+  APPROVED_PROGRAMME
+  APPROVED_COLLEGE
+  CORE
+  DEPRECATED
+}
+
+// ---------------------------------------------------------------------------
+// Simulation Template + Ground Truth
+// ---------------------------------------------------------------------------
+
+model SimulationTemplate {
+  id             String   @id @default(uuid())
+  title          String
+  version        Int      @default(1)
+  clinicalModel  String
+  studentLevel   String
+  challengeLevel Int
+  riskLevel      String
+  languages      String[]
+  personaPrompt  String
+  groundTruthId  String   @unique
+  groundTruth    GroundTruth @relation(fields: [groundTruthId], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  triggerRules   TriggerRule[]
+  assignments    Assignment[]
+  rubricVersions RubricVersion[]
+  personaBranches PersonaBranch[]
+}
+
+model GroundTruth {
+  id                   String  @id @default(uuid())
+  simulationTemplateId String  @unique
+  knownFacts           Json
+  disclosureAllowList  Json
+  escalationRules      Json
+  hardOffRampText      String
+  version              Int     @default(1)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  simulationTemplate SimulationTemplate?
+}
+
+model TriggerRule {
+  id                   String @id @default(uuid())
+  simulationTemplateId String
+  simulationTemplate   SimulationTemplate @relation(fields: [simulationTemplateId], references: [id])
+  triggerCondition     String
+  action               String
+  priority             Int    @default(0)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Rubric
+// ---------------------------------------------------------------------------
+
+model RubricVersion {
+  id                   String       @id @default(uuid())
+  simulationTemplateId String
+  simulationTemplate   SimulationTemplate @relation(fields: [simulationTemplateId], references: [id])
+  version              Int
+  status               RubricStatus @default(DRAFT)
+  publishedAt          DateTime?
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+
+  criteria    RubricCriterion[]
+  assignments Assignment[]
+
+  @@unique([simulationTemplateId, version])
+}
+
+enum RubricStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model RubricCriterion {
+  id              String        @id @default(uuid())
+  rubricVersionId String
+  rubricVersion   RubricVersion @relation(fields: [rubricVersionId], references: [id])
+  competencyId    String?
+  competency      Competency?   @relation(fields: [competencyId], references: [id])
+  labelKey        String
+  labels          Json
+  weight          Float
+  maxScore        Float
+  scoringAnchors  Json
+  formativeOnly   Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Simulation Runtime -- Core Tables
+// ---------------------------------------------------------------------------
+
+model Message {
+  id             String      @id @default(uuid())
+  attemptId      String
+  attempt        Attempt     @relation(fields: [attemptId], references: [id])
+  role           MessageRole
+  turnNumber     Int
+  originalText   String
+  translatedText String?
+  nonVerbalCues  String?
+  language       String
+  sentAt         DateTime    @default(now())
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+enum MessageRole {
+  STUDENT
+  PATIENT
+}
+
+// Hard-persisted state per turn. Written BEFORE response delivery.
+// Re-injected as structured block on every subsequent turn.
+// One row per turn per attempt. [APS-REQ-058]
+model PatientStateLog {
+  id               String  @id @default(uuid())
+  attemptId        String
+  attempt          Attempt @relation(fields: [attemptId], references: [id])
+  turnNumber       Int
+
+  // Quantitative state dimensions (0.0-1.0)
+  trust            Float
+  openness         Float
+  emotionalActiv   Float
+  avoidanceLevel   Float
+  defensiveness    Float
+  allianceQuality  Float
+  disclosureReady  Float
+  riskRelevance    Float
+
+  // Disclosure tracking
+  unlockedFactIds  String[]
+  pendingTriggers  String[]
+
+  // Interaction analyser output for this turn (audit + evaluation input)
+  analyserOutput   Json
+
+  // Challenge-level snapshot
+  challengeLevel   Int
+
+  // Guard model outcome for this turn
+  guardResult      String
+  guardDetail      String?
+
+  // Context window management
+  summarisedUpTo   Int?
+  contextSummary   String?
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([attemptId, turnNumber])
+}
+
+// ---------------------------------------------------------------------------
+// Evaluation + Debrief
+// ---------------------------------------------------------------------------
+
+model Evaluation {
+  id                   String     @id @default(uuid())
+  attemptId            String     @unique
+  attempt              Attempt    @relation(fields: [attemptId], references: [id])
+  rubricVersionId      String
+  status               EvalStatus @default(PENDING)
+  structuredScores     Json
+  transcriptHighlights Json
+  overallSummary       String?
+  teacherOverride      Boolean    @default(false)
+  teacherNotes         String?
+  publishedAt          DateTime?
+  generatedAt          DateTime?
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+}
+
+enum EvalStatus {
+  PENDING
+  DRAFT
+  TEACHER_REVIEW
+  PUBLISHED
+}
+
+model DebriefChat {
+  id         String      @id @default(uuid())
+  attemptId  String
+  attempt    Attempt     @relation(fields: [attemptId], references: [id])
+  role       DebriefRole
+  turnNumber Int
+  text       String
+  citedTurns Int[]
+  sentAt     DateTime    @default(now())
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+enum DebriefRole {
+  STUDENT
+  SUPERVISOR
+}
+
+// ---------------------------------------------------------------------------
+// Technical Support + Academic Safety
+// ---------------------------------------------------------------------------
+
+model SupportTicket {
+  id               String       @id @default(uuid())
+  attemptId        String?
+  attempt          Attempt?     @relation(fields: [attemptId], references: [id])
+  userId           String
+  issueCategory    String
+  status           TicketStatus @default(OPEN)
+  metadata         Json
+  diagnosticLogId  String?      @unique
+  diagnosticLog    DiagnosticLog? @relation(fields: [diagnosticLogId], references: [id])
+  emailSent        Boolean      @default(false)
+  emailSentAt      DateTime?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+}
+
+enum TicketStatus {
+  OPEN
+  ESCALATED
+  RESOLVED
+}
+
+model DiagnosticLog {
+  id           String   @id @default(uuid())
+  payload      Json
+  capturedAt   DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  supportTicket SupportTicket?
+}
+
+// ---------------------------------------------------------------------------
+// Credit Ledger + Usage Log
+// ---------------------------------------------------------------------------
+
+model CreditLedger {
+  id        String   @id @default(uuid())
+  collegeId String
+  college   College  @relation(fields: [collegeId], references: [id])
+  courseId  String?
+  course    Course?  @relation(fields: [courseId], references: [id])
+  balance   Int      @default(0)
+  softLimit Int?
+  hardLimit Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  entries CreditEntry[]
+}
+
+model CreditEntry {
+  id           String   @id @default(uuid())
+  ledgerId     String
+  ledger       CreditLedger @relation(fields: [ledgerId], references: [id])
+  adminId      String?
+  activityType String
+  delta        Int
+  reason       String?
+  timestamp    DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model UsageLog {
+  id                String   @id @default(uuid())
+  attemptId         String
+  attempt           Attempt  @relation(fields: [attemptId], references: [id])
+  eventType         String
+  modelId           String?
+  inputTokens       Int      @default(0)
+  outputTokens      Int      @default(0)
+  dictationSeconds  Int      @default(0)
+  estimatedCostUsd  Float?
+  timestamp         DateTime @default(now())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Phase 1b Schema Stubs -- runtime deferred; tables exist to avoid migrating
+// over live student data later. [APS-REQ-152 through APS-REQ-161]
+// Eyal MUST review StudentPersonaHistory before Phase 1b activates this.
+// ---------------------------------------------------------------------------
+
+model PersonaBranch {
+  id                   String   @id @default(uuid())
+  simulationTemplateId String
+  simulationTemplate   SimulationTemplate @relation(fields: [simulationTemplateId], references: [id])
+  courseId             String
+  label                String
+  baseState            Json
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  studentHistories StudentPersonaHistory[]
+}
+
+// PII-HIGH: access restricted to TEACHER + SYSTEM_ADMIN.
+// 12-month retention per APS-REQ-160.
+// EYAL REVIEW REQUIRED before Phase 1b activates this.
+model StudentPersonaHistory {
+  id              String        @id @default(uuid())
+  personaBranchId String
+  personaBranch   PersonaBranch @relation(fields: [personaBranchId], references: [id])
+  userId          String
+  sessionCount    Int           @default(0)
+
+  // JSONB fields -- Phase 1b runtime; null in pilot
+  sessionSummaries        Json?
+  evolvingFormulation     Json?
+  therapyGoals            Json?
+  homeworkLog             Json?
+  symptomTrajectory       Json?
+  allianceTrustTrajectory Json?
+
+  // PII-HIGH: shorter retention candidate; Eyal review required
+  notableStudentMistakes  Json?
+  avoidanceResistanceLog  Json?
+  importantThemes         Json?
+  engagementShifts        Json?
+
+  retainUntil   DateTime?
+  lastSessionAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([personaBranchId, userId])
+}

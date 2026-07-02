@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "composite": true,
+    "paths": {
+      "@aps/shared-types": ["../shared-types/src/index.ts"]
+    }
+  },
+  "references": [
+    { "path": "../shared-types" }
+  ],
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

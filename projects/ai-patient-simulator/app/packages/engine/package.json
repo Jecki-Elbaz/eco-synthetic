@@ -1,0 +1,28 @@
+{
+  "name": "@aps/engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "APS AI patient engine -- pure TS, no framework dependency",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/src/index.js",
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "test": "echo \"No tests in @aps/engine -- engine tests live in @aps/engine-test-harness\" && exit 0"
+  },
+  "dependencies": {
+    "@aps/shared-types": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "5.4.5",
+    "@types/node": "20.19.0"
+  }
+}

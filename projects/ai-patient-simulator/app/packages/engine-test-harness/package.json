@@ -1,0 +1,26 @@
+{
+  "name": "@aps/engine-test-harness",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Deterministic stubs and helpers for engine testing (no live LLM)",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "jest --config jest.config.cjs",
+    "test:coverage": "jest --config jest.config.cjs --coverage"
+  },
+  "dependencies": {
+    "@aps/engine": "workspace:*",
+    "@aps/shared-types": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/jest": "29.5.14",
+    "@types/node": "20.19.0",
+    "jest": "29.7.0",
+    "ts-jest": "29.2.5",
+    "typescript": "5.4.5"
+  }
+}

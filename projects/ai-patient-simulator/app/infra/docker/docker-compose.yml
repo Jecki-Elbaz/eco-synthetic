@@ -1,0 +1,50 @@
+# APS local dev environment
+# Requires: Docker Desktop
+# Usage: docker-compose up -d
+# Credentials below are FOR LOCAL DEV ONLY -- never use in production [red line 1]
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: aps-postgres
+    environment:
+      POSTGRES_USER: aps_dev
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}   # set in infra/docker/.env (gitignored); see .env.example
+      POSTGRES_DB: aps_dev
+    ports:
+      - "5433:5432"
+    volumes:
+      - aps_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aps_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: aps-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    container_name: aps-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: aps_dev
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}  # set in infra/docker/.env (gitignored); see .env.example
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - aps_minio_data:/data
+
+volumes:
+  aps_postgres_data:
+  aps_minio_data:

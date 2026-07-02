@@ -1,0 +1,25 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "target": "ES2022",
+    "outDir": "./dist",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "composite": true,
+    "types": ["jest", "node"],
+    "paths": {
+      "@aps/db": ["../../packages/db/src/index.ts"],
+      "@aps/engine": ["../../packages/engine/src/index.ts"],
+      "@aps/shared-types": ["../../packages/shared-types/src/index.ts"]
+    }
+  },
+  "references": [
+    { "path": "../../packages/shared-types" },
+    { "path": "../../packages/engine" },
+    { "path": "../../packages/db" }
+  ],
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

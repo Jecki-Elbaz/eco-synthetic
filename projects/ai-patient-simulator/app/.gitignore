@@ -1,0 +1,21 @@
+node_modules/
+.turbo/
+dist/
+.next/
+*.tsbuildinfo
+
+# Env files -- never commit [red line 1]
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Prisma generated client
+packages/db/src/generated/
+
+# Build outputs
+apps/api/dist/
+packages/engine/dist/
+packages/shared-types/dist/
+packages/db/dist/
