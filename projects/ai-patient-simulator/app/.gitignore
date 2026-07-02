@@ -4,6 +4,9 @@ dist/
 .next/
 *.tsbuildinfo
 
+# Test coverage reports (generated -- never commit)
+coverage/
+
 # Env files -- never commit [red line 1]
 .env
 .env.local
