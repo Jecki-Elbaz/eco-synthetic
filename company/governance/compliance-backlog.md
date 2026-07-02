@@ -4,7 +4,7 @@ Owned jointly by Eyal (Legal) and Lital (CFO). Surfaced to Eco proactively so it
 prioritized on the roadmap and never appears as a sudden critical issue.
 Source: constitution section 13. Populated as T-0008.
 
-Last legal-leg review: Eyal, 2026-06-22 (T-0005).
+Last legal-leg review: Eyal, 2026-06-29 (scheduled runner).
 Last finance-leg review: Lital, 2026-06-24 (T-0005).
 Format: each item has a LEGAL LEG block (Eyal) and a FINANCE LEG block (Lital).
 Eyal fills legal-leg; Lital fills finance-leg. Neither overwrites the other's block.
@@ -664,3 +664,143 @@ threshold or a new high-risk item is identified).
 Next report due: on-demand until first trigger event (no active customers yet).
 T-0033 proactivity program (P3) will add a Lital/Eyal compliance event-trigger once
 SHIR-005 is built.
+
+---
+
+## Lital review log
+
+Last reviewed by Lital: 2026-06-29 (run 3)
+
+Status summary (2026-06-29, run 3):
+- OVERDUE items: NONE. All deadlines remain event-triggered (first customer / first contract /
+  first invoice / first data intake). No trigger events have occurred as of this review.
+- APPROACHING (30-day calendar window): NONE with hard calendar dates.
+- Soft flag (escalating urgency): Item 3 (DPA template v0.1-DRAFT, company/legal/dpa-template.md)
+  drafted 2026-06-23; now 6+ days pending owner A1 review. APS project R&D docs are active
+  (engine architecture, QA plan, UX flows all new 2026-06-29). If APS moves toward a September
+  pilot with student data, DPA must be A1-reviewed before any data intake. Urgency increasing.
+  Lital flags to Eco: request owner scheduling of A1 review for Item 3.
+- Item 6 (Anthropic DPA): MEDIUM-HIGH risk. Eyal WebFetch re-fetch of current DPA text remains
+  outstanding. No personal data flowing -- no active violation. APS project creates a new
+  pathway to trigger this obligation (if Claude/Anthropic used for patient engine or debriefs).
+- APS cost flags (maintained from run 2):
+  - M16 (transcript retention): storage cost implications pending R&D data-volume definition.
+    Owner input on retention period required (A1 per Eyal) before APS pilot goes live.
+  - M21 (data residency): Israeli region hosting carries cost premium; must be quantified at
+    architecture time (Ido/Shir), not at billing time. No spend today.
+  - Both non-blocking today; must be resolved before APS pilot data goes live.
+- No spend authorized on any item. Budget-0 policy holds. All A1 items remain with jecki.
+
+Previous run: 2026-06-29 (run 2) -- see archived entry below.
+
+Status summary (2026-06-29, run 2 -- archived):
+- OVERDUE items: NONE. All deadlines are event-triggered (first customer / first contract /
+  first invoice / first data intake). No trigger events have occurred as of this review.
+- APPROACHING (30-day window): NONE with hard calendar dates.
+- Soft flag: Item 3 (privacy DPA template) was drafted by Eyal on 2026-06-23 and is sitting
+  at "awaiting owner A1 review." No calendar deadline, but it has been pending 6 days. Flagged
+  to Eco for owner awareness -- the AI Patient Simulator project is progressing (new R&D docs
+  observed 2026-06-29), so data-intake timelines may be approaching sooner than expected.
+- Item 6 (Anthropic DPA): MEDIUM-HIGH risk per Eyal. Eyal's WebFetch re-fetch of current DPA
+  text is still outstanding. No personal data flowing today -- no active violation.
+- APS cost flags (new, 2026-06-29 run 2 -- from Eyal review log, Lital finance angle):
+  - M16 (transcript retention): retention period decision has storage cost implications once
+    APS pilot goes live. Lital cannot estimate until R&D defines data volume and provider.
+    Owner input needed on retention period (A1 per Eyal). No spend today.
+  - M21 (data residency): if Israeli region hosting is chosen, it typically carries a premium
+    over US-based cloud regions. Cost delta depends on provider and tier. Lital flags: confirm
+    Israeli region requirement before infrastructure is provisioned -- cost differential should
+    be quantified at architecture time (Ido/Shir), not at billing time. No spend today.
+  - Both M16 and M21 are non-blocking today but must be resolved before APS pilot data goes
+    live. No A1 authorized by Lital; all flagged to Eco/jecki.
+- No spend authorized on any item. Budget-0 policy holds. All A1 items remain with jecki.
+
+---
+
+## Eyal review log
+
+Last reviewed by Eyal: 2026-06-29
+
+Status summary (2026-06-29) -- scheduled runner, no owner input available:
+
+OVERDUE items: NONE. All backlog deadlines remain event-triggered (first contract / first
+invoice / first data intake / first external email). No trigger events have occurred.
+
+APPROACHING (30-day calendar window): NONE with hard calendar dates.
+
+NEW since last Eyal review (2026-06-22): APS-004 gate entries added to gate-register.md
+on 2026-06-29. These create concrete Eyal action items:
+- M1: OpenAI API LLM provider DPA -- Eyal must confirm Israeli PPL processor obligations
+  and training-use opt-out before any OpenAI adoption for APS. Action: live terms fetch
+  + assessment. Blocking for APS pilot if OpenAI is the chosen LLM.
+- M2: Transactional email service DPA -- Eyal must confirm PPL processor obligations once
+  provider is chosen. Provider not yet selected. Non-blocking today; blocking at adoption.
+- M16: Transcript retention policy -- Eyal + Lital + owner must agree on retention period
+  (PPL minimisation principle). Also blocks "notable_mistakes" Phase 1b field (highest-
+  sensitivity PII; PPL student correction/deletion rights review required before Phase 1b).
+- M21: Data residency -- Eyal + Lital + owner to confirm Israeli region preference.
+  Non-blocking for formative pilot but must be confirmed before pilot data goes live.
+- LTI / Canvas / Moodle: DEFERRED from v1 pilot per gate-register APS note. No gate row
+  needed for September pilot. Eyal will flag if scope changes.
+
+SOFT FLAGS (existing items, increased urgency):
+- Item 3 (DPA template v0.1-DRAFT): drafted 2026-06-23; now 6 days pending owner A1 review.
+  AI Patient Simulator project is progressing (R&D docs observed 2026-06-29). If APS moves
+  toward a September pilot with student data, the DPA template must be A1-reviewed and in
+  place before any data intake. Urgency is rising. Eyal flags to Eco: this item should not
+  continue to sit -- request owner scheduling of the A1 review.
+- Item 6 (Anthropic DPA): Eyal WebFetch re-fetch of current DPA text remains outstanding
+  (pending runtime confirmation). No personal data flowing -- no active violation. However,
+  the APS project (if it uses Claude/Anthropic for the patient engine or debrief) would
+  trigger this obligation. Must resolve before any student transcript enters an LLM. Eyal
+  will re-run WebFetch in a live session when tool is confirmed available.
+- Item 5 (Google account migration): Domain purchase and Workspace subscription remain
+  deferred (no A1 yet). No customer contact is blocked by this today. Non-urgent until
+  first external communication.
+
+A1 ITEMS -- summary for owner (via Eco):
+1. Item 3: DPA template v0.1-DRAFT (company/legal/dpa-template.md) -- owner A1 review
+   required before any customer data is collected. PENDING 6 DAYS. Request scheduling.
+2. Item 6: Anthropic DPA execution -- A1 legal commitment; pending Eyal WebFetch confirm
+   of current terms. Eyal will re-fetch and report. Must precede any student/customer data
+   in LLM.
+3. APS M16 + M21: Owner input required on transcript retention period and data residency
+   (Israeli region preference). Not blocking today but needed before APS pilot goes live.
+4. APS OpenAI API gate: If OpenAI is chosen as the APS LLM engine, A1 required (paid +
+   data egress). Eyal must complete M1 assessment first. Not adopted yet -- no spend.
+5. Item 1 (Company registration): A1 required to file. Trigger = 30 days before first
+   contract. No contract imminent today, but APS progressing -- owner should be aware this
+   lead time is fixed (1-3 business days for Ltd online filing once docs are ready).
+
+NO items have breached a hard deadline. All flags above are preventive.
+
+Run 2 confirmation (2026-06-29): second scheduled-runner pass. No new items vs run 1.
+Gate-register cross-check: two Eyal-PENDING rows remain unresolved with no hard deadline
+(nspady/google-calendar-mcp; taylorwilsdon/google_workspace_mcp) -- flag to Eco to schedule.
+Agent-tool Eco (T-0020) Eyal-PENDING also still open. No overdue gate-register review dates found.
+A1 items remain open -- see A1 summary above. Last reviewed by Eyal: 2026-06-29 (run 2).
+
+Run 3 confirmation (2026-06-29): third scheduled-runner pass. No new items vs run 2.
+Status: unchanged. No hard deadlines breached. All flags are preventive.
+
+Gate-register cross-check (run 3):
+- nspady/google-calendar-mcp: Eyal PENDING -- no hard review date, but unresolved.
+- taylorwilsdon/google_workspace_mcp: Eyal PENDING -- no hard review date, but unresolved.
+- Agent-tool Eco (T-0020): Eyal PENDING -- no hard review date, but unresolved.
+- APS-004 gate rows (OpenAI API, AWS S3, transactional email): PRE-READ only; Eyal live
+  terms review required before adoption. Non-blocking today (none adopted). M1 and M2 are
+  co-blocking Rambo gate close -- cannot close without Eyal.
+
+A1 items still open (unchanged from run 1/run 2) -- escalating to Eco:
+1. Item 3: DPA template v0.1-DRAFT (company/legal/dpa-template.md) -- owner A1 review
+   required before any customer data collected. Now 6+ days pending with no scheduling.
+   APS project active; urgency rising. REQUEST: Eco schedule owner A1 review.
+2. Item 6: Anthropic DPA execution -- A1 legal commitment. Pending Eyal WebFetch confirm
+   of current terms. Must precede any student or customer data entering LLM pipeline.
+3. APS M16: Transcript retention period -- owner input required (PPL minimisation + cost
+   modelling). Blocking Phase 1b notable_mistakes field.
+4. APS M21: Data residency (Israeli region) -- owner input required before pilot data live.
+5. Item 1: Company registration (Ltd filing) -- A1 required to file. Lead time 1-3 days
+   once ready; no contract or invoice is valid without it.
+
+Last reviewed by Eyal: 2026-06-29 (run 3).

@@ -103,6 +103,19 @@ Live tally: 29 certified + live (internal); Shelly CERTIFIED (external customer,
 | Senior Developer (unnamed) | Code reviewer | P2 | 2-round cap |
 | Sami | SME advisor (per project) | as needed | One per active project |
 
+## R&R cadence (owner directive 2026-07-01)
+
+Established by owner directive 2026-07-01 (via Eco). Owned by Anat (HR/Agent-Ops). Tracked on board as HR-001.
+
+- Immediate cycle: DONE 2026-07-01. Record: company/hr/interviews/_staging/rr-sweep-2026-07-01.md.
+- Next cycle: 2026-07-31 (30-day).
+- After that: quarterly (est. 2026-10-31, then every ~90 days).
+- Scope each cycle: doc-review of all live agents; open conditions; permission-excess flags to Rambo; written sweep record in _staging/.
+- Full R&R interviews (live spawn) triggered separately by performance flags or Eco direction.
+- Top open items from the 2026-07-01 sweep: (1) Yossi AUD-005 -- conditionally certified this session (Eco A2 pending); (2) Noa live B3 confirmatory gate ~2026-07-21; (3) Gal RL9/10/11 condition + Luci/Erez/Tim model-pin fleet hygiene (Ido + Assaf to confirm).
+
+---
+
 ## Certification status
 
 - Eco: conditionally certified (Anat, 2026-06-12); 5 gaps -- see T-0002
@@ -121,3 +134,5 @@ Live tally: 29 certified + live (internal); Shelly CERTIFIED (external customer,
 - REMAINING staged hires: NONE. The full 2026-06-18 remaining-agent run is complete -- all 12 staged agents (Wave 1 + Wave 2) are live, plus Designer (Tal) and Hila full-track earlier the same day. Next agents are future-phase only (none currently approved to hire).
 - CROSS-AGENT FLAG: Luci + Erez frontmatter pins claude-opus-4-8 while body says Sonnet-default; reconcile (possible wider model-config audit).
 - Systemic at certification: RL-9/10/11 boundary-text gap across most role files (batch-fixable); Ido/Gal/Shir share a Bash over-permission flag (T-0020).
+- Noa (Senior Dev 2, APS): PROVISIONAL LIVE 2026-06-30 (owner A1 Stage-C). B4 provisional by Anat 2026-06-29. Live B3 confirmatory gate: Sprint-1 week 2 (~2026-07-21, hard gate). Fail = R&R triggered + go-live suspended.
+- Yossi (Training & Enablement): CONDITIONALLY CERTIFIED 2026-07-01 by Anat (doc-review). Pending: Eco A2; Assaf B6 within 5 days; Rambo B5 before bridge/runner spawn; live B3 at next spawnable session. Tracks board HR-002 + AUD-005.
