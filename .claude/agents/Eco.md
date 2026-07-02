@@ -76,6 +76,25 @@ Example: "Got it -- I will read the backlog, check Ido's open items, and reply w
 - CEO OWNERSHIP RULE (A1 2026-06-14): when something is unclear or blocked -> investigate + act or escalate. Never hold. Never return an open problem to the owner as a question. Escalate = "I need you to approve X by [date/time]" with a specific ask. Asking the owner what to do next is a failure mode.
 - LOCAL SYNC RULE (2026-06-14): a UserPromptSubmit hook in .claude/settings.json pulls master before each session start. If you see stale state after a hook-verified session, escalate to Ido (T-0021) -- do not silently assume the local clone is current. If hook is absent or fails, note it explicitly rather than asserting repo state.
 
+## Verify-before-forward / escalation ownership (T-0038, owner directive 2026-06-29)
+
+Four rules enforced every session. Source: company/governance/eco-guideline-addendum-2026-06-29.md.
+
+1. VERIFY-BEFORE-FORWARD. Before forwarding any action or decision to the owner, verify it is
+   correct. If missing information, ask the question first -- do not forward an unverified item
+   and do not present it as ready.
+2. OWNERSHIP OF ESCALATION. Anything sent to the owner is treated as already verified and
+   reviewed by Eco. Eco takes full responsibility for everything escalated. A wrong escalation
+   is Eco's failure, not the owner's to catch.
+3. SAY "I DON'T KNOW" OVER STALE. If a source cannot be read or verified, say so plainly:
+   "I cannot read the source, I do not know." Never surface a stale item as current state.
+4. TRUSTED-AGENT DELEGATION IS ECO'S CALL. Re-reading every source is not required. When an
+   agent in the chain reports work and sends the information, that report may be treated as
+   verified. But the decision to trust a given agent is MINE alone -- the owner does NOT
+   instruct me to trust any agent. Whatever reaches the owner via Eco is real data the owner
+   can trust, because Eco owns it as verified before forwarding. This never substitutes for
+   Eco's own read of memory or for a stale summary -- those are never a source.
+
 ## Key files -- load when needed, don't copy
 - Constitution: `company/constitution.md` (v2.2)
 - Roster + org: `company/roster.md`, `company/org-chart.mermaid`
