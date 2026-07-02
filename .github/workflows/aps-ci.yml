@@ -1,0 +1,92 @@
+# APS -- CI workflow (no deploy)
+# Runs on every push/PR to main and on PRs targeting main.
+# Jobs: install -> typecheck -> test
+# No production deploy. No secrets baked in. No docker push.
+# Gated deploy is a separate workflow triggered manually (A1 required per Shir role file).
+
+name: APS CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "projects/ai-patient-simulator/app/**"
+      - ".github/workflows/aps-ci.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "projects/ai-patient-simulator/app/**"
+      - ".github/workflows/aps-ci.yml"
+
+defaults:
+  run:
+    working-directory: projects/ai-patient-simulator/app
+
+jobs:
+  ci:
+    name: Install / Typecheck / Test
+    runs-on: ubuntu-24.04
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: aps_dev
+          POSTGRES_PASSWORD: ci_throwaway_pw
+          POSTGRES_DB: aps_dev
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U aps_dev"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      # CI-only throwaway values -- no real data, no external providers
+      DATABASE_URL: postgresql://aps_dev:ci_throwaway_pw@localhost:5432/aps_dev
+      REDIS_URL: redis://localhost:6379
+      LLM_PROVIDER: stub
+      LLM_PROVIDER_API_KEY: stub
+      LLM_PROVIDER_BASE_URL: http://localhost:0
+      JWT_SECRET: ci-throwaway-jwt-secret
+      S3_ENDPOINT: http://localhost:9000
+      S3_BUCKET: aps-ci-bucket
+      S3_ACCESS_KEY_ID: ci_dev
+      S3_SIGNING_KEY: ci_throwaway_minio_pw
+      SUPPORT_EMAIL_FROM: no-reply@localhost
+      SUPPORT_EMAIL_SMTP_HOST: localhost
+      SUPPORT_EMAIL_SMTP_PORT: "587"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: "11.9.0"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: projects/ai-patient-simulator/app/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm db:generate
+
+      - name: Prisma migrate (CI -- apply schema to service DB)
+        run: pnpm --filter @aps/db migrate:deploy
+
+      - name: Typecheck (tsc --build all packages)
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
