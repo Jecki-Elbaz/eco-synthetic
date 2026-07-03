@@ -746,11 +746,27 @@ def make_handlers(bot_name: str, system_prompt: str):
         fail_line = f"Consecutive failures: {failures}"
         if failures >= 3:
             fail_line += " ⚠️  — auth likely expired"
+        # Surface the kill-switch state so the owner can see at a glance whether
+        # autonomy is halted. Read-only check; mirrors runner.py/guard.py logic.
+        try:
+            halted = (
+                SAFE_MODE_FILE.exists()
+                and SAFE_MODE_FILE.read_text(encoding="utf-8").strip() != ""
+            )
+        except Exception:  # noqa: BLE001 -- never let status reporting crash
+            halted = None
+        if halted is True:
+            autonomy_line = "Autonomy: 🛑 HALTED (SAFE_MODE set — /resume to re-arm)"
+        elif halted is False:
+            autonomy_line = "Autonomy: ✅ armed (SAFE_MODE clear — /halt to freeze)"
+        else:
+            autonomy_line = "Autonomy: ⚠️ unknown (could not read SAFE_MODE flag)"
         lines = [
             f"[{agent_display}] Bridge status",
             f"Uptime: {uptime}",
             f"Last success: {since_ok}",
             fail_line,
+            autonomy_line,
             f"Model (default): {ECO_DEFAULT_MODEL}",
             f"Model (escalated): {ECO_ESCALATED_MODEL}",
         ]
