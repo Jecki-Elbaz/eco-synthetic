@@ -1481,3 +1481,21 @@ jecki (A1 flip).
   - Owned by: Anat. Board task: HR-001.
 - **Noa B3 date pulled forward:** Live B3 confirmatory gate moved from ~2026-07-21 (Sprint-1 wk2) to 2026-07-07 (per owner directive 2026-07-01). Hard gate: pass lifts provisional; fail = R&R triggered + go-live suspended. Anat runs 4 scenarios from noa-competency-spec-b2.md via Agent tool; results to _staging/noa-live-b3-results.md. Tracked on HR-002.
 - **Files affected:** company/hr/interviews/_staging/rr-sweep-2026-07-01.md (new), memory/board.md (HR-001 + HR-002 rows), company/decisions/decisions-log.md (this entry).
+
+## 2026-07-03 — Time-boxed mute of the Eco 2h check-in owner-Telegram ping
+
+- **Author / gate:** jecki (A1)
+- **Decision:** Suppress ONLY the owner-facing Telegram send of the Eco 2h check-in until
+  **2026-07-22** (muted through 2026-07-21 inclusive; 2h owner pings resume 2026-07-22). Window
+  anchored to the original 2026-07-01 request. The mute is ABSOLUTE — during it nothing from the
+  2h trigger goes to Telegram; items that would surface reach the owner via the daily AM/PM
+  briefs. The same mute is applied in parallel to Shelly's HandoffCheck (2h) in that project.
+- **Rationale:** Owner wants a temporary quiet window on the 2-hour notification, keeping only the
+  daily cadence. No functionality change: the 2h job still runs, does all its work, and logs; only
+  the owner ping is skipped. Self-expiring by date, so it restores with zero manual action.
+- **Alternatives considered:** Flip the job `tg` flag (manual revert, error-prone); SAFE_MODE
+  (wrong scope — halts all work); emergency-breakthrough carve-out (owner chose absolute mute).
+- **Files affected:** integrations/runner/runner.py (adds NOTIFY_MUTE_FILE + two_h_notify_muted()
+  date-gate on the 2h send), memory/MUTE_2H_UNTIL (holds restore date 2026-07-22; delete to cancel
+  early, edit line 1 to change). Notification reduction only — no new tool, no egress increase, no
+  gate. Mirrored in the Shelly project (its own runner.py + memory/MUTE_2H_UNTIL).

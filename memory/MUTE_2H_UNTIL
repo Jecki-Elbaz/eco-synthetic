@@ -1,0 +1,5 @@
+2026-07-22
+Owner (A1) directive 2026-07-03: absolute mute of the Eco 2h check-in owner-Telegram send,
+anchored to the original 2026-07-01 request. Muted through 2026-07-21 inclusive; auto-restores
+on the date above (first normal day). Job still runs and logs; only the owner ping is suppressed. Delete this file to cancel
+early; edit the first line to extend. The runner reads only the first 10 chars (the date).

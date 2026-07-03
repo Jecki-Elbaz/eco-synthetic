@@ -32,6 +32,7 @@ BOARD = ROOT / "memory" / "board.md"
 RUNLOG = ROOT / "memory" / "agent-runs.jsonl"
 STATE = ROOT / "memory" / "runner-state.json"
 SAFE_MODE_FILE = ROOT / "memory" / "SAFE_MODE"
+NOTIFY_MUTE_FILE = ROOT / "memory" / "MUTE_2H_UNTIL"  # ISO date = first day back to normal
 AGENTS_DIR = ROOT / ".claude" / "agents"
 OWNER_CHAT = "63160285"
 TOOLS = {"readonly": "Read", "act": "Read,Write,Edit"}
@@ -191,6 +192,21 @@ def actionable_gate() -> int:
         return -1
 
 
+def two_h_notify_muted() -> bool:
+    """Time-boxed owner-notification mute for the 2h check-in (auto-expires).
+    The job still RUNS and logs; only the owner Telegram ping is suppressed while
+    today < the date in memory/MUTE_2H_UNTIL. Missing/blank/invalid file => not muted
+    (fail-open to normal notifications)."""
+    try:
+        raw = NOTIFY_MUTE_FILE.read_text(encoding="utf-8").strip()[:10]
+        if not raw:
+            return False
+        until = datetime.strptime(raw, "%Y-%m-%d").date()
+    except (OSError, ValueError):
+        return False
+    return datetime.now().date() < until
+
+
 def send_telegram(text: str) -> bool:
     try:
         from dotenv import load_dotenv
@@ -245,7 +261,10 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
     # treat output whose LAST non-empty line is the sentinel as "nothing actionable".
     no_actionable = out.rstrip().endswith("NO_ACTIONABLE_CONTENT")
     if job["tg"].startswith(("YES", "CONDITIONAL")) and out and not no_actionable:
-        sent = send_telegram(f"[Proactivity -- {agent}]\n\n{out}")
+        if "2h" in job["cadence"] and two_h_notify_muted():
+            log({"key": key, "event": "tg_muted_2h"})  # work ran; owner ping suppressed
+        else:
+            sent = send_telegram(f"[Proactivity -- {agent}]\n\n{out}")
     log({"key": key, "event": "done", "rc": r.returncode, "out_chars": len(out),
          "sent": sent, "escalate": escalate, "summary": out[-600:]})
     return {"ran": True, "escalate": escalate}
