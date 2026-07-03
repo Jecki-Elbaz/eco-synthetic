@@ -1,22 +1,22 @@
 {
-  "last_run": "2026-07-02T08:00:39.591341+00:00",
+  "last_run": "2026-07-03T16:18:40.203576+00:00",
   "green": false,
   "checks": {
     "B1_deployed": true,
     "B2_deployed": false,
     "false_blocks_0": false,
     "C1_runner_starts": true,
-    "C2_owner_redpath": false,
+    "C2_owner_redpath": true,
     "C3_subagent_writes": true,
     "C4_pure_append": false
   },
   "metrics": {
     "false_blocks": 51,
-    "C1": 115,
-    "C2": 0,
+    "C1": 121,
+    "C2": 1,
     "C3": 53,
     "C4": 0,
-    "guard_events_in_window": 1099
+    "guard_events_in_window": 1136
   },
   "surfaced": false,
   "first_green": null
