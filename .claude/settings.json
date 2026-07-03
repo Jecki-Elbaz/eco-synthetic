@@ -1,6 +1,7 @@
 {
   "permissions": {
     "allow": [
+      "Write(//c/Users/Jecki/DEV/shared/handoff/**)",
       "WebSearch(*)",
       "WebFetch(*)",
       "Bash(git log*)",
