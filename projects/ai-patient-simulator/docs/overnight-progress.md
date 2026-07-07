@@ -334,3 +334,57 @@ are fully covered by their unit suites). Left deferred -- writing them is new sc
 REPO STATE FOR OWNER COMMIT (still uncommitted, on disk): all overnight build + tonight's fixes +
 the schema.prisma change + the new migration file + regenerated Prisma client. Nothing secret.
 Local Docker stack is up (aps-postgres/redis/minio) if you want to re-run integration yourself.
+
+## 2026-07-07 -- "Real E2E" sprint (APS-015): clickable pilot on stub + golden-path E2E
+
+Owner chose the "make it real end-to-end" track. Delivered:
+- RE-1 (Gal + Eco finish): API session enablement -- CORS for the web origin, GET /auth/me
+  (JwtAuthGuard), consistent LoginResponse { accessToken, user:{ id, scopes, roles } } from both
+  login endpoints. (Agent stalled mid-edit; Eco completed /auth/me + fixed the auth.spec shape.)
+  API unit 184/0-fail.
+- RE-2 (Noa): front-end session/auth -- AuthProvider + useAuth (localStorage token, /auth/me
+  hydration), login page (invite+code / email+password, role redirect, ?invite= prefill), /403,
+  authed fetch helper (Bearer), all 6 clients wired to real calls (mock gate tightened to
+  NEXT_PUBLIC_USE_MOCK==="true" only), and RequireRole/RequireAuth guards on every real route
+  (/admin=SYSTEM_ADMIN, /authoring+/teacher=TEACHER|SYSTEM_ADMIN, student routes=authed;
+  /**/demo stay public+mock). This CLOSES APS-014 B3/B4. web tsc clean, 18 pages.
+- RE-3 (Gal): idempotent seed (`pnpm --filter @aps/db seed`) -- synthetic college/2 courses/admin/
+  2 teachers/4 students (handles) + published template/GT/rubric/assignment/credit-ledger; and a
+  LIVE boot smoke test that PROVED auth works on a running server (port 3001). Found + fixed a
+  BOOT-BLOCKING bug: DebriefService had a `number` constructor param that broke NestJS DI at
+  startup (fixed with @Optional() @Inject token) -- invisible to unit + integration tests.
+- RE-4 (Eco): dependency-free golden-path E2E (apps/api/src/scripts/e2e-golden-path.mjs; node
+  fetch, no Playwright/new deps) driving the FULL pilot flow over real HTTP against the seeded,
+  running API: student invite-login -> create attempt -> 2 turns (stub patient) -> finish ->
+  teacher login -> evaluate -> publish -> student reads PUBLISHED feedback -> debrief -> student
+  FORBIDDEN on /admin (403) -> admin login -> audited credit action -> no-token 401.
+  RESULT: 15/15 PASS. Turns deliver real stub patient responses (guard=PASS, not credit-blocked).
+
+E2E CAUGHT + Eco FIXED two real issues unit/integration tests could not:
+- SEED LEDGER MISCONFIG: balance 5000 < hardLimit 5500 -> creditBalance negative -> the input
+  gate CREDIT_HARD_LIMIT-blocked every turn (patient never responded). Fixed to balance 100000 /
+  soft 20000 / hard 2000. (First E2E pass was 14/15 and exposed this; assertions then tightened
+  so a blocked turn can't masquerade as success.)
+- SEED NOT RE-RUNNABLE after a simulation: the seed deleted the assignment/ledger before the
+  Attempts + CreditEntries that FK them. Fixed: seed now wipes seeded Attempts (+ Message/
+  PatientStateLog/UsageLog/DebriefChat/Evaluation/SupportTicket) and CreditEntries first ->
+  `pnpm --filter @aps/db seed` is now idempotent even after the E2E runs.
+
+OPEN FOLLOW-UP (handed to Shir): `nest build` (production compile) FAILS. It was already broken
+pre-tonight on the APS-011 test-stub typing; adding apps/api/tsconfig.build.json (excludes specs
+-- correct) reveals the real blocker: a monorepo rootDir/project-reference issue (TS6059/6307 --
+@aps/shared-types SOURCE compiled outside apps/api rootDir). The API RUNS FINE via dev:boot; this
+only blocks the production container image (Shir's production-image path). New board task for Shir;
+ties to APS-011.
+
+APS-010 (Adam relay): owner reported 2026-07-07 that Adam replied by email. Gmail is not connected
+to this project, so Eco staged a request to Shelly (who has the owner's email access) at
+shared/handoff/eco-shelly-request-adam-aps-answers-2026-07-07.md asking her to extract Adam's
+answers to: single-vs-multi-session (Q9.1), clinical-advisor role, welfare contact for the UI
+signpost, accreditation, and pilot-date/handles-only confirmation. On reply: Q9.1 -> continuing-
+persona build decision; advisor -> Sami/Ido validation; welfare -> replace UI placeholder; the
+rest -> Eyal (APS-004). Awaiting Shelly's outbox reply.
+
+STATE: the pilot is now CLICKABLE end-to-end on the stub (real auth, guards, credit governance,
+evaluation, debrief) with a repeatable seed + a 15/15 golden-path E2E. Remaining for a deployable
+pilot: prod-image build fix (Shir), and the owner-gated APS-004 residuals + Adam's answers.

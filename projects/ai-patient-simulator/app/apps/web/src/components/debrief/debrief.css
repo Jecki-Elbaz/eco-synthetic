@@ -1,0 +1,318 @@
+/*
+ * APS Debrief Chat UI -- CSS
+ * RTL-first per hebrew-rtl-best-practices skill v1.3.0.
+ * CSS logical properties throughout; no physical left/right in layout.
+ * Shares design tokens with simulation.css and feedback.css.
+ */
+
+.db-root {
+  --color-bg: #f7f7f8;
+  --color-surface: #ffffff;
+  --color-border: #e2e2e5;
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-warn-amber: #f59e0b;
+  --color-warn-amber-bg: #fffbeb;
+  --color-warn-amber-border: #fcd34d;
+  --color-muted: #6b7280;
+  --color-text: #111827;
+  --color-text-secondary: #4b5563;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --radius: 8px;
+  --lh-he: 1.65;
+  --db-header-h: 90px;
+}
+
+/* ---- Screen wrapper ---- */
+
+.db-screen {
+  display: flex;
+  flex-direction: column;
+  block-size: 100dvh;
+  background: var(--color-bg);
+  font-family: -apple-system, Arial, sans-serif;
+  color: var(--color-text);
+  line-height: var(--lh-he);
+}
+
+/* ---- Sticky debrief header ---- */
+
+.db-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 100;
+  background: var(--color-surface);
+  border-block-end: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  padding-inline: 20px;
+  padding-block: 12px;
+  flex-shrink: 0;
+}
+
+.db-header__title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+/* Hard boundary notice -- non-dismissable, always visible */
+.db-header__boundary {
+  font-size: 0.8125rem;
+  color: #6b21a8;
+  background: #f3e8ff;
+  border: 1px solid #d8b4fe;
+  border-radius: 4px;
+  display: inline-block;
+  padding-inline: 8px;
+  padding-block: 3px;
+  margin: 0;
+}
+
+/* Question counter */
+.db-header__counter {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  margin-block-start: 4px;
+  /* Numbers always LTR */
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+.db-header__counter--warn {
+  color: #92400e;
+  font-weight: 600;
+}
+
+/* ---- Message list ---- */
+
+.db-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding-inline: 16px;
+  padding-block: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  scroll-behavior: smooth;
+}
+
+/* ---- Message bubbles ---- */
+
+.db-msg-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-inline-size: 82%;
+}
+
+.db-msg-row--student {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.db-msg-row--supervisor {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.db-msg-row__label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  padding-inline: 4px;
+}
+
+.db-bubble {
+  padding-inline: 14px;
+  padding-block: 10px;
+  border-radius: 16px;
+  font-size: 0.9375rem;
+  line-height: var(--lh-he);
+  word-break: break-word;
+}
+
+.db-bubble--student {
+  background: #dcfce7;
+  border-end-end-radius: 4px;
+}
+
+.db-bubble--supervisor {
+  background: #f0f4ff;
+  border-end-start-radius: 4px;
+}
+
+/* Cited turn chips on supervisor messages */
+.db-cited-turns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-block-start: 8px;
+}
+
+.db-turn-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #eff6ff;
+  color: var(--color-primary);
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  padding-inline: 8px;
+  padding-block: 3px;
+  cursor: pointer;
+  transition: background 0.12s;
+  /* Numbers always LTR */
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+.db-turn-chip:hover {
+  background: #dbeafe;
+}
+
+.db-turn-chip:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ---- Cap message (shown when questions exhausted) ---- */
+
+.db-cap-msg {
+  padding-inline: 16px;
+  padding-block: 14px;
+  background: var(--color-warn-amber-bg);
+  border: 1px solid var(--color-warn-amber-border);
+  border-radius: var(--radius);
+  color: #92400e;
+  font-size: 0.875rem;
+  text-align: center;
+  margin-inline: 16px;
+}
+
+/* ---- Loading indicator inside message list ---- */
+
+.db-typing-row {
+  align-self: flex-start;
+  display: flex;
+  gap: 4px;
+  padding-inline: 14px;
+  padding-block: 12px;
+  background: #f0f4ff;
+  border-radius: 16px;
+  border-end-start-radius: 4px;
+  max-inline-size: fit-content;
+}
+
+.db-typing-dot {
+  inline-size: 7px;
+  block-size: 7px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  animation: db-bounce 1.2s infinite ease-in-out;
+}
+
+.db-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.db-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes db-bounce {
+  0%, 80%, 100% { transform: scale(0.7); opacity: 0.5; }
+  40%            { transform: scale(1.0); opacity: 1;   }
+}
+
+/* ---- Input area ---- */
+
+.db-input-area {
+  position: sticky;
+  inset-block-end: 0;
+  background: var(--color-surface);
+  border-block-start: 1px solid var(--color-border);
+  padding-inline: 12px;
+  padding-block: 10px;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.db-input-area__text {
+  flex: 1;
+  resize: none;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding-inline: 16px;
+  padding-block: 10px;
+  font-size: 0.9375rem;
+  line-height: var(--lh-he);
+  font-family: inherit;
+  background: #f9fafb;
+  color: var(--color-text);
+  max-block-size: 120px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.db-input-area__text:focus {
+  border-color: var(--color-primary);
+  background: #fff;
+}
+
+.db-input-area__text::placeholder {
+  color: var(--color-muted);
+}
+
+.db-input-area__text:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.db-send-btn {
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-primary);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1rem;
+  transition: background 0.15s;
+}
+
+.db-send-btn:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.db-send-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.db-send-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ---- Empty state ---- */
+
+.db-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  font-size: 0.9375rem;
+  color: var(--color-muted);
+  padding-inline: 24px;
+  text-align: center;
+}
+
+/* ---- Accessibility ---- */
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}

@@ -1,0 +1,379 @@
+/*
+ * APS Student Dashboard -- CSS
+ * RTL-first per hebrew-rtl-best-practices skill v1.3.0.
+ * CSS logical properties throughout.
+ * Design tokens identical to dashboard.css / simulation.css.
+ */
+
+.sd-root {
+  --color-bg: #f7f7f8;
+  --color-surface: #ffffff;
+  --color-border: #e2e2e5;
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-warn-amber: #f59e0b;
+  --color-warn-amber-bg: #fffbeb;
+  --color-warn-amber-border: #fcd34d;
+  --color-muted: #6b7280;
+  --color-text: #111827;
+  --color-text-secondary: #4b5563;
+  --color-danger: #dc2626;
+  --color-green: #16a34a;
+  --color-green-bg: #f0fdf4;
+  --color-green-border: #86efac;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --radius: 8px;
+  --lh-he: 1.65;
+}
+
+.sd-root {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100dvh;
+  background: var(--color-bg);
+  font-family: -apple-system, Arial, sans-serif;
+  color: var(--color-text);
+  line-height: var(--lh-he);
+}
+
+/* ---- Sticky header ---- */
+
+.sd-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 100;
+  background: var(--color-surface);
+  border-block-end: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  padding-inline: 20px;
+  padding-block: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sd-header__title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.sd-header__sub {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  margin-block-start: 2px;
+}
+
+/* Formative label always visible in header */
+.sd-formative-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #92400e;
+  background: var(--color-warn-amber-bg);
+  border: 1px solid var(--color-warn-amber-border);
+  border-radius: 4px;
+  padding-inline: 8px;
+  padding-block: 3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ---- Page body ---- */
+
+.sd-body {
+  flex: 1;
+  padding-inline: 20px;
+  padding-block: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-inline-size: 860px;
+  margin-inline: auto;
+  inline-size: 100%;
+}
+
+/* ---- Section heading ---- */
+
+.sd-section-heading {
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin: 0 0 12px;
+  padding-block-end: 8px;
+  border-block-end: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+/* ---- Simulation card ---- */
+
+.sd-sim-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding-inline: 18px;
+  padding-block: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sd-sim-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sd-sim-card__title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.sd-sim-card__date {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  margin-block-start: 3px;
+  /* Date: LTR */
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+.sd-sim-card__formative {
+  font-size: 0.8125rem;
+  color: #92400e;
+  background: var(--color-warn-amber-bg);
+  border: 1px solid var(--color-warn-amber-border);
+  border-radius: 4px;
+  padding-inline: 8px;
+  padding-block: 2px;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+/* Criterion summary grid */
+.sd-criterion-grid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sd-criterion-pill {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  background: #f3f4f6;
+  border-radius: 6px;
+  padding-inline: 10px;
+  padding-block: 6px;
+  font-size: 0.75rem;
+  gap: 2px;
+  min-inline-size: 70px;
+}
+
+.sd-criterion-pill__id {
+  font-weight: 700;
+  color: var(--color-primary);
+  font-size: 0.7rem;
+}
+
+.sd-criterion-pill__score {
+  font-weight: 600;
+  /* Numeric LTR */
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+.sd-criterion-pill__score--high {
+  color: var(--color-green);
+}
+
+.sd-criterion-pill__score--mid {
+  color: #92400e;
+}
+
+.sd-criterion-pill__score--low {
+  color: var(--color-danger);
+}
+
+.sd-criterion-pill__label {
+  color: var(--color-muted);
+  text-align: center;
+  font-size: 0.65rem;
+}
+
+/* Card actions */
+.sd-sim-card__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sd-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding-inline: 12px;
+  padding-block: 6px;
+  border-radius: 6px;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-surface);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.sd-link-btn:hover {
+  background: #eff6ff;
+}
+
+.sd-link-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ---- Debrief history ---- */
+
+.sd-debrief-table {
+  border-collapse: collapse;
+  inline-size: 100%;
+  font-size: 0.875rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.sd-debrief-table th {
+  padding-inline: 14px;
+  padding-block: 10px;
+  border-block-end: 2px solid var(--color-border);
+  text-align: start;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  background: #f9fafb;
+  white-space: nowrap;
+}
+
+.sd-debrief-table td {
+  padding-inline: 14px;
+  padding-block: 10px;
+  border-block-end: 1px solid var(--color-border);
+}
+
+.sd-debrief-table tr:last-child td {
+  border-block-end: none;
+}
+
+.sd-debrief-table .cell-date {
+  direction: ltr;
+  unicode-bidi: embed;
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}
+
+/* ---- Support tickets ---- */
+
+.sd-ticket-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sd-ticket-row {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding-inline: 14px;
+  padding-block: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sd-ticket-row__cat {
+  font-size: 0.875rem;
+  font-weight: 500;
+  flex: 1;
+}
+
+.sd-ticket-row__date {
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+/* Ticket status badge */
+.ticket-badge {
+  padding-inline: 8px;
+  padding-block: 2px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ticket-badge--open {
+  background: #eff6ff;
+  color: var(--color-primary);
+  border: 1px solid #bfdbfe;
+}
+
+.ticket-badge--escalated {
+  background: var(--color-warn-amber-bg);
+  color: #78350f;
+  border: 1px solid var(--color-warn-amber-border);
+}
+
+.ticket-badge--resolved {
+  background: var(--color-green-bg);
+  color: var(--color-green);
+  border: 1px solid var(--color-green-border);
+}
+
+/* ---- Responsive ---- */
+
+@media (max-width: 600px) {
+  .sd-body {
+    padding-inline: 12px;
+  }
+
+  .sd-sim-card__top {
+    flex-direction: column;
+  }
+}
+
+/* ---- Accessibility ---- */
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

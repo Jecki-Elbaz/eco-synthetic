@@ -8,7 +8,7 @@ import type { LLMProvider } from "../llm/provider.interface.js";
 import { ModelHint } from "../llm/provider.interface.js";
 import { InputGate, DEFAULT_TURN_BUDGET } from "./input-gate.js";
 import type { AttemptTotals, TurnBudget, GateResult } from "./input-gate.js";
-import { ContextBuilder } from "./context-builder.js";
+import { ContextBuilder, selectWindowByTokenBudget } from "./context-builder.js";
 import type { GroundTruthRef, MessageRecord } from "./context-builder.js";
 import { GuardRunner } from "./guard-runner.js";
 import { StateUpdater } from "../state/state-updater.js";
@@ -96,6 +96,66 @@ export class TurnPipeline {
     let inputTokensUsed = 0;
     let outputTokensUsed = 0;
 
+    // [1b] CONTEXT SUMMARISER (APS-REQ-063) -- runs before context build so the
+    // fresh summary is available for this turn's prompt.
+    //
+    // Determine which messages fall outside the sliding window AND have not yet
+    // been summarised (turnNumber > prior summarisedUpTo).
+    const tokenBudget = this.gate.contextWindowTokenBudget;
+    const priorSummarisedUpTo = input.priorState?.summarisedUpTo ?? null;
+
+    // Find the retained window using the same logic as ContextBuilder
+    const windowedMessages = selectWindowByTokenBudget(input.recentMessages, tokenBudget);
+
+    // Messages outside the window = recentMessages minus windowedMessages
+    const windowedSet = new Set(windowedMessages.map((m) => m.turnNumber));
+    const droppedMessages = input.recentMessages.filter(
+      (m) =>
+        !windowedSet.has(m.turnNumber) &&
+        (priorSummarisedUpTo === null || m.turnNumber > priorSummarisedUpTo),
+    );
+
+    let currentContextSummary = input.contextSummary;
+    let currentSummarisedUpTo = priorSummarisedUpTo;
+
+    if (droppedMessages.length > 0) {
+      // Build summariser prompt: prior summary + dropped messages
+      const summaryLines: string[] = [];
+      if (currentContextSummary) {
+        summaryLines.push("PRIOR SUMMARY:\n" + currentContextSummary + "\n");
+      }
+      summaryLines.push("MESSAGES TO SUMMARISE:");
+      for (const m of droppedMessages) {
+        summaryLines.push(`[Turn ${m.turnNumber} ${m.role}]: ${m.originalText}`);
+      }
+
+      const summaryMessages = [
+        {
+          role: "system" as const,
+          content:
+            "You are a clinical session summariser. Produce a concise rolling summary of the " +
+            "simulated therapy session so far, integrating the prior summary (if any) with the " +
+            "new messages below. Preserve clinically relevant details. Maximum 200 words.",
+        },
+        { role: "user" as const, content: summaryLines.join("\n") },
+      ];
+
+      const summaryResult = await this.provider.complete({
+        messages: summaryMessages,
+        maxOutputTokens: 300,
+        temperature: 0.0,
+        modelHint: ModelHint.SUMMARISER,
+      });
+
+      inputTokensUsed += summaryResult.inputTokens;
+      outputTokensUsed += summaryResult.outputTokens;
+
+      currentContextSummary = summaryResult.text;
+      currentSummarisedUpTo = Math.max(
+        ...droppedMessages.map((m) => m.turnNumber),
+      );
+    }
+
     // [2] INTERACTION ANALYSER
     // Build analyser prompt using a lightweight approach:
     // send system prompt + last student message; expect structured JSON back.
@@ -171,11 +231,13 @@ export class TurnPipeline {
       challengeLevel: input.challengeLevel,
       guardResult: "PASS" as const,  // overwritten below
       guardDetail: null as string | null,
-      summarisedUpTo: input.priorState?.summarisedUpTo ?? null,
-      contextSummary: input.contextSummary,
+      // Use freshly-computed values (updated by summariser in step 1b, or passed through)
+      summarisedUpTo: currentSummarisedUpTo,
+      contextSummary: currentContextSummary,
     };
 
     // [4] CONTEXT BUILDER -- sliding window driven by token budget (APS-REQ-063)
+    // Uses the FRESH contextSummary from step 1b so this turn's prompt reflects it.
     const patientMessages = this.contextBuilder.build({
       personaSystemPrompt: input.personaSystemPrompt,
       currentState: {
@@ -186,7 +248,7 @@ export class TurnPipeline {
       groundTruth: input.groundTruth,
       recentMessages: input.recentMessages,
       contextTokenBudget: this.gate.contextWindowTokenBudget,
-      contextSummary: input.contextSummary,
+      contextSummary: currentContextSummary,
       challengeLevel: input.challengeLevel,
       studentMessage: input.studentMessage,
       studentLanguage: input.studentLanguage,

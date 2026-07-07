@@ -17,6 +17,14 @@ async function bootstrap(): Promise<void> {
   );
 
   const config = app.get(AppConfig);
+
+  app.enableCors({
+    origin: config.webOrigin,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  });
+
   const port = config.port;
 
   await app.listen(port);

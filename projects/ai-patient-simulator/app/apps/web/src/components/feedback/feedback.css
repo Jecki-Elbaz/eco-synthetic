@@ -1,0 +1,609 @@
+/*
+ * APS Student Feedback Screen -- CSS
+ * RTL-first per hebrew-rtl-best-practices skill v1.3.0.
+ * CSS logical properties throughout; no physical left/right in layout.
+ * Shares design tokens with simulation.css via the same :root vars.
+ */
+
+/* ---- Root vars (duplicated for standalone use; simulation.css sets the same) ---- */
+
+.fb-root {
+  /* All values are inherited from simulation.css :root when both are loaded.
+     Defined here so feedback pages work even if simulation.css is not loaded. */
+  --color-bg: #f7f7f8;
+  --color-surface: #ffffff;
+  --color-border: #e2e2e5;
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-warn-amber: #f59e0b;
+  --color-warn-amber-bg: #fffbeb;
+  --color-warn-amber-border: #fcd34d;
+  --color-muted: #6b7280;
+  --color-text: #111827;
+  --color-text-secondary: #4b5563;
+  --color-danger: #dc2626;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --radius: 8px;
+  --lh-he: 1.65;
+  --lh-en: 1.5;
+  --fb-header-h: 80px;
+}
+
+/* ---- Screen wrapper ---- */
+
+.fb-screen {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100dvh;
+  background: var(--color-bg);
+  font-family: -apple-system, Arial, sans-serif;
+  color: var(--color-text);
+  line-height: var(--lh-he);
+}
+
+/* ---- Sticky feedback header ---- */
+
+.fb-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 100;
+  background: var(--color-surface);
+  border-block-end: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  padding-inline: 20px;
+  padding-block: 12px;
+  flex-shrink: 0;
+}
+
+.fb-header__title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0 0 2px;
+}
+
+.fb-header__formative-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #92400e;
+  background: var(--color-warn-amber-bg);
+  border: 1px solid var(--color-warn-amber-border);
+  border-radius: 4px;
+  display: inline-block;
+  padding-inline: 8px;
+  padding-block: 2px;
+  margin-block-end: 2px;
+}
+
+.fb-header__boundary-label {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  margin: 0;
+}
+
+/* ---- Main body ---- */
+
+.fb-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-block-end: 24px;
+}
+
+/* ---- Overall summary card ---- */
+
+.fb-summary-card {
+  background: var(--color-surface);
+  border-block-end: 1px solid var(--color-border);
+  padding-inline: 20px;
+  padding-block: 16px;
+}
+
+.fb-summary-card__heading {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-muted);
+  margin: 0 0 8px;
+}
+
+.fb-summary-card__text {
+  font-size: 0.9375rem;
+  line-height: var(--lh-he);
+  margin: 0 0 10px;
+}
+
+.fb-summary-card__focus-heading {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  margin: 0 0 4px;
+}
+
+.fb-summary-card__focus-list {
+  margin: 0;
+  padding-inline-start: 1.5em;
+  font-size: 0.875rem;
+  line-height: var(--lh-he);
+}
+
+.fb-summary-card__focus-list li {
+  margin-block-end: 4px;
+}
+
+/* ---- Two-panel layout ---- */
+
+.fb-panels {
+  display: flex;
+  flex: 1;
+  gap: 0;
+  min-block-size: 0;
+}
+
+/* ---- Criterion scores panel (~60%) ---- */
+
+.fb-criteria-panel {
+  flex: 6;
+  min-inline-size: 0;
+  overflow-y: auto;
+  border-inline-end: 1px solid var(--color-border);
+  padding-inline: 0;
+  padding-block: 8px;
+}
+
+.fb-criteria-panel__heading {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-muted);
+  padding-inline: 20px;
+  padding-block: 10px 6px;
+  margin: 0;
+}
+
+/* ---- Criterion row ---- */
+
+.criterion-row {
+  border-block-end: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.criterion-row:hover .criterion-row__header {
+  background: #f3f4f6;
+}
+
+.criterion-row--formative {
+  border-inline-start: 3px solid var(--color-warn-amber);
+}
+
+.criterion-row__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-inline: 20px;
+  padding-block: 12px;
+  background: var(--color-surface);
+  transition: background 0.12s;
+}
+
+.criterion-row__id {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-muted);
+  flex-shrink: 0;
+  /* Criterion IDs are language-neutral; always LTR */
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+.criterion-row__label {
+  flex: 1;
+  font-size: 0.9375rem;
+  min-inline-size: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.criterion-row__score {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  /* Scores always LTR */
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+.criterion-row__bar-track {
+  flex-shrink: 0;
+  inline-size: 80px;
+  block-size: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.criterion-row__bar-fill {
+  block-size: 100%;
+  background: var(--color-primary);
+  border-radius: 3px;
+  transition: inline-size 0.3s;
+}
+
+.criterion-row__bar-fill--warn {
+  background: var(--color-warn-amber);
+}
+
+.criterion-row__bar-fill--formative {
+  background: var(--color-warn-amber);
+}
+
+.criterion-row__chevron {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.criterion-row__chevron--open {
+  transform: rotate(180deg);
+}
+
+/* Formative badge */
+.formative-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  background: var(--color-warn-amber-bg);
+  color: #92400e;
+  border: 1px solid var(--color-warn-amber-border);
+  border-radius: 4px;
+  padding-inline: 6px;
+  padding-block: 2px;
+  flex-shrink: 0;
+}
+
+/* ---- Criterion detail (expanded) ---- */
+
+.criterion-detail {
+  background: #f9fafb;
+  border-block-start: 1px solid var(--color-border);
+  padding-inline: 20px;
+  padding-block: 14px;
+  font-size: 0.875rem;
+  line-height: var(--lh-he);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.criterion-detail__section-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-muted);
+  margin: 0 0 4px;
+}
+
+.criterion-detail__notes {
+  color: var(--color-text);
+}
+
+/* Evidence items -- clickable turn links */
+.criterion-detail__evidence-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.evidence-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  color: var(--color-primary);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: start;
+  font-family: inherit;
+}
+
+.evidence-link:hover {
+  color: var(--color-primary-hover);
+}
+
+.evidence-link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.evidence-link__turn {
+  font-weight: 600;
+  /* Turn numbers LTR */
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+/* Suggested phrasing block */
+.suggested-phrasing {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: var(--radius);
+  padding-inline: 14px;
+  padding-block: 10px;
+}
+
+.suggested-phrasing__disclaimer {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-primary);
+  margin: 0 0 6px;
+}
+
+.suggested-phrasing__text {
+  font-size: 0.875rem;
+  font-style: italic;
+  color: var(--color-text);
+  margin: 0;
+}
+
+/* ---- Transcript panel (~40%) ---- */
+
+.fb-transcript-panel {
+  flex: 4;
+  min-inline-size: 0;
+  overflow-y: auto;
+  padding-block: 8px;
+}
+
+.fb-transcript-panel__heading {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-muted);
+  padding-inline: 20px;
+  padding-block: 10px 6px;
+  margin: 0;
+}
+
+/* Transcript turn row */
+.tr-turn {
+  padding-inline: 12px;
+  padding-block: 8px;
+  border-radius: 6px;
+  margin-inline: 8px;
+  margin-block: 4px;
+  font-size: 0.875rem;
+  line-height: var(--lh-he);
+  border: 2px solid transparent;
+  transition: border-color 0.15s, background 0.15s;
+  scroll-margin-block: 80px;
+}
+
+.tr-turn--student {
+  background: #dcfce7;
+}
+
+.tr-turn--patient {
+  background: #eef2ff;
+}
+
+.tr-turn__meta {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--color-muted);
+  margin-block-end: 4px;
+  /* Turn number always LTR */
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+/* Highlight outlines per UX spec (colour + outline pattern for accessibility) */
+.tr-turn--strong {
+  border-color: #16a34a;
+  outline: 2px solid #16a34a;
+  outline-offset: 1px;
+}
+
+.tr-turn--missed {
+  border-color: #d97706;
+  outline: 2px dashed #d97706;
+  outline-offset: 1px;
+}
+
+.tr-turn--risk-flag {
+  border-color: #dc2626;
+  outline: 3px solid #dc2626;
+  outline-offset: 1px;
+}
+
+/* Pulse animation for clicked-from-criterion evidence links */
+@keyframes fb-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.5); }
+  70%  { box-shadow: 0 0 0 8px rgba(37, 99, 235, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+}
+
+.tr-turn--pulsing {
+  animation: fb-pulse 0.6s ease-out;
+}
+
+/* Highlight tooltip */
+.hl-tooltip {
+  position: relative;
+}
+
+.hl-tooltip__badge {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding-inline: 6px;
+  padding-block: 2px;
+  border-radius: 4px;
+  margin-block-start: 4px;
+  cursor: default;
+}
+
+.hl-tooltip__badge--STRONG {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.hl-tooltip__badge--MISSED {
+  background: var(--color-warn-amber-bg);
+  color: #92400e;
+}
+
+.hl-tooltip__badge--RISK_FLAG {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.hl-tooltip__note {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  margin-block-start: 2px;
+}
+
+/* ---- Debrief entry block ---- */
+
+.fb-debrief-entry {
+  background: var(--color-surface);
+  border-block-start: 1px solid var(--color-border);
+  padding-inline: 20px;
+  padding-block: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fb-debrief-entry__heading {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.fb-debrief-entry__subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.fb-debrief-entry__actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-block-start: 4px;
+}
+
+/* ---- Shared button styles (mirrors simulation.css .btn) ---- */
+
+.fb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding-inline: 16px;
+  padding-block: 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background 0.15s;
+  font-family: inherit;
+}
+
+.fb-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.fb-btn--primary {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.fb-btn--primary:hover {
+  background: var(--color-primary-hover);
+}
+
+.fb-btn--ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.fb-btn--ghost:hover {
+  background: #f3f4f6;
+}
+
+/* ---- Loading / error states ---- */
+
+.fb-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  block-size: 200px;
+  font-size: 0.9375rem;
+  color: var(--color-muted);
+}
+
+.fb-error {
+  margin-inline: 20px;
+  margin-block: 16px;
+  padding-inline: 16px;
+  padding-block: 12px;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: var(--radius);
+  color: #991b1b;
+  font-size: 0.875rem;
+}
+
+/* ---- Narrow viewport: stack panels ---- */
+
+@media (max-width: 700px) {
+  .fb-panels {
+    flex-direction: column;
+  }
+
+  .fb-criteria-panel,
+  .fb-transcript-panel {
+    flex: unset;
+    min-block-size: 0;
+    overflow-y: visible;
+  }
+
+  .fb-transcript-panel {
+    border-block-start: 1px solid var(--color-border);
+  }
+
+  .fb-criteria-panel {
+    border-inline-end: none;
+  }
+}
+
+/* ---- Accessibility ---- */
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}

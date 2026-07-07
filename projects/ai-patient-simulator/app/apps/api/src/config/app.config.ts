@@ -11,6 +11,7 @@ export class AppConfig {
   readonly jwtSecret: string = this.getRequired("JWT_SECRET");
   readonly jwtExpiresIn: string = this.getString("JWT_EXPIRES_IN", "1d");
   readonly llmProvider: string = this.getString("LLM_PROVIDER", "stub");
+  readonly webOrigin: string = this.getString("WEB_ORIGIN", "http://localhost:3000");
 
   // S3-compatible storage (MinIO in dev)
   readonly s3Endpoint: string = this.getString("S3_ENDPOINT", "");

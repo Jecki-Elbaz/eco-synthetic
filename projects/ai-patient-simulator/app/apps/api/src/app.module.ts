@@ -5,6 +5,11 @@ import { AuthModule } from "./auth/auth.module.js";
 import { OrgModule } from "./org/org.module.js";
 import { SimulationModule } from "./simulation/simulation.module.js";
 import { DbModule } from "./db/db.module.js";
+import { EvaluationModule } from "./evaluation/evaluation.module.js";
+import { DebriefModule } from "./debrief/debrief.module.js";
+import { AuthoringModule } from "./authoring/authoring.module.js";
+import { SupportModule } from "./support/support.module.js";
+import { CreditAdminModule } from "./credit-admin/credit-admin.module.js";
 
 @Module({
   imports: [
@@ -13,6 +18,11 @@ import { DbModule } from "./db/db.module.js";
     AuthModule,
     OrgModule,
     SimulationModule,
+    EvaluationModule,
+    DebriefModule,
+    AuthoringModule,
+    SupportModule,
+    CreditAdminModule,
   ],
 })
 export class AppModule {}

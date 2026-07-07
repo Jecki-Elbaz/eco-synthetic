@@ -16,3 +16,29 @@ export { GuardRunner } from "./pipeline/guard-runner.js";
 export { InputGate } from "./pipeline/input-gate.js";
 export type { AttemptTotals, TurnBudget, GateResult } from "./pipeline/input-gate.js";
 export { DEFAULT_TURN_BUDGET } from "./pipeline/input-gate.js";
+export { Evaluator } from "./evaluation/evaluator.js";
+export type {
+  EvaluatorInput,
+  EvaluatorOutput,
+  RubricCriterionInput,
+  AnalyserOutputRecord,
+  TranscriptMessage,
+  CriterionScore,
+  StructuredScores,
+  TranscriptHighlight,
+  HighlightType,
+} from "./evaluation/evaluator.js";
+export { DebriefSupervisor } from "./evaluation/debrief-supervisor.js";
+export { composePersonaPrompt } from "./authoring/persona-composer.js";
+export { runTroubleshootingFlow } from "./support/troubleshoot.js";
+export { resolveRoutingTarget, ROUTING_TABLE } from "./support/routing-matrix.js";
+export { redactDiagnosticPayload } from "./support/diagnostic-redact.js";
+export { generateRubricCriteria, COMPETENCY_EXTERNAL_KEYS } from "./authoring/rubric-generator.js";
+export type { GeneratedRubric } from "./authoring/rubric-generator.js";
+export type {
+  DebriefSupervisorInput,
+  DebriefSupervisorOutput,
+  DebriefTranscriptMessage,
+  DebriefRubricCriteria,
+  DebriefEvaluationContext,
+} from "./evaluation/debrief-supervisor.js";

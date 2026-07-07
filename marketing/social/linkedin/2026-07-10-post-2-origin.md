@@ -3,6 +3,8 @@
 # Proposed publish date: 2026-07-10
 # Angle: Origin -- "governance before product"
 # Language: Hebrew (primary, publish copy). English reference kept below.
+# Voice: Tom Even / "agents and me" register -- short punchy lines, fragments, first person,
+#        rhetorical questions, self-deprecating humor, honest, conversational. NOT essay-listy.
 # Status: DRAFT A3 -- NOT PUBLISHED. Internal only.
 # Gate: owner A1 per piece + Legal (Eyal) clears any brand/product claims + Security (Rambo)
 #        review required before any publish action. No exceptions.
@@ -10,40 +12,55 @@
 # Source refs (Oracle-verified):
 #   - company/chronicle/2026-06-28.md (decisions 2026-06-10..12; certified-agent counts)
 #   - company/decisions/decisions-log.md (2026-06-10..2026-06-12 scaffold + governance)
-#   - "11 agents certified" = first certified wave; "dozens today" = full fleet (both verified)
+#   - "11 agents certified" = first certified wave; "many more today" = full fleet (both verified)
 # Series: Build-in-public -- the Eco-Synthetic story
-# Author: Hila (Marketing) leads craft; jecki's first-person voice; /humanize + Legal + Security
-#         before any publish.
 
 ---
 
 ## POST TEXT -- HEBREW (copy-paste ready)
 
-בנינו תהליך גיוס עוד לפני שכתבנו שורת קוד אחת של מוצר.
+לפני שכתבנו שורת קוד אחת של מוצר, בנינו תהליך גיוס.
 
-לא סדנת גיבוש - תהליך אמיתי. הגדרות תפקיד, מבחני כשירות, חוקה, מטריצת הרשאות, מנהלת משאבי אנוש וסריקת אבטחה - לחברה עם אפס לקוחות ואפס הכנסות.
+לא סדנת גיבוש. תהליך אמיתי.
+הגדרות תפקיד. מבחני כשירות. חוקה. הרשאות. מנהלת משאבי אנוש. סריקת אבטחה.
+כל זה, לחברה עם אפס לקוחות ואפס הכנסות.
 
-וזה החלק שעדיין מצחיק אותי: העובדת הראשונה שגייסנו הייתה משאבי אנוש. מנהלת HR שהיא עצמה סוכנת AI. כי לפני שאפשר לגייס מישהו, צריך את מי שינהל את הגיוס. ובחברה שכולה סוכני AI - גם זה סוכן.
+ומה שהכי מצחיק אותי עד היום:
+העובד הראשון שגייסתי היה משאבי אנוש.
+מנהלת HR. שהיא בעצמה AI.
 
-אז הנה הייתי, בשבוע הראשון, מראיין AI כדי שיוכל לראיין את שאר ה-AI. 🙂
+כי לפני שאתה מגייס מישהו, צריך את מי שינהל את הגיוס.
+ובחברה שכולה AI, גם זה סוכן.
 
-זה נשמע כמו בדיחה רקורסיבית. זה קצת כזה. אבל זה גם הכריח החלטה מוקדמת: הסוכנים האלה הם כלים, או משהו קרוב יותר לחברי צוות? כלי - פשוט מפעילים. חבר צוות - מחזיקים באחריות.
+אז ישבתי שם, בשבוע הראשון, ומראיין AI. כדי שהוא יראיין את שאר ה-AI.
 
-בחרנו בחברי צוות.
+בדיחה רקורסיבית? קצת.
+אבל זה הכריח אותי להחליט משהו מוקדם:
+הסוכנים האלה הם כלים? או חברי צוות?
 
-זה אומר שכל סוכן צריך תיאור תפקיד, מבחן, אישור מנהל ואישור בעלים לפני שהוא עולה לאוויר. זה אומר חוקה - חוקים אמיתיים על מה שמותר ואסור לכל סוכן לעשות, בכל מצב.
+כלי אתה פשוט מפעיל.
+מחבר צוות אתה מצפה לאחריות.
 
-עד שהרצנו שורת קוד אמיתית אחת של מוצר, כבר היו לנו 11 סוכנים מוסמכים ופעילים ומערך ממשל שלם. (היום הצוות כבר גדל להרבה מעבר לזה - אבל זה כבר סיפור לפוסט אחר.)
+בחרתי בחברי צוות.
 
-מוגזם לסטארטאפ בן שבועיים? אולי.
-אבל כשבונים עם סוכני AI אוטונומיים, ההחלטות של השבוע הראשון הופכות לתרבות. ותרבות הרבה יותר קשה לתקן מקוד.
+וזה שינה הכל.
+כל סוכן קיבל תיאור תפקיד, מבחן, אישור מנהל, ואישור שלי, לפני שהוא עולה לאוויר.
+כל סוכן קיבל חוקים ברורים על מה מותר לו ומה אסור. בלי יוצאים מן הכלל.
 
-ככה נבנתה Eco-Synthetic. מהתחלה.
-עוקבים? הפוסטים הבאים רק נהיים מוזרים יותר.
+עד שהרצנו שורת קוד אחת של מוצר, כבר היו לי 11 סוכנים מאושרים ופעילים.
+(היום? הרבה יותר. אבל על זה בפוסט אחר.)
+
+מוגזם לסטארטאפ בן שבועיים?
+אולי.
+
+אבל כשעובדים עם סוכני AI אוטונומיים, מה שאתה מחליט בשבוע הראשון הופך לתרבות של החברה.
+ותרבות הרבה יותר קשה לתקן מקוד.
+
+ככה נבנתה Eco-Synthetic. מהיום הראשון.
 
 ---
 
-## Suggested hashtags (3-5, no soup)
+## Suggested hashtags
 #בינהמלאכותית #AIAgents #BuildInPublic #סטארטאפ
 
 ## Optional visual suggestion
@@ -53,30 +70,34 @@ little absurd -- matches the tone.
 
 ---
 
-## ENGLISH REFERENCE (not for publish -- for jecki's review only)
+## ENGLISH REFERENCE (loose -- not for publish)
 
-We built a hiring process before we wrote a single line of product code.
-Not a team-building exercise -- a real process. Role files, competency tests, a constitution, an
-access matrix, an HR director, and a security scan, for a company with zero customers and zero
-revenue.
+Before we wrote a single line of product code, we built a hiring process.
+Not a team-building exercise. A real one.
+Role files. Competency tests. A constitution. Permissions. An HR director. A security scan.
+All of it -- for a company with zero customers and zero revenue.
 
-The part I still find funny: the first employee we hired was HR. An AI HR director. Because
-before you can hire anyone, you need someone to run hiring. And in a company built entirely on
-AI agents, even that someone is an AI. So there I was, in the first week, interviewing an AI so
-it could interview the other AIs.
+And the part that still makes me laugh:
+The first employee I hired was HR. An HR director. Who is herself an AI.
+Because before you hire anyone, you need someone to run hiring. And in a company that's all AI,
+that's an agent too.
+So there I was, in week one, interviewing an AI -- so it could interview the other AIs.
 
-It sounds like a recursive joke. It kind of is. But it forced an early decision: are these
-agents tools, or something closer to teammates? Tools you just use. Teammates you hold
-accountable. We chose teammates.
+A recursive joke? A little.
+But it forced an early decision: are these agents tools, or teammates?
+A tool you just operate. From a teammate you expect accountability.
+I chose teammates.
 
-By the time we ran a single line of real product code, we had 11 certified, operational agents
-and a full governance stack. (Today the team has grown well beyond that -- but that is a story
-for another post.)
+And that changed everything. Every agent got a role, a test, a manager sign-off, and my approval
+before going live. Clear rules on what it can and can't do. No exceptions.
 
-Overkill for a two-week-old startup? Maybe. But when you build with autonomous AI agents, the
-decisions you make in week one become the culture. And culture is much harder to fix than code.
+By the time we ran a single line of product code, I already had 11 approved, working agents.
+(Today? Many more. But that's another post.)
 
-That is how Eco-Synthetic was built. From the beginning. Following? The next posts only get
-weirder.
+Overkill for a two-week-old startup? Maybe.
+But with autonomous AI agents, what you decide in week one becomes the company's culture. And
+culture is much harder to fix than code.
+
+That's how Eco-Synthetic was built. From day one.
 
 ---

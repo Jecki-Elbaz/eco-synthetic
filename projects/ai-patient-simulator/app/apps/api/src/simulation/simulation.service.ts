@@ -4,14 +4,13 @@
 
 import {
   Injectable,
-  Inject,
   NotFoundException,
   ForbiddenException,
   UnprocessableEntityException,
 } from "@nestjs/common";
 import { PrismaService } from "../db/prisma.service.js";
 import { TurnPipeline } from "@aps/engine";
-import type { TurnRequest, TurnResponse, PatientStateSnapshot } from "@aps/shared-types";
+import type { TurnRequest, TurnResponse, PatientStateSnapshot, UserScope } from "@aps/shared-types";
 import type { GroundTruthRef } from "@aps/engine";
 import type { AttemptTotals } from "@aps/engine";
 
@@ -107,11 +106,12 @@ export class SimulationService {
         }
       : null;
 
-    // Load recent messages (Sprint 2: compute proper window; Sprint 1: last 20)
+    // Load ALL messages for this attempt in ascending turn order.
+    // The engine's TurnPipeline computes the sliding window internally (APS-REQ-063).
+    // Pilot cap is 75 turns so the full list is always reasonable to load.
     const recentMsgRows = await this.prisma.message.findMany({
       where: { attemptId: dto.attemptId },
       orderBy: { turnNumber: "asc" },
-      take: 20,
     });
 
     const recentMessages = recentMsgRows.map((m: Record<string, any>) => ({
@@ -154,6 +154,7 @@ export class SimulationService {
         guardResult: "BLOCKED",
         turnCount: attempt.turnCount,
         softWarnTriggered: false,
+        softWarnAnnotation: null,
         hardLimitReached: true,
       };
     }
@@ -258,31 +259,56 @@ export class SimulationService {
       });
     }
 
+    const softWarnAnnotation = result.softWarnTriggered
+      ? "You are approaching the maximum number of turns for this simulation."
+      : null;
+
     return {
       patientMessage: patientResponse,
       turnNumber: thisTurnNumber,
       guardResult: result.guardOutcome ?? "PASS",
       turnCount: newTurnCount,
       softWarnTriggered: result.softWarnTriggered,
+      softWarnAnnotation,
       hardLimitReached,
     };
   }
 
   /**
    * Teacher review: returns all PatientStateLog rows for an attempt.
-   * Teacher-review API reads PatientStateLog as specified in Ido's APPROVED-WITH-CONDITIONS.
+   * Scope enforcement (APS-REQ-017):
+   *   - SYSTEM_ADMIN: always allowed.
+   *   - TEACHER: allowed only if they have a TEACHER role scoped to the attempt's courseId
+   *     via UserRoleAssignment (scopeType=COURSE, scopeId=courseId).
+   *   - Attempt owner (STUDENT): not permitted on this endpoint (RolesGuard blocks them
+   *     at the HTTP layer; this method is only reachable by TEACHER/SYSTEM_ADMIN).
+   *   - Anyone else: ForbiddenException.
+   *
+   * NOTE: The schema has no dedicated CourseTeacher join table. Teacher-course membership
+   * is encoded in UserRoleAssignment (role=TEACHER, scopeType=COURSE, scopeId=courseId).
+   * This method reads that table directly for the scope check (APS-REQ-017).
    */
-  async getPatientStateLogs(attemptId: string, actorId: string) {
+  async getPatientStateLogs(attemptId: string, actorId: string, actorScopes: UserScope[]) {
     const attempt = await this.prisma.attempt.findUnique({
       where: { id: attemptId },
-      include: { assignment: { include: { course: true } } },
+      include: { assignment: true },
     });
     if (!attempt) throw new NotFoundException("Attempt not found");
 
-    // Access: owner or teacher of course or system admin
-    // (simplified check -- full scope check in RolesGuard for the endpoint)
-    if (attempt.userId !== actorId) {
-      // Teacher access -- RolesGuard handles the role check; here we just fetch
+    const courseId = attempt.assignment.courseId;
+    const isAdmin = actorScopes.some((s) => s.role === "SYSTEM_ADMIN");
+
+    if (!isAdmin) {
+      // Must be a TEACHER scoped to this attempt's course.
+      const isTeacherOfCourse = actorScopes.some(
+        (s) =>
+          s.role === "TEACHER" &&
+          s.scopeType === "COURSE" &&
+          s.scopeId === courseId,
+      );
+      if (!isTeacherOfCourse) {
+        throw new ForbiddenException("Not authorised to view this attempt's state log");
+      }
     }
 
     return this.prisma.patientStateLog.findMany({

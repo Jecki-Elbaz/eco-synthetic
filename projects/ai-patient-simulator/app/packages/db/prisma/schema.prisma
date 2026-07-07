@@ -29,7 +29,6 @@ model College {
   updatedAt   DateTime @updatedAt
 
   courses         Course[]
-  users           UserRoleAssignment[]
   creditAlloc     CreditLedger[]
 }
 
@@ -43,7 +42,6 @@ model Course {
   updatedAt DateTime @updatedAt
 
   assignments Assignment[]
-  users       UserRoleAssignment[]
   creditAlloc CreditLedger[]
 }
 
@@ -138,9 +136,12 @@ model UserRoleAssignment {
   user      User      @relation(fields: [userId], references: [id])
   role      UserRole
   scopeType ScopeType
+  // scopeId is POLYMORPHIC: it references a College id when scopeType=COLLEGE and a Course id
+  // when scopeType=COURSE. It intentionally has NO database FK -- a single column cannot satisfy
+  // two hard FKs at once (a courseId is not a College id), which made every COURSE-scoped role
+  // insert fail the college FK. Referential integrity for scopeId is enforced in application code
+  // (AuthService / scope checks). [fix: RBAC scope-persistence dual-FK defect, 2026-07-06]
   scopeId   String
-  college   College?  @relation(fields: [scopeId], references: [id], map: "UserRoleAssignment_college_scopeId_fkey")
-  course    Course?   @relation(fields: [scopeId], references: [id], map: "UserRoleAssignment_course_scopeId_fkey")
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 

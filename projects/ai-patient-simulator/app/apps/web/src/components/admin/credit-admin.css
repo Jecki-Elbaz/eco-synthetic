@@ -1,0 +1,673 @@
+/*
+ * APS Credit-Admin UI -- CSS
+ * APS-REQ-143, 144, 147, 148.
+ * Admin-only tool. Students never see this. (APS-REQ-145)
+ * RTL-first per hebrew-rtl-best-practices skill v1.3.0.
+ * CSS logical properties throughout; no physical left/right in layout.
+ * Design tokens match dashboard.css pattern (duplicated for standalone use).
+ */
+
+/* ---- Root vars ---- */
+
+.cadmin-root {
+  --color-bg: #f7f7f8;
+  --color-surface: #ffffff;
+  --color-border: #e2e2e5;
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-warn-amber: #f59e0b;
+  --color-warn-amber-bg: #fffbeb;
+  --color-warn-amber-border: #fcd34d;
+  --color-muted: #6b7280;
+  --color-text: #111827;
+  --color-text-secondary: #4b5563;
+  --color-danger: #dc2626;
+  --color-green: #16a34a;
+  --color-green-bg: #f0fdf4;
+  --color-green-border: #86efac;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --radius: 8px;
+  --lh-he: 1.65;
+}
+
+/* ---- Page wrapper ---- */
+
+.cadmin-root {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100dvh;
+  background: var(--color-bg);
+  font-family: -apple-system, Arial, sans-serif;
+  color: var(--color-text);
+  line-height: var(--lh-he);
+}
+
+/* ---- Admin banner (APS-REQ-145 framing) ---- */
+
+.cadmin-banner {
+  background: #1e3a5f;
+  color: #dbeafe;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+  padding-block: 5px;
+  letter-spacing: 0.04em;
+}
+
+/* ---- Header ---- */
+
+.cadmin-header {
+  background: var(--color-surface);
+  border-block-end: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  padding-inline: 20px;
+  padding-block: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cadmin-header__title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.cadmin-header__sub {
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+  margin-block-start: 2px;
+}
+
+.cadmin-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ---- Mock badge ---- */
+
+.cadmin-mock-badge {
+  display: inline-block;
+  padding-inline: 8px;
+  padding-block: 3px;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+  letter-spacing: 0.04em;
+}
+
+/* ---- Shared button ---- */
+
+.cadmin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding-inline: 12px;
+  padding-block: 7px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.cadmin-btn:hover:not(:disabled) {
+  background: #f3f4f6;
+}
+
+.cadmin-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cadmin-btn--primary {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+.cadmin-btn--primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.cadmin-btn--danger {
+  background: #fef2f2;
+  color: var(--color-danger);
+  border-color: #fecaca;
+}
+
+.cadmin-btn--danger:hover:not(:disabled) {
+  background: #fee2e2;
+}
+
+.cadmin-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ---- Body / layout ---- */
+
+.cadmin-body {
+  flex: 1;
+  padding-inline: 20px;
+  padding-block: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-inline-size: 1140px;
+  margin-inline: auto;
+  inline-size: 100%;
+}
+
+/* ---- Section heading ---- */
+
+.cadmin-section-heading {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 12px;
+  padding-block-end: 8px;
+  border-block-end: 1px solid var(--color-border);
+}
+
+/* ---- College summary card ---- */
+
+.cadmin-college-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding-inline: 20px;
+  padding-block: 16px;
+}
+
+.cadmin-college-name {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-block-end: 4px;
+}
+
+.cadmin-college-total {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  /* Numeric LTR */
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+/* ---- Course ledger table ---- */
+
+.cadmin-table-wrapper {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+
+.cadmin-table {
+  border-collapse: collapse;
+  min-inline-size: 100%;
+  font-size: 0.875rem;
+}
+
+.cadmin-table th {
+  padding-inline: 14px;
+  padding-block: 10px;
+  border-block-end: 2px solid var(--color-border);
+  text-align: start;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  background: #f9fafb;
+  white-space: nowrap;
+}
+
+.cadmin-table td {
+  padding-inline: 14px;
+  padding-block: 10px;
+  border-block-end: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.cadmin-table tr:last-child td {
+  border-block-end: none;
+}
+
+/* Low-balance highlight */
+.cadmin-table tr.row--low-balance td {
+  background: var(--color-warn-amber-bg);
+}
+
+/* Override-active highlight */
+.cadmin-table tr.row--override-active td {
+  background: #eff6ff;
+}
+
+/* Numeric cells: LTR for correct digit order */
+.cadmin-numeric {
+  direction: ltr;
+  unicode-bidi: embed;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Balance bar ---- */
+
+.cadmin-balance-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-inline-size: 100px;
+}
+
+.cadmin-balance-track {
+  block-size: 8px;
+  border-radius: 4px;
+  background: #e5e7eb;
+  overflow: hidden;
+}
+
+.cadmin-balance-fill {
+  block-size: 100%;
+  border-radius: 4px;
+  transition: inline-size 0.3s ease;
+}
+
+.cadmin-balance-fill--ok {
+  background: var(--color-green);
+}
+
+.cadmin-balance-fill--warn {
+  background: var(--color-warn-amber);
+}
+
+.cadmin-balance-fill--critical {
+  background: var(--color-danger);
+}
+
+.cadmin-balance-label {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  /* Numeric LTR */
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+/* ---- Override badge ---- */
+
+.cadmin-override-badge {
+  display: inline-block;
+  padding-inline: 6px;
+  padding-block: 2px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: #dbeafe;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+/* ---- Action panel (add/deduct/reset/bonus/limits/override) ---- */
+
+.cadmin-action-panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding-inline: 20px;
+  padding-block: 16px;
+}
+
+.cadmin-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+  margin-block-end: 16px;
+}
+
+.cadmin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cadmin-field label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.cadmin-field input,
+.cadmin-field select,
+.cadmin-field textarea {
+  padding-inline: 10px;
+  padding-block: 7px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+}
+
+.cadmin-field input:focus,
+.cadmin-field select:focus,
+.cadmin-field textarea:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-color: var(--color-primary);
+}
+
+/* Numeric inputs remain LTR */
+.cadmin-field input[type="number"],
+.cadmin-field input[type="date"],
+.cadmin-field input[type="datetime-local"] {
+  direction: ltr;
+  text-align: start;
+}
+
+.cadmin-field textarea {
+  resize: vertical;
+  min-block-size: 60px;
+}
+
+.cadmin-form-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Inline feedback message */
+.cadmin-feedback {
+  font-size: 0.8125rem;
+  padding-inline: 10px;
+  padding-block: 6px;
+  border-radius: 6px;
+  margin-block-start: 10px;
+}
+
+.cadmin-feedback--ok {
+  background: var(--color-green-bg);
+  color: var(--color-green);
+  border: 1px solid var(--color-green-border);
+}
+
+.cadmin-feedback--err {
+  background: #fef2f2;
+  color: var(--color-danger);
+  border: 1px solid #fecaca;
+}
+
+/* ---- Alert config section ---- */
+
+.cadmin-alert-panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding-inline: 20px;
+  padding-block: 16px;
+}
+
+.cadmin-alert-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cadmin-alert-row label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.cadmin-alert-row input[type="number"] {
+  padding-inline: 10px;
+  padding-block: 7px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  inline-size: 80px;
+  direction: ltr;
+}
+
+.cadmin-alert-row input[type="number"]:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-color: var(--color-primary);
+}
+
+/* ---- Activity log ---- */
+
+.cadmin-activity-table {
+  border-collapse: collapse;
+  min-inline-size: 100%;
+  font-size: 0.875rem;
+}
+
+.cadmin-activity-table th {
+  padding-inline: 14px;
+  padding-block: 10px;
+  border-block-end: 2px solid var(--color-border);
+  text-align: start;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  background: #f9fafb;
+  white-space: nowrap;
+}
+
+.cadmin-activity-table td {
+  padding-inline: 14px;
+  padding-block: 10px;
+  border-block-end: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.cadmin-activity-table tr:last-child td {
+  border-block-end: none;
+}
+
+.cadmin-activity-type-badge {
+  display: inline-block;
+  padding-inline: 7px;
+  padding-block: 2px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.cadmin-activity-type-badge--sim {
+  background: #eff6ff;
+  color: var(--color-primary);
+  border: 1px solid #bfdbfe;
+}
+
+.cadmin-activity-type-badge--eval {
+  background: var(--color-green-bg);
+  color: var(--color-green);
+  border: 1px solid var(--color-green-border);
+}
+
+.cadmin-activity-type-badge--debrief {
+  background: #f5f3ff;
+  color: #6d28d9;
+  border: 1px solid #ddd6fe;
+}
+
+.cadmin-activity-type-badge--export {
+  background: #f3f4f6;
+  color: var(--color-muted);
+  border: 1px solid var(--color-border);
+}
+
+/* ---- Audit log ---- */
+
+.cadmin-audit-table {
+  border-collapse: collapse;
+  min-inline-size: 100%;
+  font-size: 0.875rem;
+}
+
+.cadmin-audit-table th {
+  padding-inline: 14px;
+  padding-block: 10px;
+  border-block-end: 2px solid var(--color-border);
+  text-align: start;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  background: #f9fafb;
+  white-space: nowrap;
+}
+
+.cadmin-audit-table td {
+  padding-inline: 14px;
+  padding-block: 10px;
+  border-block-end: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.cadmin-audit-table tr:last-child td {
+  border-block-end: none;
+}
+
+.cadmin-action-badge {
+  display: inline-block;
+  padding-inline: 7px;
+  padding-block: 2px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.cadmin-action-badge--add {
+  background: var(--color-green-bg);
+  color: var(--color-green);
+  border: 1px solid var(--color-green-border);
+}
+
+.cadmin-action-badge--deduct {
+  background: #fef2f2;
+  color: var(--color-danger);
+  border: 1px solid #fecaca;
+}
+
+.cadmin-action-badge--reset {
+  background: #f3f4f6;
+  color: var(--color-muted);
+  border: 1px solid var(--color-border);
+}
+
+.cadmin-action-badge--bonus {
+  background: #eff6ff;
+  color: var(--color-primary);
+  border: 1px solid #bfdbfe;
+}
+
+.cadmin-action-badge--limit {
+  background: var(--color-warn-amber-bg);
+  color: #92400e;
+  border: 1px solid var(--color-warn-amber-border);
+}
+
+.cadmin-action-badge--override {
+  background: #f5f3ff;
+  color: #6d28d9;
+  border: 1px solid #ddd6fe;
+}
+
+/* ---- Export bar ---- */
+
+.cadmin-export-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cadmin-export-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+/* ---- Tab bar ---- */
+
+.cadmin-tabs {
+  display: flex;
+  gap: 0;
+  border-block-end: 2px solid var(--color-border);
+  margin-block-end: 16px;
+}
+
+.cadmin-tab {
+  padding-inline: 16px;
+  padding-block: 8px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: none;
+  border: none;
+  border-block-end: 2px solid transparent;
+  margin-block-end: -2px;
+  color: var(--color-muted);
+  transition: color 0.15s;
+}
+
+.cadmin-tab--active {
+  color: var(--color-primary);
+  border-block-end-color: var(--color-primary);
+  font-weight: 700;
+}
+
+.cadmin-tab:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ---- Responsive ---- */
+
+@media (max-width: 700px) {
+  .cadmin-header {
+    padding-inline: 12px;
+  }
+
+  .cadmin-body {
+    padding-inline: 12px;
+  }
+
+  .cadmin-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Accessibility ---- */
+
+.cadmin-visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

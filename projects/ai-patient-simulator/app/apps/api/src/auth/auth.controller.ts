@@ -1,6 +1,17 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+  Request,
+} from "@nestjs/common";
 import { AuthService } from "./auth.service.js";
+import { JwtAuthGuard } from "./jwt-auth.guard.js";
 import { IsString, MinLength } from "class-validator";
+import type { AuthTokenPayload, MeResponse } from "@aps/shared-types";
 
 export class InviteLinkLoginBodyDto {
   @IsString()
@@ -48,5 +59,24 @@ export class AuthController {
     // No credential is stored or logged from this layer.
     const creds = body;
     return this.authService.loginWithEmail({ email: creds.email, password: creds.password });
+  }
+
+  /**
+   * GET /auth/me
+   * Returns the authenticated principal so the front-end can hydrate a session
+   * and drive role-based route guards. Sourced from the validated JWT (req.user);
+   * no DB round-trip since the token already carries scopes.
+   */
+  @Get("me")
+  @UseGuards(JwtAuthGuard)
+  getMe(@Request() req: { user: AuthTokenPayload }): MeResponse {
+    const user = req.user;
+    const roles = [...new Set(user.scopes.map((s) => s.role))];
+    return {
+      userId: user.sub,
+      email: user.email,
+      scopes: user.scopes,
+      roles,
+    };
   }
 }

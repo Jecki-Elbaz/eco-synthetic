@@ -16,3 +16,23 @@ export interface AuthTokenPayload {
   iat: number;
   exp: number;
 }
+
+/** Shape returned by POST /auth/invite-login and POST /auth/email-login. */
+export interface LoginResponse {
+  accessToken: string;
+  user: {
+    id: string;
+    displayName?: string;
+    scopes: UserScope[];
+    roles: string[];
+  };
+}
+
+/** Shape returned by GET /auth/me. */
+export interface MeResponse {
+  userId: string;
+  displayName?: string;
+  email?: string;
+  scopes: UserScope[];
+  roles: string[];
+}

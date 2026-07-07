@@ -12,6 +12,7 @@ export interface TurnResponse {
   turnNumber: number;
   guardResult: "PASS" | "REGENERATE" | "BLOCKED";
   turnCount: number;
-  softWarnTriggered: boolean; // true if turnCount >= softWarnTurns
-  hardLimitReached: boolean;  // true if attempt closed
+  softWarnTriggered: boolean;          // true if turnCount >= softWarnTurns
+  softWarnAnnotation: string | null;   // human-facing message when softWarn fires; null otherwise
+  hardLimitReached: boolean;           // true if attempt closed
 }

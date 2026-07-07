@@ -13,6 +13,7 @@
  */
 
 import { AuthService } from "../auth/auth.service.js";
+import { AuthController } from "../auth/auth.controller.js";
 import { UnauthorizedException } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
 
@@ -74,8 +75,9 @@ describe("AuthService.loginWithInvite", () => {
     });
 
     expect(result.accessToken).toBe("stub.jwt.token");
-    expect(result.userId).toBe("user-test-001");
-    expect(result.email).toBe("testuser@synthetic.test");
+    expect(result.user.id).toBe("user-test-001");
+    expect(Array.isArray(result.user.scopes)).toBe(true);
+    expect(Array.isArray(result.user.roles)).toBe(true);
   });
 
   it("TC-AUTH-01: JWT contains correct sub and email scope fields", async () => {
@@ -177,7 +179,8 @@ describe("AuthService.loginWithEmail (teacher / admin)", () => {
     });
 
     expect(result.accessToken).toBe("stub.jwt.token");
-    expect(result.email).toBe("teacher@synthetic.test");
+    expect(result.user.id).toBe("teacher-test-001");
+    expect(Array.isArray(result.user.roles)).toBe(true);
   });
 
   it("wrong password throws UnauthorizedException", async () => {
@@ -277,5 +280,43 @@ describe("AuthService -- hashPassword and hashAccessCode utilities", () => {
     expect(hash).not.toBe(plain);
     const matches = await bcrypt.compare(plain, hash);
     expect(matches).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// GET /auth/me -- controller maps the validated JWT (req.user) to MeResponse.
+// (RE-1: front-end session hydration + role-based route guards.)
+// ---------------------------------------------------------------------------
+describe("AuthController.getMe (RE-1)", () => {
+  const controller = new AuthController(null as never);
+
+  it("maps req.user to MeResponse and de-duplicates roles", () => {
+    const req = {
+      user: {
+        sub: "user-me-001",
+        email: "me@synthetic.test",
+        scopes: [
+          { role: "TEACHER", scopeType: "COURSE", scopeId: "course-a" },
+          { role: "TEACHER", scopeType: "COURSE", scopeId: "course-b" },
+        ],
+      },
+    };
+    const me = controller.getMe(req as never);
+    expect(me.userId).toBe("user-me-001");
+    expect(me.email).toBe("me@synthetic.test");
+    expect(me.scopes).toHaveLength(2);
+    expect(me.roles).toEqual(["TEACHER"]);
+  });
+
+  it("SYSTEM_ADMIN scope surfaces as a role", () => {
+    const req = {
+      user: {
+        sub: "admin-001",
+        email: "admin@synthetic.test",
+        scopes: [{ role: "SYSTEM_ADMIN", scopeType: "COLLEGE", scopeId: "college-a" }],
+      },
+    };
+    const me = controller.getMe(req as never);
+    expect(me.roles).toContain("SYSTEM_ADMIN");
   });
 });

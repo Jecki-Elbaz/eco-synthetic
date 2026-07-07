@@ -1,9 +1,9 @@
 // AuthService -- invite-link + access-code + email login [APS-REQ-005]
-import { Injectable, UnauthorizedException, NotFoundException } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { PrismaService } from "../db/prisma.service.js";
-import type { AuthTokenPayload, UserScope } from "@aps/shared-types";
+import type { AuthTokenPayload, UserScope, LoginResponse } from "@aps/shared-types";
 
 const BCRYPT_ROUNDS = 12;
 
@@ -17,6 +17,7 @@ export interface EmailLoginDto {
   password: string;
 }
 
+/** @deprecated -- kept for internal use; external callers use LoginResponse */
 export interface AuthResult {
   accessToken: string;
   userId: string;
@@ -35,7 +36,7 @@ export class AuthService {
    * Student follows a link containing their inviteToken, then enters their access code.
    * The invite token identifies the user; the access code is the second factor.
    */
-  async loginWithInvite(dto: InviteLinkLoginDto): Promise<AuthResult> {
+  async loginWithInvite(dto: InviteLinkLoginDto): Promise<LoginResponse> {
     const user = await this.prisma.user.findUnique({
       where: { inviteToken: dto.inviteToken },
       include: { roleAssignments: true },
@@ -61,7 +62,7 @@ export class AuthService {
   /**
    * Email + password login (teachers / admins).
    */
-  async loginWithEmail(dto: EmailLoginDto): Promise<AuthResult> {
+  async loginWithEmail(dto: EmailLoginDto): Promise<LoginResponse> {
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
       include: { roleAssignments: true },
@@ -102,7 +103,7 @@ export class AuthService {
       scopeType: string;
       scopeId: string;
     }>,
-  ): AuthResult {
+  ): LoginResponse {
     const scopes: UserScope[] = roleAssignments.map((ra) => ({
       role: ra.role as UserScope["role"],
       scopeType: ra.scopeType as UserScope["scopeType"],
@@ -116,6 +117,11 @@ export class AuthService {
     };
 
     const accessToken = this.jwt.sign(payload);
-    return { accessToken, userId, email };
+
+    const roles = [...new Set(scopes.map((s) => s.role))];
+    return {
+      accessToken,
+      user: { id: userId, scopes, roles },
+    };
   }
 }

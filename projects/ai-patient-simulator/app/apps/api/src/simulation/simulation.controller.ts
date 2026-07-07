@@ -81,6 +81,10 @@ export class SimulationController {
     @Param("attemptId") attemptId: string,
     @Request() req: RequestWithUser,
   ) {
-    return this.simulationService.getPatientStateLogs(attemptId, req.user.sub);
+    return this.simulationService.getPatientStateLogs(
+      attemptId,
+      req.user.sub,
+      req.user.scopes,
+    );
   }
 }
