@@ -1,86 +1,88 @@
 # Owner Dashboard
 
-Last refreshed: 2026-07-02 02:00
+Last refreshed: 2026-07-07 04:08
 
 ---
 
-## P1 Tasks (open / in-progress)
+## ALERT: Runner appears DOWN
 
-- T-0001 | Go-live R&R review | in-progress | Eco | immediate
-- T-0020 | Agent-tool security gate (bridge) | in-progress | Rambo | interim live; R&D pending
-- SEC-0001 | Guard enforce-mode flip | in-progress | Shir/Rambo/Eco | B2 behavioral + 7-day clean window pending
-- AUD-001 | File-lock (board.md race condition) | open | Shir | backlog
+All runner-state timestamps stalled at 2026-07-03 (~3.5 days gap). Every interval trigger
+is dormant. Owner action: check Task Scheduler "Eco-Synthetic Runner" + restart if stopped.
+
+---
+
+## P1 Tasks Open / In-Progress
+
+- T-0020 | Agent-tool security gate | in-progress | Rambo | R&D path pending Shir
+- SEC-0001 | Guard enforce-mode flip | in-progress | Shir/Rambo/jecki | B2 fix + clean window pending
+- AUD-001 | Shared-file lock (board race) | open | Shir+Eco | backlog
 - AUD-002 | Production-readiness SOPs | open | Shir+Assaf | target 2026-08-15
-- DASH-001 | Dashboard auto-refresh | in-progress | Ido | ASAP
-- T-0040 | Shelly comms check on every Eco wake-up | in-progress | Shir+Eco | recurring
-- APS-004 | APS legal/privacy gate | in-progress | Eco | Eyal leg pending
-- APS-007 | APS Sprint 1 build | in-progress | Gal | Sprint 1 underway
-- APS-010 | Relay Qs to Adam (owner only) | open | owner relay | due 2026-07-11
-- SHIR-001 | Bridge async-ack + rogue-host fix | in-progress | Shir | P1
-- SHIR-006 | Git/CI-CD hygiene audit (daily, live) | in-progress | Shir | ACTIVE
+- T-0040 | Shelly comms check on wake-up | in-progress | Shir+Eco | recurring; wiring pending
+- SHIR-001 | Bridge rogue-host + async ack | in-progress | Shir | loose ends open
+- APS-010 | Relay open questions to Adam | open | Eco/jecki | due 2026-07-11
+- T-0033 | Proactivity program (event triggers) | in-progress | Assaf/Eco | Phase B pending
 
 ---
 
-## Pending Owner Actions
+## Pending Owner Actions (waiting on jecki)
 
-- RQ-002 | T-0038: land Eco role-file update -- needs Claude Code desktop session (writes blocked on bridge)
-- RQ-003 | APS-009 Noa: commit role file + session reload -- Noa live B3 gate target 2026-07-07
-- RQ-004 | T-0037 email-send: Eyal leg clear, OAuth re-consent in browser still outstanding
-- RQ-005 | T-0039 WhatsApp-mcp: Eyal live ToS fetch + owner ban-risk acceptance in decisions-log before install
-- APS-007 | Commit 78-file Sprint-1 set from own terminal (agent scanner blocked) + start Docker Desktop
-- APS-010 | Relay Q9.1 + clinical/welfare Qs to Adam -- deadline 2026-07-11
-- DAL-001 | Human-comms policy on hold: resumes 2026-07-04 (2 days) or when CS-0001 approved
+- RQ-003 (APS-009): Commit Noa.md -> .claude/agents/ + session reload. Noa B3 live gate due TODAY.
+- RQ-002 (T-0038): Edit Eco.md w/ verify-before-forward guideline (A1 given; run in Claude Code)
+- RQ-005 (T-0039): WhatsApp gate -- record commit SHA + ban-risk acceptance in decisions-log
+- RQ-004 (T-0037): Email-send gate -- OAuth re-consent in browser after Eyal confirms (Eyal leg pending)
+- APS-010: Relay questions to Adam -- due 2026-07-11 (owner-only relay)
+- AUD-004/Mike: CS-0001 draft due TODAY (2026-07-07) -- check if Mike submitted
+- HIL-003/Hila: 3 LinkedIn post drafts postponed to TODAY -- review when ready
+- DAL-001/Dalia: resume was due 2026-07-04 (3 days overdue)
 
 ---
 
-## Run-Queue (pending by lane)
+## Run-Queue (by lane)
 
-Runner lane: nothing queued.
+**Runner lane:** queue executor NOT armed -- no items auto-run
 
-Desktop lane:
-- RQ-002 | Eco role file (T-0038) | queued
-- RQ-003 | Noa role file + reload (APS-009) | queued
-- RQ-004 | Email-send gate (T-0037) | queued
-- RQ-005 | WhatsApp-mcp gate (T-0039) | queued
-
-Queue executor NOT ARMED (B2 + guard enforce-mode flip required first).
+**Desktop lane (jecki or /flush):**
+- RQ-002 | Eco role-file verify-before-forward edit (T-0038) | queued
+- RQ-003 | Commit Noa role file + session reload (APS-009) | queued
+- RQ-004 | Email-send gate Rambo+Eyal (T-0037) | queued
+- RQ-005 | whatsapp-mcp gate completion (T-0039) | queued
 
 ---
 
 ## Per-Trigger Health
 
-- Eco 2h check-in (2h): last 2026-07-01 23:57 -- OK
-- Eco AM brief (daily 08:00): last 2026-07-01 09:57 -- OK (today pending)
-- Eco PM summary (daily 20:00): last 2026-07-01 21:57 -- OK
-- Assaf cost snapshot (daily): last 2026-07-01 01:57 -- OK
-- Assaf fitness loop (weekly Mon): last 2026-06-29 -- OK (next 07-07)
-- Assaf T-0009 monthly review (monthly): last 2026-07-01 -- OK
-- Rambo permission scan (weekly Mon): last 2026-06-29 -- OK (next 07-07)
-- Oracle chronicle (daily): last 2026-07-01 01:57 -- OK
-- Ido DASH-001 refresh (daily): last 2026-07-01 01:57 -- OK
-- Lital+Eyal compliance check (weekly): last 2026-06-29 -- OK
-- Dalia quality audit (weekly): last 2026-06-29 -- OK
-- Yael doc hygiene (weekly Mon): last 2026-06-29 -- OK
-- Shir git hygiene (daily): last 2026-07-01 01:57 -- OK
-- Shir bridge uptime (15-30m): PENDING BUILD (no last run)
-- MeetingPrep (event trigger): PENDING BUILD (no last run)
+!! RUNNER STOPPED -- last fire 2026-07-03; all daily/2h triggers OVERDUE !!
 
-No triggers OVERDUE. All live rows healthy.
+- Eco: 2h check-in | cadence 2h | last 2026-07-03 | **OVERDUE**
+- Eco: AM brief | daily | last 2026-07-03 | **OVERDUE**
+- Eco: PM summary | daily | last 2026-07-03 | **OVERDUE**
+- Assaf: cost snapshot | daily | last 2026-07-03 | **OVERDUE**
+- Ido: DASH-001 | daily | last 2026-07-03 | **OVERDUE**
+- Oracle: chronicle | daily | last 2026-07-03 | **OVERDUE**
+- Shir: git-hygiene | daily | last 2026-07-03 | **OVERDUE**
+- Assaf: fitness loop | weekly (Mon) | last 2026-06-29 | OK (8d / 10.5d limit)
+- Rambo: permission scan | weekly (Mon) | last 2026-06-29 | OK
+- Lital+Eyal: compliance | weekly | last 2026-06-29 | OK
+- Dalia: quality audit | weekly | last 2026-06-29 | OK
+- Yael: doc-hygiene | weekly (Mon) | last 2026-06-29 | OK
+- Assaf: monthly T-0009 | monthly | last 2026-07-01 | OK
+- Shir: bridge uptime | 15-30m | PENDING BUILD | -
+- MeetingPrep | event trigger | PENDING BUILD | -
 
 ---
 
 ## Quick Agent Roster
 
-- Eco: ~14 active tasks, none overdue
-- Shir: 5 tasks (T-0040, AUD-001, SHIR-001, SHIR-003, SHIR-006), none overdue
-- Gal: 1 task (APS-007 Sprint 1), none overdue
-- Rambo: 3 tasks (T-0020, T-0037, T-0039), none overdue
-- Eyal: 4 tasks (T-0037, T-0039, AUD-003, APS-004), none overdue
-- Assaf: 3 tasks (T-0031, T-0033, AUD-002), none overdue
-- Anat: 2 tasks (HR-001, HR-002), Noa B3 live gate due 2026-07-07
-- Mike: 2 tasks (CS-0001, AUD-004), AUD-004 draft due 2026-07-07
-- Dalia: 2 tasks (DAL-001, AUD-006), DAL-001 resumes 2026-07-04
-- Ido: 2 tasks (DASH-001, APS review), none overdue
-- Lital: 2 tasks (AUD-003, APS-004 finance leg), none overdue
-- Hila: 2 tasks (HIL-003, HIL-004), none overdue
-- Oracle: 1 task (ORC-001 chronicle), none overdue
+- Eco: many tasks (T-0001/003/006/007/008/033/036/038/040, APS-004/010) | runner OVERDUE
+- Shir: 5 tasks (SHIR-001/006, SEC-0001 B2, AUD-001, T-0040) | git-hygiene OVERDUE
+- Gal: 4 tasks (APS-011/012/013/014 Sprint 2)
+- Noa: 1 task (APS-014 UI) | live B3 gate due today
+- Anat: HR-001/002 | Noa B3 gate due today
+- Assaf: T-0031/033 + HR-002 C2 (~07-08) | cost snapshot OVERDUE
+- Rambo: T-0020/037/039, SEC-0001 | scan OK
+- Eyal: T-0037/039, APS-004 residual | compliance check OK
+- Mike: CS-0001/AUD-004 | draft due today
+- Hila: HIL-003/004 | post drafts due today
+- Dalia: DAL-001 (resume 3d overdue), AUD-006 | quality audit OK
+- Oracle: ORC-001 (B3-B7 pending) | chronicle OVERDUE
+- Ido: DASH-001 | refresh OVERDUE

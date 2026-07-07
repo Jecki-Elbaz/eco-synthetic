@@ -1,31 +1,28 @@
 # Git Hygiene -- Last Audit
 
-Date: 2026-07-02 | Run by: session branch reconciliation (Shir-verified) | Verdict: RECONCILED
+Date: 2026-07-07 | Run by: audit.py (deterministic, zero-token) | Verdict: ATTENTION
 
 ## State
 - Branch: master
-- Upstream: yes | ahead 0 | behind 0 (in sync after push ab10767)
-- Working tree: CLEAN (0 staged / 0 unstaged); only untracked is memory/agent-guard.log (gitignored)
-- Remote branches: 6 (master + 5 stale) -- see Actions/Blocked below
+- Upstream: yes | ahead 0 | behind 0
+- Changed entries: 139 (staged 0 / unstaged 22 / untracked 117)
+- Top areas:
+  - projects/ai-patient-simulator: 119
+  - company/governance: 5
+  - marketing/social: 5
+  - memory/wiki: 3
+  - integrations/git-hygiene: 2
+  - ompany/governance: 1
+  - memory/board.md: 1
+  - memory/enforce-readiness-state.json: 1
+  - memory/owner-dashboard.md: 1
+  - company/security: 1
 
-## Actions taken
-- SALVAGED the only unmerged real work: cherry-picked telegram-bridge halt-state
-  commit 5ef217d -> master (ab10767, +35 lines, conflict-free), pushed to origin/master.
-
-## Kept intentionally (no data loss)
-- claude/eco-hr-flags-changelog-2026-06-14 and wip/bridge-status-done: clone-divergence
-  branches, NO merge-base with master. Merging either would DELETE ~50k / ~15k lines of
-  current master. Their only unique files (Noam.md -> renamed to Perry; Shelly.md ->
-  intentionally removed) are superseded, not lost. Left in place as their own preservation.
-
-## Blocked by remote server policy (403 -- do NOT retry, per proxy README)
-- Pushing archive/* tags: rejected (403).
-- Deleting ANY remote branch: rejected.
-- Consequence: 5 stale branches remain on origin (chore/ido-sprint-001,
-  claude/bridge-error-investigation-dmsgfw, claude/git-sync-status-10jznm, +2 divergence).
-  All content is fully preserved (3 already merged/cherry-picked into master; 2 in their
-  own branches). Deletion + tag-archive deferred until the remote permits tag/branch-ref pushes.
+## Flags (ATTENTION)
+- 139 changed files uncommitted -- large unsaved pile.
+- 117 new untracked files never added to git.
+- 139 uncommitted changes sitting directly on master.
 
 ## Note
 .env / secret CONTENTS never read; git diff content never dumped (red line 1).
-Master push succeeded; tag + branch-delete refs are server-restricted in this environment.
+Thresholds: uncommitted>=25, untracked>=15, master-dirty>=10.

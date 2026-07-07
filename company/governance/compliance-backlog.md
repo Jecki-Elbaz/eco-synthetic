@@ -5,7 +5,7 @@ prioritized on the roadmap and never appears as a sudden critical issue.
 Source: constitution section 13. Populated as T-0008.
 
 Last legal-leg review: Eyal, 2026-06-29 (scheduled runner).
-Last finance-leg review: Lital, 2026-06-24 (T-0005).
+Last finance-leg review: Lital, 2026-07-06 (scheduled runner, run 5).
 Format: each item has a LEGAL LEG block (Eyal) and a FINANCE LEG block (Lital).
 Eyal fills legal-leg; Lital fills finance-leg. Neither overwrites the other's block.
 
@@ -669,7 +669,54 @@ SHIR-005 is built.
 
 ## Lital review log
 
-Last reviewed by Lital: 2026-06-29 (run 3)
+Last reviewed by Lital: 2026-07-06 (run 5)
+
+Status summary (2026-07-06, run 5):
+- OVERDUE items: NONE. All deadlines remain event-triggered (first customer / first contract /
+  first invoice / first data intake). No trigger events have occurred as of this review.
+- APPROACHING (30-day calendar window): NONE with hard calendar dates.
+- Soft flags (unchanged from run 4; same date):
+  - Item 3 (DPA template v0.1-DRAFT, company/legal/dpa-template.md): drafted 2026-06-23;
+    now 13 days pending owner A1 review. APS R&D continues to show active file changes (git
+    status confirms simulation, engine, and schema modifications). September pilot window is
+    approaching; urgency remains elevated. Lital re-flags to Eco: owner A1 scheduling is
+    overdue by attention, not by hard deadline.
+  - Item 6 (Anthropic DPA): Eyal WebFetch re-fetch still outstanding. APS project active and
+    using LLM pipeline (simulation.service.ts, engine changes observed in git status). No
+    confirmed student/personal data flowing yet -- no active violation. Must be resolved before
+    any student transcript enters LLM pipeline.
+  - APS M16 (transcript retention): retention period decision still pending owner input.
+    Phase 1b notable_mistakes field blocked. September pilot window narrowing.
+  - APS M21 (data residency): Israeli region preference unconfirmed. Must resolve before
+    pilot infrastructure is provisioned.
+- No new compliance items identified since run 4.
+- No spend authorized on any item. Budget-0 policy holds. All A1 items remain with jecki.
+
+Previous run: 2026-07-06 (run 4) -- see archived entry below.
+
+Status summary (2026-07-06, run 4):
+- OVERDUE items: NONE. All deadlines remain event-triggered (first customer / first contract /
+  first invoice / first data intake). No trigger events have occurred as of this review.
+- APPROACHING (30-day calendar window): NONE with hard calendar dates.
+- Soft flags (updated urgency):
+  - Item 3 (DPA template v0.1-DRAFT, company/legal/dpa-template.md): drafted 2026-06-23;
+    now 13 days pending owner A1 review (was 6+ days on 2026-06-29). APS R&D is active;
+    if September pilot targets student data, ~60 days remain to resolve this before first
+    data intake. Urgency continues to rise. Lital re-flags to Eco: owner A1 review should
+    be scheduled without further delay.
+  - Item 6 (Anthropic DPA): still outstanding (Eyal WebFetch re-fetch pending). APS project
+    creates a concrete pathway to trigger this obligation if Claude/Anthropic used for the
+    patient engine or debrief. No personal data flowing -- no active violation. Must be
+    resolved before any student transcript enters LLM pipeline.
+  - APS M16 (transcript retention): retention period decision still pending owner input.
+    Blocks Phase 1b notable_mistakes field (highest-sensitivity PII). If September pilot
+    is ~60 days out, this window is shrinking.
+  - APS M21 (data residency): Israeli region preference still unconfirmed. Must be resolved
+    before pilot infrastructure is provisioned, not at billing time.
+- No new compliance items identified since last review (2026-06-29).
+- No spend authorized on any item. Budget-0 policy holds. All A1 items remain with jecki.
+
+Previous run: 2026-06-29 (run 3) -- see archived entry below.
 
 Status summary (2026-06-29, run 3):
 - OVERDUE items: NONE. All deadlines remain event-triggered (first customer / first contract /
@@ -804,3 +851,82 @@ A1 items still open (unchanged from run 1/run 2) -- escalating to Eco:
    once ready; no contract or invoice is valid without it.
 
 Last reviewed by Eyal: 2026-06-29 (run 3).
+
+---
+
+Run 4 (2026-07-06): weekly scheduled runner. No owner input available.
+
+OVERDUE items: NONE. All backlog deadlines remain event-triggered (first contract / first
+invoice / first data intake / first external email). No trigger events have occurred.
+
+APPROACHING (30-day calendar window): NONE with hard calendar dates.
+
+NEAR-DEADLINE (within 24 hours as of 2026-07-06):
+- APS Anthropic API config (gate-register APS-004 row, updated 2026-06-30 by Eyal):
+  three owner A1 config steps were targeted for 2026-07-07 (before APS Sprint 2):
+  (1) confirm account is on commercial plan (DPA applies);
+  (2) confirm/enable zero-retention in Anthropic console;
+  (3) download and retain a copy of the DPA.
+  Eyal legal side is CLEAR-WITH-CONDITIONS (2026-06-30). Owner execution still pending.
+  Full review: projects/ai-patient-simulator/docs/anthropic-dpa-review-eyal.md.
+  This is the most time-sensitive item. Eco must escalate to jecki today.
+
+NEW since last Eyal review (2026-06-29):
+- Anthropic API (APS): CLEAR-WITH-CONDITIONS (Eyal, 2026-06-30). DPA incorporated by
+  reference in commercial terms; no-training prohibition confirmed from source.
+  Three owner config steps still pending (see NEAR-DEADLINE above).
+  This partially addresses compliance-backlog Item 6. Item 6 is NOT fully closed until
+  (a) owner confirms commercial plan, (b) zero-retention confirmed/enabled, (c) DPA copy
+  retained, and (d) Eyal updates Item 6 status to closed. Item 6 remains OPEN on the
+  compliance-backlog track until Eyal can confirm these steps completed in a live session.
+- taylorwilsdon/google_workspace_mcp (GR-009): Eyal CLEAR-WITH-CONDITIONS (2026-07-01).
+  Base row now closed. MIT clear; Google Workspace ToS for internal single-account use clear.
+- Gmail send scope (T-0037/S-0025): Eyal CLEAR-WITH-CONDITIONS (2026-07-01). Gate not
+  fully closed -- owner must execute Rambo C-R4 (re-pin) + C-R5 (settings.json update) +
+  OAuth re-consent. Send tool not live until those 3 owner actions are done.
+- whatsapp-mcp: Eyal CLEAR-WITH-CONDITIONS (2026-07-01). Two hard pre-install owner gates
+  remain open: (1) owner records exact commit SHA in decisions-log; (2) formal ban-risk
+  acceptance in decisions-log (C5/C-L1).
+
+GATE-REGISTER PENDING (no hard dates -- Eyal action outstanding):
+- nspady/google-calendar-mcp: Eyal PENDING since 2026-06-18. MIT expected clear.
+  No hard deadline; flagged at run 2 and run 3. Still unresolved as of today.
+  Eco should schedule Eyal review for this row in the next available session.
+- Agent tool for Eco (T-0020): Eyal PENDING since 2026-06-15 (same subscription,
+  no new terms expected). Non-blocking for current operations. Should be resolved.
+- OpenAI API (APS M1), AWS S3, transactional email (APS M2): all PRE-READ rows.
+  Non-blocking today (none adopted). Eyal live review required before any adoption.
+
+SOFT FLAGS (existing items, urgency unchanged or increasing):
+- Item 3 (DPA template v0.1-DRAFT, company/legal/dpa-template.md): drafted 2026-06-23;
+  now 13 days pending owner A1 review (same count as Lital run 5; same day). APS R&D
+  active (simulation, engine, schema changes in git status). September pilot ~60 days
+  out. Urgency is HIGH. Eyal re-flags to Eco: owner A1 scheduling is overdue by attention.
+- Item 6 (Anthropic DPA compliance-backlog track): gate-register APS-004 row shows
+  Eyal legal analysis complete (2026-06-30). Three owner config steps remain outstanding
+  (target was 2026-07-07). Until owner completes steps and Eyal confirms, Item 6 on the
+  compliance-backlog track remains OPEN. No personal data confirmed flowing -- no active
+  violation. Must be resolved before any student/customer data enters LLM pipeline.
+- APS M16 (transcript retention): pending owner input on retention period. Phase 1b
+  notable_mistakes field blocked. September pilot window narrowing (~60 days).
+- APS M21 (data residency): Israeli region preference unconfirmed. Must be confirmed
+  before pilot infrastructure is provisioned.
+
+A1 ITEMS -- summary for owner (via Eco), run 4:
+1. APS Anthropic config (3 steps) -- target was 2026-07-07; at/past deadline. URGENT.
+   Owner must confirm commercial plan, enable/confirm zero-retention, download DPA copy.
+2. Item 3 (DPA template v0.1-DRAFT) -- 13 days pending A1 review; September pilot
+   ~60 days out. Owner A1 review required before any customer or student data collected.
+3. APS M16 (transcript retention period) -- owner input required (PPL minimisation).
+   Blocks Phase 1b notable_mistakes field.
+4. APS M21 (data residency) -- owner confirmation of Israeli region preference required
+   before pilot infrastructure is provisioned.
+5. Item 6 (Anthropic DPA formal close) -- dependent on owner completing APS config steps
+   and Eyal confirming in a subsequent session.
+6. Item 1 (company registration, Ltd) -- A1 required to file; no contract imminent but
+   APS September pilot is approaching; 1-3 business day lead time once docs ready.
+
+NO hard deadlines have been breached (all event-triggered except item 1 near-deadline
+above which is past its target date, not a legal hard-stop).
+
+Last reviewed by Eyal: 2026-07-06 (run 4).

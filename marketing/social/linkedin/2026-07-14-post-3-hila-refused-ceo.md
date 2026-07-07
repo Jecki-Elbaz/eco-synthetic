@@ -1,7 +1,8 @@
-# LinkedIn Post -- Post 2 of series
-# Post number: 2
-# Proposed publish date: 2026-07-10
+# LinkedIn Post -- Post 3 of series (QUEUED -- not one of the 2 refinement drafts)
+# Post number: 3
+# Proposed publish date: 2026-07-14
 # Angle: "Our marketing agent refused her own CEO"
+# Language: English draft below; HEBREW version to be produced when the series reaches this post.
 # Status: DRAFT A3 -- NOT PUBLISHED. Internal only.
 # Gate: owner A1 per piece + Legal (Eyal) clears any brand/product claims + Security (Rambo)
 #        review required before any publish action. No exceptions.
