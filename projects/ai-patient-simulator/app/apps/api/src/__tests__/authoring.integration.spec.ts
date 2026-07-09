@@ -54,12 +54,27 @@ afterAll(async () => {
   // (slug column has a @unique constraint on College).
   await prisma.triggerRule.deleteMany({});
   await prisma.rubricCriterion.deleteMany({});
+  // Attempt children first, then Attempt, then Assignment (FK: Attempt_assignmentId_fkey).
+  // Needed since the support/credit-admin integration suites went live 2026-07-09 and
+  // leave attempts behind; previously they were describe.skip so no attempts existed here.
+  await prisma.supportTicket.deleteMany({});
+  await prisma.diagnosticLog.deleteMany({});
+  await prisma.usageLog.deleteMany({});
+  await prisma.debriefChat.deleteMany({});
+  await prisma.evaluation.deleteMany({});
+  await prisma.patientStateLog.deleteMany({});
+  await prisma.message.deleteMany({});
+  await prisma.attempt.deleteMany({});
   // Assignment references rubricVersionId + simulationTemplateId, so it must be deleted
   // BEFORE RubricVersion and SimulationTemplate (FK: Assignment_rubricVersionId_fkey).
   await prisma.assignment.deleteMany({});
   await prisma.rubricVersion.deleteMany({});
   await prisma.simulationTemplate.deleteMany({});
   await prisma.groundTruth.deleteMany({});
+  // CreditEntry -> CreditLedger -> College/Course (FK: CreditLedger_collegeId_fkey);
+  // ledgers left behind by the credit-admin integration suite (live since 2026-07-09).
+  await prisma.creditEntry.deleteMany({});
+  await prisma.creditLedger.deleteMany({});
   // M2: Course before College (FK: Course.collegeId references College)
   await prisma.course.deleteMany({});
   await prisma.college.deleteMany({});

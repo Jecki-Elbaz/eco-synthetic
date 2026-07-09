@@ -6,6 +6,7 @@ import type {
   EvaluationResponse,
   RubricCriterionView,
   TranscriptTurn,
+  ApiTranscriptTurn,
 } from "./evaluation-types";
 import { authedGet } from "./http";
 
@@ -156,19 +157,38 @@ export async function fetchRubricCriteria(
   return MOCK_CRITERIA;
 }
 
+// Real API call: GET /simulations/:attemptId/transcript
+// Gal item F (DONE 2026-07-09). Response shape: ApiTranscriptTurn[].
+// Each API element is one exchange (studentInput + patientResponse).
+// Flatten to alternating TranscriptTurn entries for the panel:
+//   exchange turnIndex N -> student at display turnNumber 2N-1
+//                        -> patient  at display turnNumber 2N
+async function fetchTranscriptReal(attemptId: string): Promise<TranscriptTurn[]> {
+  const raw = await authedGet<ApiTranscriptTurn[]>(
+    `simulations/${encodeURIComponent(attemptId)}/transcript`,
+  );
+  const turns: TranscriptTurn[] = [];
+  for (const t of raw) {
+    turns.push({ turnNumber: t.turnIndex * 2 - 1, role: "STUDENT", text: t.studentInput });
+    turns.push({ turnNumber: t.turnIndex * 2, role: "PATIENT", text: t.patientResponse });
+  }
+  return turns;
+}
+
 /**
  * Fetch the attempt transcript for display in the feedback panel.
- * In a live system this comes from GET /simulations/:attemptId/transcript.
- * Mock returns the hard-coded demo transcript.
+ * Real path: GET /simulations/:attemptId/transcript (Gal item F, DONE).
+ * Mock (NEXT_PUBLIC_USE_MOCK === "true") returns deterministic Hebrew fixture.
+ * Non-2xx from the real endpoint throws ApiError -- caller handles error state.
  */
 export async function fetchTranscript(
-  _attemptId: string,
+  attemptId: string,
 ): Promise<TranscriptTurn[]> {
   if (USE_MOCK) {
     await new Promise<void>((r) => setTimeout(r, 300));
     return MOCK_TRANSCRIPT;
   }
-  return MOCK_TRANSCRIPT;
+  return fetchTranscriptReal(attemptId);
 }
 
 export function isEvaluationMockMode(): boolean {

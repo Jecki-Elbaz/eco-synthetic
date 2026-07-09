@@ -1,14 +1,29 @@
-import { Controller, Get, Post, Param, Body, UseGuards, Request } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Body,
+  UseGuards,
+  Request,
+  ForbiddenException,
+} from "@nestjs/common";
 import { OrgService } from "./org.service.js";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard.js";
 import { RolesGuard } from "../rbac/roles.guard.js";
 import { RequiredRoles } from "../rbac/roles.decorator.js";
-import { IsString, IsOptional } from "class-validator";
+import { IsString, IsOptional, IsIn } from "class-validator";
 import type { AuthTokenPayload } from "@aps/shared-types";
 
 class CreateAttemptDto {
   @IsString()
   language!: string;
+
+  /** Optional type field. Defaults to STUDENT on server.
+   * AUTHOR_PREVIEW requires TEACHER or SYSTEM_ADMIN role (TRACK-A-GAL item B). */
+  @IsOptional()
+  @IsIn(["STUDENT", "AUTHOR_PREVIEW"])
+  type?: "STUDENT" | "AUTHOR_PREVIEW";
 }
 
 interface RequestWithUser extends Request {
@@ -51,18 +66,42 @@ export class OrgController {
     return this.orgService.getAssignment(assignmentId, req.user);
   }
 
-  /** POST /assignments/:assignmentId/attempts -- get or create attempt for authenticated user */
+  /**
+   * POST /assignments/:assignmentId/attempts
+   * Create or return an existing attempt for the authenticated user.
+   * type=AUTHOR_PREVIEW: requires TEACHER or SYSTEM_ADMIN role (returns 403 otherwise).
+   * type=STUDENT (default): requires STUDENT role.
+   */
   @Post("assignments/:assignmentId/attempts")
-  @RequiredRoles("STUDENT")
+  @RequiredRoles("STUDENT", "TEACHER", "SYSTEM_ADMIN")
   createAttempt(
     @Param("assignmentId") assignmentId: string,
     @Body() body: CreateAttemptDto,
     @Request() req: RequestWithUser,
   ) {
+    const attemptType = body.type ?? "STUDENT";
+
+    if (attemptType === "AUTHOR_PREVIEW") {
+      // TEACHER or SYSTEM_ADMIN only
+      const isTeacherOrAdmin = req.user.scopes.some(
+        (s) => s.role === "TEACHER" || s.role === "SYSTEM_ADMIN",
+      );
+      if (!isTeacherOrAdmin) {
+        throw new ForbiddenException("AUTHOR_PREVIEW requires TEACHER or SYSTEM_ADMIN role");
+      }
+    } else {
+      // STUDENT type: only STUDENT role (original behaviour)
+      const isStudent = req.user.scopes.some((s) => s.role === "STUDENT");
+      if (!isStudent) {
+        throw new ForbiddenException("Only STUDENT role can create STUDENT attempts");
+      }
+    }
+
     return this.orgService.getOrCreateAttempt(
       assignmentId,
       req.user.sub,
       body.language,
+      attemptType,
     );
   }
 

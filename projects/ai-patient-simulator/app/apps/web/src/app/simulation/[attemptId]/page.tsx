@@ -4,13 +4,12 @@
 // Route guard: RequireAuth (client-side). Any authenticated user.
 // /simulation/demo is public (no guard) and uses mock data.
 
-import { use } from "react";
 import SimulationScreen from "@/components/simulation/SimulationScreen";
 import RequireAuth from "@/components/auth/RequireAuth";
 
 interface PageProps {
-  params: Promise<{ attemptId: string }>;
-  searchParams: Promise<{ lang?: string }>;
+  params: { attemptId: string };
+  searchParams: { lang?: string };
 }
 
 function SimulationContent({
@@ -36,8 +35,8 @@ function SimulationContent({
 }
 
 export default function SimulationPage({ params, searchParams }: PageProps) {
-  const { attemptId } = use(params);
-  const { lang: langParam } = use(searchParams);
+  const { attemptId } = params;
+  const { lang: langParam } = searchParams;
   const extraProps = langParam !== undefined ? { langParam } : {};
   return (
     <RequireAuth>

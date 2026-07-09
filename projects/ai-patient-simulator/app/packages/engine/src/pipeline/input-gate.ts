@@ -32,6 +32,12 @@ export interface AttemptTotals {
   tokenInputTotal: number;
   tokenOutputTotal: number;
   creditBalance: number;      // -1 = no credit limit configured
+  /**
+   * When true, InputGate skips the credit hard-limit check.
+   * Used for AUTHOR_PREVIEW turns only (Rambo M18).
+   * IMPORTANT: suppresses ledger DEDUCTION only -- UsageLog is STILL emitted by caller.
+   */
+  bypassCreditCheck?: boolean;
 }
 
 export class InputGate {
@@ -46,8 +52,9 @@ export class InputGate {
   }
 
   check(totals: AttemptTotals): GateResult {
-    // Credit hard limit -- checked first; student never sees credit detail
-    if (totals.creditBalance !== -1 && totals.creditBalance <= 0) {
+    // Credit hard limit -- checked first; student never sees credit detail.
+    // Rambo M18: bypassCreditCheck=true skips gate; caller still emits UsageLog.
+    if (!totals.bypassCreditCheck && totals.creditBalance !== -1 && totals.creditBalance <= 0) {
       return { allowed: false, reason: "CREDIT_HARD_LIMIT" };
     }
 

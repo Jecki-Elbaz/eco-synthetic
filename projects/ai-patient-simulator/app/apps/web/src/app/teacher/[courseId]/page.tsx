@@ -8,7 +8,7 @@
 // Guard is client-side because the token lives in localStorage.
 // Production hardening: httpOnly cookie + Next.js middleware (APS-014).
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import TeacherClassDashboard from "@/components/dashboard/TeacherClassDashboard";
 import { fetchClassDashboard } from "@/lib/dashboard-client";
 import type { ClassDashboardVM } from "@/lib/dashboard-types";
@@ -16,7 +16,7 @@ import RequireRole from "@/components/auth/RequireRole";
 import AuthHeader from "@/components/auth/AuthHeader";
 
 interface PageProps {
-  params: Promise<{ courseId: string }>;
+  params: { courseId: string };
 }
 
 function TeacherDashboardContent({ courseId }: { courseId: string }) {
@@ -59,7 +59,7 @@ function TeacherDashboardContent({ courseId }: { courseId: string }) {
 }
 
 export default function TeacherCourseDashboardPage({ params }: PageProps) {
-  const { courseId } = use(params);
+  const { courseId } = params;
   return (
     <RequireRole roles={["TEACHER", "SYSTEM_ADMIN"]}>
       <AuthHeader />

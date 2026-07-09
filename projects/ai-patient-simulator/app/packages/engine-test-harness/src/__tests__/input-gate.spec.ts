@@ -153,4 +153,29 @@ describe("InputGate", () => {
     expect(warnResult.allowed).toBe(true);
     if (warnResult.allowed) expect(warnResult.softWarn).toBe(true);
   });
+
+  // --- bypassCreditCheck (Rambo M18 -- AUTHOR_PREVIEW turns) ---
+
+  it("I1: bypassCreditCheck=true allows turn even when creditBalance=0", () => {
+    const result = gate.check(
+      buildTestAttemptTotals({ creditBalance: 0, bypassCreditCheck: true }),
+    );
+    expect(result.allowed).toBe(true);
+  });
+
+  it("I2: bypassCreditCheck=false (explicit) blocks when creditBalance=0", () => {
+    const result = gate.check(
+      buildTestAttemptTotals({ creditBalance: 0, bypassCreditCheck: false }),
+    );
+    expect(result.allowed).toBe(false);
+    if (!result.allowed) expect(result.reason).toBe("CREDIT_HARD_LIMIT");
+  });
+
+  it("I1b: bypassCreditCheck=true allows turn even when creditBalance is deeply negative", () => {
+    // -999 would block without bypass; with bypass the gate must not fire
+    const result = gate.check(
+      buildTestAttemptTotals({ creditBalance: -999, bypassCreditCheck: true }),
+    );
+    expect(result.allowed).toBe(true);
+  });
 });

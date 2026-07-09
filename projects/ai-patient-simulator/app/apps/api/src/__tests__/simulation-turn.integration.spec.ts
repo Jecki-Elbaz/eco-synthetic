@@ -15,8 +15,10 @@
  */
 
 import { PrismaClient } from "@aps/db";
+import { PrismaService } from "../db/prisma.service.js";
 import { SimulationService } from "../simulation/simulation.service.js";
-import { TurnPipeline, StubProvider } from "@aps/engine";
+import { EvaluationService } from "../evaluation/evaluation.service.js";
+import { TurnPipeline, StubProvider, Evaluator } from "@aps/engine";
 import type { TurnRequest } from "@aps/shared-types";
 
 // ---------------------------------------------------------------------------
@@ -183,9 +185,13 @@ afterAll(async () => {
 function buildService(): SimulationService {
   const provider = new StubProvider();
   const pipeline = new TurnPipeline(provider);
-  // SimulationService depends on PrismaService (same interface as PrismaClient)
-  // Cast is safe: PrismaClient satisfies all Prisma.* method signatures
-  return new SimulationService(prisma as never, pipeline);
+  // EvaluationService is injected; processTurn does not call it -- only
+  // runAuthorPreview does. Construct with real prisma + stub Evaluator.
+  // PrismaClient is structurally compatible with PrismaService for all Prisma method
+  // signatures (PrismaService extends PrismaClient; NestJS lifecycle methods unused in tests).
+  const prismaService = prisma as unknown as PrismaService;
+  const evaluationService = new EvaluationService(prismaService, new Evaluator(provider));
+  return new SimulationService(prismaService, pipeline, evaluationService);
 }
 
 // ---------------------------------------------------------------------------

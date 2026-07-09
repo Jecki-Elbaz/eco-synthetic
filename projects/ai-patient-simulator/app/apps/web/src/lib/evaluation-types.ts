@@ -81,3 +81,12 @@ export interface TranscriptTurn {
   role: "STUDENT" | "PATIENT";
   text: string;
 }
+
+// Raw shape returned by GET /simulations/:attemptId/transcript
+// Each element is one exchange: one student input + one patient response
+export interface ApiTranscriptTurn {
+  turnIndex: number;   // 1-based exchange index from DB
+  studentInput: string;
+  patientResponse: string;
+  timestamp: string;   // ISO 8601, sentAt of student message for that turn
+}

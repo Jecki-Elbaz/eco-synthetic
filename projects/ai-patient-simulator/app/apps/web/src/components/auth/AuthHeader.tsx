@@ -5,17 +5,14 @@
 // Hebrew RTL: uses CSS logical properties throughout.
 
 import { useAuth } from "@/lib/auth";
-import { useRouter } from "next/navigation";
 
 export default function AuthHeader() {
   const { user, logout } = useAuth();
-  const router = useRouter();
 
   if (!user) return null;
 
   function handleLogout() {
     logout();
-    router.replace("/login");
   }
 
   const displayName = user.displayName ?? user.email ?? user.userId;

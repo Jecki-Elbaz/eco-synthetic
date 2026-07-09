@@ -55,6 +55,31 @@ export interface DebriefSupervisorInput {
   priorDebriefTurns: Array<{ role: "STUDENT" | "SUPERVISOR"; text: string }>;
 }
 
+// ---------------------------------------------------------------------------
+// JC-3: Compile-time isolation guard for DebriefSupervisorInput.
+//
+// If DebriefSupervisorInput ever gains a persona or ground-truth field this
+// constant declaration FAILS TO COMPILE, surfacing the violation before runtime.
+// To add a new forbidden key: extend _ForbiddenDebriefKeys below (never add it
+// to DebriefSupervisorInput itself).
+// ---------------------------------------------------------------------------
+
+type _ForbiddenDebriefKeys =
+  | "personaSystemPrompt"
+  | "knownFacts"
+  | "disclosureAllowList"
+  | "hardOffRampText"
+  | "escalationRules"
+  | "analyserOutput";
+
+type _JC3Guard = Extract<keyof DebriefSupervisorInput, _ForbiddenDebriefKeys> extends never
+  ? true
+  : never; // never triggers: "Type 'boolean' is not assignable to type 'never'"
+
+// COMPILE-TIME CHECK -- keep this assignment; it is the enforcement point.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _jc3DebriefGuard: _JC3Guard = true;
+
 export interface DebriefSupervisorOutput {
   supervisorText: string;
   citedTurns: number[];

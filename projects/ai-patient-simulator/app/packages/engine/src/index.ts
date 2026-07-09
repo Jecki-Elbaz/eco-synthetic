@@ -10,6 +10,8 @@ export { DEFAULT_DELTA_CAP_CONFIG } from "./state/delta-cap.config.js";
 export type { LLMProvider, LLMRequest, LLMResponse, LLMMessage } from "./llm/provider.interface.js";
 export { ModelHint } from "./llm/provider.interface.js";
 export { StubProvider } from "./llm/providers/stub.provider.js";
+export { StudentBotProvider } from "./providers/StudentBotProvider.js";
+export type { BotProfile, BotTurn, ViolationType } from "./providers/StudentBotProvider.js";
 export { ContextBuilder, estimateTokens, selectWindowByTokenBudget } from "./pipeline/context-builder.js";
 export type { GroundTruthRef, MessageRecord, ContextBuildInput } from "./pipeline/context-builder.js";
 export { GuardRunner } from "./pipeline/guard-runner.js";

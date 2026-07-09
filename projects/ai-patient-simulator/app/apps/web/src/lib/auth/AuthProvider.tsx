@@ -18,6 +18,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { useRouter } from "next/navigation";
 import type { MeResponse, LoginResponse } from "@aps/shared-types";
 
 const TOKEN_KEY = "aps_access_token";
@@ -119,6 +120,7 @@ async function postLogin(
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   // On mount: if a token exists in localStorage, call /auth/me to hydrate.
   useEffect(() => {
@@ -160,7 +162,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback((): void => {
     clearToken();
     setUser(null);
-  }, []);
+    router.replace("/login");
+  }, [router]);
 
   return (
     <AuthContext.Provider value={{ user, loading, loginWithInvite, loginWithEmail, logout }}>

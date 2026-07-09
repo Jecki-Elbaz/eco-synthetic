@@ -40,7 +40,7 @@ import {
   IsInt,
 } from "class-validator";
 import { Type } from "class-transformer";
-import type { AuthTokenPayload, AdminCreditActionType } from "@aps/shared-types";
+import type { AuthTokenPayload, AdminCreditActionType, ActivityLogQuery } from "@aps/shared-types";
 
 // ---------------------------------------------------------------------------
 // Request body DTOs
@@ -141,14 +141,14 @@ export class CreditAdminController {
     @Query("page") page: string | undefined,
     @Query("pageSize") pageSize: string | undefined,
   ) {
-    return this.creditAdminService.getActivityLog({
-      collegeId,
-      courseId,
-      from,
-      to,
-      page: page ? parseInt(page, 10) : undefined,
-      pageSize: pageSize ? parseInt(pageSize, 10) : undefined,
-    });
+    const query: ActivityLogQuery = {};
+    if (collegeId !== undefined) query.collegeId = collegeId;
+    if (courseId !== undefined) query.courseId = courseId;
+    if (from !== undefined) query.from = from;
+    if (to !== undefined) query.to = to;
+    if (page !== undefined) query.page = parseInt(page, 10);
+    if (pageSize !== undefined) query.pageSize = parseInt(pageSize, 10);
+    return this.creditAdminService.getActivityLog(query);
   }
 
   /**

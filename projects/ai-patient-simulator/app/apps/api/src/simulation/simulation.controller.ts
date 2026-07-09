@@ -71,6 +71,25 @@ export class SimulationController {
   }
 
   /**
+   * GET /simulations/:attemptId/transcript
+   * Public-facing turn-by-turn transcript (no system prompts, no ground truth, no persona internals).
+   * RBAC: student (own attempt), teacher (any attempt in own course), system admin (all).
+   * Fine-grained ownership check is enforced in SimulationService.getTranscript.
+   */
+  @Get(":attemptId/transcript")
+  @RequiredRoles("STUDENT", "TEACHER", "SYSTEM_ADMIN")
+  getTranscript(
+    @Param("attemptId") attemptId: string,
+    @Request() req: RequestWithUser,
+  ) {
+    return this.simulationService.getTranscript(
+      attemptId,
+      req.user.sub,
+      req.user.scopes,
+    );
+  }
+
+  /**
    * GET /simulations/:attemptId/state-log
    * Teacher review: PatientStateLog per turn [teacher-review API, Ido condition]
    * Access: teacher of course or system admin.

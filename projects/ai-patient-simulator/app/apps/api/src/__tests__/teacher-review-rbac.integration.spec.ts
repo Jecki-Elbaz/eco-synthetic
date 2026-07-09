@@ -13,8 +13,10 @@
  */
 
 import { PrismaClient } from "@aps/db";
+import { PrismaService } from "../db/prisma.service.js";
 import { SimulationService } from "../simulation/simulation.service.js";
-import { TurnPipeline, StubProvider } from "@aps/engine";
+import { EvaluationService } from "../evaluation/evaluation.service.js";
+import { TurnPipeline, StubProvider, Evaluator } from "@aps/engine";
 import type { UserScope } from "@aps/shared-types";
 import { ForbiddenException } from "@nestjs/common";
 
@@ -199,7 +201,9 @@ beforeAll(async () => {
   // Run one turn to produce a PatientStateLog row
   const provider = new StubProvider();
   const pipeline = new TurnPipeline(provider);
-  const service = new SimulationService(prisma as never, pipeline);
+  const prismaService = prisma as unknown as PrismaService;
+  const evaluationService = new EvaluationService(prismaService, new Evaluator(provider));
+  const service = new SimulationService(prismaService, pipeline, evaluationService);
 
   // actorScopes for the student (used only to pass processTurn ownership check)
   await service.processTurn(
@@ -234,7 +238,11 @@ afterAll(async () => {
 function buildService(): SimulationService {
   const provider = new StubProvider();
   const pipeline = new TurnPipeline(provider);
-  return new SimulationService(prisma as never, pipeline);
+  // EvaluationService required by SimulationService constructor (Sprint 2 APS-016).
+  // getPatientStateLogs and processTurn do not invoke it; safe to pass real instance.
+  const prismaService = prisma as unknown as PrismaService;
+  const evaluationService = new EvaluationService(prismaService, new Evaluator(provider));
+  return new SimulationService(prismaService, pipeline, evaluationService);
 }
 
 function teacherAScopes(): UserScope[] {

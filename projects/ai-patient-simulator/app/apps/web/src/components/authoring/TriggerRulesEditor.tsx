@@ -164,14 +164,29 @@ export default function TriggerRulesEditor({
                 >
                   {rule.priority}
                 </span>
-                <button
-                  type="button"
-                  className="auth-list-item__remove"
-                  onClick={() => removeLocalRule(rule.id)}
-                  aria-label={`הסר כלל: ${rule.triggerCondition}`}
-                >
-                  x
-                </button>
+                {/* Remove is local-only -- API has no DELETE on trigger rules this sprint.
+                    Notice shown inline so teacher is not misled (m5). */}
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "2px" }}>
+                  <button
+                    type="button"
+                    className="auth-list-item__remove"
+                    onClick={() => removeLocalRule(rule.id)}
+                    aria-label={`הסר כלל (מקומי בלבד, לא נמחק בשרת): ${rule.triggerCondition}`}
+                    title="הסרה מקומית בלבד -- לא נמחק בשרת"
+                  >
+                    x
+                  </button>
+                  <span
+                    style={{
+                      fontSize: "0.625rem",
+                      color: "var(--color-warn-amber)",
+                      whiteSpace: "nowrap",
+                    }}
+                    aria-hidden="true"
+                  >
+                    מקומי בלבד
+                  </span>
+                </div>
               </div>
             ))}
           </div>

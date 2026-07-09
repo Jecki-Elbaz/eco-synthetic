@@ -10,6 +10,7 @@ import { DebriefModule } from "./debrief/debrief.module.js";
 import { AuthoringModule } from "./authoring/authoring.module.js";
 import { SupportModule } from "./support/support.module.js";
 import { CreditAdminModule } from "./credit-admin/credit-admin.module.js";
+import { DashboardModule } from "./dashboard/dashboard.module.js";
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CreditAdminModule } from "./credit-admin/credit-admin.module.js";
     AuthoringModule,
     SupportModule,
     CreditAdminModule,
+    DashboardModule,
   ],
 })
 export class AppModule {}

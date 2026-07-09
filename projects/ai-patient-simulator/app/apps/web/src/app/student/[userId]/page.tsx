@@ -10,7 +10,7 @@
 // can view any student. Tracked as hardening work for Sprint 3+.
 // Production hardening: httpOnly cookie + Next.js middleware (APS-014).
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import StudentDashboard from "@/components/student/StudentDashboard";
 import { fetchStudentDashboard } from "@/lib/dashboard-client";
 import type { StudentDashboardVM } from "@/lib/dashboard-types";
@@ -18,7 +18,7 @@ import RequireAuth from "@/components/auth/RequireAuth";
 import AuthHeader from "@/components/auth/AuthHeader";
 
 interface PageProps {
-  params: Promise<{ userId: string }>;
+  params: { userId: string };
 }
 
 function StudentDashboardContent({ userId }: { userId: string }) {
@@ -57,7 +57,7 @@ function StudentDashboardContent({ userId }: { userId: string }) {
 }
 
 export default function StudentDashboardPage({ params }: PageProps) {
-  const { userId } = use(params);
+  const { userId } = params;
   return (
     <RequireAuth>
       <AuthHeader />

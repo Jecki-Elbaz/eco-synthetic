@@ -400,6 +400,7 @@ export default function RubricEditor({
   const [publishing, setPublishing] = useState(false);
   const [genError, setGenError] = useState<string | null>(null);
   const [pubError, setPubError] = useState<string | null>(null);
+  const [publishConfirmPending, setPublishConfirmPending] = useState(false);
 
   const published = rubric?.status === "PUBLISHED";
 
@@ -448,14 +449,15 @@ export default function RubricEditor({
 
   async function handlePublish() {
     if (!rubric) return;
-    // Warn if any criterion has unsaved edits
+    // If there are unsaved edits and we have not yet asked for inline confirmation,
+    // surface the inline confirm banner instead of window.confirm (which blocks the
+    // main thread, is not styled, and cannot be tested in Jest/JSDOM).
     const hasDirty = Object.values(edits).some((e) => e.dirty);
-    if (hasDirty) {
-      const confirmed = window.confirm(
-        "יש שינויים שלא נשמרו בחלק מהקריטריונים. להמשיך לפרסום בכל זאת?",
-      );
-      if (!confirmed) return;
+    if (hasDirty && !publishConfirmPending) {
+      setPublishConfirmPending(true);
+      return;
     }
+    setPublishConfirmPending(false);
     setPubError(null);
     setPublishing(true);
     try {
@@ -552,6 +554,33 @@ export default function RubricEditor({
       {pubError && (
         <div className="auth-error" role="alert">
           {pubError}
+        </div>
+      )}
+
+      {/* Inline publish confirmation -- replaces window.confirm (M3) */}
+      {publishConfirmPending && (
+        <div className="auth-notice auth-notice--warn" role="alert">
+          <span className="auth-notice__title">שינויים שלא נשמרו</span>
+          <span>
+            יש קריטריונים עם שינויים שלא נשמרו. האם להמשיך לפרסום בכל זאת?
+          </span>
+          <div style={{ display: "flex", gap: "8px", marginBlockStart: "8px" }}>
+            <button
+              type="button"
+              className="auth-btn auth-btn--publish"
+              onClick={handlePublish}
+              disabled={publishing}
+            >
+              {publishing ? "מפרסם..." : "כן, פרסם"}
+            </button>
+            <button
+              type="button"
+              className="auth-btn auth-btn--ghost"
+              onClick={() => setPublishConfirmPending(false)}
+            >
+              ביטול
+            </button>
+          </div>
         </div>
       )}
 

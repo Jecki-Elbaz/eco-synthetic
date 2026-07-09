@@ -81,6 +81,7 @@ model Attempt {
   assignment       Assignment    @relation(fields: [assignmentId], references: [id])
   userId           String
   user             User          @relation(fields: [userId], references: [id])
+  type             AttemptType   @default(STUDENT)
   status           AttemptStatus @default(NOT_STARTED)
   language         String
   startedAt        DateTime?
@@ -97,6 +98,13 @@ model Attempt {
   debriefMessages  DebriefChat[]
   usageLogs        UsageLog[]
   supportTickets   SupportTicket[]
+}
+
+// AUTHOR_PREVIEW: attempt created by a teacher running a self-sim preview.
+// Not visible in student dashboard. Credit deductions bypassed. Audit log still emitted.
+enum AttemptType {
+  STUDENT
+  AUTHOR_PREVIEW
 }
 
 enum AttemptStatus {

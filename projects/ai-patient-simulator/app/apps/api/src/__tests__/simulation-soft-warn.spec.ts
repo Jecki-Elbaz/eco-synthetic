@@ -126,7 +126,7 @@ describe("SimulationService -- softWarnAnnotation", () => {
   it("softWarnAnnotation is null when softWarnTriggered is false", async () => {
     const prisma = makePrisma();
     const pipeline = makePipeline({ softWarnTriggered: false });
-    const service = new SimulationService(prisma as never, pipeline as never);
+    const service = new SimulationService(prisma as never, pipeline as never, { generateEvaluation: jest.fn() } as never);
 
     const result = await service.processTurn(
       { attemptId: ATTEMPT_ID, studentMessage: "Hello", language: "en" },
@@ -143,7 +143,7 @@ describe("SimulationService -- softWarnAnnotation", () => {
       gateResult: { allowed: true, softWarn: true },
       softWarnTriggered: true,
     });
-    const service = new SimulationService(prisma as never, pipeline as never);
+    const service = new SimulationService(prisma as never, pipeline as never, { generateEvaluation: jest.fn() } as never);
 
     const result = await service.processTurn(
       { attemptId: ATTEMPT_ID, studentMessage: "Hello again", language: "en" },
@@ -162,7 +162,7 @@ describe("SimulationService -- softWarnAnnotation", () => {
       gateResult: { allowed: true, softWarn: true },
       softWarnTriggered: true,
     });
-    const service = new SimulationService(prisma as never, pipeline as never);
+    const service = new SimulationService(prisma as never, pipeline as never, { generateEvaluation: jest.fn() } as never);
 
     const result = await service.processTurn(
       { attemptId: ATTEMPT_ID, studentMessage: "Hello again", language: "en" },
@@ -179,7 +179,7 @@ describe("SimulationService -- softWarnAnnotation", () => {
       gateResult: { allowed: false, reason: "TURN_LIMIT" },
       softWarnTriggered: false,
     });
-    const service = new SimulationService(prisma as never, pipeline as never);
+    const service = new SimulationService(prisma as never, pipeline as never, { generateEvaluation: jest.fn() } as never);
 
     const result = await service.processTurn(
       { attemptId: ATTEMPT_ID, studentMessage: "Hello", language: "en" },

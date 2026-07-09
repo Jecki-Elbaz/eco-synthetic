@@ -106,6 +106,30 @@ async function main() {
   });
   check("debrief 2xx + supervisorText reply", (db.status >= 200 && db.status < 300) && typeof db.data?.supervisorText === "string" && db.data.supervisorText.length > 0, `${db.status} capped=${db.data?.capped}`);
 
+  // 9b. Student dashboard (real data: completed sim + debrief history)
+  const studentUserId = sl.data?.user?.id || env.E2E_STUDENT_USER_ID || "seed-user---0004-0000-0000-000000000004";
+  const sd = await call("GET", `/dashboard/student/${studentUserId}`, { token: studentToken });
+  check("student dashboard 200 + completed sim + debrief history",
+    sd.status === 200 && Array.isArray(sd.data?.completedSimulations) && sd.data.completedSimulations.length > 0 && Array.isArray(sd.data?.debriefHistory) && sd.data.debriefHistory.length > 0,
+    `${sd.status} sims=${sd.data?.completedSimulations?.length} debriefs=${sd.data?.debriefHistory?.length}`);
+
+  // 9c. Teacher class dashboard (real cohort matrix with the student's scores)
+  const COURSE_ID = env.E2E_COURSE_ID || "seed-course--0001-0000-0000-000000000001";
+  const td = await call("GET", `/dashboard/teacher/${COURSE_ID}`, { token: teacherToken });
+  const row = td.data?.students?.find((s) => s.userId === studentUserId);
+  check("teacher dashboard 200 + student row scored",
+    td.status === 200 && Array.isArray(td.data?.criteria) && td.data.criteria.length > 0 && !!row && row.overallScore !== null,
+    `${td.status} students=${td.data?.students?.length} row=${row?.status} overall=${row?.overallScore}`);
+
+  // 9d. RBAC: student forbidden on ANOTHER student's dashboard
+  const otherStudent = env.E2E_OTHER_STUDENT_ID || "seed-user---0005-0000-0000-000000000005";
+  const sdf = await call("GET", `/dashboard/student/${otherStudent}`, { token: studentToken });
+  check("student FORBIDDEN on another student's dashboard (403)", sdf.status === 403, sdf.status);
+
+  // 9e. RBAC: student forbidden on teacher dashboard
+  const tdf = await call("GET", `/dashboard/teacher/${COURSE_ID}`, { token: studentToken });
+  check("student FORBIDDEN on teacher dashboard (403)", tdf.status === 403, tdf.status);
+
   // 10. RBAC: student forbidden on admin surface
   const forbidden = await call("GET", "/admin/credits", { token: studentToken });
   check("student FORBIDDEN on /admin/credits (403)", forbidden.status === 403, forbidden.status);
@@ -122,6 +146,67 @@ async function main() {
   // 12. No-token protected call -> 401
   const noauth = await call("GET", "/admin/credits", {});
   check("no-token /admin/credits -> 401", noauth.status === 401, noauth.status);
+
+  // 20. Author-preview: teacher POST -> 2xx + attemptId; credit balance unchanged; student dashboard excludes it.
+  // 20a. Snapshot credit balance before preview
+  const ledgerBefore = await call("GET", `/admin/credits/ledger/${LEDGER_ID}`, { token: adminToken });
+  const creditBefore = ledgerBefore.data?.balance;
+
+  // 20b. Teacher runs preview (TYPICAL profile)
+  const prev = await call("POST", `/assignments/${ASSIGNMENT_ID}/preview`, {
+    token: teacherToken,
+    body: { profile: "TYPICAL" },
+  });
+  check("20a: teacher POST /preview -> 2xx + { attemptId }",
+    prev.status >= 200 && prev.status < 300 && typeof prev.data?.attemptId === "string",
+    `${prev.status} attemptId=${prev.data?.attemptId}`);
+  const previewAttemptId = prev.data?.attemptId;
+
+  // 21. GET transcript for the preview attempt -- verify shape, no system-prompt leak
+  const tr21 = await call("GET", `/simulations/${previewAttemptId}/transcript`, { token: teacherToken });
+  const tr21Items = Array.isArray(tr21.data) ? tr21.data : [];
+  const tr21FieldsOk =
+    tr21Items.length > 0 &&
+    tr21Items.every(
+      (item) =>
+        typeof item.studentInput === "string" &&
+        typeof item.patientResponse === "string" &&
+        typeof item.turnIndex === "number",
+    );
+  const tr21NoLeak = tr21Items.every(
+    (item) =>
+      item.systemPrompt === undefined &&
+      item.groundTruth === undefined &&
+      item.personaPrompt === undefined,
+  );
+  check(
+    "21: GET transcript >=1 item, correct fields, no system-prompt leak",
+    tr21.status === 200 && tr21FieldsOk && tr21NoLeak,
+    `${tr21.status} items=${tr21Items.length} fieldsOk=${tr21FieldsOk} noLeak=${tr21NoLeak}`,
+  );
+
+  // 20c. Balance must not have changed (bypassCreditCheck=true)
+  const ledgerAfter = await call("GET", `/admin/credits/ledger/${LEDGER_ID}`, { token: adminToken });
+  const creditAfter = ledgerAfter.data?.balance;
+  check("20b: credit balance unchanged after preview",
+    creditBefore !== undefined && creditAfter !== undefined && creditBefore === creditAfter,
+    `before=${creditBefore} after=${creditAfter}`);
+
+  // 20d. Preview attempt must have a DRAFT Evaluation (Track-A-fix-001: auto-triggered)
+  const evalRes = await call("GET", `/simulations/${previewAttemptId}/evaluation`, { token: teacherToken });
+  check("20d: preview has DRAFT Evaluation auto-triggered (Track-A-fix-001)",
+    evalRes.status === 200 && evalRes.data?.status === "DRAFT",
+    `${evalRes.status} evalStatus=${evalRes.data?.status}`);
+
+  // 20e. Student dashboard must NOT list the AUTHOR_PREVIEW attempt
+  const sd20 = await call("GET", `/dashboard/student/${studentUserId}`, { token: studentToken });
+  const previewInDashboard = Array.isArray(sd20.data?.completedSimulations) &&
+    sd20.data.completedSimulations.some(
+      (s) => s.id === previewAttemptId || s.attemptId === previewAttemptId,
+    );
+  check("20e: student dashboard excludes AUTHOR_PREVIEW attempt",
+    sd20.status === 200 && !previewInDashboard,
+    `status=${sd20.status} found=${previewInDashboard}`);
 
   const passed = results.filter((r) => r.ok).length;
   console.log(`\nE2E GOLDEN PATH: ${passed}/${results.length} PASS`);

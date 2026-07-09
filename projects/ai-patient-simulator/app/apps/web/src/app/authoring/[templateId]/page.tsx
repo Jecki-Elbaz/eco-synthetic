@@ -22,9 +22,14 @@ import {
 import RequireRole from "@/components/auth/RequireRole";
 import AuthHeader from "@/components/auth/AuthHeader";
 
-function AuthoringContent() {
+interface PageProps {
+  params: { templateId: string };
+}
+
+function AuthoringContent({ initialTemplateId }: { initialTemplateId: string }) {
   return (
     <AuthoringShell
+      initialTemplateId={initialTemplateId}
       clients={{
         createTemplate,
         createGroundTruth,
@@ -38,11 +43,11 @@ function AuthoringContent() {
   );
 }
 
-export default function AuthoringTemplatePage() {
+export default function AuthoringTemplatePage({ params }: PageProps) {
   return (
     <RequireRole roles={["TEACHER", "SYSTEM_ADMIN"]}>
       <AuthHeader />
-      <AuthoringContent />
+      <AuthoringContent initialTemplateId={params.templateId} />
     </RequireRole>
   );
 }

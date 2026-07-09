@@ -1,6 +1,8 @@
 # DRAFT email to Adam (APS design partner) -- 2026-07-02 (rev 2)
 
-Status: DRAFT for owner to send manually. Supersedes draft-email-adam-2026-06-29.md.
+Status: SUPERSEDED / DO NOT SEND -- Adam already replied 2026-07-07; answers received + captured
+2026-07-08 (all 5 questions answered): projects/ai-patient-simulator/intake/adam-pilot-readiness-answers-2026-07-08.md.
+Kept for history only. (Was: DRAFT for owner to send manually; superseded draft-email-adam-2026-06-29.md.)
 Verified 2026-07-02 against clarifying-questions-for-adam.md + adam-pilot-readiness-answers.md
 + the APS-004 gate (Rambo/Eyal/Lital) and APS-005 feasibility (Ido).
 Rev 2 (owner edits): "September" -> "next release"; signature per owner.

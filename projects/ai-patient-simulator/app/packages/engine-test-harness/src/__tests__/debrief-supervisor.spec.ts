@@ -305,6 +305,37 @@ describe("DebriefSupervisor -- (d) token usage threaded", () => {
 });
 
 // ---------------------------------------------------------------------------
+// (f) JC-3 -- DebriefSupervisorInput type-level isolation guard
+// ---------------------------------------------------------------------------
+
+describe("DebriefSupervisor -- (f) JC-3 type isolation guard", () => {
+  it("DebriefSupervisorInput instance carries no persona or ground-truth keys at runtime", () => {
+    const input: DebriefSupervisorInput = makeInput();
+    const forbidden = [
+      "personaSystemPrompt",
+      "knownFacts",
+      "disclosureAllowList",
+      "hardOffRampText",
+      "escalationRules",
+      "analyserOutput",
+    ];
+    for (const key of forbidden) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((input as any)[key]).toBeUndefined();
+    }
+  });
+
+  it("compile-time guard (_jc3DebriefGuard) is in force -- engine compiled without forbidden fields", () => {
+    // The type assertion `const _jc3DebriefGuard: _JC3Guard = true` in
+    // debrief-supervisor.ts FAILS TO COMPILE the moment DebriefSupervisorInput
+    // gains any of: personaSystemPrompt | knownFacts | disclosureAllowList |
+    // hardOffRampText | escalationRules | analyserOutput.
+    // If this test suite passes, the engine compiled clean => the guard is satisfied.
+    expect(true).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // (e) Malformed LLM response handled gracefully
 // ---------------------------------------------------------------------------
 

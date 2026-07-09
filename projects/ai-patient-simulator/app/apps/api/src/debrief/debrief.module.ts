@@ -1,19 +1,23 @@
 // DebriefModule -- wires DebriefService + DebriefController.
-// DebriefSupervisor is provided with StubProvider (pilot constraint, same as EvaluationModule).
-// Refactor to shared provider token when APS-004 LLM gate clears.
+// APS-012: DebriefSupervisor now consumes the shared LLM_PROVIDER_TOKEN from LlmModule.
+// No more per-module `new StubProvider()`. Provider choice is env-driven in LlmModule.
+// DEBRIEF_MAX_QUESTIONS not provided here -- DebriefService uses the DEFAULT_TURN_BUDGET default.
+// Inject the token explicitly only when you need a non-default cap (e.g. tests). [RE-3 fix]
 
 import { Module } from "@nestjs/common";
 import { DebriefService } from "./debrief.service.js";
 import { DebriefController } from "./debrief.controller.js";
-import { DebriefSupervisor, StubProvider } from "@aps/engine";
-// DEBRIEF_MAX_QUESTIONS not provided here -- DebriefService uses the DEFAULT_TURN_BUDGET default.
-// Inject the token explicitly only when you need a non-default cap (e.g. tests). [RE-3 fix]
+import { DebriefSupervisor } from "@aps/engine";
+import type { LLMProvider } from "@aps/engine";
+import { LlmModule, LLM_PROVIDER_TOKEN } from "../llm/llm.module.js";
 
 @Module({
+  imports: [LlmModule],
   providers: [
     {
       provide: DebriefSupervisor,
-      useFactory: () => new DebriefSupervisor(new StubProvider()),
+      inject: [LLM_PROVIDER_TOKEN],
+      useFactory: (provider: LLMProvider) => new DebriefSupervisor(provider),
     },
     DebriefService,
   ],

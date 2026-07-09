@@ -69,15 +69,25 @@ export class OrgService {
 
   // --------------- Attempt ---------------
 
-  async getOrCreateAttempt(assignmentId: string, userId: string, language: string) {
-    const existing = await this.prisma.attempt.findFirst({
-      where: {
-        assignmentId,
-        userId,
-        status: { not: "COMPLETED" },
-      },
-    });
-    if (existing) return existing;
+  async getOrCreateAttempt(
+    assignmentId: string,
+    userId: string,
+    language: string,
+    type: "STUDENT" | "AUTHOR_PREVIEW" = "STUDENT",
+  ) {
+    // For STUDENT type: return existing non-completed attempt if one exists.
+    // For AUTHOR_PREVIEW: always create a new attempt (each preview is independent).
+    if (type === "STUDENT") {
+      const existing = await this.prisma.attempt.findFirst({
+        where: {
+          assignmentId,
+          userId,
+          status: { not: "COMPLETED" },
+          type: "STUDENT",
+        },
+      });
+      if (existing) return existing;
+    }
 
     const assignment = await this.prisma.assignment.findUnique({
       where: { id: assignmentId },
@@ -89,6 +99,7 @@ export class OrgService {
         assignmentId,
         userId,
         language,
+        type,
         status: "NOT_STARTED",
       },
     });

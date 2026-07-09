@@ -5,15 +5,14 @@
 
 "use client";
 
-import { use } from "react";
 import SimulationScreen from "@/components/simulation/SimulationScreen";
 
 interface PageProps {
-  searchParams: Promise<{ lang?: string }>;
+  searchParams: { lang?: string };
 }
 
 export default function SimulationDemoPage({ searchParams }: PageProps) {
-  const { lang: langParam } = use(searchParams);
+  const { lang: langParam } = searchParams;
   const lang: "he" | "en" = langParam === "en" ? "en" : "he";
 
   return (

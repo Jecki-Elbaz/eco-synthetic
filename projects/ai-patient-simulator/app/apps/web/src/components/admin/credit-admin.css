@@ -202,9 +202,8 @@
 .cadmin-college-total {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
-  /* Numeric LTR */
-  direction: ltr;
-  unicode-bidi: embed;
+  /* direction/unicode-bidi removed -- numeric LTR applied only on inner
+     .cadmin-numeric span to avoid wrapping the Hebrew label text LTR (m8). */
 }
 
 /* ---- Course ledger table ---- */

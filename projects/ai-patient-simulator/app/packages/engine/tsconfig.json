@@ -2,9 +2,10 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
+    "rootDir": "./",
     "composite": true,
     "paths": {
-      "@aps/shared-types": ["../shared-types/src/index.ts"]
+      "@aps/shared-types": ["../shared-types/dist/index.d.ts"]
     }
   },
   "references": [

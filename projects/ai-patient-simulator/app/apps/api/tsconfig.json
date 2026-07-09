@@ -10,9 +10,9 @@
     "composite": true,
     "types": ["jest", "node"],
     "paths": {
-      "@aps/db": ["../../packages/db/src/index.ts"],
-      "@aps/engine": ["../../packages/engine/src/index.ts"],
-      "@aps/shared-types": ["../../packages/shared-types/src/index.ts"]
+      "@aps/db": ["../../packages/db/dist/index"],
+      "@aps/engine": ["../../packages/engine/dist/src/index"],
+      "@aps/shared-types": ["../../packages/shared-types/dist/index"]
     }
   },
   "references": [

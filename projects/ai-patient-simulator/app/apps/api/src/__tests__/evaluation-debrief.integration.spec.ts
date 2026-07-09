@@ -18,6 +18,7 @@
  */
 
 import { PrismaClient } from "@aps/db";
+import { PrismaService } from "../db/prisma.service.js";
 import { EvaluationService } from "../evaluation/evaluation.service.js";
 import { DebriefService } from "../debrief/debrief.service.js";
 import { Evaluator, DebriefSupervisor, StubProvider } from "@aps/engine";
@@ -245,8 +246,11 @@ const SKIP = !process.env["DATABASE_URL"];
       // Wire services
       // ---------------------------------------------------------------------------
       const provider = new StubProvider();
-      evaluationService = new EvaluationService(prisma as never, new Evaluator(provider));
-      debriefService = new DebriefService(prisma as never, new DebriefSupervisor(provider));
+      // PrismaClient is structurally compatible with PrismaService for all Prisma method
+      // signatures (PrismaService extends PrismaClient; NestJS lifecycle methods unused in tests).
+      const prismaService = prisma as unknown as PrismaService;
+      evaluationService = new EvaluationService(prismaService, new Evaluator(provider));
+      debriefService = new DebriefService(prismaService, new DebriefSupervisor(provider));
 
       teacherScopes = [{ role: "TEACHER", scopeType: "COURSE", scopeId: courseId }];
       studentScopes = [{ role: "STUDENT", scopeType: "COURSE", scopeId: courseId }];

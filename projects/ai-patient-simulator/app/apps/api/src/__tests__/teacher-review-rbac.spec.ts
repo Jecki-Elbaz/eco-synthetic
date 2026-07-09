@@ -141,7 +141,7 @@ function adminScopes(): UserScope[] {
 describe("SimulationService.getPatientStateLogs -- RBAC scope enforcement (unit, mocked Prisma)", () => {
   it("(a) TEACHER with matching courseId receives state-log rows", async () => {
     const prisma = makePrismaWithAttempt();
-    const service = new SimulationService(prisma as never, makeNullPipeline() as never);
+    const service = new SimulationService(prisma as never, makeNullPipeline() as never, { generateEvaluation: jest.fn() } as never);
 
     const result = await service.getPatientStateLogs(ATTEMPT_ID, TEACHER_A_ID, teacherAScopes());
 
@@ -152,7 +152,7 @@ describe("SimulationService.getPatientStateLogs -- RBAC scope enforcement (unit,
 
   it("(a) returned rows contain expected turn fields", async () => {
     const prisma = makePrismaWithAttempt();
-    const service = new SimulationService(prisma as never, makeNullPipeline() as never);
+    const service = new SimulationService(prisma as never, makeNullPipeline() as never, { generateEvaluation: jest.fn() } as never);
 
     const result = await service.getPatientStateLogs(ATTEMPT_ID, TEACHER_A_ID, teacherAScopes());
 
@@ -164,7 +164,7 @@ describe("SimulationService.getPatientStateLogs -- RBAC scope enforcement (unit,
 
   it("(b) TEACHER with a DIFFERENT courseId throws ForbiddenException", async () => {
     const prisma = makePrismaWithAttempt();
-    const service = new SimulationService(prisma as never, makeNullPipeline() as never);
+    const service = new SimulationService(prisma as never, makeNullPipeline() as never, { generateEvaluation: jest.fn() } as never);
 
     await expect(
       service.getPatientStateLogs(ATTEMPT_ID, TEACHER_B_ID, teacherBScopes()),
@@ -173,7 +173,7 @@ describe("SimulationService.getPatientStateLogs -- RBAC scope enforcement (unit,
 
   it("(b) TEACHER with wrong courseId does NOT receive rows", async () => {
     const prisma = makePrismaWithAttempt();
-    const service = new SimulationService(prisma as never, makeNullPipeline() as never);
+    const service = new SimulationService(prisma as never, makeNullPipeline() as never, { generateEvaluation: jest.fn() } as never);
 
     let threw = false;
     try {
@@ -189,7 +189,7 @@ describe("SimulationService.getPatientStateLogs -- RBAC scope enforcement (unit,
 
   it("(c) SYSTEM_ADMIN receives state-log rows regardless of course scope", async () => {
     const prisma = makePrismaWithAttempt();
-    const service = new SimulationService(prisma as never, makeNullPipeline() as never);
+    const service = new SimulationService(prisma as never, makeNullPipeline() as never, { generateEvaluation: jest.fn() } as never);
 
     const result = await service.getPatientStateLogs(ATTEMPT_ID, ADMIN_ID, adminScopes());
 
@@ -199,7 +199,7 @@ describe("SimulationService.getPatientStateLogs -- RBAC scope enforcement (unit,
 
   it("(d) non-existent attemptId throws NotFoundException", async () => {
     const prisma = makePrismaNoAttempt();
-    const service = new SimulationService(prisma as never, makeNullPipeline() as never);
+    const service = new SimulationService(prisma as never, makeNullPipeline() as never, { generateEvaluation: jest.fn() } as never);
 
     await expect(
       service.getPatientStateLogs("00000000-0000-0000-0000-000000000000", TEACHER_A_ID, teacherAScopes()),
@@ -208,7 +208,7 @@ describe("SimulationService.getPatientStateLogs -- RBAC scope enforcement (unit,
 
   it("(d) NotFoundException does not trigger patientStateLog query", async () => {
     const prisma = makePrismaNoAttempt();
-    const service = new SimulationService(prisma as never, makeNullPipeline() as never);
+    const service = new SimulationService(prisma as never, makeNullPipeline() as never, { generateEvaluation: jest.fn() } as never);
 
     try {
       await service.getPatientStateLogs("missing-id", TEACHER_A_ID, teacherAScopes());

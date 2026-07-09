@@ -1,31 +1,17 @@
-// EngineProvider -- registers the LLMProvider via NestJS DI.
-// Active provider selected by LLM_PROVIDER env var.
-// StubProvider is the default (no API calls).
-// Real providers require APS-004 gate clearance before wiring in.
+// EngineProvider -- registers TurnPipeline via NestJS DI.
+// APS-012: LLM_PROVIDER_TOKEN is now provided by LlmModule (shared across all modules).
+// SimulationModule imports LlmModule to get the token, then this provider uses it
+// to wire TurnPipeline. The LLM factory (stub/real selection) lives in LlmModule only.
 
-import { Provider } from "@nestjs/common";
-import { TurnPipeline, StubProvider } from "@aps/engine";
+import type { Provider } from "@nestjs/common";
+import { TurnPipeline } from "@aps/engine";
 import type { LLMProvider } from "@aps/engine";
-import { AppConfig } from "../config/app.config.js";
+import { LLM_PROVIDER_TOKEN } from "../llm/llm.module.js";
 
-export const LLM_PROVIDER_TOKEN = "LLM_PROVIDER";
+// Re-export token so callers that imported it from here continue to work.
+export { LLM_PROVIDER_TOKEN } from "../llm/llm.module.js";
 
 export const EngineProvider: Provider[] = [
-  {
-    provide: LLM_PROVIDER_TOKEN,
-    inject: [AppConfig],
-    useFactory: (config: AppConfig): LLMProvider => {
-      switch (config.llmProvider) {
-        case "stub":
-          return new StubProvider();
-        // case "anthropic": return new AnthropicProvider(config); // APS-004 gate required
-        // case "openai":    return new OpenAIProvider(config);    // APS-004 gate required
-        default:
-          console.warn(`Unknown LLM_PROVIDER "${config.llmProvider}" -- falling back to stub`);
-          return new StubProvider();
-      }
-    },
-  },
   {
     provide: TurnPipeline,
     inject: [LLM_PROVIDER_TOKEN],

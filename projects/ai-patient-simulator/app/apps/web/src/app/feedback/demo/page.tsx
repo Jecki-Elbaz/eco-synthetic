@@ -4,15 +4,14 @@
 // Renders FeedbackScreen with mock data (no live API needed).
 // Navigate to /feedback/demo or /feedback/demo?lang=en.
 
-import { use } from "react";
 import FeedbackScreen from "@/components/feedback/FeedbackScreen";
 
 interface PageProps {
-  searchParams: Promise<{ lang?: string }>;
+  searchParams: { lang?: string };
 }
 
 export default function FeedbackDemoPage({ searchParams }: PageProps) {
-  const { lang: langParam } = use(searchParams);
+  const { lang: langParam } = searchParams;
   const lang: "he" | "en" = langParam === "en" ? "en" : "he";
 
   return (
