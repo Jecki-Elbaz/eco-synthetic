@@ -1,8 +1,8 @@
 # Eco-Synthetic: Policy Framework
 
 - **Owner:** Dalia (Quality & Governance)
-- **Version:** 0.1 (initial, 2026-06-22)
-- **Status:** DRAFT -- advance to A2 (Eco approves framework structure) then A1 (owner) for full activation
+- **Version:** 0.2 (2026-07-08 -- policy index updated; activation path confirmed; section 8 status note updated)
+- **Status:** A2 GRANTED (Eco, 2026-07-08) -- framework structure approved; awaiting owner A1 for full activation
 - **Authority:** owner direction 2026-06-15 (decisions-log, item 2 of 6-part decision)
 - **Reference:** company/constitution.md (section 3, 5, 13); company/soul.md; CLAUDE.md
 
@@ -80,8 +80,8 @@ All company policies live in company/policies/.
 
 | Policy ID | Name | File | Owner | Status | Gate | Activated |
 |-----------|------|------|-------|--------|------|-----------|
-| POL-001 | Human-Communication Policy | human-communication-policy.md | Dalia (Q&G) | DRAFT v0.2 | A1 required | pending |
-| CS-0001 | Customer-Communication Policy | (not yet created) | Mike (VP CS) | not started | A1 + product-live | blocked on Mike + product |
+| POL-001 | Human-Communication Policy | human-communication-policy.md | Dalia (Q&G) | PRE-A1 READY v0.5 | A1 required | pending owner A1 |
+| CS-0001 | Customer-Communication Policy | (not yet created) | Mike (VP CS) | in-progress (AUD-004) | A2 Eco + A1 owner | blocked on CS-0001 draft completion |
 
 ---
 
@@ -97,14 +97,12 @@ this process. Those files govern their own domain; policies go here.
 
 ---
 
-## 8. Dalia's R&R note (A1 flag)
+## 8. Dalia's R&R note (resolved)
 
-The 2026-06-15 owner decision assigns policy-framework ownership to Dalia and requires a Dalia role-file
-update to reflect this responsibility. That role-file edit is A1 (red line 6; .claude/agents/ is
-owner/CEO-only). Dalia does NOT self-edit her role file. This flag is recorded here so the owner can
-action it in the next Claude Code session.
+The 2026-06-15 owner decision assigns policy-framework ownership to Dalia. As of Dalia's go-live
+(2026-06-17, owner A1 batch), her role file (.claude/agents/Dalia.md) includes:
+- "Policy framework ownership" in Responsibilities.
+- company/policies/ in Key files.
+- Policy-review cadence in Triggers.
 
-Specifically needed in Dalia.md: add "policy framework ownership" and "policy approval gate review" to
-Responsibilities; add company/policies/ to Key files; add policy-review cadence to Triggers.
-
-**Owner A1 required to execute the role-file update.**
+This flag is RESOLVED. No further role-file update needed for this item.

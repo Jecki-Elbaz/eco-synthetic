@@ -1,14 +1,19 @@
 # APS Requirements Baseline
 # task APS-001 | owner: Perry (VP Product) | date: 2026-06-28 | status: DRAFT (internal discovery)
-# Updated: 2026-06-28 -- folded in adam-pilot-readiness-answers + adam-appendix-credit-and-continuing-personas
+# Updated: 2026-07-08 -- folded in adam-pilot-readiness-answers-2026-07-08 (APS-010 answers:
+#   session format, clinical oversight, welfare de-scope, cohort sizing);
+#   prior update 2026-06-28 -- adam-pilot-readiness-answers + adam-appendix-credit-and-continuing-personas
 
 Source: adam-hld-text-extract.txt (71pp) + adam-architecture-deck.pdf (RAG/storage deck)
-        + adam-pilot-readiness-answers.md (2026-06-28) + adam-appendix-credit-and-continuing-personas.md (2026-06-28).
+        + adam-pilot-readiness-answers.md (2026-06-28) + adam-appendix-credit-and-continuing-personas.md (2026-06-28)
+        + adam-pilot-readiness-answers-2026-07-08.md (APS-010 answers, owner relay 2026-07-08).
+Correspondence record: projects/ai-patient-simulator/correspondence/notes/adam-aps-010-answers-2026-07-08.md
 Not for external sharing. All requirements prefixed with APS-REQ.
 
 ---
 
-## LOCKED PILOT FACTS (from adam-pilot-readiness-answers.md, 2026-06-28)
+## LOCKED PILOT FACTS (from adam-pilot-readiness-answers.md, 2026-06-28;
+##                     updated adam-pilot-readiness-answers-2026-07-08.md)
 
 - Site: Gome Gevim College (Israel). CONFIRMED.
 - Pilot start: 1 September 2026. HARD TARGET (treat as real, not speculative).
@@ -16,6 +21,17 @@ Not for external sharing. All requirements prefixed with APS-REQ.
 - Assessment mode v1: FORMATIVE only. No formal grading, no grade sync required for pilot.
 - Languages: Hebrew REQUIRED day one; English desirable; Arabic later phase.
 - Students: Israel-based. Privacy baseline: Israeli Privacy Protection Law.
+- Cohort (2026-07-08): ~20-25 students, ~2 staff (teachers/supervisors/admins),
+  ~3-5 sessions per student. Planning range: 60-175 total simulation runs + buffer.
+- Session format (2026-07-08): BOTH single-encounter AND multi-session (persistent patient
+  state) required for Sep pilot. Multi-session = competitive differentiator per Adam.
+  Continuing Persona runtime is IN SCOPE for Sep pilot (NOT Phase 1b). See Section 17.
+- Clinical lead (2026-07-08): Adam is the clinical/product lead for pilot content.
+  No external advisor hire required. Adam performs periodic review of content + outputs.
+- Student welfare contact (2026-07-08): DE-SCOPED for pilot. No named contact.
+  Retain: AI-disclosure, off-ramp, neutral signpost ("speak to your course supervisor").
+- Data controller (2026-07-08): Adam. Platform handles student Personal Data under
+  Israeli PPL. Security controls per Rambo/Eyal APS-004 gate.
 
 ---
 
@@ -416,29 +432,36 @@ Perry's cut: Adam's MVP list includes teacher dashboard as Must and programme + 
 ---
 
 ## 17. Module: Continuing Persona / Therapeutic History (NEW -- from adam-appendix 2026-06-28)
-# CRITICAL decision: IN the 1-Sep pilot or deferred?
+# STATUS REVISED 2026-07-08: IN SCOPE FOR 1-SEP PILOT. Deferral reversed.
 #
-# Perry recommendation: DEFERRED to Phase 1b (first fast-follow after pilot, ~4-6 weeks post-Sep).
-# Rationale:
-#   1. TIMELINE: 9 weeks. The AI patient engine (dynamic state, ground-truth, eval pipeline) is
-#      already the hardest item in pilot-minimal scope. Adding longitudinal history branching,
-#      per-student-persona state persistence, and reset/fork UI in the same 9 weeks is not
-#      credible. One of the two will be under-built.
-#   2. FORMATIVE context: a formative pilot's value is in the per-session feedback loop, not
-#      multi-session continuity. A single well-designed session is sufficient to prove the
-#      concept. Continuing persona adds pedagogical richness but is not what makes or breaks
-#      the Sep pilot.
-#   3. ARCHITECTURE: if continuing persona is in scope, the schema must include PersonaBranch,
-#      StudentPersonaHistory, and all the JSONB history fields from day one. That is buildable
-#      (JSONB recommendation above), but adds R&D surface area. Design it now; implement in 1b.
-#   4. COUNTER-ARGUMENT: if Adam specifically requires multi-session continuity for the Sep
-#      pilot, this decision must be reversed. Perry does not know Adam's exact session plan.
-#      OPEN QUESTION: see clarifying-questions-for-adam.md Q9.1.
+# Adam confirmed (adam-pilot-readiness-answers-2026-07-08.md, Q9.1): BOTH single-encounter
+# AND multi-session with the same simulated patient (persistent patient state) are required
+# for the Sep pilot. Adam described multi-session continuity as a competitive differentiator.
 #
-# Schema note: even if deferred from the UI/runtime, the data model stubs MUST be designed now
-# so the schema is not broken when 1b is built. Flag to Ido.
+# Prior deferral rationale (Perry 2026-06-28) is now void on items 1-2. Item 3 (schema design)
+# was correct and has been acted on (PersonaBranch + StudentPersonaHistory stubs in schema).
+# The SCHEMA IS ALREADY IN PLACE (APS-007 build). What is needed is the RUNTIME and UI.
+#
+# SCHEDULE IMPACT: this is the most significant scope change from Adam's answers.
+# Adding continuing persona runtime to the 9-week window alongside the AI patient engine
+# was assessed by Ido (feasibility-ido.md Section 4, Case B) as requiring timeline
+# renegotiation. That assessment stands.
+#
+# ESCALATION NOTE (Perry -> Eco): timeline must be re-evaluated with Ido immediately.
+# Options per Ido Case B in feasibility-ido.md:
+#   Option 1: 1 Sep single-session only; continuing personas Phase 1b (Oct). Rejected by Adam.
+#   Option 2: ~15 Oct with both modes. Negotiate with Adam.
+#   Option 3: 1 Sep with limited 2-session arc only (EXTREMELY HIGH RISK, Ido does not recommend).
+# Perry position: surface the tradeoff to owner + Adam before committing. Do not silently absorb.
+# Continuing persona runtime is the second-highest-risk build item after the engine core.
+#
+# Schema note: PersonaBranch + StudentPersonaHistory are ALREADY in the schema (APS-007).
+# Runtime and UI are NOT built. That is what must be scoped for the Sep window.
+#
+# Cohort confirmation of scope: 3-5 sessions per student are planned. Multi-session persistence
+# is inherently required for that session plan to have pedagogical value.
 
-### Must (Phase 1b -- fast-follow)
+### Must (Sep pilot -- REVISED 2026-07-08; was Phase 1b)
 - APS-REQ-152: Shared base persona per course: teacher defines/selects a base persona; multiple
   students begin from the same starting state.
 - APS-REQ-153: Student-specific branching: first interaction creates a unique StudentPersona
@@ -459,15 +482,17 @@ Perry's cut: Adam's MVP list includes teacher dashboard as Must and programme + 
   (session 1 restart). Audit log entry required.
 - APS-REQ-159: Fork option: course staff can branch from any prior session point; creates
   an alternative StudentPersona branch. Original preserved.
-- APS-REQ-160: Data retention: StudentPersona history retained 12 months, then delete or
-  archive per platform data-retention policy. Retention period configurable by System Admin.
+- APS-REQ-160: Data retention: StudentPersona history retained per Eyal/Rambo APS-004
+  recommendation. Retention period configurable by System Admin. NOTE: 12-month flat retention
+  flagged as a PPL concern by Eyal; defer final retention value to APS-004 Eyal sign-off.
 - APS-REQ-161: Educational boundary enforcement: all UI surfaces label continuing personas as
   "simulated educational patient." History must NOT be treated or displayed as a clinical record.
   System must not output anything suggesting real clinical status.
+- APS-REQ-162: Teacher control of session mode: course-level toggle (single-encounter vs
+  continuing persona). Students cannot set this. REQUIRED for Sep pilot (Adam confirmed
+  both modes must be available).
 
-### Should (Phase 1b)
-- APS-REQ-162: Teacher control of continuation: course-level toggle (one-off session vs
-  continuing persona). Students cannot set this.
+### Should (Sep pilot)
 - APS-REQ-163: Compare therapeutic paths: view two StudentPersona branches side by side
   (teaching / remediation use case).
 
@@ -475,6 +500,74 @@ Perry's cut: Adam's MVP list includes teacher dashboard as Must and programme + 
 - APS-REQ-164: Automated cross-student pattern analysis on persona history -> Phase 2
   (vector/RAG layer).
 - APS-REQ-165: Embedding-based similarity search across StudentPersona histories -> Phase 2.
+
+---
+
+## 17b. Module: Self-Simulation Mode (NEW -- from adam-pilot-readiness-answers-2026-07-08.md)
+# Source: Adam Q-CLINICAL-OVERSIGHT answer, 2026-07-08.
+# Adam DESIRED feature: a bot simulates a student, runs the full simulation including
+# the final review, and Adam inspects the results. This enables content quality validation
+# without requiring a human student to run the case first.
+#
+# Classification: DESIRED by Adam; not stated as hard-required for launch. Perry recommends
+# treating as HIGH PRIORITY for the Sep pilot (directly serves Adam's clinical-lead function)
+# but scheduling it after the core engine + continuing persona runtime are stable.
+# Engineering items for Ido: see Section 19 (engineering items list).
+
+### Should (Sep pilot -- HIGH PRIORITY)
+- APS-REQ-166: Self-simulation mode: system can run a complete simulation session with a
+  bot acting as the student. Bot generates student turns; the AI patient responds as normal;
+  the full evaluation pipeline runs at the end including the debrief.
+- APS-REQ-167: Self-simulation output review: the session runner (Adam, or any authorised
+  staff with the self-simulation trigger) can inspect the full bot-run transcript, patient
+  state progression, and evaluation report after the run completes.
+- APS-REQ-168: Self-simulation trigger: accessible from the case authoring / teacher
+  validation interface. Not accessible to student-role users.
+- APS-REQ-169: Self-simulation bot behaviour is configurable: at minimum, the bot should be
+  able to simulate a "competent student," a "weak student," and a "typical student." These
+  define the quality distribution of bot-generated turns to stress-test the evaluation rubric
+  and patient responses at different skill levels.
+- APS-REQ-170: Self-simulation does NOT consume student-facing credit allocations. Tracked
+  separately in UsageLog (activity_type = SELF_SIMULATION).
+
+### Could (Sep pilot)
+- APS-REQ-171: Scheduled batch self-simulation (run N bot sessions overnight and email
+  results summary to the content owner).
+
+### Won't (Sep pilot)
+- APS-REQ-172: External LLM-as-student model with full pedagogical theory backing -> Phase 2.
+
+---
+
+## 17c. Module: Teacher Validation / Preview Flow (NEW -- adam-pilot-readiness-answers-2026-07-08.md)
+# Source: Adam Q-CLINICAL-OVERSIGHT answer, 2026-07-08.
+# Adam specified: when a teacher builds a new simulation/persona they must be able to run
+# checks and see whether it works well. This is the teacher validation/preview flow.
+#
+# NOTE: APS-REQ-034 (simulation preview) was previously a "Should" item in Section 5 (Case
+# Authoring). This module formalises it as a Must for the Sep pilot, given Adam's explicit ask.
+# APS-REQ-034 is SUPERSEDED by the requirements below. Cross-reference retained.
+
+### Must (Sep pilot -- REVISED from Should 2026-07-08)
+- APS-REQ-173: Teacher validation/preview mode: a teacher who has built or is editing a
+  simulation/persona can trigger a preview run of that simulation before publishing it.
+  Preview runs use a lightweight stub student (not the full self-simulation bot) to return
+  a representative patient response sequence.
+- APS-REQ-174: Preview run result view: teacher sees the AI patient's responses, patient
+  state changes across sample turns, and any ground-truth enforcement events. Sufficient to
+  judge whether the persona and ground-truth rules are working as intended.
+- APS-REQ-175: Preview is gated to the author/teacher only. No student can trigger a preview.
+  Preview sessions are clearly marked "PREVIEW - NOT A REAL SESSION" in all UI surfaces.
+- APS-REQ-176: Preview does NOT affect the published rubric version or any student attempt
+  records. Preview sessions are stored separately (preview_session table or flag).
+
+### Should (Sep pilot)
+- APS-REQ-177: Preview with different challenge levels: teacher can trigger previews at
+  challenge level 1, 3, and 5 to see how the patient responds to varying student quality.
+
+### Won't (Sep pilot)
+- APS-REQ-178: Full automated quality-score for the simulation (does the rubric discriminate
+  well between challenge levels?) -> Phase 2, requires population data.
 
 ---
 
@@ -513,28 +606,46 @@ Clinical-adjacent training data + student PII (Israel-based) = Israeli Privacy P
 minimum. Continuing Persona history (12-month retention) amplifies this. Eyal must review
 before any data is stored. Flag to Eco for Legal engagement.
 
-### Flag 7: Continuing Persona -- pilot inclusion decision is OPEN
-Perry recommends Phase 1b (not 1-Sep). But if Adam requires multi-session continuity from
-day one (e.g., Sep cohort runs across multiple weeks, continuity is the point), the call
-reverses and timeline risk escalates. Eco must clarify with Adam before R&D scoping.
+### Flag 7: Continuing Persona -- SCOPE REVERSED 2026-07-08
+Adam confirmed (2026-07-08): multi-session with persistent patient state IS required for Sep pilot.
+The Phase 1b deferral is reversed. Runtime + UI are now IN SCOPE.
+This is the highest-impact scope change from Adam's answers. Timeline must be re-evaluated.
+Escalation to Eco + Ido required immediately. See Section 17 for options.
+
+### Flag 8: Self-simulation mode + teacher validation/preview -- NEW 2026-07-08
+Adam requested both features. See Sections 17b and 17c.
+Engineering items raised for Ido (new task APS-PENDING or addition to existing APS sprint).
+Self-simulation mode requires: bot-student generator, self-sim run pipeline, separate credit
+accounting. Teacher preview requires: lightweight preview run mode, result view, preview-only
+session storage. Both are feasibility items for Ido -- Perry has not committed timelines.
+
+### Flag 9: Student welfare contact -- DE-SCOPED 2026-07-08
+Adam confirmed: no named welfare contact required at this stage. Retain AI-disclosure,
+off-ramp, and neutral signpost ("speak to your course supervisor"). Named contact is Phase 2+.
 
 ---
 
-## PM. Pilot-Minimal Scope (1 September 2026 credible target -- Perry assessment 2026-06-28)
+## PM. Pilot-Minimal Scope -- REVISED 2026-07-08 (Perry, from Adam answers)
 
-9-week window. Concrete and opinionated. This is what can ship if R&D starts this week.
+# SCOPE CHANGE 2026-07-08: multi-session continuing persona runtime moved IN (was Phase 1b).
+# Two new features added: self-simulation mode and teacher validation/preview flow.
+# Student welfare contact remains de-scoped (Adam confirmed).
+# Timeline impact: SIGNIFICANT. Ido must re-evaluate against the Sep window. See Section 17.
 
-| IN (pilot-minimal) | OUT (Phase 1b or later) |
-|--------------------|-------------------------|
+| IN (pilot -- REVISED 2026-07-08) | OUT (Phase 1b or later) |
+|----------------------------------|-------------------------|
 | Secure invite link auth (no LTI) | Canvas/Moodle LTI |
 | Email/access-code login | Grade sync |
 | Org hierarchy: College, Course, Student Attempt (stubs for Programme) | Programme / College dashboards |
 | RBAC: Student, Teacher, System Admin | Programme Manager, College Manager, Support Staff UI |
 | One institution (Gome Gevim), 1-3 courses | Multi-institution |
 | Hebrew + English (RTL rendering for Hebrew) | Arabic |
-| Guided case authoring: structured builder + ground-truth file | Advanced authoring studio, quality checker, preview |
+| Guided case authoring: structured builder + ground-truth file | Advanced authoring studio, quality checker |
 | Core competency library (platform-seeded, no governance workflow) | Competency approval workflow |
-| AI patient engine: text, dynamic state, ground-truth enforcement, disclosure rules | Patient audio, continuing persona (Phase 1b) |
+| AI patient engine: text, dynamic state, ground-truth enforcement, disclosure rules | Patient audio |
+| Continuing persona runtime + UI: persistent patient state across sessions (APS-REQ-152-162) [MOVED IN 2026-07-08] | Phase 1b: advanced branching analytics |
+| Self-simulation mode: bot-as-student runs full session; Adam inspects output (APS-REQ-166-170) [NEW 2026-07-08] | Phase 2: full pedagogical theory LLM-as-student |
+| Teacher validation/preview flow: teacher runs own case before publishing (APS-REQ-173-176) [NEW 2026-07-08] | Phase 2: automated quality score for simulation |
 | Rubric builder: semi-auto + teacher edit + version lock | Rubric marketplace |
 | Evaluation engine: structured scoring + transcript highlights + student feedback view | Remediation content library |
 | Debrief chat (guardrailed, transcript-only) | Longitudinal analytics |
@@ -545,11 +656,14 @@ reverses and timeline risk escalates. Eco must clarify with Adam before R&D scop
 | Credit/token management: college + course allocation, soft/hard limits, admin UI, audit log | Student credits, billing, cross-institution pooling |
 | Cost monitoring: UsageLog per attempt, basic cost alert | Full credit ledger UI (beyond admin controls above) |
 | PostgreSQL + Prisma + JSONB + Redis + S3 | MongoDB / vector store |
-| PersonaBranch + StudentPersonaHistory SCHEMA (data model only, no runtime) | Continuing persona runtime + UI (Phase 1b) |
+| AI-disclosure + off-ramp + neutral welfare signpost (no named welfare contact) | Named welfare contact resource (de-scoped by Adam) |
 
-SCHEDULE RISK: AI patient engine quality is the single biggest risk. Prompt engineering,
-ground-truth enforcement, and state tracking cannot be parallelised. If this is not production-
-quality by mid-August, the Sep pilot will be embarrassing. Mitigation: R&D must start on the
-patient engine this week; everything else is secondary. Perry recommends Eco agree with Ido on
-a mid-August internal rehearsal with real users as the checkpoint. If that rehearsal fails,
-advise Adam of a 4-6 week slip to Phase 1b parity.
+SCHEDULE RISK (updated 2026-07-08): the addition of continuing persona runtime to the Sep
+window significantly increases build surface on the highest-risk module. Ido assessed this
+as requiring timeline renegotiation (feasibility-ido.md Section 4, Case B). Perry position:
+do not silently absorb this change. Options (see Section 17): ~15 Oct for both modes, or
+Sep with single-session only and continuing persona in Oct. Owner and Adam must decide before
+R&D re-scopes.
+
+PLANNING NUMBERS (from Adam 2026-07-08): 20-25 students, ~2 staff, 3-5 sessions per student.
+Total simulation runs: 60-175 with buffer. Lital to update cost estimate.

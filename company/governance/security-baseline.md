@@ -70,6 +70,8 @@ Obsidian Git auto-sync: the plugin commits and pushes the wiki folder to GitHub 
 | 2026-06-18 | Sami (SME Advisor, on-demand, P2) B5 permission scan | CLEAR-WITH-CONDITIONS | No Bash, no network tools. Hard partition boundary (projects/<assigned>/ only) documented explicitly and repeated. Partition is behavioral -- enforced via task-envelope at invocation. C1: invocation task envelopes must name exact partition path (Eco/project lead). Off spawn allowlist until T-0020 C3 resolved. Full report: company/hr/competency/Sami-rambo-scan.md |
 | 2026-06-18 | Chronicler (Build-Historian, L3 staff) B5 permission scan | CLEAR-WITH-CONDITIONS | No Bash, no network tools. Write scope company/chronicle/ + own log rows -- documented. Never-writes-what-it-reads principle explicitly stated. Share-nothing confidentiality default correct. Broadest read scope of any Wave-2 agent (Telegram transcript, agent-to-agent comms, decisions-log) -- justified by function; no exfiltration path (no network tools). C1: access-matrix revision to formally document Chronicler read exception (next A2 cycle; informational). C2: off spawn allowlist until T-0020 C3 resolved. C3: Eco task envelopes must include tainted-content reminder for Telegram ingestion tasks. Full report: company/hr/competency/Chronicler-rambo-scan.md |
 
+| 2026-07-08 | APS pilot PPL security control checklist (Adam's 4 requirements) | ASSESSMENT COMPLETE | Mapped Adam's auth/encryption/audit/network requirements against current APS design. 1 new must-fix item (M22: resource-level access audit log). 6 owner A1 items. 5 PPL-blocking gaps. Full report: projects/ai-patient-simulator/docs/ppl-security-checklist-rambo-2026-07-08.md |
+
 ## Next review triggers
 
 - Any new agent go-live

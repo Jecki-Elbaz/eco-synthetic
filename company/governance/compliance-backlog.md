@@ -11,6 +11,32 @@ Eyal fills legal-leg; Lital fills finance-leg. Neither overwrites the other's bl
 
 ---
 
+## ECO-ASSIGNED ACTION ITEMS -- EYAL (open; added by Eco 2026-07-09)
+
+Concrete, self-contained legal tasks Eco assigned to Eyal. Complete each on your next
+compliance run: do the task, write the stated output, then append a one-line
+"DONE <date>: <result>" under the item (do not delete it). No owner input needed for either.
+
+**EA-1 -- WhatsApp ToS confirm (closes T-0039 item 3).**
+Read C:\Users\Jecki\DEV\shared\handoff\shelly-outbox\S-0005-whatsapp-tos-packet-for-eyal-2026-07-02.md
+(Shelly already staged the primary-source ToS text -- this is Read-only, NOT a WebFetch task).
+In one line, confirm whether the packet satisfies your live-ToS item for the whatsapp-mcp gate:
+does it show that both the consumer ToS and the Business Terms prohibit unofficial/automated
+clients and reserve account termination (the concrete basis for the C5 / C-L1 ban-risk the owner
+must accept)? Write the verdict to
+C:\Users\Jecki\DEV\shared\handoff\eyal-whatsapp-tos-confirm-2026-07-09.md and mark DONE here.
+After your confirm, only two owner keystrokes remain (record SHA + ban-risk acceptance at install).
+
+**EA-2 -- CS ticket retention window (last item before CS-0001 owner A1 package; AUD-004).**
+Provide the PPL-compliant retention period for CUSTOMER-SUPPORT TICKET SUMMARIES (CS ticket
+data, not APS student data). Legal guidance from PPL data-minimisation -- no WebFetch needed.
+State three things: the retention period, the PPL basis, and any deletion/minimisation condition.
+Write it to C:\Users\Jecki\DEV\shared\handoff\eyal-cs-retention-2026-07-09.md and mark DONE here.
+Eco folds it into company/cs/cs-0001-customer-communication-policy.md and the owner A1 package is
+then complete.
+
+---
+
 ## ITEM 1 -- Israeli company registration
 
 **Status:** not started
@@ -930,3 +956,27 @@ NO hard deadlines have been breached (all event-triggered except item 1 near-dea
 above which is past its target date, not a legal hard-stop).
 
 Last reviewed by Eyal: 2026-07-06 (run 4).
+
+---
+
+## ECO-QUEUED ACTION ITEMS FOR EYAL (queued by Eco 2026-07-09)
+
+Placed here because Eyal's scheduled compliance job READS this file (it does not read the
+task board). Both items are Read/reason/Write only -- NO WebFetch needed. Do on the next
+Eyal run; do not defer to "a tool session." Owner directive 2026-07-09: start-time is NOW,
+agent cadence, not the due date.
+
+EYAL-Q1 -- WhatsApp ToS confirm (closes T-0039 remaining item 3):
+- Read shared/handoff/shelly-outbox/S-0005-whatsapp-tos-packet-for-eyal-2026-07-02.md
+  (Shelly staged the verbatim WhatsApp consumer ToS + Business Terms prohibitions).
+- Confirm the packet satisfies your live-ToS item and states a concrete ban-risk basis
+  (both docs prohibit unofficial/automated clients + reserve account termination = the
+  C5/C-L1 ban-risk the owner formally accepts at install).
+- Write a one-line verdict to shared/handoff/eco-eyal-whatsapp-tos-confirm-2026-07-09.md
+  so only the two owner keystrokes (record SHA + ban-risk acceptance) remain at install.
+
+EYAL-Q2 -- CS ticket-summary retention window (unblocks CS-0001 / AUD-004 owner A1 package):
+- Provide the PPL-compliant retention window for CS ticket summaries (data-minimisation,
+  Amendment 13). This is legal guidance from PPL knowledge -- no external fetch required.
+- State the window (e.g. "N months after ticket close") + the legal basis, and write it so
+  Mike can insert it into company/cs/cs-0001-customer-communication-policy.md before owner A1.

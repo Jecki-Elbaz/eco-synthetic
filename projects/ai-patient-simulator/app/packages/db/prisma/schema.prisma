@@ -459,16 +459,19 @@ model CreditLedger {
 }
 
 model CreditEntry {
-  id           String   @id @default(uuid())
-  ledgerId     String
-  ledger       CreditLedger @relation(fields: [ledgerId], references: [id])
-  adminId      String?
-  activityType String
-  delta        Int
-  reason       String?
-  timestamp    DateTime @default(now())
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id               String   @id @default(uuid())
+  ledgerId         String
+  ledger           CreditLedger @relation(fields: [ledgerId], references: [id])
+  adminId          String?
+  activityType     String
+  delta            Int
+  reason           String?
+  // Runtime deduction reason (populated by CreditLedgerService.deductCredits;
+  // null for admin-initiated entries). APS-REQ-139 audit trail.
+  deduction_reason String?
+  timestamp        DateTime @default(now())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
 model UsageLog {

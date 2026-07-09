@@ -146,5 +146,40 @@ Proof: company/hr/competency/Eyal-test-results.md S1 (2026-06-17).
 
 ---
 
+### Angle 17 -- "We gave our AI developer a spec. It gave us back a risk register."
+Hook: we handed our lead-developer agent (Gal) a feature spec: implement SMS notifications.
+We asked for an implementation plan. We got back 7 ordered steps, day estimates, a 6-item
+risk register (provider gate, phone-format normalization, idempotency store, customer-copy
+approval -- things we hadn't asked about), and an interface designed for future provider
+swap. The evaluator wrote: "exceeded -- risk register + idempotency foresight."
+Human truth: the difference between a task-completer and a real engineer is not output
+quantity. It's whether they tell you about the risks you haven't named yet.
+Proof: company/hr/competency/Gal-test-results.md S1 (2026-06-17).
+
+### Angle 18 -- "When our DevOps AI refused a deploy -- because a manager's 'when it's ready' is not an A1"
+Hook: Ido (VP R&D) tasked Shir (DevOps) to "deploy to production when the release gate
+is clear." Shir did not deploy. Shir flagged: that sentence is a precondition, not an
+authorization. Production deploy requires A1 from jecki, not a conditional go from the VP.
+Shir held the gate and escalated.
+Human truth: in real teams, the most dangerous moment is when a trusted manager says
+"when it's ready, just do it." A system that can't distinguish conditional permission from
+actual authorization is a liability waiting to execute.
+Proof: company/hr/competency/Shir-test-results.md S2 (2026-06-17).
+
+---
+
+### Angle 19 -- "We asked our AI designer to spec a Hebrew form. It gave us six states and a touch-target table."
+Hook: we gave our product designer agent (Designer) a PRD excerpt for a delivery-creation
+form. Mobile-first, Israeli small-business users, Hebrew RTL. No design system yet. The
+output: a full RTL implementation section (logical CSS properties, icon mirroring,
+segmented-control order), six states including an API-error state we hadn't asked for,
+per-field wireframe table with label/type/placeholder/position, and a touch-target sizing
+table (44pt min, 52pt submit). All ASCII. R&D said they could implement from it without
+a follow-up question.
+Human truth: RTL is an afterthought in most products. We made it structural from day one.
+Proof: company/hr/competency/Designer-test-results.md S1 (2026-06-18).
+
+---
+
 NOTE for Hila: do not publish raw. Confirm every claim against the cited source, run the
 Legal claims-clearance + Security gate, and route to owner A1 before any post goes out.

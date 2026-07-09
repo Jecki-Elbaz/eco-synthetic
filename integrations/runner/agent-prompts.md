@@ -292,6 +292,11 @@ Steps:
       deadline within 30 days.
    b. Any gate-register entry with a review date that has passed.
    c. Any item in the backlog requiring owner A1 that has not been escalated yet.
+4. ECO-ASSIGNED ACTIONS: if compliance-backlog.md has a section titled
+   "ECO-ASSIGNED ACTION ITEMS -- EYAL" with any item NOT marked DONE, COMPLETE each one now --
+   do exactly what the item says (read the named file, write the stated output file), then
+   append a one-line "DONE <today>: <result>" under that item. These are direct tasks from Eco:
+   act on them, do not merely flag them.
 
 Update company/governance/compliance-backlog.md:
 - Append a "Last reviewed by Eyal: <YYYY-MM-DD>" line in your section or footer.

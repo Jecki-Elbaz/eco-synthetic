@@ -4,6 +4,8 @@ Daily cost and token usage summaries.
 
 | Date | Summary |
 |------|---------|
+| 2026-07-09 | Logging infrastructure offline; token data incomplete (8+ day gap); runner telemetry unavailable; cannot verify health. 8-day DEGRADED trend; snapshot unable to fulfill observability mission. ESCALATE_TO_ECO. -- DEGRADED. |
+| 2026-07-08 | ~8.1k tokens (Eco only); 20+ runs; 3 TimeoutExpired (Eco x2, Oracle), 4 rc!=0 (Shir x2, Eco API x2), NEW: API connectivity errors (ConnectionRefused, FailedToOpenSocket). Shir git-hygiene rc=1 now recurring pattern (2 days). Logging gap persists. ESCALATE_TO_ECO. -- DEGRADED. |
 | 2026-07-07 | Token data unavailable (6-day logging gap from 2026-07-01); 5 TimeoutExpired (Eco, Assaf, Rambo), 2 rc=1 (Shir git-hygiene); SAFE_MODE flag may block writes. 6-day DEGRADED trend. ESCALATE_TO_ECO. -- DEGRADED. |
 | 2026-07-06 | Token data unavailable (5-day gap); logging files offline; Shir rc=1 x2; Eco/Assaf timeout+retry pattern; SAFE_MODE active blocks writes. 5-day DEGRADED trend continues. ESCALATE_TO_ECO. -- DEGRADED. |
 | 2026-07-02 | Token data unavailable (logging gap); agent-runs unverifiable; 3-day DEGRADED trend (Rambo/Dalia timeouts, Shir rc!=0, Eco PM-summary timeout). Escalation pending investigation. -- DEGRADED. |

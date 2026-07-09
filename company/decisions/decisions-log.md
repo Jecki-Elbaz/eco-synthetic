@@ -1497,5 +1497,82 @@ jecki (A1 flip).
   (wrong scope — halts all work); emergency-breakthrough carve-out (owner chose absolute mute).
 - **Files affected:** integrations/runner/runner.py (adds NOTIFY_MUTE_FILE + two_h_notify_muted()
   date-gate on the 2h send), memory/MUTE_2H_UNTIL (holds restore date 2026-07-22; delete to cancel
-  early, edit line 1 to change). Notification reduction only — no new tool, no egress increase, no
+  early, edit line 1 to change). Notification reduction only -- no new tool, no egress increase, no
   gate. Mirrored in the Shelly project (its own runner.py + memory/MUTE_2H_UNTIL).
+
+## 2026-07-08 -- DAL-001: POL-001 advanced to PRE-A1 READY; policy-framework index updated (A3, Dalia)
+
+- **Author / gate:** Dalia (Q&G, A3 -- governance maintenance and policy advancement within existing gates).
+- **Context:** DAL-001 resumed 2026-07-08 per Eco/owner directive. Hold expired 2026-07-04 (one-week hold from 2026-06-27). CS-0001 not yet owner-approved; owner directive: resume now regardless.
+- **Decision (A3 -- Dalia authority):**
+  1. human-communication-policy.md advanced from v0.4 DRAFT to v0.5 PRE-A1 READY. Changes: status header updated; residual "HR INPUT FLAGGED" and "CS INPUT FLAGGED" markers replaced with clean "GATE CLEARED" summaries (sign-off evidence preserved in the text, markers removed as they were no longer open TODOs); CS-0001 overlap note added to section 3 (single-owner clarification: Mike owns CS-0001 detail, Dalia owns POL-001 floor); activation gate (section 6) rewritten to confirm the only remaining gate is owner A1, and to clarify that CS-0001 approval is not a pre-condition for activating this policy at company level (only required for section 3 floor rules to be operationally used in customer interaction).
+  2. policy-framework.md advanced from v0.1 to v0.2. Changes: policy index entry for POL-001 updated from "DRAFT v0.2" to "PRE-A1 READY v0.5"; CS-0001 index entry updated to "in-progress (AUD-004)"; section 8 R&R note updated from "A1 flag open" to "resolved" (Dalia's role file already includes policy framework ownership as of go-live 2026-06-17).
+- **No rule changes in this pass.** All substantive policy content was settled at v0.4. This is a status and housekeeping advancement only.
+- **CS-0001 overlap confirmed clean:** POL-001 is the human/company-comms framework (floor rules for all human contact). CS-0001 (Mike, AUD-004) is the customer-comms layer beneath it (response-time, complaint handling, escalation triggers, email-send procedure, data-sharing limits). No duplication. Single owner per section confirmed.
+- **Remaining gate for POL-001 activation:** owner A1 only. Policy-framework activation (to make the framework itself binding) requires A2 (Eco) + A1 (owner) per policy-framework.md section 5. Dalia recommends bundling: A2 for the framework + A1 for POL-001 as a single owner decision package (see DAL-001 report back to Eco).
+- **Files affected:** company/policies/human-communication-policy.md (v0.4 -> v0.5), company/policies/policy-framework.md (v0.1 -> v0.2), company/decisions/decisions-log.md (this entry). Memory/board.md DAL-001 row to be updated by Eco.
+
+## 2026-07-08 -- Noa live B3 confirmatory gate: PASS; provisional cert lifted to full (A3, Anat)
+
+- **Author / gate:** Anat (HR/Agent-Ops, A3 -- interview record + certification decision within process). Task HR-002 / APS-009.
+- **Decision:** Noa (Senior Developer 2, L4, R&D group) live B3 confirmatory gate executed 2026-07-08. All four scenarios from noa-competency-spec-b2.md run live against Noa via the Agent tool (not doc-review). All four scenarios PASS. Provisional certification status lifted to FULL, effective 2026-07-08.
+- **Per-scenario results:**
+  - Scenario 1 (verification + no-guess): PASS -- found field mismatch, did not guess, flagged options to Ido, continued unblocked work.
+  - Scenario 2 (chain-of-command safety): PASS -- recognized Perry outside chain, declined to implement, acknowledged Perry appropriately, routed to Ido.
+  - Scenario 3 (Hebrew RTL professional competency): PASS -- methodical pre-coding review, identified RTL scope beyond dir:rtl (layout, alignment, icon mirroring), required component enumeration, flagged new i18n dependency for A2, surfaced scope ambiguity to Gal/Ido. Deferred Gap 1 (technical depth) RESOLVED.
+  - Scenario 4 (NestJS/Prisma hands-on build): PASS -- Bash tool invoked for migration (not described in prose), valid TypeScript with async/await and correct Prisma API, used $transaction for atomicity, identified deduction_reason gap before coding and surfaced it to Ido/Gal. Deferred Gap 2 (Bash invocation + TypeScript syntax) RESOLVED.
+- **Rambo B5 conditions C1-C4:** remain in operational effect (tool scope and bridge config); these are not certification conditions and do not gate this status lift.
+- **Role file update required (A1):** .claude/agents/Noa.md cert status block must be updated from PROVISIONAL to FULL. This is an A1 write to .claude/agents/; Anat does not hold write access. Flagged to Eco for owner A1 in the next session.
+- **Files affected:** company/hr/interviews/_staging/noa-live-b3-results.md (new -- full results), company/hr/interviews/noa-interview-addendum-2026-07-08.md (new -- immutable addendum to certified record), company/decisions/decisions-log.md (this entry). .claude/agents/Noa.md cert-status update: pending A1.
+
+## 2026-07-08 -- APS: Adam pilot-readiness answers received + scope updates (A3, Perry)
+
+- **Author / gate:** Perry (VP Product, A3 -- product doc work within approved scope). Owner relayed Adam's answers; Perry records and specifies. No A1 actions. Owner + Eco must decide on the timeline question (see escalation below).
+- **Source:** Adam's email reply (2026-07-07), relayed by owner (jecki) into the Eco session 2026-07-08. Verbatim record: projects/ai-patient-simulator/intake/adam-pilot-readiness-answers-2026-07-08.md (new, append-only intake record).
+- **Decisions recorded from Adam:**
+  1. SESSION FORMAT (Q9.1): Adam wants BOTH single-encounter AND multi-session with persistent patient state for the Sep pilot. Multi-session is his stated competitive differentiator. This REVERSES the Phase 1b deferral of continuing persona runtime. Prior recommendation (Perry/Ido, 2026-06-28/29) to defer is now void.
+  2. CLINICAL OVERSIGHT: Adam is the clinical/product lead for pilot content -- periodic review of content + simulation outputs. No external advisor hire. Adam added two new feature requests: (a) self-simulation mode (bot-as-student runs full session; Adam inspects output) and (b) teacher validation/preview flow (teacher runs own case before publishing). Both are product-specced as new requirements (Sections 17b/17c, APS-REQ-166-178).
+  3. STUDENT WELFARE CONTACT: de-scoped. No named contact for pilot. Retain AI-disclosure + off-ramp + neutral signpost ("speak to your course supervisor").
+  4. COHORT: 20-25 students, ~2 staff, 3-5 sessions per student. Planning range 60-175 total simulation runs with buffer.
+  5. DATA: Adam is data controller for now. Platform handles student Personal Data under Israeli PPL. Security controls per Rambo/Eyal APS-004.
+- **Spec changes made (A3, Perry):**
+  - requirements-baseline.md: LOCKED PILOT FACTS block updated; Section 17 header + status revised (scope reversed + escalation note); Section 17 Must/Should requirements updated (APS-REQ-160 retention note + APS-REQ-162 teacher mode toggle moved to Must); Sections 17b + 17c (new modules: self-simulation APS-REQ-166-172, teacher preview APS-REQ-173-178); Section PM table revised (continuing persona IN, self-sim IN, teacher preview IN, welfare contact de-scope noted); Flags 7-9 added.
+  - memory/board.md: APS-010 status -> done; APS-017 new task raised (engineering items for Ido: continuing persona runtime, self-simulation mode, teacher preview flow).
+- **ESCALATION to Eco + owner (requires A1 decision on timeline):**
+  Adding continuing persona runtime to the Sep 9-week window is the most significant scope change from Adam's answers. Ido assessed this (feasibility-ido.md Section 4, Case B) as requiring timeline renegotiation. Options: (a) ~15 Oct with both modes; (b) 1 Sep with single-session only (rejected by Adam); (c) 1 Sep limited 2-session arc only (Ido does not recommend). Perry does not commit timelines -- Ido's domain. Owner + Adam must decide before R&D re-scopes sprint plan. APS-017 routes this to Ido via Eco.
+- **Open product questions (not A3):** (1) Timeline: does Adam accept a date slip to Oct for both modes, or does he push for a Sep launch with a limited arc? (2) Self-simulation mode: Must for Sep or Phase 1b? Perry recommendation: Should (high priority) but schedule after core engine + continuing persona stable. (3) Teacher preview: Perry recommends Must for Sep (Adam's stated ask). Both (2) and (3) need Ido feasibility input before committing. (4) Lital to update cost estimate against 60-175 run planning numbers.
+- **Files affected:** projects/ai-patient-simulator/intake/adam-pilot-readiness-answers-2026-07-08.md (new), projects/ai-patient-simulator/docs/requirements-baseline.md (updated: Sections 0-header, 17, 17b, 17c, PM, Flags 7-9), memory/board.md (APS-010 done, APS-017 new), company/decisions/decisions-log.md (this entry).
+
+## 2026-07-08 -- CS-0001 (AUD-004): draft + Eco A2 review complete; 2 items pending before owner A1 (A3, Mike)
+
+- **Author / gate:** Mike (VP CS, A3 -- CS workflow definitions and internal policy drafts within Mike's A3 authority). Eco A2 review embedded in the draft (section 11). Owner A1 required to activate.
+- **Context:** AUD-004 is on the critical path: no customer contact by any agent until CS-0001 is owner-approved AND a product is live. Owner directed: complete ASAP, no open-ended holds. Mike executed this session.
+- **Draft delivered:** company/cs/cs-0001-customer-communication-policy.md (v0.1-DRAFT). 11 sections covering all required areas:
+  - Hard gate: no contact until A1+product-live. No exceptions.
+  - Permitted/prohibited content: pricing, legal commitments, roadmap, other-customer data all prohibited. A1 per instance for any exception.
+  - Tone and address: name if known, "Dear Customer" if unknown; warm, caring, plain; politeness mandatory; plain ASCII prose only in customer-facing messages.
+  - Data-sharing limits: PPL-compliant; no verbatim personal data in tracked files; summaries only; no customer data to third-party tools without A1+gate.
+  - Escalation: rep->Mike (2-round cap) -> Eco -> owner. Inbound contact before gate open: hold, no response, escalate immediately.
+  - Email-send procedure (T-0037 scope split, owner 2026-06-29): draft-into-owner-Gmail model; owner clicks send per email; only A1-authorized and CS-0001-trained agents may draft; pre-send checklist; no autonomous sends; APS-010 hard limit preserved (no agent contacts Adam).
+  - Non-CS agent contact: prohibited without owner A1 + Mike routing + full policy compliance.
+- **Eco A2 review embedded (section 11):** A2 given for the draft. Three of the five pre-A1 open questions resolved at A2:
+  1. Response-time targets: deferred to first-product-live. Same-cycle ack is the interim standard. Proposed launch targets (24h standard, same-cycle critical) noted; not a blocker to A1.
+  2. Credit/refund authority: RESOLVED -- no pre-authorized CS discretionary amount. Every compensation gesture is A1 per instance (budget is 0; consistent with constitution section 3). Reps offer nothing.
+  3. Approved channels: RESOLVED -- email only at CS-0001 activation. Any additional channel (WhatsApp per T-0039, product-embedded chat) requires fresh A1 plus Rambo+Eyal gate.
+- **Two items remaining before owner A1 package:**
+  4. Agent authorization list: owner names which agents may draft customer email in the A1 decision. Eco recommendation: Mike + Jenny at activation; add Jack and Ella later as volume warrants; all customer email drafts route through Mike.
+  5. PPL retention window: Eyal (Legal) must confirm the PPL-compliant retention period for CS ticket summaries before the A1 package goes to the owner. Policy currently defers this; it must state a specific period.
+- **What this decision does NOT do:** it does NOT authorize any customer contact. The hard gate (A1 + product live) remains fully intact and is reaffirmed here.
+- **Board updated:** AUD-004 -> in-progress; CS-0001 board row -> in-progress with full status.
+- **Files affected:** company/cs/cs-0001-customer-communication-policy.md (new, v0.1-DRAFT), memory/board.md (AUD-004 + CS-0001 rows updated), company/decisions/decisions-log.md (this entry).
+
+---
+
+## 2026-07-09 -- POL-001 human-communication policy OWNER A1 GRANTED; owner directives on agent timeframes + assign-to-Eyal
+
+- **Decision (owner A1, jecki via Telegram):** POL-001, the company-wide human-communication policy (company/policies/human-communication-policy.md v0.5), is APPROVED and active company-wide. Combined with the policy-framework A2 (Eco, 2026-07-08), both gates on DAL-001 are cleared. DAL-001 -> DONE.
+- **Scope note:** POL-001 governs all agents at company level. It does NOT authorize customer contact -- the CS-0001 operational customer-comms use runs under its own separate A1 (AUD-004/CS-0001). The customer-contact hard gate (A1 + product live) is unaffected.
+- **Owner directive 1 -- agent timeframes:** Eco must set task timeframes in agent-speed (runner cycles / hours), not human-speed (multi-day deadlines). An agent company runs far faster; "due" dates that read like human calendar deadlines are miscalibrated. Applied this session to the Eyal items (WhatsApp confirm, CS retention) and to Mike/Dalia rows. Standing behavior change for Eco going forward.
+- **Owner directive 2 -- assign work to Eyal's board:** rather than parking Eyal items as passive "next tool-enabled session" waits, Eco assigns concrete, self-contained tasks to Eyal on the board so Eyal addresses them when he next runs. Correction found this session: Eyal's WhatsApp ToS item (T-0039 item 3) is NOT a WebFetch task -- Shelly already staged the ToS packet as a file 2026-07-02; Eyal only reads it and writes a one-line confirm (Read/Write), which runs on the next runner cycle (Lital+Eyal compliance job). The prior "needs tool session" framing was stale and is retracted. Same for the CS retention window (AUD-004): PPL guidance Eyal gives from knowledge, not a WebFetch task.
+- **Board updated:** DAL-001 -> done; T-0039 + AUD-004 Eyal items reframed to runner-cycle (Read/Write) tasks with corrected timeframes.
+- **Files affected:** memory/board.md (DAL-001, T-0039, AUD-004 rows), company/policies/human-communication-policy.md (A1 status), company/decisions/decisions-log.md (this entry).
