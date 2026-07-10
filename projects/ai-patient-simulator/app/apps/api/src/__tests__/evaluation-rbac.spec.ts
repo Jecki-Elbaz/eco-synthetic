@@ -179,6 +179,9 @@ function makePrismaForOverride(evaluation: object | null) {
         attemptId: ATTEMPT_ID,
       })),
     },
+    // m7 (APS-014): $executeRawUnsafe used for overrideAudit write (raw SQL bypass).
+    // dist/index.d.ts shim omits this method; real PrismaClient has it.
+    $executeRawUnsafe: jest.fn().mockResolvedValue(1),
   };
 }
 

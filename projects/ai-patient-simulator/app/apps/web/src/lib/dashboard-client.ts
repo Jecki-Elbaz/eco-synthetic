@@ -5,6 +5,7 @@
 import type {
   ClassDashboardVM,
   StudentDashboardVM,
+  InProgressSimulationVM,
 } from "./dashboard-types";
 import { authedGet, authedPost } from "./http";
 
@@ -27,11 +28,13 @@ const MOCK_CLASS_DASHBOARD: ClassDashboardVM = {
     { id: "asgn-002", title: "סימולציה 2 -- הערכת סיכון" },
   ],
   selectedAssignmentId: "asgn-001",
+  // S4-NOA-HEATMAP: shortLabel now mirrors backend dashboard.service.ts fix
+  // (criterionLabelHe returns Hebrew label in shortLabel, not the raw labelKey).
   criteria: [
-    { id: "C-001", shortLabel: "C-001", label: "ברית טיפולית ואמפתיה", maxScore: 10 },
-    { id: "C-002", shortLabel: "C-002", label: "שאלות פתוחות", maxScore: 10 },
-    { id: "C-003", shortLabel: "C-003", label: "ניתוח תפקודי", maxScore: 10 },
-    { id: "C-004", shortLabel: "C-004", label: "מודעות לסיכון", maxScore: 10 },
+    { id: "C-001", shortLabel: "ברית טיפולית ואמפתיה", label: "ברית טיפולית ואמפתיה", maxScore: 10 },
+    { id: "C-002", shortLabel: "שאלות פתוחות", label: "שאלות פתוחות", maxScore: 10 },
+    { id: "C-003", shortLabel: "ניתוח תפקודי", label: "ניתוח תפקודי", maxScore: 10 },
+    { id: "C-004", shortLabel: "מודעות לסיכון", label: "מודעות לסיכון", maxScore: 10 },
   ],
   students: [
     {
@@ -161,9 +164,22 @@ const MOCK_CLASS_DASHBOARD: ClassDashboardVM = {
 // Mock data -- Student Dashboard
 // ---------------------------------------------------------------------------
 
+// S4-NOA-RESUME: mock IN_PROGRESS attempts (mirrors Gal S4-GAL-RESUME API shape).
+const MOCK_IN_PROGRESS: InProgressSimulationVM[] = [
+  {
+    attemptId: "attempt-u002-asgn003-inprogress",
+    title: "ראיון קבלה ראשוני -- שלב ב",
+    status: "IN_PROGRESS",
+    lastTurnAt: "2026-07-10T10:15:00Z",
+    elapsed: 1234,          // ~20 minutes elapsed
+    timeLimitSeconds: 1800, // 30-minute session
+  },
+];
+
 const MOCK_STUDENT_DASHBOARD: StudentDashboardVM = {
   userId: "student-demo-001",
   displayName: "מיכל גרין",
+  inProgressSimulations: MOCK_IN_PROGRESS,
   completedSimulations: [
     {
       attemptId: "attempt-u002-asgn001",

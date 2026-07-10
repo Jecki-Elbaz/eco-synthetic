@@ -232,7 +232,24 @@ function makePrismaForActivityLog(entries: object[], total: number) {
   };
 }
 
-function makePrismaForCollegeUsage(ledgers: object[]) {
+/**
+ * APS-014 M1: getCollegeUsage now uses groupBy instead of findMany(include:entries).
+ *
+ * groupByResults mirrors the three parallel groupBy calls:
+ *   1. credits: creditEntry rows with delta > 0 (sum)
+ *   2. debits:  creditEntry rows with delta < 0 (sum)
+ *   3. counts:  all creditEntry rows (count)
+ *
+ * mockResolvedValueOnce chains the three calls in order.
+ */
+function makePrismaForCollegeUsage(
+  ledgers: object[],
+  groupByResults: {
+    credits: object[];
+    debits: object[];
+    counts: object[];
+  } = { credits: [], debits: [], counts: [] },
+) {
   return {
     creditLedger: {
       findMany: jest.fn().mockResolvedValue(ledgers),
@@ -242,12 +259,26 @@ function makePrismaForCollegeUsage(ledgers: object[]) {
       findMany: jest.fn().mockResolvedValue([]),
       count: jest.fn().mockResolvedValue(0),
       create: jest.fn().mockResolvedValue(makeEntry()),
+      groupBy: jest.fn()
+        .mockResolvedValueOnce(groupByResults.credits)
+        .mockResolvedValueOnce(groupByResults.debits)
+        .mockResolvedValueOnce(groupByResults.counts),
     },
     $transaction: jest.fn(),
   };
 }
 
-function makePrismaForCourseUsage(ledger: object | null) {
+/**
+ * APS-014 M1: getCourseUsage now uses groupBy instead of findFirst(include:entries).
+ */
+function makePrismaForCourseUsage(
+  ledger: object | null,
+  groupByResults: {
+    credits: object[];
+    debits: object[];
+    counts: object[];
+  } = { credits: [], debits: [], counts: [] },
+) {
   return {
     creditLedger: {
       findFirst: jest.fn().mockResolvedValue(ledger),
@@ -258,6 +289,10 @@ function makePrismaForCourseUsage(ledger: object | null) {
       findMany: jest.fn().mockResolvedValue([]),
       count: jest.fn().mockResolvedValue(0),
       create: jest.fn().mockResolvedValue(makeEntry()),
+      groupBy: jest.fn()
+        .mockResolvedValueOnce(groupByResults.credits)
+        .mockResolvedValueOnce(groupByResults.debits)
+        .mockResolvedValueOnce(groupByResults.counts),
     },
     $transaction: jest.fn(),
   };
@@ -837,14 +872,16 @@ describe("CreditAdminService.getActivityLog", () => {
 // (n) getCollegeUsage: aggregates entries across college ledgers
 // ---------------------------------------------------------------------------
 
-describe("CreditAdminService.getCollegeUsage", () => {
-  it("(n) returns usage summary per ledger with correct totals", async () => {
-    const entries = [
-      makeEntry({ delta: 100, activityType: "ADMIN_ADD" }),
-      makeEntry({ delta: -30, activityType: "ADMIN_DEDUCT" }),
-    ];
-    const ledger = makeLedgerWithEntries(entries);
-    const prisma = makePrismaForCollegeUsage([ledger]);
+describe("CreditAdminService.getCollegeUsage -- APS-014 M1 groupBy", () => {
+  it("(n) returns usage summary per ledger with correct totals (groupBy)", async () => {
+    // M1: service now aggregates at DB level via groupBy, not in-memory via findMany(entries).
+    const ledger = makeLedger();
+    const groupByResults = {
+      credits: [{ ledgerId: LEDGER_ID, _sum: { delta: 100 } }],
+      debits: [{ ledgerId: LEDGER_ID, _sum: { delta: -30 } }],
+      counts: [{ ledgerId: LEDGER_ID, _count: { _all: 2 } }],
+    };
+    const prisma = makePrismaForCollegeUsage([ledger], groupByResults);
     const service = new CreditAdminService(prisma as never);
 
     const results = await service.getCollegeUsage(COLLEGE_ID);
@@ -855,12 +892,36 @@ describe("CreditAdminService.getCollegeUsage", () => {
     expect(results[0]?.entryCount).toBe(2);
   });
 
+  it("(n-M1) getCollegeUsage calls creditEntry.groupBy, not findMany with entries include", async () => {
+    const ledger = makeLedger();
+    const groupByResults = {
+      credits: [],
+      debits: [],
+      counts: [],
+    };
+    const prisma = makePrismaForCollegeUsage([ledger], groupByResults);
+    const service = new CreditAdminService(prisma as never);
+
+    await service.getCollegeUsage(COLLEGE_ID);
+
+    // M1 assertion: groupBy must be called (DB aggregation).
+    expect(prisma.creditEntry.groupBy).toHaveBeenCalled();
+    // findMany must NOT have been called with include: { entries: true }.
+    const findManyCalls = (prisma.creditLedger.findMany as jest.Mock).mock.calls;
+    for (const call of findManyCalls) {
+      const args = call[0] as { include?: unknown };
+      expect(args?.include).toBeUndefined();
+    }
+  });
+
   it("(n) returns empty array when no ledgers for college", async () => {
     const prisma = makePrismaForCollegeUsage([]);
     const service = new CreditAdminService(prisma as never);
 
     const results = await service.getCollegeUsage("unknown-college");
     expect(results).toHaveLength(0);
+    // groupBy should NOT be called when there are no ledgers (early return).
+    expect(prisma.creditEntry.groupBy).not.toHaveBeenCalled();
   });
 });
 
@@ -868,17 +929,40 @@ describe("CreditAdminService.getCollegeUsage", () => {
 // (o) getCourseUsage: single course ledger
 // ---------------------------------------------------------------------------
 
-describe("CreditAdminService.getCourseUsage", () => {
-  it("(o) returns usage summary for a known course", async () => {
-    const entries = [makeEntry({ delta: 50 })];
-    const ledger = makeLedgerWithEntries(entries);
-    const prisma = makePrismaForCourseUsage(ledger);
+describe("CreditAdminService.getCourseUsage -- APS-014 M1 groupBy", () => {
+  it("(o) returns usage summary for a known course (groupBy)", async () => {
+    const ledger = makeLedger();
+    const groupByResults = {
+      credits: [{ ledgerId: LEDGER_ID, _sum: { delta: 50 } }],
+      debits: [],
+      counts: [{ ledgerId: LEDGER_ID, _count: { _all: 1 } }],
+    };
+    const prisma = makePrismaForCourseUsage(ledger, groupByResults);
     const service = new CreditAdminService(prisma as never);
 
     const result = await service.getCourseUsage(COURSE_ID);
 
     expect(result.courseId).toBe(COURSE_ID);
     expect(result.entryCount).toBe(1);
+    expect(result.totalCredited).toBe(50);
+    expect(result.totalDebited).toBe(0);
+  });
+
+  it("(o-M1) getCourseUsage calls creditEntry.groupBy not findMany with include", async () => {
+    const ledger = makeLedger();
+    const groupByResults = { credits: [], debits: [], counts: [] };
+    const prisma = makePrismaForCourseUsage(ledger, groupByResults);
+    const service = new CreditAdminService(prisma as never);
+
+    await service.getCourseUsage(COURSE_ID);
+
+    expect(prisma.creditEntry.groupBy).toHaveBeenCalled();
+    // creditLedger.findFirst must NOT have been called with include: { entries: true }
+    const findFirstCalls = (prisma.creditLedger.findFirst as jest.Mock).mock.calls;
+    for (const call of findFirstCalls) {
+      const args = call[0] as { include?: unknown };
+      expect(args?.include).toBeUndefined();
+    }
   });
 
   it("(o) throws NotFoundException for unknown courseId", async () => {

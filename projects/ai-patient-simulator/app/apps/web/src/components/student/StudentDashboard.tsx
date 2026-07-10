@@ -6,7 +6,7 @@
 // CSS logical properties throughout.
 
 import "./student-dashboard.css";
-import type { StudentDashboardVM, CriterionScoreVM } from "@/lib/dashboard-types";
+import type { StudentDashboardVM, CriterionScoreVM, InProgressSimulationVM } from "@/lib/dashboard-types";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -50,6 +50,58 @@ function ticketStatusLabel(status: "OPEN" | "ESCALATED" | "RESOLVED"): string {
 // ---------------------------------------------------------------------------
 // Sub-components
 // ---------------------------------------------------------------------------
+
+// S4-NOA-RESUME: format elapsed seconds as MM:SS for display.
+function formatElapsed(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
+// S4-NOA-RESUME: build the "Continue" href with resume context.
+// Passes elapsed so SimulationScreen can restore the timer (Ido A3 ruling).
+function resumeHref(sim: InProgressSimulationVM): string {
+  const base = `/simulation/${encodeURIComponent(sim.attemptId)}?resume=1`;
+  return sim.elapsed !== null ? `${base}&elapsed=${sim.elapsed}` : base;
+}
+
+// S4-NOA-RESUME: in-progress simulation card with "Continue" button.
+function InProgressCard({ sim }: { sim: InProgressSimulationVM }) {
+  const elapsedLabel =
+    sim.elapsed !== null
+      ? `חלפו: ${formatElapsed(sim.elapsed)}`
+      : null;
+  const lastActiveLabel = sim.lastTurnAt
+    ? `פעיל לאחרונה: ${formatDate(sim.lastTurnAt)}`
+    : null;
+
+  return (
+    <article className="sd-sim-card sd-sim-card--in-progress" aria-label={`המשך סימולציה: ${sim.title}`}>
+      <div className="sd-sim-card__top">
+        <div>
+          <h3 className="sd-sim-card__title">{sim.title}</h3>
+          {lastActiveLabel && (
+            <div className="sd-sim-card__date">{lastActiveLabel}</div>
+          )}
+          {elapsedLabel && (
+            <div className="sd-sim-card__date">{elapsedLabel}</div>
+          )}
+        </div>
+        <span className="sd-inprogress-badge" aria-label="בתהליך">בתהליך</span>
+      </div>
+      <div className="sd-sim-card__actions">
+        <a
+          href={resumeHref(sim)}
+          className="sd-link-btn sd-link-btn--resume"
+          aria-label={`המשך סימולציה: ${sim.title}`}
+          data-testid="resume-continue-btn"
+        >
+          המשך
+        </a>
+      </div>
+    </article>
+  );
+}
 
 function CriterionSummaryPills({ criteria }: { criteria: CriterionScoreVM[] }) {
   return (
@@ -97,6 +149,21 @@ export default function StudentDashboard({ data }: StudentDashboardProps) {
 
       {/* ---- Main body ---- */}
       <main className="sd-body">
+
+        {/* ---- In-progress simulations (S4-NOA-RESUME) ----
+            Section hidden entirely when no IN_PROGRESS attempts (envelope rule).
+            Card shows: title, last-activity timestamp, elapsed time if available.
+            "המשך" navigates to /simulation/:attemptId?resume=1[&elapsed=N]. */}
+        {(data.inProgressSimulations ?? []).length > 0 && (
+          <section aria-label="סימולציות בתהליך">
+            <h2 className="sd-section-heading">סימולציות בתהליך</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              {data.inProgressSimulations.map((sim) => (
+                <InProgressCard key={sim.attemptId} sim={sim} />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* ---- Completed simulations ---- */}
         <section aria-label="סימולציות שהושלמו">

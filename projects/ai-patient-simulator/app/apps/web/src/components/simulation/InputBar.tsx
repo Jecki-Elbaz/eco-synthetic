@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, KeyboardEvent } from "react";
+import type { DictationState } from "./useDictation";
 
 export type MicState = "ready" | "recording" | "transcribing" | "result" | "unavailable";
 
@@ -8,10 +9,23 @@ interface InputBarProps {
   value: string;
   onChange: (v: string) => void;
   onSend: () => void;
+  /** @deprecated kept for back-compat; mic button now controlled by dictationEnabled */
   micState: MicState;
+  /** @deprecated kept for back-compat; use dictation props instead */
   onMicClick: () => void;
   disabled?: boolean;
   lang: "he" | "en";
+  // S4-NOA-DICT: dictation props (APS-REQ-046).
+  // Button renders ONLY when dictationEnabled=true.
+  // Enable only after Eyal/Rambo APS-004 privacy clearance.
+  /** True when flag=true AND SpeechRecognition available. */
+  dictationEnabled?: boolean;
+  /** Current dictation recording state from useDictation hook */
+  dictationState?: DictationState;
+  /** Called when user clicks the mic button */
+  onDictationClick?: () => void;
+  /** Inline error from dictation (Hebrew) -- shown near input when present */
+  dictationError?: string | null;
 }
 
 const MIC_ICONS: Record<MicState, string> = {
@@ -65,6 +79,10 @@ export default function InputBar({
   onMicClick,
   disabled = false,
   lang,
+  dictationEnabled = false,
+  dictationState = "idle",
+  onDictationClick,
+  dictationError,
 }: InputBarProps) {
   const t = L[lang];
   const textRef = useRef<HTMLTextAreaElement>(null);
@@ -78,6 +96,11 @@ export default function InputBar({
     }
   }
 
+  // Dictation button state
+  const isListening = dictationState === "listening";
+
+  // Legacy mic button kept for non-dictation paths (micState-based)
+  const showLegacyMic = !dictationEnabled && micState !== "unavailable";
   const micLabel =
     micState === "ready"
       ? t.micReady
@@ -88,28 +111,66 @@ export default function InputBar({
       : micState === "result"
       ? t.micResult
       : t.micUnavailable;
-
   const micStatusText = t.micStatus[micState];
   const iconText = MIC_ICONS[micState];
 
   return (
     <div className="input-bar">
-      <button
-        className={`mic-btn mic-btn--${micState}`}
-        type="button"
-        onClick={micState !== "unavailable" && micState !== "transcribing" ? onMicClick : undefined}
-        aria-label={micLabel}
-        title={micLabel}
-        disabled={micState === "transcribing" || micState === "unavailable"}
-      >
-        {/* Using text characters as icon fallbacks -- no external font */}
-        <span className="mic-btn__icon" aria-hidden="true">
-          {iconText === "mic" ? "(" : iconText === "stop_circle" ? "[" : iconText === "sync" ? "~" : iconText === "check_circle" ? "+" : "x"}
-        </span>
-      </button>
+      {/* S4-NOA-DICT: Dictation mic button.
+          Renders ONLY when dictationEnabled=true (flag=true AND SpeechRecognition available).
+          Enable only after Eyal/Rambo APS-004 privacy clearance.
+          Default: flag=false -> button not rendered. */}
+      {dictationEnabled && (
+        <button
+          data-testid="dictation-mic-btn"
+          className={`mic-btn mic-btn--dictation${isListening ? " mic-btn--recording" : ""}`}
+          type="button"
+          onClick={onDictationClick}
+          aria-label={
+            isListening
+              ? (lang === "he" ? "עצור הקלטה" : "Stop recording")
+              : (lang === "he" ? "התחל הקלטה קולית" : "Start voice recording")
+          }
+          aria-pressed={isListening}
+          disabled={disabled}
+        >
+          <span className="mic-btn__icon" aria-hidden="true">
+            {isListening ? "[" : "("}
+          </span>
+          {isListening && (
+            <span className="mic-btn__pulse" aria-hidden="true" />
+          )}
+        </button>
+      )}
+
+      {/* Legacy stub mic button (non-dictation paths, demo mode) */}
+      {showLegacyMic && (
+        <button
+          className={`mic-btn mic-btn--${micState}`}
+          type="button"
+          onClick={micState !== "transcribing" ? onMicClick : undefined}
+          aria-label={micLabel}
+          title={micLabel}
+          disabled={micState === "transcribing"}
+        >
+          <span className="mic-btn__icon" aria-hidden="true">
+            {iconText === "mic" ? "(" : iconText === "stop_circle" ? "[" : iconText === "sync" ? "~" : iconText === "check_circle" ? "+" : "x"}
+          </span>
+        </button>
+      )}
 
       <div className="input-bar__group">
-        {micStatusText && (
+        {/* Dictation error inline message (graceful degradation) */}
+        {dictationError && (
+          <span
+            className="mic-status mic-status--error"
+            role="alert"
+            aria-live="assertive"
+          >
+            {dictationError}
+          </span>
+        )}
+        {!dictationEnabled && micStatusText && (
           <span className="mic-status" aria-live="polite">
             {micStatusText}
           </span>

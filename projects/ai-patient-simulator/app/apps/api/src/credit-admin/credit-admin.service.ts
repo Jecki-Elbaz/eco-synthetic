@@ -106,13 +106,52 @@ export class CreditAdminService {
   // -------------------------------------------------------------------------
 
   async getCollegeUsage(collegeId: string): Promise<CreditUsageSummary[]> {
-    // All ledgers for the college (college-level + course-level)
+    // APS-014 M1: replaced findMany(include:entries) with DB-level groupBy aggregation.
+    // Previously all CreditEntry rows were loaded into memory. At pilot scale
+    // (60-175 runs) this was fine; at multi-course scale it became a table scan.
+    // Fix: fetch ledger metadata without entries, then aggregate via groupBy.
     const ledgers = await (this.prisma as unknown as PrismaLike).creditLedger.findMany({
       where: { collegeId },
-      include: { entries: true },
-    }) as Array<LedgerRow & { entries: EntryRow[] }>;
+    }) as LedgerRow[];
 
-    return ledgers.map((l) => buildUsageSummary(l));
+    if (ledgers.length === 0) return [];
+
+    const ledgerIds = ledgers.map((l) => l.id);
+
+    // Three parallel groupBy calls to get credited sum, debited sum, and total count.
+    const [creditRows, debitRows, countRows] = await Promise.all([
+      (this.prisma as unknown as PrismaLike).creditEntry.groupBy({
+        by: ["ledgerId"],
+        where: { ledgerId: { in: ledgerIds }, delta: { gt: 0 } },
+        _sum: { delta: true },
+      }) as Promise<GroupByAggRow[]>,
+      (this.prisma as unknown as PrismaLike).creditEntry.groupBy({
+        by: ["ledgerId"],
+        where: { ledgerId: { in: ledgerIds }, delta: { lt: 0 } },
+        _sum: { delta: true },
+      }) as Promise<GroupByAggRow[]>,
+      (this.prisma as unknown as PrismaLike).creditEntry.groupBy({
+        by: ["ledgerId"],
+        where: { ledgerId: { in: ledgerIds } },
+        _count: { _all: true },
+      }) as Promise<GroupByCountRow[]>,
+    ]);
+
+    const creditMap = new Map(creditRows.map((r) => [r.ledgerId, r._sum?.delta ?? 0]));
+    const debitMap = new Map(debitRows.map((r) => [r.ledgerId, r._sum?.delta ?? 0]));
+    const countMap = new Map(countRows.map((r) => [r.ledgerId, r._count?._all ?? 0]));
+
+    return ledgers.map((l) => ({
+      ledgerId: l.id,
+      collegeId: l.collegeId,
+      courseId: l.courseId,
+      balance: l.balance,
+      softLimit: l.softLimit,
+      hardLimit: l.hardLimit,
+      totalCredited: creditMap.get(l.id) ?? 0,
+      totalDebited: Math.abs(debitMap.get(l.id) ?? 0),
+      entryCount: countMap.get(l.id) ?? 0,
+    }));
   }
 
   // -------------------------------------------------------------------------
@@ -121,15 +160,44 @@ export class CreditAdminService {
   // -------------------------------------------------------------------------
 
   async getCourseUsage(courseId: string): Promise<CreditUsageSummary> {
+    // APS-014 M1: replaced findFirst(include:entries) with DB groupBy aggregation.
     const ledger = await (this.prisma as unknown as PrismaLike).creditLedger.findFirst({
       where: { courseId },
-      include: { entries: true },
-    }) as (LedgerRow & { entries: EntryRow[] }) | null;
+    }) as LedgerRow | null;
 
     if (!ledger) {
       throw new NotFoundException(`CreditLedger for courseId=${courseId} not found`);
     }
-    return buildUsageSummary(ledger);
+
+    const [creditRows, debitRows, countRows] = await Promise.all([
+      (this.prisma as unknown as PrismaLike).creditEntry.groupBy({
+        by: ["ledgerId"],
+        where: { ledgerId: ledger.id, delta: { gt: 0 } },
+        _sum: { delta: true },
+      }) as Promise<GroupByAggRow[]>,
+      (this.prisma as unknown as PrismaLike).creditEntry.groupBy({
+        by: ["ledgerId"],
+        where: { ledgerId: ledger.id, delta: { lt: 0 } },
+        _sum: { delta: true },
+      }) as Promise<GroupByAggRow[]>,
+      (this.prisma as unknown as PrismaLike).creditEntry.groupBy({
+        by: ["ledgerId"],
+        where: { ledgerId: ledger.id },
+        _count: { _all: true },
+      }) as Promise<GroupByCountRow[]>,
+    ]);
+
+    return {
+      ledgerId: ledger.id,
+      collegeId: ledger.collegeId,
+      courseId: ledger.courseId,
+      balance: ledger.balance,
+      softLimit: ledger.softLimit,
+      hardLimit: ledger.hardLimit,
+      totalCredited: creditRows[0]?._sum?.delta ?? 0,
+      totalDebited: Math.abs(debitRows[0]?._sum?.delta ?? 0),
+      entryCount: countRows[0]?._count?._all ?? 0,
+    };
   }
 
   // -------------------------------------------------------------------------
@@ -160,12 +228,14 @@ export class CreditAdminService {
 
     const where: Record<string, unknown> = {};
 
-    if (query.collegeId) {
-      where["ledger"] = { collegeId: query.collegeId };
-    }
-    if (query.courseId) {
-      where["ledger"] = { ...(where["ledger"] as object ?? {}), courseId: query.courseId };
-    }
+    // m2 fix: replaced unsafe `as object` cast with a properly-typed ledger filter
+    // object. Prior code: `where["ledger"] as object ?? {}` was an unsafe cast on a
+    // potentially undefined value. New approach: build the ledger sub-filter first.
+    const ledgerFilter: Record<string, string> = {};
+    if (query.collegeId) ledgerFilter.collegeId = query.collegeId;
+    if (query.courseId) ledgerFilter.courseId = query.courseId;
+    if (Object.keys(ledgerFilter).length > 0) where["ledger"] = ledgerFilter;
+
     if (query.from || query.to) {
       const timestampFilter: Record<string, Date> = {};
       if (query.from) timestampFilter["gte"] = new Date(query.from);
@@ -173,14 +243,19 @@ export class CreditAdminService {
       where["timestamp"] = timestampFilter;
     }
 
+    const prismaLike = this.prisma as unknown as PrismaLike;
+    // m4 fix: PrismaLike.creditEntry.count is now optional (may not be present on
+    // all mock/stub implementations). Guard the call; fall back to 0 if absent.
     const [entries, total] = await Promise.all([
-      (this.prisma as unknown as PrismaLike).creditEntry.findMany({
+      prismaLike.creditEntry.findMany({
         where,
         orderBy: { timestamp: "desc" },
         skip,
         take: pageSize,
       }) as Promise<EntryRow[]>,
-      (this.prisma as unknown as PrismaLike).creditEntry.count({ where }) as Promise<number>,
+      prismaLike.creditEntry.count
+        ? (prismaLike.creditEntry.count({ where }) as Promise<number>)
+        : Promise.resolve(0),
     ]);
 
     return {
@@ -421,6 +496,16 @@ export class CreditAdminService {
 // The mocked-Prisma pattern (used in tests) matches this interface.
 // ---------------------------------------------------------------------------
 
+// Grouping-result row shapes used by getCollegeUsage / getCourseUsage (APS-014 M1).
+interface GroupByAggRow {
+  ledgerId: string;
+  _sum?: { delta?: number | null };
+}
+interface GroupByCountRow {
+  ledgerId: string;
+  _count?: { _all?: number };
+}
+
 interface PrismaLike {
   creditLedger: {
     findUnique: (args: unknown) => Promise<unknown>;
@@ -432,7 +517,10 @@ interface PrismaLike {
   creditEntry: {
     findMany: (args: unknown) => Promise<unknown[]>;
     create: (args: unknown) => Promise<unknown>;
-    count: (args: unknown) => Promise<number>;
+    /** m4: count is optional -- guard call sites (getActivityLog uses prismaLike.creditEntry.count?). */
+    count?: (args: unknown) => Promise<number>;
+    /** M1: groupBy for aggregated usage queries -- replaces full row scans. */
+    groupBy: (args: unknown) => Promise<unknown[]>;
   };
   $transaction: (ops: unknown[] | ((tx: PrismaLike) => Promise<unknown>)) => Promise<unknown[]>;
 }

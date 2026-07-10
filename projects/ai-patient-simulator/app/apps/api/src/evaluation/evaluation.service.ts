@@ -263,6 +263,10 @@ export class EvaluationService {
 
     if (!evaluation) throw new NotFoundException("Evaluation not found -- generate first");
 
+    const evalRecord = evaluation as unknown as Record<string, unknown>;
+    const previousStatus = evalRecord["status"] as string;
+    const previousTeacherNotes = (evalRecord["teacherNotes"] as string | null) ?? null;
+
     const updateData: Record<string, unknown> = {
       teacherOverride: true,
     };
@@ -271,10 +275,25 @@ export class EvaluationService {
       updateData["teacherNotes"] = dto.teacherNotes;
     }
 
+    const newStatus = dto.publish === true ? "PUBLISHED" : previousStatus;
+    const newTeacherNotes =
+      (updateData["teacherNotes"] as string | undefined) ?? previousTeacherNotes;
+
     if (dto.publish === true) {
       updateData["status"] = "PUBLISHED";
       updateData["publishedAt"] = new Date();
     }
+
+    // m7 (APS-014): override audit delta, typed via the regenerated client
+    // (column added in migration 20260710000001).
+    updateData["overrideAudit"] = {
+      previousStatus,
+      newStatus,
+      previousTeacherNotes,
+      newTeacherNotes,
+      overriddenAt: new Date().toISOString(),
+      overriddenBy: actorId,
+    };
 
     return this.prisma.evaluation.update({
       where: { attemptId },

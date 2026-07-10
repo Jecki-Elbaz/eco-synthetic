@@ -208,6 +208,59 @@ async function main() {
     sd20.status === 200 && !previewInDashboard,
     `status=${sd20.status} found=${previewInDashboard}`);
 
+  // ---------------------------------------------------------------------------
+  // 25. RESUME-ON-INTERRUPT (S4-NOA-RESUME / S4-GAL-RESUME)
+  //     Interrupt an in-progress attempt; verify dashboard and transcript.
+  //     Step 25c depends on Gal S4-GAL-RESUME (dashboard returns IN_PROGRESS).
+  //     Step 25d tests the existing transcript endpoint (no Gal dep needed).
+  // ---------------------------------------------------------------------------
+
+  // 25a. Create a second attempt (separate from the main flow).
+  const ra = await call("POST", `/assignments/${ASSIGNMENT_ID}/attempts`, {
+    token: studentToken, body: { language: "he" },
+  });
+  check("25a: resume attempt created (new IN_PROGRESS attempt)", ra.status >= 200 && ra.status < 300, ra.status);
+  const resumeAttemptId = ra.data?.id ?? null;
+
+  // 25b. Send exactly 1 turn -- do NOT call /finish (attempt stays IN_PROGRESS).
+  let step25bOk = false;
+  if (resumeAttemptId) {
+    const rt1 = await call("POST", `/simulations/${resumeAttemptId}/turn`, {
+      token: studentToken, body: { studentMessage: "שאלה ראשונה בסימולציה חלקית", language: "he" },
+    });
+    step25bOk = rt1.status >= 200 && rt1.status < 300;
+    check("25b: 1 turn sent to IN_PROGRESS attempt (not finished)", step25bOk, rt1.status);
+  } else {
+    check("25b: 1 turn sent to IN_PROGRESS attempt (not finished)", false, "no attemptId from 25a");
+  }
+
+  // 25c. Student dashboard -> IN_PROGRESS attempt must appear (S4-GAL-RESUME required).
+  // This check will fail until Gal lands dashboard IN_PROGRESS extension.
+  const sd25 = await call("GET", `/dashboard/student/${studentUserId}`, { token: studentToken });
+  const inProgressArr = Array.isArray(sd25.data?.inProgressSimulations) ? sd25.data.inProgressSimulations : [];
+  const inProgressEntry = inProgressArr.find((s) => s.attemptId === resumeAttemptId);
+  check(
+    "25c: IN_PROGRESS attempt visible in student dashboard with status=IN_PROGRESS (dep: S4-GAL-RESUME)",
+    sd25.status === 200 && !!inProgressEntry && inProgressEntry.status === "IN_PROGRESS",
+    `${sd25.status} found=${!!inProgressEntry} status=${inProgressEntry?.status}`,
+  );
+
+  // 25d. GET /simulations/:attemptId/transcript -> contains the prior turn.
+  // This uses the already-live transcript endpoint; no Gal dep needed.
+  let step25dOk = false;
+  if (resumeAttemptId && step25bOk) {
+    const rtResp = await call("GET", `/simulations/${resumeAttemptId}/transcript`, { token: studentToken });
+    const rtItems = Array.isArray(rtResp.data) ? rtResp.data : [];
+    step25dOk = rtResp.status === 200 && rtItems.length > 0 && typeof rtItems[0]?.turnIndex === "number";
+    check(
+      "25d: transcript for IN_PROGRESS attempt contains prior turn",
+      step25dOk,
+      `${rtResp.status} turns=${rtItems.length} firstTurnIndex=${rtItems[0]?.turnIndex}`,
+    );
+  } else {
+    check("25d: transcript for IN_PROGRESS attempt contains prior turn", false, "skipped (25a or 25b failed)");
+  }
+
   const passed = results.filter((r) => r.ok).length;
   console.log(`\nE2E GOLDEN PATH: ${passed}/${results.length} PASS`);
   process.exit(passed === results.length ? 0 : 1);

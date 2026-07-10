@@ -518,3 +518,90 @@ E2E: 23/24 PASS (added step 20d; see note below).
     accept null when using stub. Flagging to Ido as separate tech-debt item (APS-stub-scores).
 
 *Gal (Lead Developer) | 2026-07-09 | Track-A-fix-001 delivery*
+
+---
+
+## Sprint-3 / Gal | 2026-07-09
+
+task_ids: APS-012 + APS-011
+requester: Ido (via Eco, sequential-sprints mode)
+report-back: Ido
+
+### Status
+
+APS-012: DONE (implemented in commit b21ab4e; verified this session)
+APS-011: DONE (resolved in commit b21ab4e; verified 0 errors this session)
+
+### APS-012 (a) -- shared LlmModule
+
+LlmModule already implemented in apps/api/src/llm/llm.module.ts (committed b21ab4e). The
+Track-A-fix-001 work introduced EvaluationModule import into SimulationModule and required a
+shared LLM token to avoid circular dependency. The LlmModule was created in that same session.
+
+Architecture:
+- LLM_PROVIDER_TOKEN exported by LlmModule
+- EvaluationModule imports LlmModule, injects token to Evaluator factory
+- DebriefModule imports LlmModule, injects token to DebriefSupervisor factory
+- SimulationModule imports LlmModule + EvaluationModule; EngineProvider uses token for TurnPipeline
+- No circular import: LlmModule has zero feature-module dependencies
+- NestJS singleton semantics: module instantiated once per root context -> single provider instance
+- Factory: config.llmProvider === "stub" -> new StubProvider(); other cases commented as APS-004-gated
+- AppConfig (global ConfigModule) available in factory via injection without explicit import
+
+Files verified:
+- apps/api/src/llm/llm.module.ts
+- apps/api/src/evaluation/evaluation.module.ts
+- apps/api/src/debrief/debrief.module.ts
+- apps/api/src/simulation/simulation.module.ts
+- apps/api/src/simulation/engine.provider.ts
+
+### APS-012 (b) -- JC-3 debrief isolation guard
+
+Compile-time guard in packages/engine/src/evaluation/debrief-supervisor.ts (lines 59-81):
+
+  type _ForbiddenDebriefKeys = "personaSystemPrompt" | "knownFacts" | "disclosureAllowList"
+    | "hardOffRampText" | "escalationRules" | "analyserOutput";
+  type _JC3Guard = Extract<keyof DebriefSupervisorInput, _ForbiddenDebriefKeys> extends never
+    ? true : never;
+  const _jc3DebriefGuard: _JC3Guard = true;  // fails to compile if DebriefSupervisorInput gains a forbidden key
+
+Runtime test block (f) in packages/engine-test-harness/src/__tests__/debrief-supervisor.spec.ts:
+- "DebriefSupervisorInput instance carries no persona or ground-truth keys at runtime" -- iterates
+  all 6 forbidden keys, asserts each is undefined on a real DebriefSupervisorInput object
+- "compile-time guard (_jc3DebriefGuard) is in force -- engine compiled without forbidden fields"
+  -- compilation of the spec suite IS the assertion (engine must compile for the suite to run)
+
+Both tests pass in the engine-test-harness suite (210/210 total).
+
+### APS-011 -- tsc --noEmit clean
+
+Baseline at Sprint-3 start (b21ab4e): 0 errors.
+Explanation: the prior APS-011 description (29 errors) was the state at Inc-3 (2026-07-04), before
+Shir's APS-016 tsconfig fix. APS-016 changed all three @aps/* path entries in apps/api/tsconfig.json
+from source .ts to built dist/.d.ts. This resolved the Prisma delegate type errors in
+*.integration.spec.ts -- the dist .d.ts exports correct PrismaClient method types (deleteMany,
+count, $transaction) that the source mapping failed to provide.
+No code changes were needed for APS-011 in this Sprint-3 session.
+
+pnpm --filter @aps/api exec tsc --noEmit: EXIT 0, 0 errors. Spec files in src/__tests__/
+(confirmed in tsconfig include: src/**/*) compile without error.
+
+### Validation gate (all 6 -- self-run 2026-07-09)
+
+1. pnpm --filter @aps/api build (nest build)               PASS  exit 0
+2. pnpm --filter @aps/engine-test-harness test             PASS  210/210 pass (210 >= 208 target)
+3. pnpm --filter @aps/api test                             PASS  223 pass / 0 fail / 8 skip (231 total)
+4. pnpm --filter @aps/api exec tsc --noEmit                PASS  0 errors
+5. pnpm --filter @aps/api test:integration                 PASS  6/6 suites, 50 pass / 0 fail / 2 skip (52 total)
+6. E2E golden path (seed + dev:boot + e2e-golden-path.mjs) PASS  24/24
+
+Note: Gate 6 required killing a stale node process on port 3001 (old API instance from a prior
+session) before booting fresh. E2E result was 8/24 against the stale instance (404s on all routes
+because the stale dist predated the latest build); PASS 24/24 after clean restart.
+
+### No file changes required
+
+Both items were already implemented and committed. Sprint-3 work = verification + board update.
+Board rows APS-011 and APS-012 updated to "done" in memory/board.md.
+
+*Gal (Lead Developer) | 2026-07-09 | Sprint-3 verification delivery*

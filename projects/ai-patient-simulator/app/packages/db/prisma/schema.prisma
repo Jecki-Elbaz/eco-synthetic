@@ -380,6 +380,10 @@ model Evaluation {
   overallSummary       String?
   teacherOverride      Boolean    @default(false)
   teacherNotes         String?
+  // m7 (APS-014): override audit delta -- { previousStatus, newStatus,
+  // previousTeacherNotes, newTeacherNotes, overriddenAt, overriddenBy }.
+  // Null until a teacher override action is performed.
+  overrideAudit        Json?
   publishedAt          DateTime?
   generatedAt          DateTime?
   createdAt            DateTime   @default(now())

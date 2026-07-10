@@ -83,16 +83,30 @@ function makeAttemptRow(overrides: Record<string, unknown> = {}) {
 // Prisma mock factory
 // ---------------------------------------------------------------------------
 
+/**
+ * Build a Prisma mock for getStudentDashboard tests.
+ *
+ * getStudentDashboard now makes TWO attempt.findMany calls:
+ *   1st call -> completed attempts (finishedAt: { not: null })
+ *   2nd call -> IN_PROGRESS attempts (status: 'IN_PROGRESS', finishedAt: null)
+ *
+ * mockResolvedValueOnce chains the two responses in order.
+ * Subsequent calls (if any) fall back to [] via mockResolvedValue.
+ */
 function makePrisma(
   user: ReturnType<typeof makeUser> | null = makeUser(),
-  attempts: ReturnType<typeof makeAttemptRow>[] = [],
+  completedAttempts: ReturnType<typeof makeAttemptRow>[] = [],
+  inProgressAttempts: object[] = [],
 ) {
   return {
     user: {
       findUnique: jest.fn().mockResolvedValue(user),
     },
     attempt: {
-      findMany: jest.fn().mockResolvedValue(attempts),
+      findMany: jest.fn()
+        .mockResolvedValueOnce(completedAttempts)
+        .mockResolvedValueOnce(inProgressAttempts)
+        .mockResolvedValue([]),
     },
     supportTicket: {
       findMany: jest.fn().mockResolvedValue([]),
@@ -422,5 +436,114 @@ describe("DashboardService.getClassDashboard -- AUTHOR_PREVIEW exclusion (Oren F
     expect(result.students).toHaveLength(1);
     expect(result.students[0]!.status).toBe("NOT_STARTED");
     expect(result.students[0]!.overallScore).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// S4-GAL-RESUME: IN_PROGRESS attempts in student dashboard
+// ---------------------------------------------------------------------------
+
+const IN_PROGRESS_ATTEMPT_ID = "attempt-ip-001";
+
+function makeInProgressAttemptRow(overrides: Record<string, unknown> = {}) {
+  return {
+    id: IN_PROGRESS_ATTEMPT_ID,
+    userId: USER_ID,
+    status: "IN_PROGRESS",
+    updatedAt: new Date("2026-07-10T09:00:00Z"),
+    assignment: {
+      simulationTemplate: { title: "In-Progress Simulation" },
+    },
+    messages: [],
+    ...overrides,
+  };
+}
+
+describe("DashboardService.getStudentDashboard -- IN_PROGRESS resume (S4-GAL-RESUME)", () => {
+  it("D1: returns inProgressSimulations array with one entry when attempt is IN_PROGRESS", async () => {
+    const inProgressAttempt = makeInProgressAttemptRow();
+    const prisma = makePrisma(makeUser(), [], [inProgressAttempt]);
+    const svc = new DashboardService(prisma as never);
+
+    const result = await svc.getStudentDashboard(USER_ID, USER_ID, []);
+
+    expect(result.inProgressSimulations).toHaveLength(1);
+    expect(result.inProgressSimulations[0]!.attemptId).toBe(IN_PROGRESS_ATTEMPT_ID);
+    expect(result.inProgressSimulations[0]!.title).toBe("In-Progress Simulation");
+  });
+
+  it("D2: IN_PROGRESS attempt row has status='IN_PROGRESS'", async () => {
+    const inProgressAttempt = makeInProgressAttemptRow();
+    const prisma = makePrisma(makeUser(), [], [inProgressAttempt]);
+    const svc = new DashboardService(prisma as never);
+
+    const result = await svc.getStudentDashboard(USER_ID, USER_ID, []);
+
+    expect(result.inProgressSimulations[0]!.status).toBe("IN_PROGRESS");
+  });
+
+  it("D2b: elapsedSeconds is computed from first/last message sentAt when >=2 messages", async () => {
+    const first = new Date("2026-07-10T09:00:00Z");
+    const last = new Date("2026-07-10T09:05:30Z"); // 330 seconds later
+    const inProgressAttempt = makeInProgressAttemptRow({
+      messages: [{ sentAt: first }, { sentAt: last }],
+    });
+    const prisma = makePrisma(makeUser(), [], [inProgressAttempt]);
+    const svc = new DashboardService(prisma as never);
+
+    const result = await svc.getStudentDashboard(USER_ID, USER_ID, []);
+
+    expect(result.inProgressSimulations[0]!.elapsedSeconds).toBe(330);
+  });
+
+  it("D2c: elapsedSeconds is null when fewer than 2 messages exist", async () => {
+    const inProgressAttempt = makeInProgressAttemptRow({
+      messages: [{ sentAt: new Date("2026-07-10T09:00:00Z") }],
+    });
+    const prisma = makePrisma(makeUser(), [], [inProgressAttempt]);
+    const svc = new DashboardService(prisma as never);
+
+    const result = await svc.getStudentDashboard(USER_ID, USER_ID, []);
+
+    expect(result.inProgressSimulations[0]!.elapsedSeconds).toBeNull();
+  });
+
+  it("D2d: lastTurnAt falls back to updatedAt when no messages", async () => {
+    const updatedAt = new Date("2026-07-10T09:00:00Z");
+    const inProgressAttempt = makeInProgressAttemptRow({ messages: [], updatedAt });
+    const prisma = makePrisma(makeUser(), [], [inProgressAttempt]);
+    const svc = new DashboardService(prisma as never);
+
+    const result = await svc.getStudentDashboard(USER_ID, USER_ID, []);
+
+    expect(result.inProgressSimulations[0]!.lastTurnAt).toBe(updatedAt.toISOString());
+  });
+
+  it("D3: completed attempts still returned unchanged (regression)", async () => {
+    const completed = makeAttemptRow({ finishedAt: new Date("2026-07-09T08:00:00Z") });
+    const prisma = makePrisma(makeUser(), [completed], []);
+    const svc = new DashboardService(prisma as never);
+
+    const result = await svc.getStudentDashboard(USER_ID, USER_ID, []);
+
+    expect(result.completedSimulations).toHaveLength(1);
+    expect(result.completedSimulations[0]!.attemptId).toBe(ATTEMPT_ID);
+    expect(result.inProgressSimulations).toHaveLength(0);
+  });
+
+  it("D4: in-progress query uses userId filter (other student exclusion)", async () => {
+    const prisma = makePrisma(makeUser(), [], []);
+    const svc = new DashboardService(prisma as never);
+
+    await svc.getStudentDashboard(USER_ID, USER_ID, []);
+
+    // Second findMany call is the IN_PROGRESS query; verify it includes userId filter.
+    const calls = (prisma.attempt.findMany as jest.Mock).mock.calls;
+    const inProgressCall = calls[1] as [{ where: Record<string, unknown> }] | undefined;
+    expect(inProgressCall).toBeDefined();
+    expect(inProgressCall![0].where).toMatchObject({
+      userId: USER_ID,
+      status: "IN_PROGRESS",
+    });
   });
 });

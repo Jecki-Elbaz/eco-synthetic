@@ -63,9 +63,30 @@ export interface ClassDashboardVM {
   students: StudentRowVM[];
 }
 
+// ---------------------------------------------------------------------------
+// Resume-on-interrupt: IN_PROGRESS attempt view model (S4-GAL-RESUME)
+// ---------------------------------------------------------------------------
+
+export interface InProgressSimulationVM {
+  attemptId: string;
+  title: string;
+  status: "IN_PROGRESS";
+  /** ISO timestamp of the last message sent, or attempt.updatedAt if no messages. */
+  lastTurnAt: string;
+  /**
+   * Elapsed time in seconds: (last message sentAt) - (first message sentAt).
+   * null when fewer than 2 messages exist (cannot derive elapsed from a single
+   * timestamp). Front-end shows "-- : --" timer slot when null.
+   * Timer ruling (Ido A3): remaining = timeLimitMinutes * 60 - elapsedSeconds.
+   */
+  elapsedSeconds: number | null;
+}
+
 export interface StudentDashboardVM {
   userId: string;
   displayName: string;
+  /** IN_PROGRESS attempts resumable by the student. Empty array when none. */
+  inProgressSimulations: InProgressSimulationVM[];
   completedSimulations: Array<{
     attemptId: string;
     title: string;
@@ -186,6 +207,18 @@ interface AttemptRow {
   debriefMessages: Array<{ sentAt: Date }>;
 }
 
+/** Attempt row shape for the IN_PROGRESS query (S4-GAL-RESUME). */
+interface InProgressAttemptRow {
+  id: string;
+  userId: string;
+  status: string;
+  updatedAt: Date;
+  assignment: {
+    simulationTemplate: { title: string };
+  };
+  messages: Array<{ sentAt: Date }>;
+}
+
 interface RoleAssignmentRow {
   role: string;
   scopeType: string;
@@ -241,6 +274,7 @@ export class DashboardService {
 
     const studentView = actorId === userId && !isAdmin(actorScopes);
 
+    // --- Completed attempts (existing query, unchanged) -----------------------
     const attempts = (await this.prisma.attempt.findMany({
       where: {
         userId,
@@ -260,6 +294,52 @@ export class DashboardService {
       },
       orderBy: { finishedAt: "desc" },
     })) as unknown as AttemptRow[];
+
+    // --- IN_PROGRESS attempts (S4-GAL-RESUME) ---------------------------------
+    // Resume-on-interrupt: expose attempts the student can continue.
+    // RBAC: userId filter ensures only this student's attempts are returned.
+    // Timer ruling (Ido A3): elapsed = last-msg.sentAt - first-msg.sentAt in seconds.
+    // If fewer than 2 messages, elapsed is null -> front-end shows "-- : --".
+    const inProgressAttemptRows = (await this.prisma.attempt.findMany({
+      where: {
+        userId,
+        status: "IN_PROGRESS",
+        finishedAt: null,
+        type: { not: "AUTHOR_PREVIEW" },
+      },
+      include: {
+        assignment: {
+          include: { simulationTemplate: true },
+        },
+        messages: {
+          orderBy: { sentAt: "asc" },
+          select: { sentAt: true },
+        },
+      },
+      orderBy: { updatedAt: "desc" },
+    })) as unknown as InProgressAttemptRow[];
+
+    const inProgressSimulations: InProgressSimulationVM[] = inProgressAttemptRows.map((a) => {
+      const msgs = a.messages;
+      const lastMsg = msgs.length > 0 ? msgs[msgs.length - 1] : null;
+      const firstMsg = msgs.length > 0 ? msgs[0] : null;
+      const lastTurnAt = lastMsg
+        ? lastMsg.sentAt.toISOString()
+        : a.updatedAt.toISOString();
+      const elapsedSeconds =
+        firstMsg && lastMsg && msgs.length >= 2
+          ? Math.floor(
+              (lastMsg.sentAt.getTime() - firstMsg.sentAt.getTime()) / 1000,
+            )
+          : null;
+      return {
+        attemptId: a.id,
+        title: a.assignment.simulationTemplate.title,
+        status: "IN_PROGRESS",
+        lastTurnAt,
+        elapsedSeconds,
+      };
+    });
 
     const completedSimulations = attempts.map((a) => {
       const evaluation = a.evaluation;
@@ -321,6 +401,7 @@ export class DashboardService {
     return {
       userId,
       displayName: user.displayName,
+      inProgressSimulations,
       completedSimulations,
       debriefHistory,
       supportTickets: tickets.map((t) => ({
@@ -472,7 +553,8 @@ export class DashboardService {
       selectedAssignmentId: selected.id,
       criteria: criteria.map((c) => ({
         id: c.id,
-        shortLabel: c.labelKey,
+        // Header shows the localized label, not the internal labelKey (APS-019 minor)
+        shortLabel: criterionLabelHe(c.labels, c.labelKey),
         label: criterionLabelHe(c.labels, c.labelKey),
         maxScore: c.maxScore,
       })),

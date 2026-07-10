@@ -15,6 +15,12 @@ export interface SessionHeaderProps {
   onHelp: () => void;
   onFinish: () => void;
   onToggleNotes: () => void;
+  /**
+   * S4-NOA-RESUME: When true, elapsed data was unavailable on resume.
+   * Shows "-- : --" in the timer slot instead of a formatted time.
+   * Ido A3 ruling: do NOT show 00:00 (would imply full time available).
+   */
+  timerUnavailable?: boolean;
 }
 
 function formatSeconds(s: number): string {
@@ -56,11 +62,16 @@ export default function SessionHeader({
   onHelp,
   onFinish,
   onToggleNotes,
+  timerUnavailable = false,
 }: SessionHeaderProps) {
   const t = L[lang];
+  // S4-NOA-RESUME: when elapsed was unavailable on resume, show "-- : --"
+  // instead of any computed value (Ido A3: do not reset or show 00:00).
   const timerLabel =
     timerMode === "none"
       ? null
+      : timerUnavailable
+      ? "-- : --"
       : timerMode === "countdown"
       ? `${formatSeconds(timerSeconds)} ${t.remaining}`
       : `${formatSeconds(timerSeconds)} ${t.elapsed}`;

@@ -14,7 +14,8 @@ import TurnCounter from "./TurnCounter";
 import FinishModal from "./FinishModal";
 import HelpOverlay from "./HelpOverlay";
 import type { TypingStage } from "./PatientBubble";
-import { sendTurn } from "@/lib/api-client";
+import { sendTurn, fetchTranscript } from "@/lib/api-client";
+import { useDictation, isDictationEnabled } from "./useDictation";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -34,10 +35,22 @@ export interface SimulationScreenProps {
   timerMode?: "none" | "countdown" | "elapsed";
   /** For countdown: total seconds. For elapsed: unused (auto-increments). */
   timerDurationSeconds?: number;
-  /** Mic availability at session start */
+  /** Mic availability at session start (legacy; dictation now controls mic button) */
   micAvailable?: boolean;
   /** Welfare resource name */
   welfareResource?: string;
+  // S4-NOA-RESUME: resume-on-interrupt support.
+  /**
+   * True when this is a resume of an IN_PROGRESS attempt.
+   * On mount: loads prior transcript from GET /simulations/:attemptId/transcript.
+   */
+  isResume?: boolean;
+  /**
+   * Elapsed seconds before interruption (from student dashboard).
+   * Null when server could not compute it (Ido A3: show "-- : --", do not reset).
+   * Undefined (or absent) for new attempts -- timer starts from zero.
+   */
+  initialElapsedSeconds?: number | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -98,6 +111,8 @@ export default function SimulationScreen({
   timerDurationSeconds = 30 * 60,
   micAvailable = true,
   welfareResource,
+  isResume = false,
+  initialElapsedSeconds,
 }: SimulationScreenProps) {
   // --- State ---
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -107,7 +122,15 @@ export default function SimulationScreen({
   );
   const [typingStage, setTypingStage] = useState<TypingStage | null>(null);
   const [turnCount, setTurnCount] = useState(0);
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  // S4-NOA-RESUME: timer starts from initialElapsedSeconds on resume (not zero).
+  const [elapsedSeconds, setElapsedSeconds] = useState<number>(() => {
+    if (isResume && typeof initialElapsedSeconds === "number") {
+      return initialElapsedSeconds;
+    }
+    return 0;
+  });
+  // S4-NOA-RESUME: when elapsed data was unavailable, show "-- : --" (Ido A3).
+  const timerUnavailable = isResume && initialElapsedSeconds === null;
   const [timerExpired, setTimerExpired] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);
   const [notes, setNotes] = useState<NotesSections>(() => loadNotes(attemptId));
@@ -122,6 +145,25 @@ export default function SimulationScreen({
   // Refs for typing stage timer cleanup
   const typingTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const lastMessageRef = useRef<string>("");
+
+  // S4-NOA-DICT: dictation hook.
+  // Enable only after Eyal/Rambo APS-004 privacy clearance.
+  // isDictationEnabled() returns true only when NEXT_PUBLIC_DICTATION_ENABLED=true
+  // AND window.SpeechRecognition is available. Button does NOT render otherwise.
+  const dictationAvailable = isDictationEnabled();
+  const { dictationState, errorMessage: dictationError, startListening, stopListening } =
+    useDictation(lang, (text) => {
+      // On recognition result: append to input for student review before send.
+      setInputText((prev) => prev ? `${prev} ${text}` : text);
+    });
+
+  function handleDictationClick() {
+    if (dictationState === "listening") {
+      stopListening();
+    } else {
+      startListening();
+    }
+  }
 
   // --- Timer ---
   useEffect(() => {
@@ -145,6 +187,46 @@ export default function SimulationScreen({
   useEffect(() => {
     saveNotes(attemptId, notes);
   }, [attemptId, notes]);
+
+  // S4-NOA-RESUME: transcript rehydration on re-entry.
+  // Only fires when isResume=true. On success: renders prior turns in chat.
+  // On error: shows inline message with retry; does NOT block typed input.
+  // Guard: does NOT fire for new (non-IN_PROGRESS) attempts.
+  useEffect(() => {
+    if (!isResume) return;
+    let cancelled = false;
+    fetchTranscript(attemptId)
+      .then((turns) => {
+        if (cancelled) return;
+        if (turns.length === 0) return; // fresh start appearance
+        const hydrated: ChatMessage[] = [];
+        for (const turn of turns) {
+          if (turn.studentInput) {
+            hydrated.push({ id: `resume-s-${turn.turnIndex}`, role: "student", content: turn.studentInput });
+          }
+          if (turn.patientResponse) {
+            hydrated.push({ id: `resume-p-${turn.turnIndex}`, role: "patient", content: turn.patientResponse });
+          }
+        }
+        setMessages(hydrated);
+        setTurnCount(turns.length);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        // Inline error -- let student continue typing; transcript may be empty
+        const errMsg: ChatMessage = {
+          id: `resume-err-${Date.now()}`,
+          role: "patient",
+          content:
+            lang === "he"
+              ? "לא ניתן לטעון את השיחה -- נסה שוב"
+              : "Could not load transcript -- please retry",
+        };
+        setMessages([errMsg]);
+      });
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isResume, attemptId]);
 
   // --- Soft warn ---
   // M3: The server warns when turnCount >= softWarnTurns (evaluated PRE-turn by the
@@ -307,6 +389,7 @@ export default function SimulationScreen({
         timerMode={timerMode}
         timerSeconds={timerDisplaySeconds}
         timerExpired={timerExpired}
+        timerUnavailable={timerUnavailable}
         notesOpen={notesOpen}
         lang={lang}
         onHelp={() => setShowHelp(true)}
@@ -341,6 +424,10 @@ export default function SimulationScreen({
             onMicClick={handleMicClick}
             disabled={sending}
             lang={lang}
+            dictationEnabled={dictationAvailable}
+            dictationState={dictationState}
+            onDictationClick={handleDictationClick}
+            dictationError={dictationError}
           />
         </div>
 

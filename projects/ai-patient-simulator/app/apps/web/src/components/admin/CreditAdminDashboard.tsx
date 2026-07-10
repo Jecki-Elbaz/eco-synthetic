@@ -31,6 +31,58 @@ import {
 type TabKey = "ledger" | "activity" | "audit" | "settings";
 
 // ---------------------------------------------------------------------------
+// APS-014 m1: Pagination control.
+// Renders previous/next buttons with disabled state at boundaries.
+// Previous disabled on first page; Next disabled on last page.
+// UI-only -- no API change. Applied to ActivityLog and AuditLog tables.
+// ---------------------------------------------------------------------------
+
+interface PaginationControlProps {
+  page: number;           // 0-indexed current page
+  totalPages: number;
+  onPrev: () => void;
+  onNext: () => void;
+}
+
+function PaginationControl({ page, totalPages, onPrev, onNext }: PaginationControlProps) {
+  if (totalPages <= 1) return null;
+  const isFirst = page === 0;
+  const isLast = page >= totalPages - 1;
+  return (
+    <div
+      className="cadmin-pagination"
+      role="navigation"
+      aria-label="ניווט בדפים"
+      style={{ display: "flex", gap: "8px", alignItems: "center", marginBlockStart: "12px" }}
+    >
+      <button
+        type="button"
+        className="cadmin-btn"
+        onClick={onPrev}
+        disabled={isFirst}
+        aria-disabled={isFirst}
+        aria-label="עמוד קודם"
+      >
+        &laquo; קודם
+      </button>
+      <span style={{ fontSize: "0.875rem", color: "var(--color-muted)" }} aria-current="page">
+        עמוד {page + 1} מתוך {totalPages}
+      </span>
+      <button
+        type="button"
+        className="cadmin-btn"
+        onClick={onNext}
+        disabled={isLast}
+        aria-disabled={isLast}
+        aria-label="עמוד הבא"
+      >
+        הבא &raquo;
+      </button>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -444,114 +496,146 @@ function ActionPanel({ courses, selectedCourseId, onSuccess }: ActionPanelProps)
 
 // --- ActivityLog (APS-REQ-144) ---
 
+// APS-014 m1: Page size chosen so mock data (6 entries) spans 2 pages,
+// making the disabled-state boundary visible without extra data.
+const ACTIVITY_PAGE_SIZE = 5;
+
 function ActivityLogTable({ entries }: { entries: ActivityLogEntry[] }) {
+  const [page, setPage] = useState(0);
+  const totalPages = Math.max(1, Math.ceil(entries.length / ACTIVITY_PAGE_SIZE));
+  const pageEntries = entries.slice(page * ACTIVITY_PAGE_SIZE, (page + 1) * ACTIVITY_PAGE_SIZE);
+
   return (
-    <div className="cadmin-table-wrapper">
-      <table className="cadmin-activity-table" aria-label="יומן פעילות -- ניכויי קרדיטים">
-        <thead>
-          <tr>
-            <th scope="col">תאריך ושעה</th>
-            <th scope="col">קורס</th>
-            <th scope="col">סוג פעילות</th>
-            <th scope="col">קרדיטים</th>
-            <th scope="col">מזהה ניסיון</th>
-          </tr>
-        </thead>
-        <tbody>
-          {entries.length === 0 ? (
+    <div>
+      <div className="cadmin-table-wrapper">
+        <table className="cadmin-activity-table" aria-label="יומן פעילות -- ניכויי קרדיטים">
+          <thead>
             <tr>
-              <td colSpan={5} style={{ textAlign: "center", color: "var(--color-muted)", padding: "24px" }}>
-                אין רשומות פעילות
-              </td>
+              <th scope="col">תאריך ושעה</th>
+              <th scope="col">קורס</th>
+              <th scope="col">סוג פעילות</th>
+              <th scope="col">קרדיטים</th>
+              <th scope="col">מזהה ניסיון</th>
             </tr>
-          ) : (
-            entries.map((entry) => (
-              <tr key={entry.id}>
-                <td>
-                  <span dir="ltr" style={{ unicodeBidi: "embed" }}>
-                    {formatDateTime(entry.timestamp)}
-                  </span>
-                </td>
-                <td>{entry.courseName}</td>
-                <td>
-                  <span className={activityTypeBadgeClass(entry.activityType)}>
-                    {activityTypeLabel(entry.activityType)}
-                  </span>
-                </td>
-                <td>
-                  <span className="cadmin-numeric">
-                    -{entry.amount}
-                  </span>
-                </td>
-                <td>
-                  {entry.attemptId ? (
-                    <span dir="ltr" style={{ unicodeBidi: "embed", fontSize: "0.75rem", color: "var(--color-muted)" }}>
-                      {entry.attemptId}
-                    </span>
-                  ) : "--"}
+          </thead>
+          <tbody>
+            {entries.length === 0 ? (
+              <tr>
+                <td colSpan={5} style={{ textAlign: "center", color: "var(--color-muted)", padding: "24px" }}>
+                  אין רשומות פעילות
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              pageEntries.map((entry) => (
+                <tr key={entry.id}>
+                  <td>
+                    <span dir="ltr" style={{ unicodeBidi: "embed" }}>
+                      {formatDateTime(entry.timestamp)}
+                    </span>
+                  </td>
+                  <td>{entry.courseName}</td>
+                  <td>
+                    <span className={activityTypeBadgeClass(entry.activityType)}>
+                      {activityTypeLabel(entry.activityType)}
+                    </span>
+                  </td>
+                  <td>
+                    <span className="cadmin-numeric">
+                      -{entry.amount}
+                    </span>
+                  </td>
+                  <td>
+                    {entry.attemptId ? (
+                      <span dir="ltr" style={{ unicodeBidi: "embed", fontSize: "0.75rem", color: "var(--color-muted)" }}>
+                        {entry.attemptId}
+                      </span>
+                    ) : "--"}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+      {/* APS-014 m1: pagination -- Previous disabled on page 0, Next disabled on last page */}
+      <PaginationControl
+        page={page}
+        totalPages={totalPages}
+        onPrev={() => setPage((p) => Math.max(0, p - 1))}
+        onNext={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+      />
     </div>
   );
 }
 
 // --- AuditLog (APS-REQ-143 -- every manual change writes to audit log) ---
 
+const AUDIT_PAGE_SIZE = 3;
+
 function AuditLogTable({ entries }: { entries: AuditLogEntry[] }) {
+  const [page, setPage] = useState(0);
+  const totalPages = Math.max(1, Math.ceil(entries.length / AUDIT_PAGE_SIZE));
+  const pageEntries = entries.slice(page * AUDIT_PAGE_SIZE, (page + 1) * AUDIT_PAGE_SIZE);
+
   return (
-    <div className="cadmin-table-wrapper">
-      <table className="cadmin-audit-table" aria-label="יומן ביקורת -- פעולות מנהל">
-        <thead>
-          <tr>
-            <th scope="col">תאריך ושעה</th>
-            <th scope="col">מנהל</th>
-            <th scope="col">פעולה</th>
-            <th scope="col">כמות</th>
-            <th scope="col">קורס</th>
-            <th scope="col">סיבה</th>
-          </tr>
-        </thead>
-        <tbody>
-          {entries.length === 0 ? (
+    <div>
+      <div className="cadmin-table-wrapper">
+        <table className="cadmin-audit-table" aria-label="יומן ביקורת -- פעולות מנהל">
+          <thead>
             <tr>
-              <td colSpan={6} style={{ textAlign: "center", color: "var(--color-muted)", padding: "24px" }}>
-                אין רשומות ביקורת
-              </td>
+              <th scope="col">תאריך ושעה</th>
+              <th scope="col">מנהל</th>
+              <th scope="col">פעולה</th>
+              <th scope="col">כמות</th>
+              <th scope="col">קורס</th>
+              <th scope="col">סיבה</th>
             </tr>
-          ) : (
-            entries.map((entry) => (
-              <tr key={entry.id}>
-                <td>
-                  <span dir="ltr" style={{ unicodeBidi: "embed" }}>
-                    {formatDateTime(entry.timestamp)}
-                  </span>
-                </td>
-                <td>{entry.adminName}</td>
-                <td>
-                  <span className={actionBadgeClass(entry.action)}>
-                    {actionLabel(entry.action)}
-                  </span>
-                </td>
-                <td>
-                  {entry.amount !== null ? (
-                    <span className="cadmin-numeric">
-                      {entry.amount > 0 ? "+" : ""}{entry.amount.toLocaleString("he-IL")}
-                    </span>
-                  ) : "--"}
-                </td>
-                <td>{entry.courseName ?? "כלל המכללה"}</td>
-                <td style={{ maxInlineSize: "220px", wordBreak: "break-word" }}>
-                  {entry.reason}
+          </thead>
+          <tbody>
+            {entries.length === 0 ? (
+              <tr>
+                <td colSpan={6} style={{ textAlign: "center", color: "var(--color-muted)", padding: "24px" }}>
+                  אין רשומות ביקורת
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              pageEntries.map((entry) => (
+                <tr key={entry.id}>
+                  <td>
+                    <span dir="ltr" style={{ unicodeBidi: "embed" }}>
+                      {formatDateTime(entry.timestamp)}
+                    </span>
+                  </td>
+                  <td>{entry.adminName}</td>
+                  <td>
+                    <span className={actionBadgeClass(entry.action)}>
+                      {actionLabel(entry.action)}
+                    </span>
+                  </td>
+                  <td>
+                    {entry.amount !== null ? (
+                      <span className="cadmin-numeric">
+                        {entry.amount > 0 ? "+" : ""}{entry.amount.toLocaleString("he-IL")}
+                      </span>
+                    ) : "--"}
+                  </td>
+                  <td>{entry.courseName ?? "כלל המכללה"}</td>
+                  <td style={{ maxInlineSize: "220px", wordBreak: "break-word" }}>
+                    {entry.reason}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+      {/* APS-014 m1: pagination -- Previous disabled on page 0, Next disabled on last page */}
+      <PaginationControl
+        page={page}
+        totalPages={totalPages}
+        onPrev={() => setPage((p) => Math.max(0, p - 1))}
+        onNext={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+      />
     </div>
   );
 }

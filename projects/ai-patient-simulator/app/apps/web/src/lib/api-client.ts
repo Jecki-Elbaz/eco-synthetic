@@ -5,7 +5,18 @@
 //   /simulation/demo always uses mock regardless (no-auth showcase).
 
 import type { TurnRequest, TurnResponse } from "@aps/shared-types";
-import { authedPost } from "./http";
+import { authedPost, authedGet } from "./http";
+
+// ---------------------------------------------------------------------------
+// Transcript types (S4-NOA-RESUME)
+// ---------------------------------------------------------------------------
+
+export interface TranscriptTurn {
+  turnIndex: number;
+  studentInput: string;
+  patientResponse: string;
+  timestamp: string; // ISO
+}
 
 const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === "true";
 
@@ -73,4 +84,24 @@ export async function sendTurn(req: TurnRequest): Promise<TurnResponse> {
 
 export function isMockMode(): boolean {
   return USE_MOCK;
+}
+
+// ---------------------------------------------------------------------------
+// Transcript (S4-NOA-RESUME)
+// ---------------------------------------------------------------------------
+
+/**
+ * Fetch the turn-by-turn transcript for an attempt.
+ * Used by SimulationScreen on resume to rehydrate the chat history.
+ * Real endpoint: GET /simulations/:attemptId/transcript.
+ * Mock mode: returns empty array (fresh start appearance for demo).
+ */
+export async function fetchTranscript(attemptId: string): Promise<TranscriptTurn[]> {
+  if (USE_MOCK) {
+    await new Promise<void>((r) => setTimeout(r, 300));
+    return [];
+  }
+  return authedGet<TranscriptTurn[]>(
+    `simulations/${encodeURIComponent(attemptId)}/transcript`,
+  );
 }

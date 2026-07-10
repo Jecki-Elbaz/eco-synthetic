@@ -99,9 +99,29 @@ export interface SupportTicketVM {
   createdAt: string; // ISO timestamp
 }
 
+// S4-NOA-RESUME: in-progress attempt shown in student dashboard.
+// Shape mirrors Gal's S4-GAL-RESUME API contract (envelope 2026-07-10).
+export interface InProgressSimulationVM {
+  attemptId: string;
+  title: string;
+  status: "IN_PROGRESS";
+  /** ISO timestamp of last turn; null if no turns yet */
+  lastTurnAt: string | null;
+  /**
+   * Elapsed seconds (first to last turn). null if server cannot compute it.
+   * Timer shows remaining = (timeLimitSeconds - elapsed) when not null.
+   * Shows "-- : --" when null (Ido A3 ruling -- do not reset to zero).
+   */
+  elapsed: number | null;
+  /** Assignment time limit in seconds; null if not configured */
+  timeLimitSeconds: number | null;
+}
+
 export interface StudentDashboardVM {
   userId: string;
   displayName: string;
+  /** IN_PROGRESS attempts (S4-NOA-RESUME). Empty array when none. */
+  inProgressSimulations: InProgressSimulationVM[];
   completedSimulations: CompletedSimulationVM[];
   debriefHistory: DebriefHistoryEntryVM[];
   supportTickets: SupportTicketVM[];
