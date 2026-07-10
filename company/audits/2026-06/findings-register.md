@@ -70,3 +70,30 @@ Phase 2 detail: company/audits/2026-06/phase2-internal-audit.md. T-0034 decision
 - **IGNORE:** none.
 
 ---
+
+## Phase 5 -- Procedures & Workflow Audit (2026-07-11; Dalia + Assaf; Eco-verified). Owner triage: PENDING.
+
+Register: company/governance/procedures-register.md. Report: company/audits/2026-06/phase5-procedures-audit.md.
+Many rows confirm already-tracked items (AUD-001/002/004/006, SEC-0001); the NEW headline is the live runner degradation.
+
+| id | phase | area | severity | finding | recommended fix | owner disposition | resolution ref |
+|----|-------|------|----------|---------|-----------------|-------------------|----------------|
+| F-P5-RUNNER | 5 | Audit cadence / runner (LIVE) | critical | VERIFIED: all 6 weekly Monday jobs (Rambo scan, Dalia quality, Assaf fitness, Lital+Eyal compliance, Yael docs) last fired 2026-06-29; 07-06 cycle never ran. PM summary stale (07-09). Log shows TimeoutExpired (Opus), ConnectionRefused, "session limit". Standing security/quality/compliance safety net dark ~12 days. | Root causes: machine off/asleep Mon 07-06 + Task Scheduler no catch-up; account session-limit + connectivity; 300s timeout too tight for Opus. Fix: Shir adds missed-run catch-up + raises/segments timeout + moves Eco off always-Opus; owner ensures machine-on Mondays / account headroom. Re-run the missed weekly audits now. | PENDING | |
+| F-P5-COST | 5 | Cost instrumentation (LIVE) | major | Token pipeline (memory/log.jsonl) offline since ~07-01; daily cost snapshot runs but is blind to token/$ drift (self-reports DEGRADED). (F-PA03/F-P11) | Restore token capture in runner.py/agent-runs.jsonl (tokens in/out + est $); wire cost-threshold alert into Assaf snapshot. -> AUD-002. | PENDING | |
+| F-P01 | 5 | Incident response | critical | No incident-response runbook; Israeli PPL Amd.13 72h breach clock cannot be met; APS involves student PII. | Write company/processes/incident-response-runbook.md (classification, owner-per-severity, 72h PPL clock+Eyal trigger, post-incident LL). Before APS pilot. -> AUD-002. | PENDING | |
+| F-P02 | 5 | Concurrency / file-lock | critical | T-0002 lock never built; runner + parallel sessions race on board/decisions-log/log every 2h (last-write-wins). | Shir builds lock (AUD-001 P1); interim read-before-write + .lock sentinel in runner prompts. | PENDING | AUD-001 |
+| F-P03 | 5 | Customer comms (CS-0001) | critical | CS-0001 v0.1 DRAFT not A1-activated; one open item = Eyal EA-2 retention window. | Eyal EA-2 next runner cycle; Eco packages for owner A1; close AUD-004. | PENDING | AUD-004 |
+| F-P12 | 5 | Compliance (runner-fixable) | major | Eyal EA-1 (WhatsApp ToS) + EA-2 (CS retention) overdue; block WhatsApp gate + CS-0001; both are Read/reason/Write (no WebFetch). | Eyal completes both on the next runner compliance cycle (or spawn Eyal now). | PENDING | |
+| F-P04 | 5 | Release / deploy SOP | major | No release gate / PR review / CI / rollback; ad-hoc pushes to master. | company/processes/release-procedure.md (branch, PR, Adi test gate, Ido release call, rollback, A1 for prod). -> AUD-002. | PENDING | AUD-002 |
+| F-P05 | 5 | Backup / restore | major | Single machine + one remote; nothing tested; git history is the only audit trail. | Backup scope+schedule+restore test; -> AUD-002. | PENDING | AUD-002 |
+| F-P06 | 5 | On-call / acting-CEO | major | Solo Eco/Shir/Ido; no acting-CEO or on-call. | Designate acting-CEO (Ido); on-call runbook; -> AUD-002. | PENDING | AUD-002 |
+| F-P07 | 5 | Guard shadow-mode / B2 | major | GUARD_MODE=shadow; per-agent write scoping inert; SEC-0001 B2 (Edit->Write-append switch) list undocumented. | Produce the B2 agent list; confirm switches; accumulate clean window; owner A1 flip. -> SEC-0001. | PENDING | SEC-0001 |
+| F-P08 | 5 | Board task lifecycle | major | No intake validation / routing SLA / closure checklist; stale in-progress rows; some tasks lack due dates. | Add a board-task-lifecycle procedure (intake fields, ack SLA, result-envelope, closure checklist). | PENDING | |
+| F-P09 | 5 | Access-matrix drift | major | AUD-006 items (Oracle broad-read, Yossi, runner paths, project security reports) not formalized; matrix incomplete for Phase 6. | Execute AUD-006 A2 matrix revision before Phase 6. | PENDING | AUD-006 |
+| F-P10 | 5 | Quality-audit adherence | major | Dalia quality-audit-log.md unconfirmed to exist; post-FLAG->Anat escalation path undefined; audit not firing (see F-P5-RUNNER). | Confirm/create the log; add post-FLAG procedure to Dalia's role file. | PENDING | |
+| F-P11 | 5 | Model + cost governance | major | No cost thresholds, no token instrumentation, no model-change procedure. | model-governance doc + thresholds + real instrumentation. -> AUD-002. | PENDING | AUD-002 |
+| F-P-SOP | 5 | Missing minor SOPs | minor | No standalone SOP for: SAFE_MODE runbook (F-P13), secrets rotation/exposure (F-P14), gate-request template (F-P15), B1/B2 hiring (F-P16), runner ops (proc 13), cross-project handoff (proc 14), chronicle (F-P19), tool-gate SLA (F-P02-Dalia). | Batch as thin process docs; owners per register. -> AUD-006 governance batch. | PENDING | |
+| F-P17 | 5 | Lessons-learned unverified | minor | LL procedure exists (v1.0) but zero confirmed runs; SHIR-001 (7-day outage) never processed. | Retro-run SHIR-001 LL (lightweight); create the first post-mortem; add LL trigger to the incident runbook. | PENDING | |
+| F-P-EXIST | 5 | Exists-but-unverified outputs | observation | Permission-drift reports (F-P21), quality-audit-log, file-index.md, post-mortems dir -- referenced by procedures but existence unconfirmed. | Confirm each output file exists; create/instrument where missing (mostly rides F-P5-RUNNER fix). | PENDING | |
+
+---
