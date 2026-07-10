@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "google_workspace": {
+      "command": "C:\\Users\\Jecki\\AppData\\Local\\Python\\pythoncore-3.14-64\\Scripts\\uvx.exe",
+      "args": [
+        "workspace-mcp==1.21.3",
+        "--single-user",
+        "--tools", "gmail", "calendar", "drive"
+      ],
+      "env": {
+        "GOOGLE_OAUTH_CLIENT_ID": "${GOOGLE_OAUTH_CLIENT_ID}",
+        "GOOGLE_OAUTH_CLIENT_SECRET": "${GOOGLE_OAUTH_CLIENT_SECRET}",
+        "WORKSPACE_MCP_CREDENTIALS_DIR": "C:\\Users\\Jecki\\.google_workspace_mcp\\eco-creds"
+      }
+    }
+  }
+}

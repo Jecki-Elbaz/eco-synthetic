@@ -162,6 +162,13 @@ APPEND_ONLY = {
 
 SAFE_MODE_REL = "memory/SAFE_MODE"
 
+# --- Google account boundary (owner A1 2026-07-10) ---------------------------
+# The project's workspace-mcp server (.mcp.json `google_workspace`) is pinned to
+# the company account; its credential store is isolated (eco-creds). This rule is
+# HARD-ENFORCED regardless of GUARD_MODE (like the handoff secret scan): a wrong
+# account or a runner-path send is a security boundary, not a phase-in rule.
+ECO_GOOGLE_ACCOUNT = "eco.synthetic.org@gmail.com"
+
 # Patterns for credential/secret scanning on shared/handoff/ writes.
 _SECRET_PATTERNS = [
     re.compile(r"(?i)(password|passwd|secret|token|api[-_]?key)\s*[:=]\s*\S{6,}"),
@@ -238,10 +245,24 @@ def _current_content(rel: str) -> str:
 
 def evaluate(event: dict) -> tuple[str, str]:
     """Pure decision function. Returns (allow|deny, reason). Raises on bad input."""
-    tool = str(event.get("tool_name", "")).lower()
+    tool_raw = str(event.get("tool_name", ""))
+    tool = tool_raw.lower()
     ti = event.get("tool_input") or {}
     if not isinstance(ti, dict):
         raise ValueError("tool_input is not an object")
+
+    # --- Google account boundary (hard-enforced; see ECO_GOOGLE_ACCOUNT above) ---
+    if tool_raw.startswith("mcp__google_workspace__"):
+        short = tool_raw[len("mcp__google_workspace__"):]
+        email = str(ti.get("user_google_email") or "").strip().lower()
+        if short == "send_gmail_message" and os.environ.get("RUNNER_CONTEXT") == "1":
+            return DENY, "google boundary: send_gmail_message never available on the runner path"
+        if email and email != ECO_GOOGLE_ACCOUNT:
+            return DENY, (
+                f"google boundary: google_workspace is pinned to {ECO_GOOGLE_ACCOUNT}; "
+                f"call attempted user_google_email='{email}'"
+            )
+        return ALLOW, "google boundary: own-account call"
 
     governed = tool in ("write", "edit", "multiedit", "task", "agent")
 
@@ -403,7 +424,8 @@ def decide(event: dict, mode: str) -> tuple[str, str]:
             return DENY, f"fail-closed: guard could not evaluate ({exc})"
         return ALLOW, f"[shadow] eval-error (would fail-closed): {exc}"
     handoff_block = decision == DENY and "handoff write" in reason
-    if runner or mode == "enforce" or handoff_block:
+    google_block = decision == DENY and reason.startswith("google boundary")
+    if runner or mode == "enforce" or handoff_block or google_block:
         return decision, reason
     if decision == DENY:
         return ALLOW, f"[shadow] would-DENY: {reason}"

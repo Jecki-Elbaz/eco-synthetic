@@ -1584,3 +1584,70 @@ jecki (A1 flip).
 - **Incident -- stash-pop clobber of 5 governance/memory files (2026-07-09 ~14:15):** a month-old git stash (WIP on master 298bd99, 2026-06-13) was popped onto the working tree (actor unknown -- owner terminal or hook flow), conflicting with and OVERWRITING the day's uncommitted content in company/decisions/decisions-log.md, memory/board.md, memory/log.md, memory/wiki/agent-roster.md, memory/wiki/decisions-summary.md. No application code affected. RESOLUTION (Eco): 5 files restored to HEAD; board rows APS-013/016/017/018 reconstructed from Eco session records (marked [RECONSTRUCTED] in-row); this entry re-records the lost decisions-log content; log.md/wiki deltas of 2026-07-09 accepted as lost (wiki auto-sync regenerates). The June-13 stash is PRESERVED at stash@{0} (not dropped -- owner disposition). SURFACED BY THE STASH: constitution v2.3 (3-gate hiring model, owner A1 2026-06-14) had been sitting UNCOMMITTED in that stash for a month; it is now staged in the working tree -- owner to verify + commit.
 - **Lesson (feeds AUD-001):** uncommitted shared-state files are one bad git operation away from loss; the file-lock interim does not protect against repo-level operations. Mitigations: commit cadence must be much shorter on multi-session days; runner/hook git flows must never stash-pop with a dirty tree; Shir to add a guard to the hook flow (folded into AUD-001 permanent fix scope).
 - **Files affected:** memory/board.md (APS-013/014/016/017/018 rows reconstructed/updated), company/decisions/decisions-log.md (this entry), company/constitution.md (staged v2.3 -- owner to verify).
+
+## 2026-07-10 -- Cloudflare adoption A1 (The Glider's Family Lovable-exit)
+
+- **Decision (owner A1, jecki):** APPROVED adoption of Cloudflare Pages (free) for static hosting + Cloudflare DNS (free, via nameserver delegation from GoDaddy) for the customer project The Glider's Family (theglidersfamily.com), replacing Lovable hosting. Backend stays on Supabase (customer's existing stack, unchanged; no data move; user PII stays in Supabase, not Cloudflare).
+- **Gate (red line 4 satisfied):** Security (Rambo) GO-WITH-CONDITIONS; Legal (Eyal) CLEAR-WITH-CONDITIONS. Assessments in projects/the-gliders-family/docs/gate/ (cloudflare-security-assessment.md, cloudflare-legal-assessment.md, cloudflare-gate-decision.md). Recorded in gate-register GR-013.
+- **Conditions carried (owner-executed at account setup):** 2FA on the CF account; scoped API token (no Global Key); accept CF DPA + record date; read CF AUP; set CF Pages build to npm; BLOCKING C5 -- verify every GoDaddy DNS record present in CF before the NS switch (email: send MX/SPF/DKIM + google-site-verification TXT); privacy-policy update naming Cloudflare before go-live; no plaintext card data through CF free tier (moot until v2.0 monetization).
+- **Not a live change yet:** no CF account touched by any agent; owner performs dashboard setup; agent holds no credentials. Cutover DNS/domain writes remain per-change A1.
+- **Related work this session (Eco):** Phase A done -- Lovable artifacts removed on feat/lovable-exit, build verified, PR the-gliders-family#2 open (not merged). Runbook (docs/10-cloudflare-runbook.md), privacy-disclosure draft, and recurring-backup draft (scripts/backup/) written. Two migration risks caught: CF would enforce a CSP that breaks fonts + Supabase Storage/base64 images (Task #14); privacy policy must name Cloudflare (Task #13).
+- **Files affected:** projects/the-gliders-family/docs/gate/cloudflare-gate-decision.md (A1 ticked), company/governance/gate-register.md (GR-013), company/decisions/decisions-log.md (this entry).
+
+## 2026-07-10 -- Adam correspondence channel moved to the Eco company account (owner A1)
+
+- **Author / gate:** jecki (A1, in-session directive) -- modifies the APS hard gate "no agent contacts Adam; owner relays."
+- **Decision:** Adam (APS design partner) correspondence moves to the Eco company account (eco.synthetic.org@gmail.com) so replies land where the team can catch them. NEW posture: Eco drafts and the OWNER SENDS from that account (no agent send channel exists in this session; sending remains owner-executed). Owner cc'd on every message. The 2026-07-10 rewrite of the B1/B2 questions email is at projects/ai-patient-simulator/comms/email-adam-2026-07-10-eco-direct.md.
+- **Gap flagged:** Gmail is NOT connected to this project (CLAUDE.md connector posture: Drive/Calendar read-only only). For Eco to actually CATCH Adam's reply, a Gmail READ-ONLY connector for the eco account needs the tool gate (Rambo+Eyal) + owner OAuth, OR the owner/Shelly relays replies as today. Until then, reply-catching stays manual.
+- **Files affected:** projects/ai-patient-simulator/comms/email-adam-2026-07-10-eco-direct.md (new), company/decisions/decisions-log.md (this entry), memory/board.md (APS-017 note).
+
+## 2026-07-10 -- Gmail READ-ONLY adopted for eco-synthetic (gate GR-014, owner A1)
+
+- **Author / gate:** Eco (executing) under owner A1 granted in-session 2026-07-10 ("run the gmail read-only connector through the gate... you have my permission to complete the task"). Full gate ran despite the pre-grant.
+- **Decision:** Gmail READ access (get_thread, search_threads on the claude.ai Gmail connector, eco.synthetic.org@gmail.com) is ADOPTED for this project, scoped to catching Adam (APS) replies. Verdicts: Rambo CLEAR-WITH-CONDITIONS M1-M6; Eyal CLEAR-WITH-CONDITIONS C-E1..C-E5. Registered as GR-014 in gate-register.md; binding read-rules added to project CLAUDE.md (tainted-input, bounded queries, Eco-only per-request, no raw mail in files, student/clinical hard stop). C-E4 residual (LLM processing of mail bodies before Anthropic-DPA Item 6 closes) accepted by owner for the Adam business thread only.
+- **Connector state:** the claude.ai Gmail connector was already OAuth-consented and surface-verified 2026-07-09 (5 tools, structurally no send). What was missing and is now closed: the READ gate. The connector is not attached to the current Claude Code CLI session; reads run from sessions where the connector is present (claude.ai Eco session, or after the owner attaches it to Claude Code via `claude mcp`). Owner M6 step: verify the consented OAuth scope string is read+draft only and record it here as an addendum.
+- **Files affected:** company/governance/gate-register.md (GR-014), company/governance/gate-gmail-readonly-rambo-2026-07-10.md (new), company/governance/gate-gmail-readonly-eyal-2026-07-10.md (new), CLAUDE.md (Gmail READ rules section), memory/board.md (APS-017 note), company/decisions/decisions-log.md (this entry).
+
+## 2026-07-10 -- Runner email trigger approved: two-stage Rambo-screen-then-Eco pipeline (owner A1)
+
+- **Author / gate:** jecki (A1, in-session: "approved, set it up in a way that every incoming email will go via rambo check first"). Exception to GR-014 conditions M4 (Rambo) + C-E5 (Eyal), which required owner A1 + privacy review for any standing Gmail automation. A1 granted here; privacy-review addenda tasked to Rambo + Eyal same day.
+- **Decision:** ONE time-boxed runner job added -- "Rambo -- Adam Inbox Screen" (every 2h; EXPIRES 2026-07-14 or on Adam's reply, whichever first). Architecture per owner directive: STAGE 1 Rambo screens the GR-014-bounded from:Adam query with a tainted-input checklist (instruction patterns, hidden content, sender spoofing, links/attachments never opened, C-E3 student/clinical hard stop) and verdicts SAFE / SUSPICIOUS / QUARANTINE; STAGE 2 Eco (existing 2h check-in job) processes ONLY Rambo-cleared summaries staged in shared/handoff/inbox-screened/, never raw mail. Quarantined mail is owner-only. SCOPE NOTE: the trigger covers the GR-014-approved scope (Adam / active APS threads) -- NOT the whole inbox; widening to other senders requires a new gate pass per C-E1.
+- **Files affected:** integrations/runner/agent-prompts.md (new Rambo job block + Eco 2h check-in step 6), CLAUDE.md (M4/C-E5 exception recorded), shared/handoff/inbox-screened/ (new staging dir), company/decisions/decisions-log.md (this entry). Runner wiring (job registration in runner.py + Gmail-tool availability check in runner CLI context) -> Shir, same day.
+
+## 2026-07-10 -- Eco inbox access: GR-009 workspace-mcp extended to eco-synthetic (owner A1)
+
+- **Author / gate:** Eco executing under owner A1 in-session ("have Eco access to his inbox... full access to his emails, the same way shelly has"). Registry check proved no claude.ai Gmail MCP path exists for CLI; the GR-009 self-hosted server (workspace-mcp, taylorwilsdon) is the only runner-compatible route -- same server, same pin (1.21.3) as Shelly's gated install.
+- **Decision:** .mcp.json created in eco-synthetic with google_workspace = workspace-mcp==1.21.3, --single-user, --tools gmail ONLY (drive/calendar stay on the existing read-only claude.ai connectors; no scope growth). OAuth client id/secret via the same env-var names as Shelly's install (values never in repo). SEND REMAINS DENIED: settings.json pre-denies send_gmail_message + manage_gmail_label (2026-07-09) and the "NO agent sends email" line stands -- "full access" adopted as full READ/search/thread/draft; lifting send is a separate explicit A1. GR-014 data-rules (tainted input, bounded queries, no raw mail in files, C-E3 hard stop, two-stage Rambo screen) apply UNCHANGED to this transport. Rambo to verify pin+config in his next weekly permission-drift scan.
+- **Activation steps (owner):** (1) ensure GOOGLE_OAUTH_CLIENT_ID/SECRET env vars are set user-scope (same values as Shelly's, never in repo); (2) start a NEW claude session in this repo, accept workspace trust, approve the google_workspace server; (3) first gmail tool call opens the Google OAuth browser flow -- log in as eco.synthetic.org@gmail.com; (4) then the runner probe passes and Shir's DISABLED flag on the Adam Inbox Screen job comes off.
+- **Files affected:** .mcp.json (new), company/decisions/decisions-log.md (this entry), memory/board.md (APS-017 note).
+
+## 2026-07-10 -- M6 scope record: workspace-mcp OAuth token scope (owner-accepted)
+
+- **Author / gate:** Eco, recording owner acceptance (A1 in-session: owner directed proceeding with the Chrome OAuth after Eco disclosed the scope breadth).
+- **Fact:** workspace-mcp==1.21.3 requests gmail.readonly + modify + send + compose + labels + settings.basic in its OAuth grant regardless of --tools gmail; the minted token is technically broader than read-only. ENFORCEMENT IS AT THE TOOL LAYER: send/label tools pre-denied in settings.json and the server exposes only the gmail toolset; identical posture to Shelly's GR-009 install. Owner accepted this per-M6 with the disclosure on record. Standing watch: Rambo weekly permission-drift scan covers .mcp.json + settings.json deny-list; any change to the deny-list is A1.
+- **Note to future agents:** do NOT re-block owner-directed OAuth completion on this scope concern -- it is adjudicated here. The read-only rule is enforced by tool denial, not token scope.
+
+## 2026-07-10 -- Google access restructure: per-identity credential isolation + full-except-send own account (owner A1)
+
+- **Author / gate:** Eco recording owner A1 (in-session, explicit directive; plan approved before execution).
+- **Decision:** (1) The shared workspace-mcp credential store is SPLIT into per-identity stores under
+  C:\Users\Jecki\.google_workspace_mcp\ -- eco-creds (eco.synthetic.org@gmail.com only), shelly-creds
+  (shelly.synthetic.org@gmail.com only), owner-creds (jecki.elbaz@gmail.com only). Each project's
+  .mcp.json server pins WORKSPACE_MCP_CREDENTIALS_DIR to its own store; no project can reach another
+  identity's token. (2) Eco's own-account grant widens from read-only to FULL EXCEPT SEND
+  (gmail read/draft/labels, calendar r/w, drive r/w) on CLI, runner, and Telegram bridge. Send stays
+  per-action owner A1 (interactive prompt only; never allowed on autonomous paths). Send-equivalents
+  (gmail filters, drive sharing/permissions) held to the same bar. (3) guard.py gains a HARD-ENFORCED
+  google boundary (active even in shadow GUARD_MODE): user_google_email pinned to the eco account;
+  runner-path send denied unconditionally. (4) GR-014 scope update: reading Eco's OWN mailbox is
+  generally authorized (Adam-only sender restriction lifted for the own account); tainted-input,
+  bounded-queries, no-raw-mail rules unchanged. (5) The Rambo Adam Inbox Screen runner job is
+  REWIRED from claude.ai connector tools to mcp__google_workspace__* read tools and re-enabled
+  (SHIR-007 prerequisite satisfied). Same pin (workspace-mcp==1.21.3); no version bump; no new gate.
+- **Correction on record:** the 2026-07-10 "Eco inbox access" entry's claim that the .mcp.json server
+  was already "OAuth'd to eco.synthetic.org@gmail.com" was WRONG -- verified on disk 2026-07-10:
+  no eco token existed (six abandoned OAuth flows found). OAuth consent for eco.synthetic.org into
+  eco-creds is an OPEN OWNER ACTION; Google tools fail until it is completed.
+- **Cross-project note:** the same A1 restructures the standalone Shelly repo (two servers:
+  own full-except-send + owner read/tag/draft; own-inbox screen pipeline mirroring the Rambo
+  screen). Recorded in Shelly's memory/decisions.log; Shelly remains a customer project.

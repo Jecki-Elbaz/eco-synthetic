@@ -168,11 +168,45 @@ _AGENT_ACCESS: dict[str, list[str]] = {
     ],
 }
 
+# Google Workspace tools for Eco's OWN account (eco.synthetic.org@gmail.com),
+# owner A1 2026-07-10: FULL access EXCEPT SEND. The .mcp.json server is pinned to
+# the isolated eco-creds credential store; guard.py additionally pins every call's
+# user_google_email to the eco account. send_gmail_message is NEVER granted here
+# (per-action owner approval, interactive CLI only). manage_gmail_filter and Drive
+# sharing/permission tools are also held back from the autonomous surface
+# (mail-forwarding rules and file sharing are send-equivalents).
+_ECO_GOOGLE_TOOLS: list[str] = [
+    "mcp__google_workspace__search_gmail_messages",
+    "mcp__google_workspace__get_gmail_message_content",
+    "mcp__google_workspace__get_gmail_messages_content_batch",
+    "mcp__google_workspace__get_gmail_thread_content",
+    "mcp__google_workspace__get_gmail_threads_content_batch",
+    "mcp__google_workspace__get_gmail_attachment_content",
+    "mcp__google_workspace__draft_gmail_message",
+    "mcp__google_workspace__list_gmail_labels",
+    "mcp__google_workspace__manage_gmail_label",
+    "mcp__google_workspace__modify_gmail_message_labels",
+    "mcp__google_workspace__batch_modify_gmail_message_labels",
+    "mcp__google_workspace__list_calendars",
+    "mcp__google_workspace__get_events",
+    "mcp__google_workspace__query_freebusy",
+    "mcp__google_workspace__manage_event",
+    "mcp__google_workspace__create_calendar",
+    "mcp__google_workspace__search_drive_files",
+    "mcp__google_workspace__get_drive_file_content",
+    "mcp__google_workspace__list_drive_items",
+    "mcp__google_workspace__get_drive_file_download_url",
+    "mcp__google_workspace__create_drive_file",
+    "mcp__google_workspace__create_drive_folder",
+    "mcp__google_workspace__update_drive_file",
+    "mcp__google_workspace__copy_drive_file",
+]
+
 # Tools granted to each agent at the CLI level (--allowedTools).
 # Must match the tools: line in the agent's .claude/agents/*.md frontmatter,
 # scoped to what is safe to grant in a Telegram session.
 _AGENT_TOOLS: dict[str, list[str]] = {
-    "eco": ["Read", "Write", "Edit"],
+    "eco": ["Read", "Write", "Edit"] + _ECO_GOOGLE_TOOLS,
 }
 
 

@@ -36,6 +36,27 @@ NOTIFY_MUTE_FILE = ROOT / "memory" / "MUTE_2H_UNTIL"  # ISO date = first day bac
 AGENTS_DIR = ROOT / ".claude" / "agents"
 OWNER_CHAT = "63160285"
 TOOLS = {"readonly": "Read", "act": "Read,Write,Edit"}
+# Per-job tool overrides: keys match job["key"]; values replace TOOLS[mode] for that job.
+# REWIRED 2026-07-10 (owner A1, Google access restructure): the project .mcp.json now
+# registers GR-009 workspace-mcp (server `google_workspace`, isolated eco-creds credential
+# store), so the screen job uses mcp__google_workspace__* Gmail READ tools instead of the
+# claude.ai connector tools (which attach only in claude.ai web sessions -- SHIR-007).
+PER_JOB_TOOLS = {
+    "Rambo:Adam Inbox Screen (every 2h; EXPIRES 2026-07-14 or on Adam reply)": (
+        "Read,Write,Edit,"
+        "mcp__google_workspace__search_gmail_messages,"
+        "mcp__google_workspace__get_gmail_message_content,"
+        "mcp__google_workspace__get_gmail_thread_content"
+    ),
+}
+# Jobs registered but DISABLED pending a prerequisite. Key = job["key"]; value = reason.
+# To re-enable: satisfy the prerequisite, remove the key, re-run the tool probe.
+# 2026-07-10: Rambo inbox-screen RE-ENABLED after the Google access restructure wired
+# workspace-mcp via .mcp.json (owner A1; the SHIR-007 prerequisite is satisfied).
+# NOTE: the job stays inert until the owner completes the eco.synthetic.org@gmail.com
+# OAuth consent into eco-creds -- until then Gmail calls fail and the job reports
+# GMAIL_TOOLS_UNAVAILABLE per its prompt.
+DISABLED_JOBS = {}
 HOLD = ("on hold", "on-hold", "blocked on", "blocked-until", "waiting on",
         "waiting-on", "pending owner", "queued until")
 CLAUDE_TIMEOUT = 300
@@ -130,6 +151,8 @@ def parse_prompts() -> list:
         agent = m.group("agent").strip()
         task = m.group("task").strip()
         cad = task.lower()  # scan the whole title for cadence keywords (handles multi-paren titles)
+        # Extract hard expiry date from task title (EXPIRES YYYY-MM-DD -- code-level gate).
+        exp_m = re.search(r"\bEXPIRES\s+(\d{4}-\d{2}-\d{2})\b", task, re.IGNORECASE)
         jobs.append({
             "key": f"{agent}:{task}",
             "agent": agent,
@@ -137,11 +160,20 @@ def parse_prompts() -> list:
             "cadence": cad,
             "tg": m.group("tg").strip().upper(),
             "prompt": m.group("prompt").strip(),
+            "expiry": exp_m.group(1) if exp_m else None,
         })
     return jobs
 
 
 def is_due(job: dict, state: dict, t: datetime) -> bool:
+    # Hard expiry gate: code-level (authoritative); prompt-level is defense-in-depth only.
+    expiry = job.get("expiry")
+    if expiry:
+        try:
+            if t.date() > datetime.fromisoformat(expiry).date():
+                return False
+        except ValueError:
+            pass
     last = state.get(job["key"], {}).get("last")
     last_dt = None
     if last:
@@ -229,8 +261,17 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
         if actionable_gate() == 0:
             log({"key": key, "event": "gate_skip", "actionable": 0})
             return {"ran": False, "reason": "gate_skip"}
+    # Disabled-jobs gate: job registered but blocked on an unmet prerequisite.
+    disabled_reason = DISABLED_JOBS.get(key)
+    if disabled_reason:
+        if dry:
+            print(f"  DISABLED {key} -- {disabled_reason[:120]}")
+        else:
+            log({"key": key, "event": "job_disabled", "reason": disabled_reason[:200]})
+        return {"ran": False, "reason": "disabled"}
     model = agent_model(agent)
-    tools = TOOLS[mode]
+    # Per-job tool override: some jobs need tools beyond the runner default (e.g., Gmail MCP).
+    tools = PER_JOB_TOOLS.get(key, TOOLS[mode])
     if dry:
         print(f"  WOULD RUN {key} | cadence={job['cadence']} | tg={job['tg']} | model={model} | tools={tools}")
         return {"ran": False, "reason": "dry"}
@@ -261,7 +302,7 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
     # treat output whose LAST non-empty line is the sentinel as "nothing actionable".
     no_actionable = out.rstrip().endswith("NO_ACTIONABLE_CONTENT")
     if job["tg"].startswith(("YES", "CONDITIONAL")) and out and not no_actionable:
-        if "2h" in job["cadence"] and two_h_notify_muted():
+        if agent.lower() == "eco" and "2h" in job["cadence"] and two_h_notify_muted():
             log({"key": key, "event": "tg_muted_2h"})  # work ran; owner ping suppressed
         else:
             sent = send_telegram(f"[Proactivity -- {agent}]\n\n{out}")
