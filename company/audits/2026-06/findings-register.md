@@ -94,6 +94,12 @@ Many rows confirm already-tracked items (AUD-001/002/004/006, SEC-0001); the NEW
 | F-P11 | 5 | Model + cost governance | major | No cost thresholds, no token instrumentation, no model-change procedure. | model-governance doc + thresholds + real instrumentation. -> AUD-002. | PENDING | AUD-002 |
 | F-P-SOP | 5 | Missing minor SOPs | minor | No standalone SOP for: SAFE_MODE runbook (F-P13), secrets rotation/exposure (F-P14), gate-request template (F-P15), B1/B2 hiring (F-P16), runner ops (proc 13), cross-project handoff (proc 14), chronicle (F-P19), tool-gate SLA (F-P02-Dalia). | Batch as thin process docs; owners per register. -> AUD-006 governance batch. | PENDING | |
 | F-P17 | 5 | Lessons-learned unverified | minor | LL procedure exists (v1.0) but zero confirmed runs; SHIR-001 (7-day outage) never processed. | Retro-run SHIR-001 LL (lightweight); create the first post-mortem; add LL trigger to the incident runbook. | PENDING | |
-| F-P-EXIST | 5 | Exists-but-unverified outputs | observation | Permission-drift reports (F-P21), quality-audit-log, file-index.md, post-mortems dir -- referenced by procedures but existence unconfirmed. | Confirm each output file exists; create/instrument where missing (mostly rides F-P5-RUNNER fix). | PENDING | |
+| F-P-EXIST | 5 | Exists-but-unverified outputs | observation | Permission-drift reports (F-P21), quality-audit-log, file-index.md, post-mortems dir -- referenced by procedures but existence unconfirmed. | Confirm each output file exists; create/instrument where missing (mostly rides F-P5-RUNNER fix). | VERIFIED | quality-audit-log/file-index/drift-reports(06-29,07-06,07-07) EXIST; only SHIR-001 LL missing -> AUD-006 |
+
+### Phase 5 triage outcome (owner A1 2026-07-11)
+- **FIX-NOW (applied/executed in-session):** F-P5-RUNNER -> Shir fix spec delivered (AUD-007; save-state-per-job, Eco->Sonnet, per-model timeout, catch-up, retry, cost-json); root cause corrected (state-tracking artifact + Opus timeouts, not a 12-day blackout). F-P12 -> Eyal closed EA-1 + EA-2 (CS-0001 unblocked). Rambo catch-up delta scan done (AUD-008: fleet CLEAR bar Noa spawn-gap + GR-014 07-14 expiry + T-0041 leg owed + Yossi B5). RedTeam.md stale identity line fixed. Exists-but-unverified -> VERIFIED (files exist).
+- **BACKLOG:** F-P01/04/05/06/11 + F-P5-COST -> AUD-001 (file-lock P1) + AUD-002 (SOP bundle, 2026-08-15 target). F-P07 -> SEC-0001. F-P09 -> AUD-006. F-P-SOP/F-P08/F-P17 + retro SHIR-001 LL -> AUD-006 governance batch.
+- **OWNER A1 (flagged, not self-applied):** Noa->OWNER_SPAWN_ONLY guard edit + Noa.md cert-status; GR-014 runner-exception expiry decision by 2026-07-14 (AUD-008).
+- **IGNORE:** none.
 
 ---
