@@ -130,4 +130,11 @@ Verdict: fleet ~100% capability-complete in shadow mode; 2 real current holes; a
 
 Capability spot-tests: Gal PASS, Jenny PASS, Lital PASS (input-gap surfaced). Every live agent already holds a B3 competency PASS on record; full 32-agent live re-test deferred as low-marginal-value (sample logged, not silently dropped).
 
+### Phase 6 triage outcome (owner A1 2026-07-12)
+- **FIX-NOW (applied):** F-CAP01 Noa Bash allowlist (pnpm/docker-compose/npx prisma; held broad npx *); F-CAP02 Oren Write; F-RR03 Eyal RL9/10/11 block (v1.2); F-RR01 Designer 7 sections (v1.2); F-RR02 Eco Identity/KPIs/Escalation (v1.1).
+- **BACKLOG:** F-CAP-ENFORCE -> AUD-009 (hard SEC-0001 pre-flip gate). F-RR08/RR-STALE/RR04-06 + org reconciliations -> AUD-010 (one mechanical owner-A1 commit; Anat drafts). F-DEP-COST -> AUD-007; F-RAMBO-INBOX -> AUD-008/GR-014; F-CAP09 -> AUD-010 context.
+- **RESOLVED BY DECISION (Eco A2, applied via AUD-010):** F-RR07 Adi/Dalia routing = BOTH (Ido action + Dalia governance); F-DUP-COST = Assaf operational / Lital financial split.
+- **OWNER DECISION PENDING:** F-RR18 marketing-design orphan (product-only vs expand Tal vs hire).
+- **IGNORE:** none.
+
 ---
