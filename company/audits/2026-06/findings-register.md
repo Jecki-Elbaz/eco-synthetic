@@ -103,3 +103,31 @@ Many rows confirm already-tracked items (AUD-001/002/004/006, SEC-0001); the NEW
 - **IGNORE:** none.
 
 ---
+
+## Phase 6 -- R&R + Capability Audit (2026-07-12; Anat + Rambo + Assaf + live spot-tests). Owner triage: PENDING.
+
+Report: company/audits/2026-06/phase6-rr-capability-audit.md. Scorecard: agent-fitness-scorecard.md (Capability axis; Doing% = Phase 7).
+Verdict: fleet ~100% capability-complete in shadow mode; 2 real current holes; a ~16-item enforce-mode pre-flip checklist; R&R has 1 critical + a staleness tail.
+
+| id | phase | area | severity | finding | recommended fix | owner disposition | resolution ref |
+|----|-------|------|----------|---------|-----------------|-------------------|----------------|
+| F-CAP01 | 6 | Noa build tools (CURRENT) | critical | pnpm/docker-compose/npx-prisma absent from settings.json Bash allowlist though B5 C2 scopes Bash to exactly those; APS Sprint 2 live and blocked on non-interactive paths. | Add Bash(pnpm *), Bash(docker-compose *), Bash(npx prisma *), Bash(npx *) to settings.json (Rambo gate + owner A1). | PENDING | |
+| F-CAP02 | 6 | Oren no Write (CURRENT) | major | Oren has Edit only, no Write -> cannot create new review-note files (his core deliverable). | Add Write to Oren.md frontmatter (owner A1; Rambo re-scan). | PENDING | |
+| F-CAP-ENFORCE | 6 | Enforce-mode pre-flip checklist | major | ~16 items break the instant the guard flips: Oracle+Yael not in ALLOWED_AGENTS (dead PATH_SCOPE, F-CAP03); Dalia PATH_SCOPE missing policies/+post-mortems/ (F-CAP05); Eyal no legal-drafts path (F-CAP08); 12 agents not in ALLOWED_AGENTS (F-CAP06); + Noa spawn-gap (AUD-008). | Clear ALL before SEC-0001 flip: add agents to ALLOWED_AGENTS + PATH_SCOPE entries + company/legal/. Hard dependency on SEC-0001/Phase 8. | PENDING | SEC-0001 |
+| F-CAP09 | 6 | Shir DevOps Bash (usability) | minor | docker/deploy commands not in Bash allowlist -> per-command approval (OWNER_SPAWN_ONLY so interactive-only anyway). | Enumerate Shir's Bash patterns; add after Rambo gate + owner A1. | PENDING | |
+| F-DEP-COST | 6 | Cost/token pipeline (input dep) | major | Lital + Assaf cost-reporting responsibilities are INPUT-BLOCKED -- token pipeline offline; live spot-test confirmed Lital cannot produce per-agent USD. | AUD-007 fix -07 (cost_usd capture) + -01/-04 (state/catch-up). | PENDING | AUD-007 |
+| F-RR01 | 6 | Designer role file (R&R) | critical | Designer/Tal missing 7 required sections (KPIs, Triggers, Inputs, Outputs, Data/access, Tone, Escalation) -- most incomplete file in the fleet; live agent. | Eco+Perry full role-file pass vs gold template; Anat review; owner A1. | PENDING | |
+| F-RR02 | 6 | Eco role file (R&R) | major | Eco missing KPIs, Escalation, Identity/version block (long-standing since 2026-06-12 cert). | Add the 3 sections to Eco.md (owner A1). | PENDING | |
+| F-RR03 | 6 | Eyal RL block (R&R) | major | Eyal missing the RL9/10/11 block; RL9/RL10 uncited -- exactly the surfaces (WebFetch, legal docs, gate) where they matter. | Add the RL9/10/11 block + cite RL8/RL10 (owner A1). | PENDING | |
+| F-RR04-06 | 6 | Template gaps (Shir/Luci/Noa) | major | Shir no Identity block; Luci missing Identity/Tools/Tone; Noa missing RL9/10/11 block + Voice (+ provisional B3 gate ~07-21). | Add missing sections (owner A1 batch); confirm Noa B3 gate schedule with Ido. | PENDING | |
+| F-RR07 | 6 | Org contradiction (routing) | major | Adi routes QA quality-trends "via Ido"; Dalia says "direct independent line" -- live files contradict. | Eco+Ido+Dalia decide the path; fix the wrong file (owner A1). | PENDING | |
+| F-RR08 | 6 | Stale identity batch (R&R) | minor | 10 agents (Oracle, Zvika, Oren, Roman, Adi, Sami, Mike, Alex, Sally, Ido) show stale "Approved by: PENDING" (cert-status blocks are correct). | One-commit batch fix of the Approved-by + change-log lines (owner A1). | PENDING | |
+| F-RR-STALE | 6 | Staleness tail (R&R) | minor | Shelly refs (Hila/Lital); Ido "Senior Dev TBD"; Perry "Designer unnamed"; Sally omits MeetingPrep; Erez identity at file-bottom; Yossi cert-status; Rambo v0.1; Perry/MeetingPrep no Tone section. | Batch role-file corrections (owner A1); fold with F-RR08. | PENDING | |
+| F-RR18 | 6 | Org orphan (marketing design) | observation | No agent owns marketing/brand visual design (Designer product-only; Hila not a designer). | Eco logs a decision: product-only confirmed vs expand Tal to marketing vs new hire. | PENDING | |
+| F-DUP-COST | 6 | Org duplicate (cost reporting) | observation | Assaf + Lital both claim per-agent cost reporting, same cadence/recipients. | Dedup the operational (Assaf) vs financial (Lital) split in both role files. | PENDING | |
+| F-ASSAF-ACC | 6 | Assessor accuracy (-> Phase 7) | observation | Assaf's Phase 6 leg reported 2 false blockers (Adi/Oren "not live"; T-0012 "open"); both stale misreads corrected by Eco. Op-Ex accuracy flag. | Carry into Phase 7 performance review of Assaf. | PENDING | |
+| F-RAMBO-INBOX | 6 | Runner job failing (live) | major | Rambo Adam-inbox-screen runner job failing 7/7 (rc=1, 0 chars) -- burning cycles; also expires 2026-07-14. | Diagnose (credential/config/code); decide GR-014 extension by 07-14. | PENDING | AUD-008 |
+
+Capability spot-tests: Gal PASS, Jenny PASS, Lital PASS (input-gap surfaced). Every live agent already holds a B3 competency PASS on record; full 32-agent live re-test deferred as low-marginal-value (sample logged, not silently dropped).
+
+---
