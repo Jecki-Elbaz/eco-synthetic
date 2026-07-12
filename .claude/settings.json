@@ -55,7 +55,10 @@
       "Bash(ls *)",
       "Bash(cat *)",
       "Bash(find *)",
-      "Bash(grep *)"
+      "Bash(grep *)",
+      "Bash(pnpm *)",
+      "Bash(docker-compose *)",
+      "Bash(npx prisma *)"
     ],
     "deny": [
       "Write(.env)",
