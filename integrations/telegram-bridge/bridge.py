@@ -270,6 +270,16 @@ def _build_bridge_context(agent_name: str) -> str:
     unavailable = [t for t in ["Write", "Edit", "Bash", "WebSearch", "WebFetch"] if t not in tools]
     unavailable_str = ", ".join(unavailable) if unavailable else "none"
     halt_block = _SAFE_MODE_DIRECTIVE if "Write" in tools else ""
+    google_block = ""
+    if any(t.startswith("mcp__google_workspace__") for t in tools):
+        google_block = """
+**Google Workspace tools -- startup latency (IMPORTANT):** the google_workspace MCP
+server is spawned fresh for every message and takes up to ~60 seconds to initialize.
+If a Google tool is reported as unavailable or "still connecting", that is NOT a
+broken connection -- wait a moment and RETRY (2-3 attempts over the first minute)
+before telling the owner anything is down. Your account: eco.synthetic.org@gmail.com
+(pass it as user_google_email). You cannot send email from this session.
+"""
     return f"""
 ---
 
@@ -297,7 +307,7 @@ If a request needs a capability you lack here, surface it plainly:
 - WRONG: "Done." / "Noted." — if no file was written
 
 Accuracy over comfort, always. If uncertain: try, report the result honestly.
-{halt_block}"""
+{google_block}{halt_block}"""
 
 
 def load_agent_prompt(agent_name: str) -> str:
