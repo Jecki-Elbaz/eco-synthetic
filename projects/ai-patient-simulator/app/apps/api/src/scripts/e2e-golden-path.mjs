@@ -27,6 +27,13 @@ const ADMIN = {
   email: env.E2E_ADMIN_EMAIL || "admin@synthetic.test",
   password: env.E2E_ADMIN_SECRET || "AdminPass!re3",
 };
+// S5-ADI-ARC-E2E: arc steps use student2 (no prior COMPLETED attempts in fresh DB).
+// Student1 already has COMPLETED attempts from baseline steps 1-4; using student2
+// ensures sessionNumber starts at 1 without interfering with the baseline flow.
+const STUDENT2 = {
+  inviteToken: env.E2E_STUDENT2_INVITE || "invite-tok-student-02-re3",
+  accessCode: env.E2E_STUDENT2_CODE || "code-s02-re3",
+};
 
 async function call(method, path, { token, body } = {}) {
   const res = await fetch(API + path, {
@@ -260,6 +267,110 @@ async function main() {
   } else {
     check("25d: transcript for IN_PROGRESS attempt contains prior turn", false, "skipped (25a or 25b failed)");
   }
+
+  // ---------------------------------------------------------------------------
+  // 29-34. ARC FLOW (S5-ADI-ARC-E2E) -- 3-session arc end-to-end
+  //    Uses seeded student2 (no prior COMPLETED attempts -- arc starts at session 1).
+  //    Steps 30 and 32: ArcSessionSummary row is verified INDIRECTLY (script is
+  //    HTTP-only; no endpoint exposes ArcSessionSummary). The next session's
+  //    attempt-create carrying sessionNumber=2 (step 31) and sessionNumber=3 (step 33)
+  //    proves completedCount incremented, which requires finishAttempt +
+  //    arcWriterService.writeSessionSummary to have completed. Direct row checks
+  //    are covered by arc-coherence.integration.spec.ts (C1-T1, C1-T2).
+  // ---------------------------------------------------------------------------
+
+  // Login student2 (pre-flight; not a separate check step)
+  const s2l = await call("POST", "/auth/invite-login", { body: STUDENT2 });
+  const student2Token = s2l.data?.accessToken;
+
+  // 29. Arc session 1: create (assert sessionNumber=1) + 1 turn + finish (assert COMPLETED)
+  const arc1 = await call("POST", `/assignments/${ASSIGNMENT_ID}/attempts`, {
+    token: student2Token, body: { language: "he" },
+  });
+  const arc1Id = arc1.data?.id ?? null;
+  if (arc1Id) {
+    await call("POST", `/simulations/${arc1Id}/turn`, {
+      token: student2Token, body: { studentMessage: "שלום, כיצד אתה מרגיש היום?", language: "he" },
+    });
+  }
+  const arc1fin = arc1Id
+    ? await call("POST", `/simulations/${arc1Id}/finish`, { token: student2Token, body: {} })
+    : { status: 0, data: null };
+  check(
+    "29: arc session-1 attempt (sessionNumber=1) + finish -> COMPLETED",
+    s2l.status === 200 &&
+      arc1.status >= 200 && arc1.status < 300 &&
+      arc1.data?.sessionNumber === 1 &&
+      arc1fin.data?.status === "COMPLETED",
+    `login=${s2l.status} create=${arc1.status} sessionNumber=${arc1.data?.sessionNumber} finish=${arc1fin.data?.status}`,
+  );
+
+  // 30. ArcSessionSummary for session 1 -- INDIRECT VARIANT
+  //     No HTTP endpoint exposes ArcSessionSummary. COMPLETED proves arc writer was triggered.
+  //     Step 31 (sessionNumber=2 on next create) confirms completedCount incremented,
+  //     completing the indirect proof. Direct row: arc-coherence.integration.spec.ts C1-T1.
+  check(
+    "30: session-1 arc summary (indirect) -- COMPLETED confirms arc writer triggered; direct row in integration suite",
+    arc1fin.data?.status === "COMPLETED",
+    `arc1 finishedStatus=${arc1fin.data?.status}`,
+  );
+
+  // 31. Start session 2 -> assert attempt-create 2xx and sessionNumber=2 (count=1, max=3)
+  const arc2 = await call("POST", `/assignments/${ASSIGNMENT_ID}/attempts`, {
+    token: student2Token, body: { language: "he" },
+  });
+  check(
+    "31: arc session-2 attempt-create -> 2xx, sessionNumber=2",
+    arc2.status >= 200 && arc2.status < 300 && arc2.data?.sessionNumber === 2,
+    `${arc2.status} sessionNumber=${arc2.data?.sessionNumber}`,
+  );
+  const arc2Id = arc2.data?.id ?? null;
+
+  // 32. Send 1 turn, finish session 2 -> COMPLETED
+  //     ArcSessionSummary indirect: step 33 (sessionNumber=3) confirms completedCount=2.
+  //     Direct row: arc-coherence.integration.spec.ts C1-T2.
+  if (arc2Id) {
+    await call("POST", `/simulations/${arc2Id}/turn`, {
+      token: student2Token, body: { studentMessage: "המשך מהפגישה הקודמת", language: "he" },
+    });
+  }
+  const arc2fin = arc2Id
+    ? await call("POST", `/simulations/${arc2Id}/finish`, { token: student2Token, body: {} })
+    : { status: 0, data: null };
+  check(
+    "32: session-2 finish -> COMPLETED (summary indirect: step-33 sessionNumber=3 confirms arc writer ran)",
+    arc2fin.status >= 200 && arc2fin.status < 300 && arc2fin.data?.status === "COMPLETED",
+    `${arc2fin.status} status=${arc2fin.data?.status}`,
+  );
+
+  // 33. Start session 3 -> assert sessionNumber=3 (count=2, max=3).
+  //     Then finish session 3 so completedCount=3 before step 34 cap test.
+  const arc3 = await call("POST", `/assignments/${ASSIGNMENT_ID}/attempts`, {
+    token: student2Token, body: { language: "he" },
+  });
+  check(
+    "33: arc session-3 attempt-create -> 2xx, sessionNumber=3 (count=2, max=3)",
+    arc3.status >= 200 && arc3.status < 300 && arc3.data?.sessionNumber === 3,
+    `${arc3.status} sessionNumber=${arc3.data?.sessionNumber}`,
+  );
+  const arc3Id = arc3.data?.id ?? null;
+  // Finish session 3 so completedCount=3 for the step 34 cap assertion.
+  if (arc3Id) {
+    await call("POST", `/simulations/${arc3Id}/turn`, {
+      token: student2Token, body: { studentMessage: "פגישה שלישית ואחרונה", language: "he" },
+    });
+    await call("POST", `/simulations/${arc3Id}/finish`, { token: student2Token, body: {} });
+  }
+
+  // 34. Attempt session 4 -> 403 ARC_COMPLETE (count=3 >= max=3)
+  const arc4 = await call("POST", `/assignments/${ASSIGNMENT_ID}/attempts`, {
+    token: student2Token, body: { language: "he" },
+  });
+  check(
+    "34: arc session-4 blocked -> 403 ARC_COMPLETE (count=3, max=3)",
+    arc4.status === 403 && arc4.data?.code === "ARC_COMPLETE",
+    `${arc4.status} code=${arc4.data?.code}`,
+  );
 
   const passed = results.filter((r) => r.ok).length;
   console.log(`\nE2E GOLDEN PATH: ${passed}/${results.length} PASS`);

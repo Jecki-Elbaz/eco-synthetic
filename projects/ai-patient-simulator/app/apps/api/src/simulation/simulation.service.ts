@@ -1,6 +1,11 @@
 // SimulationService -- coordinates DB reads/writes around TurnPipeline.
 // This is the service-layer boundary between the engine (pure TS) and the DB.
 // The engine never imports @aps/db; all DB access is here.
+//
+// S5-GAL-ARC-LOADER / S5-GAL-ARC-WRITER:
+//   processTurn loads ArcSessionContext for session N from ArcLoaderService.
+//   runPipelineTurn (hardLimitReached) and finishAttempt both call ArcWriterService
+//   to persist per-session summary on COMPLETED.
 
 import {
   Injectable,
@@ -12,9 +17,12 @@ import { PrismaService } from "../db/prisma.service.js";
 import { TurnPipeline, StudentBotProvider } from "@aps/engine";
 import type { BotProfile } from "@aps/engine";
 import type { TurnRequest, TurnResponse, PatientStateSnapshot, UserScope } from "@aps/shared-types";
+import type { ArcSessionContext } from "@aps/shared-types";
 import type { GroundTruthRef } from "@aps/engine";
 import type { AttemptTotals } from "@aps/engine";
 import { EvaluationService } from "../evaluation/evaluation.service.js";
+import { ArcLoaderService } from "./arc/arc-loader.service.js";
+import { ArcWriterService } from "./arc/arc-writer.service.js";
 
 // Context passed to runPipelineTurn() -- separates pre-loaded template/assignment data
 // from the per-turn DB state that runPipelineTurn() always reloads fresh.
@@ -39,6 +47,11 @@ interface RunPipelineContext {
    * SIMULATION_TURN for student turns; SELF_SIMULATION for author-preview turns.
    */
   usageLogEventType: string;
+  /**
+   * S5-GAL-ARC-LOADER: arc context from prior session, passed to TurnPipeline.
+   * null for session 1, AUTHOR_PREVIEW, or non-arc templates.
+   */
+  arcContext?: ArcSessionContext | null;
 }
 
 @Injectable()
@@ -47,6 +60,8 @@ export class SimulationService {
     private readonly prisma: PrismaService,
     private readonly pipeline: TurnPipeline,
     private readonly evaluationService: EvaluationService,
+    private readonly arcLoaderService: ArcLoaderService,
+    private readonly arcWriterService: ArcWriterService,
   ) {}
 
   /**
@@ -85,6 +100,17 @@ export class SimulationService {
       where: { courseId: assignment.courseId },
     });
 
+    // S5-GAL-ARC-LOADER: load prior session context for arc-enabled STUDENT attempts.
+    // attempt.sessionNumber is null for non-arc templates (maxSessions <= 1); skip in that case.
+    let arcContext: ArcSessionContext | null = null;
+    if (attempt.type === "STUDENT" && attempt.sessionNumber != null && template.maxSessions > 1) {
+      arcContext = await this.arcLoaderService.loadArcContext(
+        actorId,
+        template.id,
+        attempt.sessionNumber,
+      );
+    }
+
     return this.runPipelineTurn(dto.attemptId, dto.studentMessage, dto.language, dto.nonVerbalCues, {
       challengeLevel: assignment.challengeLevel,
       maxTurns: assignment.maxTurns,
@@ -93,6 +119,7 @@ export class SimulationService {
       ledger: ledger as { id: string; balance: number; hardLimit: number | null } | null,
       bypassCreditCheck: false,
       usageLogEventType: "SIMULATION_TURN",
+      arcContext,
     });
   }
 
@@ -186,6 +213,7 @@ export class SimulationService {
       recentMessages,
       contextSummary: priorState?.contextSummary ?? null,
       totals,
+      arcContext: ctx.arcContext ?? null,
     });
 
     if (!result.gateResult.allowed) {
@@ -296,6 +324,8 @@ export class SimulationService {
         where: { id: attemptId },
         data: { status: "COMPLETED", finishedAt: new Date() },
       });
+      // S5-GAL-ARC-WRITER: persist per-session arc summary on auto-complete (turn limit).
+      await this.arcWriterService.writeSessionSummary(attemptId);
     }
 
     const softWarnAnnotation = result.softWarnTriggered
@@ -466,6 +496,7 @@ export class SimulationService {
 
   /**
    * Student/teacher: finish a simulation explicitly.
+   * S5-GAL-ARC-WRITER: after marking COMPLETED, persist per-session arc summary.
    */
   async finishAttempt(attemptId: string, actorId: string) {
     const attempt = await this.prisma.attempt.findUnique({
@@ -474,10 +505,15 @@ export class SimulationService {
     if (!attempt) throw new NotFoundException("Attempt not found");
     if (attempt.userId !== actorId) throw new ForbiddenException("Not your attempt");
 
-    return this.prisma.attempt.update({
+    const updated = await this.prisma.attempt.update({
       where: { id: attemptId },
       data: { status: "COMPLETED", finishedAt: new Date() },
     });
+
+    // Persist arc session summary (no-op for AUTHOR_PREVIEW or non-arc attempts)
+    await this.arcWriterService.writeSessionSummary(attemptId);
+
+    return updated;
   }
 
   /**

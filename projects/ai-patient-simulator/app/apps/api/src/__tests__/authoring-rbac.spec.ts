@@ -181,6 +181,11 @@ function makeGroundTruth(overrides?: Record<string, unknown>) {
 }
 
 function makeDraftRubricVersion(overrides?: Record<string, unknown>) {
+  // S5-GAL-M6: simulationTemplate.groundTruth required for publishRubric M6 gate checks.
+  // GT has non-empty doNotInvent (passes GROUND_TRUTH_REQUIRED).
+  // rubricLastReviewedAt is set to NOW+1s (after gt.updatedAt) to pass RUBRIC_PROVISIONAL gate.
+  const gtUpdatedAt = new Date("2026-01-01T00:00:00Z");
+  const rubricLastReviewedAt = new Date("2026-01-01T00:00:01Z"); // 1s after gt update
   return {
     id: RUBRIC_V1_ID,
     simulationTemplateId: TEMPLATE_ID,
@@ -188,6 +193,13 @@ function makeDraftRubricVersion(overrides?: Record<string, unknown>) {
     status: "DRAFT",
     publishedAt: null,
     criteria: [],
+    simulationTemplate: {
+      rubricLastReviewedAt,
+      groundTruth: {
+        updatedAt: gtUpdatedAt,
+        knownFacts: { facts: ["fact-1"], doNotInvent: ["do-not-invent-1"], riskBoundaries: [] },
+      },
+    },
     ...overrides,
   };
 }

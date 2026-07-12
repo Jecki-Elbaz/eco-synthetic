@@ -23,7 +23,7 @@ import type {
   RubricVersionResponse,
   UpdateCriterionRequest,
 } from "@aps/shared-types";
-import { getTemplate } from "@/lib/authoring-client";
+import { getTemplate, markRubricReviewed } from "@/lib/authoring-client";
 import {
   fetchAssignmentsForTemplate,
   runPreview,
@@ -75,6 +75,9 @@ export default function AuthoringShell({ clients, initialTemplateId }: Props) {
   const [template, setTemplate] = useState<TemplateResponse | null>(null);
   const [groundTruth, setGroundTruth] = useState<GroundTruthResponse | null>(null);
   const [triggerRules, setTriggerRules] = useState<TriggerRuleResponse[]>([]);
+
+  // S5-NOA-M6: warn when navigating to rubric step with GT not yet saved.
+  const [showRubricGTWarn, setShowRubricGTWarn] = useState(false);
 
   // Preview panel state
   const [showPreview, setShowPreview] = useState(false);
@@ -133,6 +136,13 @@ export default function AuthoringShell({ clients, initialTemplateId }: Props) {
     setShowPreview(false);
     setPreviewRunError(null);
     setPreviewAssignmentsError(null);
+  }
+
+  // S5-NOA-M6: mark rubric reviewed -- clears rubricProvisional flag on template.
+  async function handleMarkRubricReviewed() {
+    if (!template) return;
+    await markRubricReviewed(template.id);
+    setTemplate((prev) => (prev ? { ...prev, rubricProvisional: false } : null));
   }
 
   const activeIdx = stepIndex(activeStep);
@@ -343,7 +353,16 @@ export default function AuthoringShell({ clients, initialTemplateId }: Props) {
                   (active ? " auth-step-nav__item--active" : "") +
                   (done && !active ? " auth-step-nav__item--done" : "")
                 }
-                onClick={() => enabled && setActiveStep(step.key)}
+                onClick={() => {
+                  if (!enabled) return;
+                  // S5-NOA-M6: soft warn when navigating to rubric with GT unsaved.
+                  if (step.key === "rubric" && groundTruth === null) {
+                    setShowRubricGTWarn(true);
+                    return;
+                  }
+                  setShowRubricGTWarn(false);
+                  setActiveStep(step.key);
+                }}
                 disabled={!enabled}
                 aria-current={active ? "step" : undefined}
                 aria-label={`שלב ${idx + 1}: ${step.label}${done ? " (הושלם)" : ""}${!enabled ? " (נעול)" : ""}`}
@@ -359,6 +378,41 @@ export default function AuthoringShell({ clients, initialTemplateId }: Props) {
 
         {/* Main content */}
         <main className="auth-content" id="authoring-main">
+          {/* S5-NOA-M6: soft warn -- GT empty when navigating to rubric. */}
+          {showRubricGTWarn && (
+            <div
+              className="auth-notice auth-notice--warn"
+              role="alert"
+              data-testid="gt-rubric-warn-banner"
+            >
+              <span className="auth-notice__title">Ground Truth לא הושלם</span>
+              <span>
+                Ground Truth is not complete. Your rubric criteria may not match
+                this patient&apos;s case. Complete Ground Truth first, or continue anyway.
+              </span>
+              <div style={{ display: "flex", gap: "8px", marginBlockStart: "8px" }}>
+                <button
+                  type="button"
+                  className="auth-btn auth-btn--primary auth-btn--sm"
+                  data-testid="gt-warn-continue-btn"
+                  onClick={() => {
+                    setShowRubricGTWarn(false);
+                    setActiveStep("rubric");
+                  }}
+                >
+                  Continue anyway
+                </button>
+                <button
+                  type="button"
+                  className="auth-btn auth-btn--ghost auth-btn--sm"
+                  onClick={() => setShowRubricGTWarn(false)}
+                >
+                  ביטול
+                </button>
+              </div>
+            </div>
+          )}
+
           {activeStep === "builder" && (
             <SimulationBuilder
               onCreated={(t) => {
@@ -437,6 +491,8 @@ export default function AuthoringShell({ clients, initialTemplateId }: Props) {
               }
               onUpdateCriterion={clients.updateCriterion}
               onPublish={clients.publishRubric}
+              rubricProvisional={template.rubricProvisional}
+              onMarkReviewed={handleMarkRubricReviewed}
             />
           )}
 

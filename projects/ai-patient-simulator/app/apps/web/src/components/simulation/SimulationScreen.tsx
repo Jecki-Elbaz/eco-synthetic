@@ -51,6 +51,17 @@ export interface SimulationScreenProps {
    * Undefined (or absent) for new attempts -- timer starts from zero.
    */
   initialElapsedSeconds?: number | null;
+  // S5-NOA-ARC-STUDENT: 3-session arc context props (CP-1 confirmed).
+  /**
+   * Session number for this attempt. null = non-arc/legacy attempt.
+   * Session 1: no arc UI shown. Session 2+: context panel + welfare modal + gap briefing.
+   */
+  sessionNumber?: number | null;
+  /**
+   * Total number of sessions in this arc (from assignment.simulationTemplate.maxSessions).
+   * Required when sessionNumber >= 2.
+   */
+  maxSessions?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -113,7 +124,12 @@ export default function SimulationScreen({
   welfareResource,
   isResume = false,
   initialElapsedSeconds,
+  sessionNumber = null,
+  maxSessions = 3,
 }: SimulationScreenProps) {
+  // S5-NOA-ARC-STUDENT: determine if this is session 2+ (arc continuation).
+  const isArcContinuation = typeof sessionNumber === "number" && sessionNumber >= 2;
+
   // --- State ---
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState("");
@@ -141,6 +157,19 @@ export default function SimulationScreen({
   // as the banner text when present; softWarnTriggered drives the badge in TurnCounter.
   const [serverSoftWarnAnnotation, setServerSoftWarnAnnotation] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
+
+  // S5-NOA-ARC-STUDENT: arc session UI state.
+  // Welfare re-anchor modal (Sami C3): mandatory ack before chat is interactive.
+  // Shown for sessions 2+. Chat input disabled until acknowledged.
+  // Oren S5 review m3: ack state is in-memory only, so the modal re-fires on
+  // resume/refresh of the same session. Intentional -- repeating the welfare
+  // re-anchor is clinically harmless-to-desirable. Persist per-attempt
+  // (e.g. sessionStorage) only if product later rules it should not re-fire.
+  const [welfareModalAcknowledged, setWelfareModalAcknowledged] = useState(
+    !isArcContinuation,
+  );
+  // Session-context panel: dismissible banner above chat, shown for sessions 2+.
+  const [contextPanelVisible, setContextPanelVisible] = useState(isArcContinuation);
 
   // Refs for typing stage timer cleanup
   const typingTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -265,6 +294,9 @@ export default function SimulationScreen({
   const handleSend = useCallback(async () => {
     const text = inputText.trim();
     if (!text || sending) return;
+    // Oren S5 review m4: welfare ack (Sami C3) must gate sends here too, not only
+    // via the InputBar disabled prop, so the block holds if the input is bypassed.
+    if (!welfareModalAcknowledged) return;
 
     const studentMsg: ChatMessage = {
       id: `s-${Date.now()}`,
@@ -323,7 +355,7 @@ export default function SimulationScreen({
     } finally {
       setSending(false);
     }
-  }, [inputText, sending, attemptId, lang]);
+  }, [inputText, sending, attemptId, lang, welfareModalAcknowledged]);
 
   const handleRetry = useCallback(async () => {
     if (!lastMessageRef.current || sending) return;
@@ -397,6 +429,106 @@ export default function SimulationScreen({
         onToggleNotes={() => setNotesOpen((prev) => !prev)}
       />
 
+      {/* S5-NOA-ARC-STUDENT: session-context panel (dismissible, shown for sessions 2+). */}
+      {isArcContinuation && contextPanelVisible && (
+        <div
+          className="sim-arc-context-panel"
+          data-testid="arc-context-panel"
+          dir="rtl"
+          lang="he"
+          style={{
+            background: "#eff6ff",
+            borderBottom: "1px solid #bfdbfe",
+            padding: "10px 16px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "12px",
+            fontSize: "0.875rem",
+            color: "#1e40af",
+          }}
+        >
+          <span>
+            {/* Sami arc context text -- verbatim from envelope, N and max substituted. */}
+            {`זוהי פגישה ${String(sessionNumber)} מתוך ${String(maxSessions)} -- המשך מפגישה ${String((sessionNumber as number) - 1)}.`}
+          </span>
+          <button
+            type="button"
+            aria-label={lang === "he" ? "סגור פאנל הקשר פגישה" : "Dismiss session context"}
+            onClick={() => setContextPanelVisible(false)}
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              color: "#1e40af",
+              flexShrink: 0,
+            }}
+          >
+            x
+          </button>
+        </div>
+      )}
+
+      {/* S5-NOA-ARC-STUDENT: welfare re-anchor modal (Sami C3).
+          Mandatory acknowledgement before chat is interactive for sessions 2+.
+          Both components required: identity reminder + welfare signpost. */}
+      {isArcContinuation && !welfareModalAcknowledged && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={lang === "he" ? "הנחיית רווחה" : "Welfare reminder"}
+          data-testid="welfare-reanchor-modal"
+          dir="rtl"
+          lang="he"
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.55)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 200,
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: "12px",
+              padding: "28px 32px",
+              maxInlineSize: "480px",
+              inlineSize: "90%",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
+              display: "flex",
+              flexDirection: "column",
+              gap: "14px",
+            }}
+          >
+            {/* (a) Simulation-identity reminder -- Sami C3 */}
+            <p
+              style={{ margin: 0, fontWeight: 600, fontSize: "1rem" }}
+              data-testid="welfare-modal-identity"
+            >
+              {"המטופל הוא דמות אימון מדומה; הוא אינו אדם אמיתי."}
+            </p>
+            {/* (b) Welfare signpost -- Sami C3 */}
+            <p
+              style={{ margin: 0, fontSize: "0.9375rem", color: "#374151" }}
+              data-testid="welfare-modal-signpost"
+            >
+              {"אם אתה/את חש/ה אי-נוחות, פנה/י לאיש הצוות שלך."}
+            </p>
+            <button
+              type="button"
+              className="btn btn--primary"
+              onClick={() => setWelfareModalAcknowledged(true)}
+              style={{ alignSelf: "flex-end", minInlineSize: "100px" }}
+            >
+              {"הבנתי"}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="sim-body">
         {/* Main chat column */}
         <div className="sim-chat-column">
@@ -416,13 +548,38 @@ export default function SimulationScreen({
             onEndSession={() => setShowFinishModal(true)}
           />
 
+          {/* S5-NOA-ARC-STUDENT: session-gap limitation briefing (Sami C5).
+              Shown after welfare modal ack, before first message is sent. */}
+          {isArcContinuation && welfareModalAcknowledged && messages.length === 0 && (
+            <div
+              className="sim-arc-gap-briefing"
+              data-testid="session-gap-briefing"
+              dir="rtl"
+              lang="he"
+              style={{
+                padding: "10px 14px",
+                background: "#f0f9ff",
+                borderTop: "1px solid #bae6fd",
+                fontSize: "0.875rem",
+                color: "#0369a1",
+                lineHeight: 1.6,
+              }}
+            >
+              {/* Sami C5 -- verbatim text from Sprint 5 envelope */}
+              <p style={{ margin: 0 }}>
+                {"שים/י לב: המטופל המדומה אינו מדמה חלוף זמן אמיתי בין פגישות. ייתכן שנושאים " +
+                  "מהפגישה הקודמת יוזכרו, אך לא יהיו שינויים הנובעים מאירועי חיים שהתרחשו בין הפגישות."}
+              </p>
+            </div>
+          )}
+
           <InputBar
             value={inputText}
             onChange={setInputText}
             onSend={handleSend}
             micState={micState}
             onMicClick={handleMicClick}
-            disabled={sending}
+            disabled={sending || !welfareModalAcknowledged}
             lang={lang}
             dictationEnabled={dictationAvailable}
             dictationState={dictationState}

@@ -2,18 +2,19 @@
 // All endpoints: TEACHER or SYSTEM_ADMIN only.
 //
 // Routes:
-//   POST   /authoring/templates                           create template
-//   GET    /authoring/templates/:templateId               get template
-//   PATCH  /authoring/templates/:templateId               update template (version-bump if in use)
-//   POST   /authoring/ground-truth                        create/replace ground truth
-//   PATCH  /authoring/ground-truth/:templateId            update ground truth
-//   GET    /authoring/ground-truth/:templateId            get ground truth
-//   POST   /authoring/triggers                            create trigger rule
-//   GET    /authoring/triggers/:templateId                list trigger rules for template
-//   POST   /authoring/rubric/generate                     generate DRAFT rubric version
-//   GET    /authoring/rubrics/:rubricVersionId            get rubric version
+//   POST   /authoring/templates                                       create template
+//   GET    /authoring/templates/:templateId                           get template (includes rubricProvisional)
+//   PATCH  /authoring/templates/:templateId                           update template (version-bump if in use)
+//   PATCH  /authoring/templates/:templateId/rubric-reviewed           S5-GAL-M6: mark rubric reviewed
+//   POST   /authoring/ground-truth                                    create/replace ground truth
+//   PATCH  /authoring/ground-truth/:templateId                        update ground truth
+//   GET    /authoring/ground-truth/:templateId                        get ground truth
+//   POST   /authoring/triggers                                        create trigger rule
+//   GET    /authoring/triggers/:templateId                            list trigger rules for template
+//   POST   /authoring/rubric/generate                                 generate DRAFT rubric version
+//   GET    /authoring/rubrics/:rubricVersionId                        get rubric version
 //   PATCH  /authoring/rubrics/:rubricVersionId/criteria/:criterionId  update criterion
-//   POST   /authoring/rubrics/:rubricVersionId/publish    publish rubric version
+//   POST   /authoring/rubrics/:rubricVersionId/publish                publish rubric version (M6 gates)
 
 import {
   Controller,
@@ -64,6 +65,16 @@ export class AuthoringController {
     @Body() body: UpdateTemplateRequest,
   ) {
     return this.authoringService.updateTemplate(templateId, body);
+  }
+
+  /**
+   * S5-GAL-M6: mark rubric as reviewed for a template.
+   * Sets rubricLastReviewedAt = NOW(). Must be called before publishRubric
+   * when ground truth was updated after the last review.
+   */
+  @Patch("templates/:templateId/rubric-reviewed")
+  markRubricReviewed(@Param("templateId") templateId: string) {
+    return this.authoringService.markRubricReviewed(templateId);
   }
 
   // -------------------------------------------------------------------------

@@ -1,6 +1,8 @@
 // OrgService -- College, Course, Assignment, Attempt entity operations.
 // Programme exists as DB stub only; no service methods in pilot.
-import { Injectable, NotFoundException, ForbiddenException } from "@nestjs/common";
+// S5-GAL-ARC-ENFORCE: getOrCreateAttempt enforces arc session cap (ARC_COMPLETE 403)
+// and assigns sessionNumber to new arc attempts.
+import { Injectable, NotFoundException, ForbiddenException, HttpException } from "@nestjs/common";
 import { PrismaService } from "../db/prisma.service.js";
 import type { AuthTokenPayload } from "@aps/shared-types";
 
@@ -91,8 +93,54 @@ export class OrgService {
 
     const assignment = await this.prisma.assignment.findUnique({
       where: { id: assignmentId },
+      include: { simulationTemplate: { select: { id: true, maxSessions: true } } },
     });
     if (!assignment) throw new NotFoundException("Assignment not found");
+
+    // S5-GAL-ARC-ENFORCE: arc session cap check (STUDENT type only).
+    // maxSessions <= 1 means no arc (non-arc templates); skip the guard.
+    // ARC SCOPE (Oren S5 review M2): counts COMPLETED STUDENT attempts across ALL
+    // assignments that share templateId. The arc belongs to the patient (template),
+    // not the assignment. A student gets at most maxSessions contacts with a given
+    // patient across their entire enrollment, regardless of which course's
+    // assignment brought them there. Intentional for pilot-1. Revisit before
+    // multi-assignment deployment if per-assignment arcs are required.
+    if (type === "STUDENT" && assignment.simulationTemplate.maxSessions > 1) {
+      const templateId = assignment.simulationTemplate.id;
+      const maxSessions = assignment.simulationTemplate.maxSessions;
+
+      const completedCount = await this.prisma.attempt.count({
+        where: {
+          userId,
+          type: "STUDENT",
+          status: "COMPLETED",
+          assignment: { simulationTemplateId: templateId },
+        },
+      });
+
+      if (completedCount >= maxSessions) {
+        throw new HttpException(
+          {
+            code: "ARC_COMPLETE",
+            message: "Session arc complete -- no further sessions permitted.",
+          },
+          403,
+        );
+      }
+
+      // Assign sessionNumber = completedCount + 1 on new attempt
+      const sessionNumber = completedCount + 1;
+      return this.prisma.attempt.create({
+        data: {
+          assignmentId,
+          userId,
+          language,
+          type,
+          status: "NOT_STARTED",
+          sessionNumber,
+        },
+      });
+    }
 
     return this.prisma.attempt.create({
       data: {

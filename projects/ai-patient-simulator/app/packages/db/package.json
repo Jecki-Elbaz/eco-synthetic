@@ -19,6 +19,7 @@
   },
   "files": ["src/generated"],
   "scripts": {
+    "build": "tsc --noEmit",
     "generate": "dotenv -e ../../.env.local -- prisma generate",
     "migrate": "dotenv -e ../../.env.local -- prisma migrate dev",
     "migrate:deploy": "dotenv -e ../../.env.local -- prisma migrate deploy",

@@ -160,6 +160,41 @@ describe("GuardRunner -- malformed guard output defaults to PASS", () => {
     // Should not throw; malformed -> PASS fallback (design choice documented in guard-runner.ts)
     expect(["PASS", "REGENERATE", "BLOCKED"]).toContain(result.outcome);
   });
+
+  /**
+   * Oren S5 review M1 regression: a well-formed FAIL verdict WITHOUT a violations
+   * array must not crash the REGENERATE path (violations.join on undefined).
+   * Real guard models may omit the array; guard-runner defaults it to [].
+   */
+  it("[Oren S5 M1] FAIL verdict without violations array does not throw (FAIL then PASS)", async () => {
+    const provider = new ScriptedStubProvider({
+      [ModelHint.PATIENT_RESPONSE]: ["Some response", "Regenerated response"],
+      [ModelHint.ANALYSER]: ["[stub]"],
+      [ModelHint.GUARD_PASS]: [
+        '{ "verdict": "FAIL" }',
+        '{ "verdict": "PASS", "violations": [], "suggestion": "" }',
+      ],
+    });
+
+    const runner = new GuardRunner(provider, 1);
+    const result = await runner.run(STUB_PATIENT_MESSAGES, buildGuardMessages);
+
+    expect(result.outcome).toBe("REGENERATE");
+    expect(result.guardDetail).toContain("Original violation:");
+  });
+
+  it("[Oren S5 M1] FAIL verdict without violations array does not throw (FAIL both attempts)", async () => {
+    const provider = new ScriptedStubProvider({
+      [ModelHint.PATIENT_RESPONSE]: ["Some response", "Regenerated response"],
+      [ModelHint.ANALYSER]: ["[stub]"],
+      [ModelHint.GUARD_PASS]: ['{ "verdict": "FAIL" }'],
+    });
+
+    const runner = new GuardRunner(provider, 1);
+    const result = await runner.run(STUB_PATIENT_MESSAGES, buildGuardMessages);
+
+    expect(result.outcome).toBe("BLOCKED");
+  });
 });
 
 describe("GuardRunner -- engineered violation scenarios (15-Aug Criterion B)", () => {

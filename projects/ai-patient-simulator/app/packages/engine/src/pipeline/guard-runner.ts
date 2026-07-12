@@ -30,19 +30,23 @@ export class GuardRunner {
    * Run the guard check against a proposed response.
    * guardPrompt: pre-built guard messages (from ContextBuilder.buildGuardPrompt).
    * patientMessages: pre-built patient generator messages.
+   * patientProvider: optional dedicated provider for patient response generation (REQ-066).
+   *   Defaults to this.provider (the guard provider) when not supplied.
+   *   Separate slot allows lighter model for guard, premium model for patient generation.
    *
-   * Parallel execution: both LLM calls fire simultaneously.
    * Delivery gates on guard PASS.
    */
   async run(
     patientMessages: LLMMessage[],
     guardPromptBuilder: (proposedResponse: string) => LLMMessage[],
+    patientProvider?: LLMProvider,
   ): Promise<GuardRunResult> {
+    const patGen = patientProvider ?? this.provider;
     let inputTokens = 0;
     let outputTokens = 0;
 
-    // First attempt: fire patient generation
-    const firstResponse = await this.provider.complete({
+    // First attempt: fire patient generation (uses patientProvider slot if supplied)
+    const firstResponse = await patGen.complete({
       messages: patientMessages,
       maxOutputTokens: 512,
       temperature: 0.7,
@@ -74,7 +78,8 @@ export class GuardRunner {
         },
       ];
 
-      const retryResponse = await this.provider.complete({
+      // Retry also uses patientProvider slot
+      const retryResponse = await patGen.complete({
         messages: retryMessages,
         maxOutputTokens: 512,
         temperature: 0.7,
@@ -132,11 +137,21 @@ export class GuardRunner {
         parsed !== null &&
         typeof parsed === "object" &&
         "verdict" in parsed &&
-        (parsed as Record<string, unknown>)["verdict"] === "PASS" ||
-        (parsed as Record<string, unknown>)["verdict"] === "FAIL"
+        ((parsed as Record<string, unknown>)["verdict"] === "PASS" ||
+          (parsed as Record<string, unknown>)["verdict"] === "FAIL")
       ) {
+        // A real guard model may return a FAIL verdict without a violations
+        // array; default it so callers can rely on GuardResult.violations.
+        const record = parsed as Record<string, unknown>;
         return {
           ...(parsed as GuardResult),
+          violations: Array.isArray(record["violations"])
+            ? (record["violations"] as string[])
+            : [],
+          suggestion:
+            typeof record["suggestion"] === "string"
+              ? (record["suggestion"] as string)
+              : "",
           inputTokens: resp.inputTokens,
           outputTokens: resp.outputTokens,
         };

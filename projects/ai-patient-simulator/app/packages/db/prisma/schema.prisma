@@ -89,6 +89,10 @@ model Attempt {
   turnCount        Int           @default(0)
   tokenInputTotal  Int           @default(0)
   tokenOutputTotal Int           @default(0)
+  // S5-GAL-ARC-LOADER/ENFORCE: session number within the arc (1-indexed).
+  // Null for non-arc attempts and for any attempt created before S5.
+  // Front-end reads this to determine panel/modal display (CP-1).
+  sessionNumber    Int?
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 
@@ -223,6 +227,13 @@ model SimulationTemplate {
   personaPrompt  String
   groundTruthId  String   @unique
   groundTruth    GroundTruth @relation(fields: [groundTruthId], references: [id])
+  // S5-GAL-ARC-ENFORCE: arc session cap (valid range 2-4; enforced at service layer).
+  // Default 3 (Eco A2 2026-07-11; pending Adam review before production go-live).
+  maxSessions    Int      @default(3)
+  // S5-GAL-M6: GT-before-rubric provisional flag support.
+  // Set to NOW() when author opens/reviews the rubric step.
+  // rubricProvisional = rubricLastReviewedAt IS NULL OR groundTruth.updatedAt > rubricLastReviewedAt
+  rubricLastReviewedAt DateTime?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -518,6 +529,45 @@ model PersonaBranch {
   updatedAt            DateTime @updatedAt
 
   studentHistories StudentPersonaHistory[]
+}
+
+// ---------------------------------------------------------------------------
+// S5 -- 3-Session Arc Runtime
+// ---------------------------------------------------------------------------
+
+// ArcSessionSummary: per-session arc state snapshot persisted at COMPLETED.
+// Written by ArcWriterService; read by ArcLoaderService at session N+1 start.
+//
+// LAST-SESSION-SUMMARY PATTERN: session 3 loads only the session-2 row.
+// Session-1 state is not directly accessible in session 3 beyond what session 2
+// preserved. Known pilot-1 limitation; accepted. Ref: feasibility Section 4 /
+// 3session-arc-feasibility-ido-2026-07-11.md.
+//
+// NOTE: This table is scope-equivalent to StudentPersonaHistory (per-student arc
+// state). It is separate from the Eyal-gated StudentPersonaHistory Phase 1b stub
+// to avoid activating a gated resource. Eyal review scope should cover both tables
+// before Phase 1b goes live. [S5 design decision, Gal A3]
+//
+// Ceiling/floor values applied at write time are in ArcDeltaConfig (api layer).
+// ArcDeltaConfig defaults are "pending Adam review before production go-live" (Sami C1).
+model ArcSessionSummary {
+  id                    String   @id @default(uuid())
+  userId                String
+  templateId            String
+  sessionNumber         Int
+  trustDeltaApplied     Float    @default(0)
+  finalTrustLevel       Float
+  finalOpennessLevel    Float
+  finalAllianceLevel    Float
+  // symptomMarkerState: unlockedFactIds from last PatientStateLog (pilot proxy).
+  symptomMarkerState    Json     @default("{}")
+  // notableMomentsSummary: contextSummary from last PatientStateLog or empty string.
+  notableMomentsSummary String   @default("")
+  sessionCompletedAt    DateTime @default(now())
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@unique([userId, templateId, sessionNumber])
 }
 
 // PII-HIGH: access restricted to TEACHER + SYSTEM_ADMIN.

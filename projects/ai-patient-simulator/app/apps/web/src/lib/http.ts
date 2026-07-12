@@ -31,6 +31,8 @@ export class ApiError extends Error {
   constructor(
     public readonly status: number,
     message: string,
+    /** Machine-readable error code from the API response body (e.g. "GROUND_TRUTH_REQUIRED"). */
+    public readonly code?: string,
   ) {
     super(message);
     this.name = "ApiError";
@@ -41,13 +43,15 @@ async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     let msg: string;
+    let code: string | undefined;
     try {
-      const parsed = JSON.parse(text) as { message?: string };
+      const parsed = JSON.parse(text) as { message?: string; code?: string };
       msg = parsed.message ?? text;
+      code = parsed.code;
     } catch {
       msg = text || `HTTP ${res.status}`;
     }
-    throw new ApiError(res.status, `API error ${res.status}: ${msg}`);
+    throw new ApiError(res.status, `API error ${res.status}: ${msg}`, code);
   }
   return res.json() as Promise<T>;
 }

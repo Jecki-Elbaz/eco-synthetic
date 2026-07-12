@@ -3,7 +3,7 @@
 // Sliding window + state injection + ground-truth enforcement.
 
 import type { LLMMessage } from "../llm/provider.interface.js";
-import type { PatientStateSnapshot } from "@aps/shared-types";
+import type { PatientStateSnapshot, ArcSessionContext } from "@aps/shared-types";
 
 // ---------------------------------------------------------------------------
 // Token-budget sliding window (APS-REQ-063 cost governance)
@@ -85,6 +85,15 @@ export interface ContextBuildInput {
   challengeLevel: number;
   studentMessage: string;
   studentLanguage: string;
+  /**
+   * S5 Track B arc context: summary of the prior session loaded by ArcLoaderService.
+   * Null for session 1 or non-arc attempts.
+   * Injected as a system prompt block so the patient model has continuity context.
+   * IMPORTANT: arc context is context, NOT authoritative ground truth.
+   * Facts from arc summaries must NOT be promoted to ground-truth status
+   * (Sami C2 compounding-facts requirement).
+   */
+  arcContext?: ArcSessionContext | null;
 }
 
 const CHALLENGE_INSTRUCTIONS: Record<number, string> = {
@@ -151,6 +160,36 @@ export class ContextBuilder {
     ].join("\n");
 
     messages.push({ role: "system", content: stateBlock });
+
+    // --- Arc session context (prior session summary, S5 Track B) ---
+    // This block is context only -- NOT authoritative ground truth.
+    // The patient may reference events mentioned here but MUST NOT treat them
+    // as newly unlocked facts not present in the GROUND TRUTH section above.
+    // Ref: Sami C2 compounding-facts requirement / 3session-arc-feasibility-ido-2026-07-11.md.
+    if (input.arcContext) {
+      const arc = input.arcContext;
+      const arcBlock = [
+        `## PRIOR SESSION CONTEXT (session ${arc.sessionNumber} -- context only, not ground truth)`,
+        "This is a CONTINUATION SESSION. The patient remembers the previous session.",
+        `At the end of session ${arc.sessionNumber}:`,
+        `  Trust level: ${arc.trustLevel.toFixed(2)} (on 0-1 scale)`,
+        `  Openness level: ${arc.opennessLevel.toFixed(2)}`,
+        `  Alliance quality: ${arc.allianceScore.toFixed(2)}`,
+        arc.notableMomentsSummary
+          ? `  Session summary: ${arc.notableMomentsSummary}`
+          : "",
+        "",
+        "IMPORTANT: The above reflects what the patient experienced in session " +
+          arc.sessionNumber +
+          ". Reference it for continuity but do NOT introduce new clinical facts",
+        "beyond what is in the GROUND TRUTH section. Session summaries are CONTEXT; they do not",
+        "override or extend the authoritative ground truth.",
+      ]
+        .filter(Boolean)
+        .join("\n");
+
+      messages.push({ role: "system", content: arcBlock });
+    }
 
     // --- Context summary for turns before the sliding window ---
     if (input.contextSummary) {

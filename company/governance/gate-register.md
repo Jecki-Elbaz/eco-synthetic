@@ -429,3 +429,34 @@ guard.py + settings.json for the Shelly repo's dedicated `google_owner` server.
 **Rambo standing watch extension:** the weekly permission-drift scan now also covers the
 three credential-store directories (unexpected token files = drift), both projects'
 .mcp.json WORKSPACE_MCP_CREDENTIALS_DIR pins, and the guard.py google-boundary constants.
+
+---
+
+## GR-015 -- supertest@7.2.2 (npm devDependency, APS API) -- DRAFT, PENDING owner A1
+
+Project: AI Patient Simulator (apps/api devDependencies only). Purpose: enable HTTP-layer
+integration tests (CA-INT-002/003) against NestJS controllers via @nestjs/testing +
+supertest pattern. Triggered by Sprint 4 Item 5 Case C (not in devDeps, not in pnpm store;
+gate required before install per Ido ruling).
+
+Verdicts: Security (Rambo) CLEAR-WITH-CONDITIONS C1-C5 (gate-supertest-security-rambo-2026-07-11.md);
+Legal (Eyal) CLEAR -- no conditions (gate-supertest-legal-eyal-2026-07-11.md). Both legs
+complete 2026-07-11. Adoption blocked until owner A1 (install is a new-dependency action).
+
+| Tool | Type | Tier | Pin | Conditions (binding on install) |
+|------|------|------|-----|---------------------------------|
+| supertest | npm devDependency (test framework) | free / MIT | supertest@7.2.2 (exact) | C1 exact pin; C2 devDeps only, never import in src/; C3 pin @types/supertest at install and record version; C4 no bump without Rambo advance; C5 Rambo weekly drift scan covers this package |
+
+Security findings summary: zero CVEs on supertest@7.2.2 (Snyk verified). One historical
+transitive CVE (superagent CVE-2017-16129, zip bomb, Moderate) -- patched at v3.7.0;
+supertest@7.2.2 requires superagent@^10.3.0, fully past the patch. Risk level LOW: no
+production code path, no external egress (loopback only), no student data exposure, no
+OS hooks, no postinstall scripts. Ido characterization (MIT / zero network egress /
+standard NestJS companion) verified on all three claims.
+
+Full security findings: projects/ai-patient-simulator/docs/gate-supertest-security-rambo-2026-07-11.md
+Full legal findings: projects/ai-patient-simulator/docs/gate-supertest-legal-eyal-2026-07-11.md
+
+STATUS: DRAFT -- PENDING owner A1. Do not install until owner approves in-session.
+
+**Opened by:** Eco | **Date:** 2026-07-11 | **Triggered by:** APS Sprint 4 Item 5 (CA-INT-002/003 unblock)

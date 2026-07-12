@@ -30,6 +30,7 @@ import {
   NotFoundException,
   ConflictException,
   BadRequestException,
+  HttpException,
 } from "@nestjs/common";
 import { PrismaService } from "../db/prisma.service.js";
 import { composePersonaPrompt, generateRubricCriteria } from "@aps/engine";
@@ -84,6 +85,18 @@ function resolveHardOffRamp(text: string | undefined | null): string {
   return text;
 }
 
+/**
+ * S5-GAL-ARC-ENFORCE: validate that maxSessions is in the allowed arc range [2,4].
+ * Throws 400 if the value is provided and out of range.
+ * Undefined/null is allowed (DB default of 3 applies).
+ */
+function validateMaxSessions(maxSessions: number | undefined | null): void {
+  if (maxSessions == null) return;
+  if (!Number.isInteger(maxSessions) || maxSessions < 2 || maxSessions > 4) {
+    throw new BadRequestException("maxSessions must be an integer in the range [2, 4]");
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Service
 // ---------------------------------------------------------------------------
@@ -105,6 +118,8 @@ export class AuthoringService {
    */
   async createTemplate(dto: CreateTemplateRequest) {
     const { builder } = dto;
+    // S5-GAL-ARC-ENFORCE: validate maxSessions if provided
+    validateMaxSessions(builder.maxSessions);
     const personaPrompt = composePersonaPrompt(builder);
 
     // B1 FIX: all three steps (GT stub, template, GT update) run inside a single
@@ -137,19 +152,22 @@ export class AuthoringService {
       });
 
       // Step 2: create the template referencing the GT
-      const tpl = await tx.simulationTemplate.create({
-        data: {
-          title: builder.title,
-          version: 1,
-          clinicalModel: builder.clinicalModel,
-          studentLevel: builder.studentLevel,
-          challengeLevel: builder.challengeLevel,
-          riskLevel: builder.riskLevel,
-          languages: builder.languages,
-          personaPrompt,
-          groundTruthId: gt.id,
-        },
-      });
+      const createData: Record<string, unknown> = {
+        title: builder.title,
+        version: 1,
+        clinicalModel: builder.clinicalModel,
+        studentLevel: builder.studentLevel,
+        challengeLevel: builder.challengeLevel,
+        riskLevel: builder.riskLevel,
+        languages: builder.languages,
+        personaPrompt,
+        groundTruthId: gt.id,
+      };
+      // S5-GAL-ARC-ENFORCE: persist maxSessions if provided (DB default=3 applies if absent)
+      if (builder.maxSessions != null) {
+        createData["maxSessions"] = builder.maxSessions;
+      }
+      const tpl = await tx.simulationTemplate.create({ data: createData });
 
       // Step 3: update GT with real simulationTemplateId
       await tx.groundTruth.update({
@@ -181,6 +199,8 @@ export class AuthoringService {
 
     // Build updated field values
     const builder = dto.builder;
+    // S5-GAL-ARC-ENFORCE: validate maxSessions if provided
+    validateMaxSessions(builder.maxSessions);
     const newTitle = builder.title ?? existing.title;
     const newClinicalModel = builder.clinicalModel ?? existing.clinicalModel;
     const newStudentLevel = builder.studentLevel ?? existing.studentLevel;
@@ -246,19 +266,21 @@ export class AuthoringService {
           },
         });
 
-        const tpl = await tx.simulationTemplate.create({
-          data: {
-            title: newTitle,
-            version: existing.version + 1,
-            clinicalModel: newClinicalModel,
-            studentLevel: newStudentLevel,
-            challengeLevel: newChallengeLevel,
-            riskLevel: newRiskLevel,
-            languages: newLanguages,
-            personaPrompt: newPersonaPrompt,
-            groundTruthId: gt.id,
-          },
-        });
+        // S5-GAL-ARC-ENFORCE: carry maxSessions through to new version
+        const newMaxSessions = builder.maxSessions ?? existing.maxSessions;
+        const versionBumpData: Record<string, unknown> = {
+          title: newTitle,
+          version: existing.version + 1,
+          clinicalModel: newClinicalModel,
+          studentLevel: newStudentLevel,
+          challengeLevel: newChallengeLevel,
+          riskLevel: newRiskLevel,
+          languages: newLanguages,
+          personaPrompt: newPersonaPrompt,
+          groundTruthId: gt.id,
+          maxSessions: newMaxSessions,
+        };
+        const tpl = await tx.simulationTemplate.create({ data: versionBumpData });
 
         await tx.groundTruth.update({
           where: { id: gt.id },
@@ -272,17 +294,22 @@ export class AuthoringService {
     }
 
     // Not in use -- update in place
+    const inPlaceData: Record<string, unknown> = {
+      title: newTitle,
+      clinicalModel: newClinicalModel,
+      studentLevel: newStudentLevel,
+      challengeLevel: newChallengeLevel,
+      riskLevel: newRiskLevel,
+      languages: newLanguages,
+      personaPrompt: newPersonaPrompt,
+    };
+    // S5-GAL-ARC-ENFORCE: update maxSessions if provided in the update DTO
+    if (builder.maxSessions != null) {
+      inPlaceData["maxSessions"] = builder.maxSessions;
+    }
     const updated = await this.prisma.simulationTemplate.update({
       where: { id: templateId },
-      data: {
-        title: newTitle,
-        clinicalModel: newClinicalModel,
-        studentLevel: newStudentLevel,
-        challengeLevel: newChallengeLevel,
-        riskLevel: newRiskLevel,
-        languages: newLanguages,
-        personaPrompt: newPersonaPrompt,
-      },
+      data: inPlaceData,
     });
 
     return { versionBumped: false, template: updated };
@@ -294,7 +321,16 @@ export class AuthoringService {
       include: { groundTruth: true, rubricVersions: true },
     });
     if (!template) throw new NotFoundException("SimulationTemplate not found");
-    return template;
+
+    // S5-GAL-M6: compute rubricProvisional
+    // true when rubric has not been reviewed after the latest GT update.
+    const rubricLastReviewedAt = template.rubricLastReviewedAt as Date | null;
+    const gtUpdatedAt = template.groundTruth?.updatedAt ?? null;
+    const rubricProvisional =
+      rubricLastReviewedAt == null ||
+      (gtUpdatedAt != null && gtUpdatedAt > rubricLastReviewedAt);
+
+    return { ...template, rubricProvisional };
   }
 
   // -------------------------------------------------------------------------
@@ -529,15 +565,67 @@ export class AuthoringService {
    * Publish a DRAFT RubricVersion.
    * Once published, the version and its criteria are immutable (APS-REQ-041).
    * An Assignment pins the rubricVersionId -- that pin must remain stable.
+   *
+   * S5-GAL-M6 gate checks (both enforced before publish):
+   *   1. GROUND_TRUTH_REQUIRED (422): template must have a populated GT
+   *      (not the stub with empty fact arrays).
+   *   2. RUBRIC_PROVISIONAL (422): rubricLastReviewedAt must be non-null
+   *      AND >= groundTruth.updatedAt (rubric reviewed after last GT change).
    */
   async publishRubric(rubricVersionId: string) {
     const rubricVersion = await this.prisma.rubricVersion.findUnique({
       where: { id: rubricVersionId },
+      include: {
+        simulationTemplate: { include: { groundTruth: true } },
+      },
     });
     if (!rubricVersion) throw new NotFoundException("RubricVersion not found");
 
     if (rubricVersion.status === "PUBLISHED") {
       throw new ConflictException("RubricVersion is already PUBLISHED");
+    }
+
+    const template = rubricVersion.simulationTemplate as {
+      rubricLastReviewedAt: Date | null;
+      groundTruth: { updatedAt: Date; knownFacts: unknown } | null;
+    };
+    const gt = template.groundTruth;
+
+    // M6 gate 1: GROUND_TRUTH_REQUIRED
+    // GT is considered stub/empty if it has no doNotInvent entries AND no facts entries.
+    const gtKnownFacts = gt?.knownFacts as Record<string, unknown> | null;
+    const gtDoNotInvent = Array.isArray(gtKnownFacts?.["doNotInvent"])
+      ? (gtKnownFacts!["doNotInvent"] as unknown[])
+      : [];
+    const gtFacts = Array.isArray(gtKnownFacts?.["facts"])
+      ? (gtKnownFacts!["facts"] as unknown[])
+      : [];
+
+    if (!gt || (gtDoNotInvent.length === 0 && gtFacts.length === 0)) {
+      throw new HttpException(
+        {
+          code: "GROUND_TRUTH_REQUIRED",
+          message: "Ground truth must be populated before publishing a rubric.",
+        },
+        422,
+      );
+    }
+
+    // M6 gate 2: RUBRIC_PROVISIONAL
+    // rubricProvisional = rubricLastReviewedAt IS NULL OR gt.updatedAt > rubricLastReviewedAt
+    const rubricLastReviewedAt = template.rubricLastReviewedAt;
+    const isProvisional =
+      rubricLastReviewedAt == null || gt.updatedAt > rubricLastReviewedAt;
+
+    if (isProvisional) {
+      throw new HttpException(
+        {
+          code: "RUBRIC_PROVISIONAL",
+          message:
+            "Rubric must be reviewed after the latest ground truth update before publishing. Call PATCH /authoring/templates/:id/rubric-reviewed first.",
+        },
+        422,
+      );
     }
 
     return this.prisma.rubricVersion.update({
@@ -547,6 +635,23 @@ export class AuthoringService {
         publishedAt: new Date(),
       },
       include: { criteria: true },
+    });
+  }
+
+  /**
+   * S5-GAL-M6: mark rubric as reviewed for a template.
+   * Sets rubricLastReviewedAt = NOW(). Call this after reviewing the rubric
+   * against the current ground truth to unblock publishRubric.
+   */
+  async markRubricReviewed(templateId: string) {
+    const template = await this.prisma.simulationTemplate.findUnique({
+      where: { id: templateId },
+    });
+    if (!template) throw new NotFoundException("SimulationTemplate not found");
+
+    return this.prisma.simulationTemplate.update({
+      where: { id: templateId },
+      data: { rubricLastReviewedAt: new Date() },
     });
   }
 

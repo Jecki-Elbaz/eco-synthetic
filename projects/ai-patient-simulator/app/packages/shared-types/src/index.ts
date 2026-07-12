@@ -40,6 +40,7 @@ export type {
   LowBalanceLedger,
   ActivityLogQuery,
 } from "./credit-admin.types.js";
+export type { ArcSessionContext } from "./arc.types.js";
 export type {
   BuilderFields,
   CreateTemplateRequest,

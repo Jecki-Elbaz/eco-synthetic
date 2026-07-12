@@ -101,7 +101,13 @@ function makePrismaMock(
 
 function makeService(prisma: ReturnType<typeof makePrismaMock>) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return new SimulationService(prisma as any, {} as any, { generateEvaluation: jest.fn().mockResolvedValue({}) } as any);
+  return new SimulationService(
+    prisma as any,
+    {} as any,
+    { generateEvaluation: jest.fn().mockResolvedValue({}) } as any,
+    { loadArcContext: jest.fn().mockResolvedValue(null) } as any,
+    { writeSessionSummary: jest.fn().mockResolvedValue(undefined) } as any,
+  );
 }
 
 // ---------------------------------------------------------------------------

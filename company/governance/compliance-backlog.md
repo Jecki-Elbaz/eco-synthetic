@@ -26,6 +26,11 @@ clients and reserve account termination (the concrete basis for the C5 / C-L1 ba
 must accept)? Write the verdict to
 C:\Users\Jecki\DEV\shared\handoff\eyal-whatsapp-tos-confirm-2026-07-09.md and mark DONE here.
 After your confirm, only two owner keystrokes remain (record SHA + ban-risk acceptance at install).
+DONE 2026-07-11: CONFIRMED. Both sources verified from primary-source (whatsapp.com). Consumer
+ToS prohibits unauthorized/automated clients; Business Terms prohibit unauthorized apps AND
+explicitly reserve account termination. Concrete ban-risk basis for C5/C-L1 established. Verdict
+filed at shared/handoff/eyal-whatsapp-tos-confirm-2026-07-09.md. Eyal gate leg CLOSED. Remaining:
+owner records SHA + ban-risk acceptance in decisions-log at install (2 keystrokes, no Eyal action).
 
 **EA-2 -- CS ticket retention window (last item before CS-0001 owner A1 package; AUD-004).**
 Provide the PPL-compliant retention period for CUSTOMER-SUPPORT TICKET SUMMARIES (CS ticket
@@ -34,6 +39,15 @@ State three things: the retention period, the PPL basis, and any deletion/minimi
 Write it to C:\Users\Jecki\DEV\shared\handoff\eyal-cs-retention-2026-07-09.md and mark DONE here.
 Eco folds it into company/cs/cs-0001-customer-communication-policy.md and the owner A1 package is
 then complete.
+DONE 2026-07-11: CLOSED. Retention window = 2 years from ticket close date, then delete or
+anonymize. Basis: PPL proportionality + purpose-limitation (Amendment 13 minimization); 2 years
+covers dispute-resolution justification for routine CS tickets without approaching the 7-year
+civil limitation ceiling. Exception: active legal dispute -- retain until resolved + 1 year.
+Data-subject rights (access, correction, deletion, objection) mandatory throughout. No separate
+consent required (contractual/legitimate-interest basis); must be disclosed in privacy notice
+(Item 3). Third-party data in tickets: anonymize at close. Full guidance + CS-0001 insert text
+filed at shared/handoff/eyal-cs-retention-2026-07-09.md. CS-0001 can now proceed to owner A1
+package once Eco folds retention language into section 8 (per handoff file).
 
 ---
 

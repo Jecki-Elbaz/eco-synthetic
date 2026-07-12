@@ -20,6 +20,23 @@ export class AppConfig {
   // (S3_ACCESS_KEY_ID + S3_SIGNING_KEY). Never surfaced via this config class,
   // never logged or serialised. [red line 1 compliance]
 
+  // ARC ceiling/floor config -- PENDING ADAM REVIEW BEFORE PRODUCTION GO-LIVE (Sami C1).
+  // Env var names (set to calibrate without a code edit at the 2026-08-08 Adam checkpoint):
+  //   ARC_MAX_TRUST    (default 0.70)
+  //   ARC_MAX_OPENNESS (default 0.65)
+  //   ARC_MAX_ALLIANCE (default 0.70)
+  //   ARC_MIN_TRUST    (default 0.15)
+  //   ARC_MIN_OPENNESS (default 0.10)
+  //   ARC_MIN_ALLIANCE (default 0.10)
+  // When env vars are absent, defaults are unchanged (StubProvider behavior: identical).
+  // S6-GAL-ARCCONFIG: injectable via AppConfig so calibration = config change, not code edit.
+  readonly arcMaxTrust: number = this.getFloat("ARC_MAX_TRUST", 0.70);
+  readonly arcMaxOpenness: number = this.getFloat("ARC_MAX_OPENNESS", 0.65);
+  readonly arcMaxAlliance: number = this.getFloat("ARC_MAX_ALLIANCE", 0.70);
+  readonly arcMinTrust: number = this.getFloat("ARC_MIN_TRUST", 0.15);
+  readonly arcMinOpenness: number = this.getFloat("ARC_MIN_OPENNESS", 0.10);
+  readonly arcMinAlliance: number = this.getFloat("ARC_MIN_ALLIANCE", 0.10);
+
   private getRequired(key: string): string {
     const val = process.env[key];
     if (!val) {
@@ -37,6 +54,14 @@ export class AppConfig {
     if (!val) return fallback;
     const parsed = parseInt(val, 10);
     if (isNaN(parsed)) throw new Error(`Env var ${key} must be an integer`);
+    return parsed;
+  }
+
+  private getFloat(key: string, fallback: number): number {
+    const val = process.env[key];
+    if (!val) return fallback;
+    const parsed = parseFloat(val);
+    if (isNaN(parsed)) throw new Error(`Env var ${key} must be a number`);
     return parsed;
   }
 }

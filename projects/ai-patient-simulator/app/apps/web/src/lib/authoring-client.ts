@@ -44,6 +44,10 @@ const MOCK_TEMPLATE: TemplateResponse = {
     "אתה/את מהסס/ת לשתף ומגלה מידע בהדרגה בלבד כשמרגיש/ה שהסטודנט/ית אמפתי/ת. " +
     "[generated server-side -- read-only]",
   groundTruthId: "gt-demo-001",
+  /** S5-GAL-ARC-ENFORCE: default 3-session arc. */
+  maxSessions: 3,
+  /** S5-GAL-M6: no provisional flag by default. */
+  rubricProvisional: false,
 };
 
 const MOCK_GROUND_TRUTH: GroundTruthResponse = {
@@ -356,4 +360,20 @@ export async function publishRubric(
 
 export function isAuthoringMockMode(): boolean {
   return USE_MOCK;
+}
+
+// ---------------------------------------------------------------------------
+// S5-NOA-M6: Mark rubric as reviewed (clears rubricProvisional flag)
+// PATCH /authoring/templates/:templateId/rubric-reviewed
+// ---------------------------------------------------------------------------
+
+export async function markRubricReviewed(templateId: string): Promise<void> {
+  if (USE_MOCK) {
+    await new Promise<void>((r) => setTimeout(r, 300));
+    return;
+  }
+  await apiPatch<unknown>(
+    `authoring/templates/${encodeURIComponent(templateId)}/rubric-reviewed`,
+    {},
+  );
 }

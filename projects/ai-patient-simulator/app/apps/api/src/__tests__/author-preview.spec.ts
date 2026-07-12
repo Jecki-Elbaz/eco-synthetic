@@ -187,7 +187,13 @@ function makeService(
   evalService = makeEvalMock(),
 ) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return new SimulationService(prisma as any, pipeline as any, evalService as any);
+  return new SimulationService(
+    prisma as any,
+    pipeline as any,
+    evalService as any,
+    { loadArcContext: jest.fn().mockResolvedValue(null) } as any,
+    { writeSessionSummary: jest.fn().mockResolvedValue(undefined) } as any,
+  );
 }
 
 // NOTE: InputGate bypassCreditCheck tests (I1, I2, I1b) live in
@@ -439,7 +445,7 @@ describe("processTurn (STUDENT turn) -- credit decrement + SIMULATION_TURN log (
     const prisma = makeStudentTurnPrismaMock(true);
     const pipeline = makePipelineMock();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const svc = new SimulationService(prisma as any, pipeline as any, makeEvalMock() as any);
+    const svc = new SimulationService(prisma as any, pipeline as any, makeEvalMock() as any, { loadArcContext: jest.fn().mockResolvedValue(null) } as any, { writeSessionSummary: jest.fn().mockResolvedValue(undefined) } as any);
     await svc.processTurn(
       { attemptId: ATTEMPT_ID_CREATED, studentMessage: "Hello patient.", language: "he" },
       STUDENT_ID,
@@ -452,7 +458,7 @@ describe("processTurn (STUDENT turn) -- credit decrement + SIMULATION_TURN log (
     const prisma = makeStudentTurnPrismaMock(false);
     const pipeline = makePipelineMock();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const svc = new SimulationService(prisma as any, pipeline as any, makeEvalMock() as any);
+    const svc = new SimulationService(prisma as any, pipeline as any, makeEvalMock() as any, { loadArcContext: jest.fn().mockResolvedValue(null) } as any, { writeSessionSummary: jest.fn().mockResolvedValue(undefined) } as any);
     await svc.processTurn(
       { attemptId: ATTEMPT_ID_CREATED, studentMessage: "Hello patient.", language: "he" },
       STUDENT_ID,

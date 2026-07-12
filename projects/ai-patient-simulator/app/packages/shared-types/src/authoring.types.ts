@@ -20,6 +20,8 @@ export interface BuilderFields {
   mode: string;                   // e.g. "intake", "ongoing", "crisis"
   maxTurns?: number | undefined;
   timeLimitMinutes?: number | undefined;
+  /** S5-GAL-ARC-ENFORCE: number of sessions in the arc. Must be in [2,4]. Defaults to 3 (DB default). */
+  maxSessions?: number | undefined;
 }
 
 export interface CreateTemplateRequest {
@@ -41,6 +43,13 @@ export interface TemplateResponse {
   languages: string[];
   personaPrompt: string;
   groundTruthId: string;
+  /** S5-GAL-ARC-ENFORCE: session arc cap (2-4 for arc, 3 default). */
+  maxSessions: number;
+  /**
+   * S5-GAL-M6: true when the rubric has not been reviewed after the last GT update.
+   * Derived: rubricLastReviewedAt IS NULL OR groundTruth.updatedAt > rubricLastReviewedAt.
+   */
+  rubricProvisional: boolean;
 }
 
 // ---------------------------------------------------------------------------

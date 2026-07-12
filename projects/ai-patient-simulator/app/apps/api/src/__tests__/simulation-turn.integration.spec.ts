@@ -191,7 +191,13 @@ function buildService(): SimulationService {
   // signatures (PrismaService extends PrismaClient; NestJS lifecycle methods unused in tests).
   const prismaService = prisma as unknown as PrismaService;
   const evaluationService = new EvaluationService(prismaService, new Evaluator(provider));
-  return new SimulationService(prismaService, pipeline, evaluationService);
+  return new SimulationService(
+    prismaService,
+    pipeline,
+    evaluationService,
+    { loadArcContext: jest.fn().mockResolvedValue(null) } as any,
+    { writeSessionSummary: jest.fn().mockResolvedValue(undefined) } as any,
+  );
 }
 
 // ---------------------------------------------------------------------------

@@ -3,7 +3,7 @@
 // All DB reads/writes are done by the api service layer which calls this pipeline.
 // The pipeline receives pre-loaded state and returns artifacts; the caller persists them.
 
-import type { PatientState, PatientStateSnapshot, AnalyserResult } from "@aps/shared-types";
+import type { PatientState, PatientStateSnapshot, AnalyserResult, ArcSessionContext } from "@aps/shared-types";
 import type { LLMProvider } from "../llm/provider.interface.js";
 import { ModelHint } from "../llm/provider.interface.js";
 import { InputGate, DEFAULT_TURN_BUDGET } from "./input-gate.js";
@@ -15,9 +15,19 @@ import { StateUpdater } from "../state/state-updater.js";
 import type { DeltaCapConfig } from "../state/delta-cap.config.js";
 import { DEFAULT_DELTA_CAP_CONFIG } from "../state/delta-cap.config.js";
 
+// S5-GAL-REQ066: named provider slots for tier routing.
+// All optional; absent slots fall back to the main provider passed to the constructor.
+// Production ops sets LLM_PROVIDER_ANALYSER + LLM_PROVIDER_GUARD to a lighter model
+// at APS-004 go-live gate with no code change needed.
 export interface TurnPipelineConfig {
   budget?: TurnBudget;
   deltaCapConfig?: DeltaCapConfig;
+  /** Analyser call (empathy scoring, question-type, ACT-consistency). Defaults to main provider. */
+  analyserProvider?: LLMProvider;
+  /** Ground-truth guard call. Defaults to main provider. */
+  guardProvider?: LLMProvider;
+  /** Patient-response generation. Defaults to main provider. */
+  patientProvider?: LLMProvider;
 }
 
 export interface TurnPipelineInput {
@@ -42,6 +52,13 @@ export interface TurnPipelineInput {
 
   // Budget tracking (fresh from DB -- no in-memory accumulation)
   totals: AttemptTotals;
+  /**
+   * S5 Track B: arc session context from the prior session.
+   * Null for session 1 or non-arc attempts.
+   * When present on turn 1 (priorState=null): used as starting state instead of
+   * the hardcoded defaults, and injected into the context builder prompt.
+   */
+  arcContext?: ArcSessionContext | null;
 }
 
 export interface TurnPipelineOutput {
@@ -68,16 +85,26 @@ export class TurnPipeline {
   private readonly contextBuilder: ContextBuilder;
   private readonly guardRunner: GuardRunner;
   private readonly stateUpdater: StateUpdater;
+  // Main provider (used as fallback for any slot not explicitly set)
   private readonly provider: LLMProvider;
+  // S5-GAL-REQ066: named tier slots. Default to main provider when not set.
+  private readonly analyserProvider: LLMProvider;
+  private readonly patientProvider: LLMProvider;
 
   constructor(provider: LLMProvider, config: TurnPipelineConfig = {}) {
     const budget = config.budget ?? DEFAULT_TURN_BUDGET;
     const deltaCapConfig = config.deltaCapConfig ?? DEFAULT_DELTA_CAP_CONFIG;
 
     this.provider = provider;
+    // REQ-066 slots -- default to main provider if not specified
+    this.analyserProvider = config.analyserProvider ?? provider;
+    this.patientProvider = config.patientProvider ?? provider;
+    const guardProvider = config.guardProvider ?? provider;
+
     this.gate = new InputGate(budget);
     this.contextBuilder = new ContextBuilder();
-    this.guardRunner = new GuardRunner(provider, budget.maxGuardRetries);
+    // Guard uses its own dedicated slot (REQ-066: lighter tier at production)
+    this.guardRunner = new GuardRunner(guardProvider, budget.maxGuardRetries);
     this.stateUpdater = new StateUpdater(deltaCapConfig);
   }
 
@@ -175,7 +202,8 @@ export class TurnPipeline {
       { role: "user" as const, content: input.studentMessage },
     ];
 
-    const analyserRaw = await this.provider.complete({
+    // [2] INTERACTION ANALYSER -- uses analyserProvider slot (REQ-066)
+    const analyserRaw = await this.analyserProvider.complete({
       messages: analyserMessages,
       maxOutputTokens: 300,
       temperature: 0.0,
@@ -206,7 +234,22 @@ export class TurnPipeline {
     }
 
     // [3] STATE UPDATER
-    const priorState: PatientState = input.priorState ?? {
+    // S5 Track B: if priorState is null (turn 1) AND arc context exists, use arc context
+    // values as the opening behavioral state for the new session. Otherwise use defaults.
+    const arcInitialState: PatientState | null = input.arcContext
+      ? {
+          trust: input.arcContext.trustLevel,
+          openness: input.arcContext.opennessLevel,
+          emotionalActiv: 0.4,       // not tracked across sessions; use neutral default
+          avoidanceLevel: 0.6,       // not tracked across sessions; use neutral default
+          defensiveness: 0.5,        // not tracked across sessions; use neutral default
+          allianceQuality: input.arcContext.allianceScore,
+          disclosureReady: 0.1,      // not tracked across sessions; use neutral default
+          riskRelevance: 0.0,        // not tracked across sessions; use neutral default
+        }
+      : null;
+
+    const priorState: PatientState = input.priorState ?? arcInitialState ?? {
       trust: 0.3,
       openness: 0.2,
       emotionalActiv: 0.4,
@@ -252,9 +295,12 @@ export class TurnPipeline {
       challengeLevel: input.challengeLevel,
       studentMessage: input.studentMessage,
       studentLanguage: input.studentLanguage,
+      arcContext: input.arcContext ?? null,   // S5 Track B: prior session context injection
     });
 
     // [5 + 6] PATIENT RESPONSE GENERATOR + GUARD (guard runs parallel, gates delivery)
+    // REQ-066: patient generator uses patientProvider slot; guard uses guardRunner
+    // which was constructed with guardProvider. Both default to main provider on StubProvider.
     const guardPromptBuilder = (proposedResponse: string) =>
       this.contextBuilder.buildGuardPrompt(
         proposedResponse,
@@ -262,7 +308,11 @@ export class TurnPipeline {
         input.turnNumber,
       );
 
-    const guardResult = await this.guardRunner.run(patientMessages, guardPromptBuilder);
+    const guardResult = await this.guardRunner.run(
+      patientMessages,
+      guardPromptBuilder,
+      this.patientProvider,  // patient-response generation uses patientProvider slot
+    );
 
     // Thread real token counts from GuardRunner (patient generator + guard calls)
     inputTokensUsed += guardResult.inputTokens;

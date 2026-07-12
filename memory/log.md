@@ -18,6 +18,8 @@ YYYY-MM-DD HH:MM | agent | action | detail | tokens (if known)
 
 2026-07-08 | Mike | AUD-004 / CS-0001 draft -- initial policy draft written | CS-0001 v0.1-DRAFT written to company/cs/cs-0001-customer-communication-policy.md. Covers 6 required areas: permitted/prohibited content, tone/address, data-sharing limits, escalation path, email-send procedure (draft-into-owner-Gmail model, T-0037 scope), hard gate restatement. 5 open questions flagged for owner/Eco pre-A1 resolution. Routed to Eco for A2 review. Hard gate remains closed. | est ~3000 tokens
 
+2026-07-11 | Rambo | supertest gate -- security leg (GR-015) | APS Sprint 4 Item 5 Case C. Verdict: CLEAR-WITH-CONDITIONS (C1-C5). Package: supertest@7.2.2, MIT, ladjs/Forward Email org, active. Supply chain: 3 direct deps (methods, superagent, cookie-signature); no postinstall scripts, no telemetry, no egress tools. CVE scan: zero on supertest (Snyk verified); historical CVE-2017-16129 on superagent patched at v3.7.0 -- resolved in @^10.3.0. Ido characterization verified: MIT CONFIRMED, zero external egress CONFIRMED (loopback only), standard NestJS companion CONFIRMED. Risk level: LOW. Eyal leg: CLEAR (gate-supertest-legal-eyal-2026-07-11.md). Both legs complete. Gate-register GR-015 DRAFT row appended. Adoption PENDING owner A1. CA-INT-002/003 remain skipped until A1 issued and install confirmed. Full findings: projects/ai-patient-simulator/docs/gate-supertest-security-rambo-2026-07-11.md | est ~5000 tokens
+
 ---
 
 2026-06-12 | Claude Code (jecki session) | scaffold | Repo scaffolded per company/repo-structure.md. All folders, infrastructure files, company docs, agent role files placed. See company/build-log.md Phase 1 entry for full details. | --

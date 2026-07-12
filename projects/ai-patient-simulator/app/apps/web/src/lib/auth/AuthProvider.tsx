@@ -10,6 +10,13 @@
 // guards at the edge. Tracked: APS-014.
 //
 // The token is stored under the key "aps_access_token".
+//
+// APS-014 S6-NOA-MIDDLEWARE: at login, a non-httpOnly cookie "aps_mw_roles" is
+// written so that server-side Next.js middleware can enforce route protection
+// before the page shell is served (APS-REQ-145 student-visibility-NONE).
+// The cookie is NOT httpOnly because JavaScript must clear it at logout.
+// SECURITY: the API enforces authoritative RBAC on every call regardless of
+// cookie state. A tampered cookie may expose a page shell but never data.
 
 import React, {
   createContext,
@@ -72,6 +79,29 @@ function clearToken(): void {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Role cookie helpers (APS-014 S6-NOA-MIDDLEWARE)
+// Writes/clears the non-httpOnly "aps_mw_roles" cookie used by middleware.ts
+// to enforce server-side route protection before the page shell is served.
+// SSR guard: check document availability before writing (middleware.ts runs
+// server-side and never calls these functions directly).
+// ---------------------------------------------------------------------------
+
+function storeRoleCookie(roles: string[]): void {
+  if (typeof document === "undefined") return;
+  // Oren S6 review i-1: Secure attribute omitted intentionally for HTTP pilot
+  // compatibility (Secure would suppress the cookie over HTTP). APS-004
+  // production hardening replaces this cookie mechanism entirely (httpOnly +
+  // signed session), at which point Secure applies.
+  document.cookie =
+    "aps_mw_roles=" + roles.join(",") + "; path=/; SameSite=Strict";
+}
+
+function clearRoleCookie(): void {
+  if (typeof document === "undefined") return;
+  document.cookie = "aps_mw_roles=; path=/; SameSite=Strict; max-age=0";
+}
+
 async function fetchMe(token: string): Promise<AuthUser | null> {
   try {
     const res = await fetch(`${API_BASE}/auth/me`, {
@@ -123,6 +153,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   // On mount: if a token exists in localStorage, call /auth/me to hydrate.
+  // If fetchMe returns null (expired/invalid token), clear the role cookie so
+  // middleware does not retain a stale role grant from the prior session.
   useEffect(() => {
     const token = loadToken();
     if (!token) {
@@ -131,6 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     fetchMe(token).then((me) => {
       setUser(me);
+      if (!me) clearRoleCookie();
       setLoading(false);
     });
   }, []);
@@ -145,6 +178,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Hydrate full user from /auth/me to get canonical MeResponse shape.
       const me = await fetchMe(resp.accessToken);
       setUser(me);
+      // Write role cookie so middleware.ts can enforce route protection
+      // server-side before the next page navigation renders. (APS-014)
+      if (me) storeRoleCookie(me.roles ?? []);
     },
     [],
   );
@@ -155,12 +191,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       storeToken(resp.accessToken);
       const me = await fetchMe(resp.accessToken);
       setUser(me);
+      // Write role cookie so middleware.ts can enforce route protection
+      // server-side before the next page navigation renders. (APS-014)
+      if (me) storeRoleCookie(me.roles ?? []);
     },
     [],
   );
 
   const logout = useCallback((): void => {
     clearToken();
+    clearRoleCookie();
     setUser(null);
     router.replace("/login");
   }, [router]);

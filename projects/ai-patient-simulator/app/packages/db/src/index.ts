@@ -64,6 +64,8 @@ export class PrismaClient {
   readonly usageLog: ModelDelegate = {} as ModelDelegate;
   readonly personaBranch: ModelDelegate = {} as ModelDelegate;
   readonly studentPersonaHistory: ModelDelegate = {} as ModelDelegate;
+  // S5-GAL-ARC-WRITER/LOADER: arc session summary table (added 2026-07-11)
+  readonly arcSessionSummary: ModelDelegate = {} as ModelDelegate;
 
   async $connect(): Promise<void> {
     throw new Error(

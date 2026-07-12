@@ -85,6 +85,8 @@ const DEFAULT_FIELDS: BuilderFields = {
   mode: "intake",
   maxTurns: undefined,
   timeLimitMinutes: undefined,
+  // S5-NOA-ARC-AUTHOR: arc session cap. Default 3 (matches DB default).
+  maxSessions: 3,
 };
 
 export default function SimulationBuilder({ onCreated, onSubmit }: Props) {
@@ -117,6 +119,12 @@ export default function SimulationBuilder({ onCreated, onSubmit }: Props) {
     }
     if (!fields.presentingProblem.trim()) {
       setError("חובה למלא בעיה מוצגת.");
+      return;
+    }
+    // S5-NOA-ARC-AUTHOR: validate maxSessions range [2,4].
+    const sessions = fields.maxSessions ?? 3;
+    if (sessions < 2 || sessions > 4) {
+      setError("מספר פגישות חייב להיות בין 2 ל-4.");
       return;
     }
     setSubmitting(true);
@@ -469,6 +477,43 @@ export default function SimulationBuilder({ onCreated, onSubmit }: Props) {
                 style={{ direction: "ltr" }}
               />
             </div>
+          </div>
+
+          {/* S5-NOA-ARC-AUTHOR: max sessions field */}
+          <div className="auth-field">
+            <label htmlFor="builder-max-sessions" className="auth-label">
+              מספר פגישות בקשת הטיפול
+            </label>
+            <input
+              id="builder-max-sessions"
+              type="number"
+              className="auth-input"
+              min={2}
+              max={4}
+              step={1}
+              value={fields.maxSessions ?? 3}
+              onChange={(e) =>
+                setField(
+                  "maxSessions",
+                  e.target.value ? Number(e.target.value) : 3,
+                )
+              }
+              aria-describedby="builder-max-sessions-hint"
+              style={{ direction: "ltr", maxInlineSize: "80px" }}
+            />
+            <span id="builder-max-sessions-hint" className="auth-hint">
+              2-4 פגישות (ברירת מחדל: 3). השרת אוכף טווח זה.
+            </span>
+            {(fields.maxSessions !== undefined &&
+              (fields.maxSessions < 2 || fields.maxSessions > 4)) && (
+              <span
+                className="auth-error"
+                role="alert"
+                data-testid="max-sessions-error"
+              >
+                מספר פגישות חייב להיות בין 2 ל-4.
+              </span>
+            )}
           </div>
 
           <div className="auth-field">

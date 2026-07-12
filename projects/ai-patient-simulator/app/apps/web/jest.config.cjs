@@ -32,7 +32,12 @@ module.exports = {
     "\\.css$": "<rootDir>/src/__tests__/__mocks__/fileMock.cjs",
   },
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
-  testMatch: ["**/src/__tests__/**/*.test.tsx", "**/src/__tests__/**/*.test.ts"],
+  testMatch: [
+    "**/src/__tests__/**/*.test.tsx",
+    "**/src/__tests__/**/*.test.ts",
+    "**/src/__tests__/**/*.spec.ts",
+    "**/src/__tests__/**/*.spec.tsx",
+  ],
   // Next.js client-only modules need transform
   transformIgnorePatterns: ["/node_modules/(?!(@aps)/)"],
 };

@@ -5,8 +5,9 @@
 // After publish, the rubric version is shown as LOCKED/immutable.
 // risk_awareness criterion is always marked formativeOnly (weight 0) -- shown with badge.
 // APS-REQ-039/040/041
+// S5-NOA-M6: provisional banner + named publish-gate errors.
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type {
   RubricVersionResponse,
   RubricCriterionResponse,
@@ -14,6 +15,7 @@ import type {
   ScoringAnchor,
   CriterionLabels,
 } from "@aps/shared-types";
+import { ApiError } from "@/lib/http";
 
 interface Props {
   templateId: string;
@@ -24,6 +26,32 @@ interface Props {
     req: UpdateCriterionRequest,
   ) => Promise<void>;
   onPublish: (rubricVersionId: string) => Promise<RubricVersionResponse>;
+  /**
+   * S5-NOA-M6: True when GT was saved after the rubric was last reviewed.
+   * Shows a provisional banner with a "mark reviewed" action.
+   */
+  rubricProvisional?: boolean;
+  /**
+   * S5-NOA-M6: Call PATCH /authoring/templates/:id/rubric-reviewed to clear the flag.
+   * Provided by AuthoringShell when template is loaded.
+   */
+  onMarkReviewed?: () => Promise<void>;
+}
+
+// S5-NOA-M6: map API error codes to user-facing publish-gate messages.
+function getPublishErrorMessage(err: unknown): string {
+  if (err instanceof ApiError) {
+    if (err.code === "GROUND_TRUTH_REQUIRED") {
+      return "Cannot publish -- Ground Truth is empty. Complete Step 2 first.";
+    }
+    if (err.code === "RUBRIC_PROVISIONAL") {
+      return (
+        "Cannot publish -- Rubric is provisional. Ground Truth changed after " +
+        "your last review. Open the Rubric step and review it before publishing."
+      );
+    }
+  }
+  return err instanceof Error ? err.message : "שגיאה בפרסום הרובריקה.";
 }
 
 // Local editable state per criterion (mirrors UpdateCriterionRequest)
@@ -393,6 +421,8 @@ export default function RubricEditor({
   onGenerate,
   onUpdateCriterion,
   onPublish,
+  rubricProvisional = false,
+  onMarkReviewed,
 }: Props) {
   const [rubric, setRubric] = useState<RubricVersionResponse | null>(null);
   const [edits, setEdits] = useState<Record<string, CriterionEdit>>({});
@@ -401,6 +431,27 @@ export default function RubricEditor({
   const [genError, setGenError] = useState<string | null>(null);
   const [pubError, setPubError] = useState<string | null>(null);
   const [publishConfirmPending, setPublishConfirmPending] = useState(false);
+  // S5-NOA-M6: track provisional state locally so "mark reviewed" updates immediately.
+  const [provisionalLocal, setProvisionalLocal] = useState(rubricProvisional);
+  const [markingReviewed, setMarkingReviewed] = useState(false);
+
+  // Sync provisional flag from prop (e.g. if parent re-fetches template).
+  useEffect(() => {
+    setProvisionalLocal(rubricProvisional);
+  }, [rubricProvisional]);
+
+  async function handleMarkReviewed() {
+    if (!onMarkReviewed) return;
+    setMarkingReviewed(true);
+    try {
+      await onMarkReviewed();
+      setProvisionalLocal(false);
+    } catch {
+      // Best-effort; provisional banner remains if server call fails.
+    } finally {
+      setMarkingReviewed(false);
+    }
+  }
 
   const published = rubric?.status === "PUBLISHED";
 
@@ -464,11 +515,39 @@ export default function RubricEditor({
       const result = await onPublish(rubric.id);
       setRubric(result);
     } catch (err) {
-      setPubError(err instanceof Error ? err.message : "שגיאה בפרסום הרובריקה.");
+      // S5-NOA-M6: named error messages for GT-before-rubric publish gate.
+      setPubError(getPublishErrorMessage(err));
     } finally {
       setPublishing(false);
     }
   }
+
+  // S5-NOA-M6: provisional banner -- extracted so it renders in both !rubric and rubric paths.
+  const provisionalBannerNode = provisionalLocal ? (
+    <div
+      className="auth-notice auth-notice--warn"
+      data-testid="rubric-provisional-banner"
+      role="status"
+    >
+      <span className="auth-notice__title">
+        Provisional -- Ground Truth changed after your last rubric review.
+      </span>
+      <span>Review before publishing.</span>
+      {onMarkReviewed && (
+        <div style={{ marginBlockStart: "8px" }}>
+          <button
+            type="button"
+            className="auth-btn auth-btn--ghost auth-btn--sm"
+            onClick={handleMarkReviewed}
+            disabled={markingReviewed || published}
+            data-testid="mark-reviewed-btn"
+          >
+            {markingReviewed ? "Marking..." : "Mark as Reviewed"}
+          </button>
+        </div>
+      )}
+    </div>
+  ) : null;
 
   if (!rubric) {
     return (
@@ -480,6 +559,9 @@ export default function RubricEditor({
             ורמת הסטודנט/ית. לאחר מכן תוכל/י לערוך ולפרסם.
           </p>
         </div>
+
+        {/* S5-NOA-M6: provisional banner shown even before rubric generation */}
+        {provisionalBannerNode}
 
         {genError && (
           <div className="auth-error" role="alert">
@@ -551,8 +633,11 @@ export default function RubricEditor({
         )}
       </div>
 
+      {/* S5-NOA-M6: provisional banner (also rendered in !rubric path above). */}
+      {provisionalBannerNode}
+
       {pubError && (
-        <div className="auth-error" role="alert">
+        <div className="auth-error" role="alert" data-testid="pub-error-msg">
           {pubError}
         </div>
       )}

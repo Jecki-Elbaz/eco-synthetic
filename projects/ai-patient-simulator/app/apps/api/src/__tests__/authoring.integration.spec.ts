@@ -20,7 +20,7 @@ import { AuthoringModule } from "../authoring/authoring.module.js";
 import { AuthoringService } from "../authoring/authoring.service.js";
 import { DbModule } from "../db/db.module.js";
 import { PrismaService } from "../db/prisma.service.js";
-import { ConflictException, NotFoundException } from "@nestjs/common";
+import { ConflictException, HttpException, NotFoundException } from "@nestjs/common";
 import { DEFAULT_HARD_OFF_RAMP } from "../authoring/authoring.service.js";
 
 // ---------------------------------------------------------------------------
@@ -52,6 +52,8 @@ afterAll(async () => {
   // M2 FIX: College and Course rows created by the in-use-template test (~line 334)
   // were previously not deleted here, causing unique-constraint failures on re-run
   // (slug column has a @unique constraint on College).
+  // S5-GAL-ARC-WRITER: ArcSessionSummary cleanup (safe to call even if none exist)
+  await prisma.arcSessionSummary.deleteMany({});
   await prisma.triggerRule.deleteMany({});
   await prisma.rubricCriterion.deleteMany({});
   // Attempt children first, then Attempt, then Assignment (FK: Attempt_assignmentId_fkey).
@@ -312,6 +314,34 @@ describe("[integration] AuthoringService -- rubric versioning", () => {
     expect(updated).toBeDefined();
   });
 
+  // S5-GAL-M6 prerequisite: populate GT with real facts (passes GROUND_TRUTH_REQUIRED gate)
+  it("M6 setup: populate ground truth before publish", async () => {
+    const result = await service.createGroundTruth({
+      simulationTemplateId: templateId,
+      knownFacts: {
+        facts: ["patient has presented with persistent low mood for 6 months"],
+        doNotInvent: ["patient has no prior hospital admissions"],
+        riskBoundaries: [],
+      },
+      disclosureAllowList: {
+        disclosed: [],
+        unlocked: ["Patient reports low mood for 6 months"],
+        locked: ["Patient has passive suicidal ideation"],
+        triggers: [],
+      },
+      escalationRules: {},
+      hardOffRampText: "This is a simulation. Please seek real support if needed.",
+    });
+    expect(result).toBeDefined();
+  });
+
+  // S5-GAL-M6 prerequisite: mark rubric reviewed after GT update (passes RUBRIC_PROVISIONAL gate)
+  it("M6 setup: mark rubric reviewed before publish", async () => {
+    const result = await service.markRubricReviewed(templateId);
+    expect(result).toBeDefined();
+    expect((result as Record<string, unknown>)["rubricLastReviewedAt"]).toBeInstanceOf(Date);
+  });
+
   it("publishRubric transitions DRAFT to PUBLISHED with publishedAt set", async () => {
     const result = await service.publishRubric(rubricVersionId);
 
@@ -378,6 +408,25 @@ describe("[integration] AuthoringService -- template version bump when in use", 
 
     // Create a rubric version so we can create an assignment
     const rv = await service.generateRubric({ simulationTemplateId: template.id });
+
+    // S5-GAL-M6: populate GT + mark reviewed before publish
+    await service.createGroundTruth({
+      simulationTemplateId: template.id,
+      knownFacts: {
+        facts: ["patient has presented with anxiety for 3 months"],
+        doNotInvent: ["patient has no prior treatment"],
+        riskBoundaries: [],
+      },
+      disclosureAllowList: {
+        disclosed: [],
+        unlocked: ["Patient reports anxiety"],
+        locked: [],
+        triggers: [],
+      },
+      escalationRules: {},
+    });
+    await service.markRubricReviewed(template.id);
+
     const publishedRv = await service.publishRubric(rv.id);
 
     await prisma.assignment.create({
@@ -402,5 +451,48 @@ describe("[integration] AuthoringService -- template version bump when in use", 
     // Original template must still exist with version 1
     const original = await service.getTemplate(template.id);
     expect(original.version).toBe(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// S5-ADI-M6: publish gate -- GROUND_TRUTH_REQUIRED (integration; additive)
+// Verifies that publishRubric blocks with 422 GROUND_TRUTH_REQUIRED when the
+// template has the auto-seeded stub GroundTruth (empty facts) through the
+// live-Postgres stack. Gal's unit test P1/P2 covers the unit path; this test
+// covers the service-level integration path (real DB, real AuthoringService).
+// Does NOT modify any of Gal's existing tests.
+// ---------------------------------------------------------------------------
+
+describe("[integration] S5-ADI-M6: publishRubric blocks with GROUND_TRUTH_REQUIRED when GT is empty", () => {
+  it("publishRubric with stub (empty) groundTruth -> 422 GROUND_TRUTH_REQUIRED", async () => {
+    // createTemplate auto-creates a stub GT with knownFacts: { facts: [], doNotInvent: [], riskBoundaries: [] }.
+    // No createGroundTruth call -- the stub GT stays empty.
+    const t = await service.createTemplate({
+      builder: {
+        title: "S5-ADI-M6 Gate Test",
+        clinicalModel: "CBT",
+        studentLevel: "year2",
+        primarySkill: "empathy",
+        patientStyle: "neutral",
+        presentingProblem: "Test presenting problem for M6 gate",
+        riskLevel: "low",
+        challengeLevel: 1,
+        languages: ["he"],
+        mode: "intake",
+      },
+    });
+
+    // Generate a DRAFT rubric (required; publishRubric looks up via rubricVersionId).
+    const rv = await service.generateRubric({ simulationTemplateId: t.id });
+
+    // Attempt publish -- stub GT has empty facts: Gate 1 fires first (before RUBRIC_PROVISIONAL).
+    try {
+      await service.publishRubric(rv.id);
+      fail("Should have thrown 422 GROUND_TRUTH_REQUIRED");
+    } catch (err: unknown) {
+      const ex = err as HttpException;
+      expect(ex.getStatus()).toBe(422);
+      expect((ex.getResponse() as Record<string, unknown>)["code"]).toBe("GROUND_TRUTH_REQUIRED");
+    }
   });
 });

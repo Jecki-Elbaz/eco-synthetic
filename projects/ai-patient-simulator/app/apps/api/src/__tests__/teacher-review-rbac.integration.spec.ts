@@ -203,7 +203,13 @@ beforeAll(async () => {
   const pipeline = new TurnPipeline(provider);
   const prismaService = prisma as unknown as PrismaService;
   const evaluationService = new EvaluationService(prismaService, new Evaluator(provider));
-  const service = new SimulationService(prismaService, pipeline, evaluationService);
+  const service = new SimulationService(
+    prismaService,
+    pipeline,
+    evaluationService,
+    { loadArcContext: jest.fn().mockResolvedValue(null) } as any,
+    { writeSessionSummary: jest.fn().mockResolvedValue(undefined) } as any,
+  );
 
   // actorScopes for the student (used only to pass processTurn ownership check)
   await service.processTurn(
@@ -242,7 +248,13 @@ function buildService(): SimulationService {
   // getPatientStateLogs and processTurn do not invoke it; safe to pass real instance.
   const prismaService = prisma as unknown as PrismaService;
   const evaluationService = new EvaluationService(prismaService, new Evaluator(provider));
-  return new SimulationService(prismaService, pipeline, evaluationService);
+  return new SimulationService(
+    prismaService,
+    pipeline,
+    evaluationService,
+    { loadArcContext: jest.fn().mockResolvedValue(null) } as any,
+    { writeSessionSummary: jest.fn().mockResolvedValue(undefined) } as any,
+  );
 }
 
 function teacherAScopes(): UserScope[] {
