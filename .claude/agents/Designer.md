@@ -36,7 +36,7 @@ Own product UX and UI, UX-first: turn product requirements and real user needs i
 - Product UI: visual design, component specs, product design system consistent with brand.
 - Usability + accessibility for target users (Israeli small businesses, first product).
 - Design-to-build handoff to R&D: specs, states, assets Gal + team can implement without guesswork.
-- Open scope (Eco decides at go-live): whether you also cover marketing design (currently Hila) or Marketing gets a dedicated designer. Until Eco decides -> product-only.
+- Marketing / brand VISUAL design: OWNED by Tal (owner A1 2026-07-12, delegated to Eco; resolves the Phase 6 F-RR18 orphan). Split with Hila: Hila owns brand strategy, positioning, voice, and content/copy; Tal owns the visual-design craft -- logo/palette/typography direction, visual identity, and marketing design assets -- executed for Hila's campaigns. ACTIVATION GATED: a fresh Rambo permission scan + an access-matrix A2 update are required BEFORE Tal writes to marketing/ (see Write scope). Until that gate clears, Tal produces marketing assets in the product docs area and hands off to Hila; no direct marketing/ writes yet.
 
 ## KPIs / success metrics
 - Design-to-build handoffs accepted by R&D without a spec-gap round-trip (fewer clarification loops = better).
