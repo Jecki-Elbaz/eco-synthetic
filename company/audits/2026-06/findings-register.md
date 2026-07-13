@@ -138,3 +138,21 @@ Capability spot-tests: Gal PASS, Jenny PASS, Lital PASS (input-gap surfaced). Ev
 - **IGNORE:** none.
 
 ---
+
+## Phase 7 -- Agent Performance Audit (2026-07-13; Assaf delivery + Dalia quality). Owner triage: PENDING.
+
+Report: company/audits/2026-06/phase7-performance-audit.md. Scorecard (both axes complete): agent-fitness-scorecard.md.
+Verdict: fleet is doing its job -- quality STRONG, delivery on-track; all "gaps" are infra-blocked (AUD-007, fixed), owner-gated, or idle-by-design. Zero real performance misses.
+
+| id | phase | area | severity | finding | recommended fix | owner disposition | resolution ref |
+|----|-------|------|----------|---------|-----------------|-------------------|----------------|
+| F-QUAL01 | 7 | Assaf accuracy (fitness-loop) | major | Assaf's Phase 6 leg reported live agents (Adi/Oren) as "not live" + T-0012 as "open" -- stale misreads; a verify-before-claim breach for the OpEx agent whose fitness-loop depends on accurate live-status. Dalia independently confirmed. (His Phase 7 delivery leg WAS accurate -- not a pattern.) | Add a mandatory source-read step to the fitness-loop procedure ("read cert record + decisions-log before flagging any agent not-live"); route to Anat for Assaf's next R&R. | PENDING | |
+| F-QUAL02 | 7 | Ido schema-field assumption | minor | A Sprint-7 envelope named a Prisma field (studentId) from memory; real field is userId. Gal caught + corrected it. | Read the schema before naming fields/models in a task envelope. Coaching note to Ido. | PENDING | |
+| F-QUAL03 | 7 | Oren review efficiency | minor | Sprint-7 review took 3 runs (session-limit + stall) before a bounded 9-file reading list worked. | Make a bounded reading list the default start condition for any review. Coaching note to Oren. | PENDING | |
+| F-QUAL04 | 7 | Next-cycle sampling | observation | Oracle + Yael output fires but was not directly sampled this cycle. | Add Oracle + Yael to the next quality-audit sample. | PENDING | |
+| F-QUAL05 | 7 | Mike CS-0001 fold-in | observation | CS-0001 draft sound; section 8 pending fold-in of Eyal's EA-2 retention text (now available). | Mike folds EA-2 text into CS-0001 section 8, then Eco packages for owner A1 (AUD-004). | PENDING | AUD-004 |
+| F-PERF-NONE | 7 | Performance (delivery) | observation | No real performance misses: infra-blocked agents (Rambo/Dalia/Ido/Oracle/Yael) recover on the AUD-007 fix; owner-gated (Hila/Mike/Sally) and idle-by-design (on-demand/pre-product) are correct, not misses. | None -- documented positive result. | n/a | AUD-007 |
+
+Fitness scorecard: overwhelmingly FIT or correctly IDLE-BY-DESIGN; no agent "NEITHER". The two program questions ("can each agent do its job / is each doing it") are answered YES with evidence.
+
+---
