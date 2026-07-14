@@ -1,6 +1,8 @@
 # APS -- Draft Student Privacy Notice (Outline)
 # Author: Eyal (Legal, L3)
 # Date: 2026-06-30
+# Last updated: 2026-07-12 -- Section ARC-SUMMARIES added (Eyal, pre-real-students
+#   condition 3 per privacy-note-arc-session-summary-eyal-2026-07-11.md)
 # Status: DRAFT -- internal working document. Owner A1 required before any version is
 #         distributed or shown to students, parents, or the college.
 # Scope: Pseudonymous-handle (Option A) pilot path only.
@@ -54,6 +56,10 @@ What we DO collect (under Option A):
   records about your learning progress (including any mistakes noted for formative purposes).
 - Technical data: login time, session duration, and basic usage logs (to keep the platform
   running and to fix problems).
+- Arc session summaries (multi-session arcs only): if your practise involves more than
+  one session with the same simulated patient, the platform saves a brief summary at the
+  end of each session so the next session continues where you left off. Full disclosure
+  clause and Hebrew text in Section ARC-SUMMARIES below.
 
 What we do NOT collect:
 - Your real name.
@@ -162,9 +168,118 @@ that affects what we collect or how we use it.
 
 ---
 
+### ARC-SUMMARIES -- DATA DISCLOSURE CLAUSE
+
+APPROVED -- OWNER A1 2026-07-14 (jecki, in-session directive; recorded in decisions-log).
+Added: 2026-07-12, Eyal (Legal, L3)
+Pre-real-students condition 3 of 5 (see privacy-note-arc-session-summary-eyal-2026-07-11.md).
+CLAUSE CONTENT approved for incorporation into the final Hebrew-language notice. The
+NOTICE AS A WHOLE still requires its own pre-launch owner A1 + final Hebrew review
+before distribution (that gate is unchanged; see the document-level status line).
+
+---
+
+**Background -- for owner and legal reference (not student-facing text)**
+
+The ArcSessionSummary table (Sprint 5) stores per-student, per-template, per-session arc
+state to support multi-session arcs (up to 3 sessions with the same simulated patient).
+Fields: userId (platform handle), templateId, sessionNumber, trust / openness / alliance
+levels (Float), symptomMarkerState (JSON), notableMomentsSummary (free-text LLM-generated
+session narrative), sessionCompletedAt.
+
+Under Israeli PPL (5741-1981 + Amendment 13), this data linked to a real student via
+their platform handle is personal data. Disclosure before acknowledgment or consent is a
+pre-launch requirement.
+
+Retention ruling (Eyal 2026-07-11): end-of-arc + 90 days, then permanently deleted.
+Implementation note: the retainUntil field and purge mechanism are not yet in the schema.
+This is an engineering task required before real students onboard (condition 1 of 5 from
+the same ruling note, separate from this notice clause).
+
+---
+
+**English working version -- plain-language disclosure clause**
+
+Arc session summaries -- what they are, what we store, and how long we keep them
+
+Some practise scenarios in this platform span more than one session with the same
+simulated patient. We call this a multi-session arc. To allow each session to continue
+from where the last one ended, the platform saves a brief arc session summary at the
+close of each session.
+
+What an arc session summary contains:
+
+- The simulated patient's trust, openness, and alliance levels at the end of your
+  session (internal numeric scores used only by the simulation engine).
+- Which aspects of the simulated patient's situation were disclosed during your session
+  (internal symptom markers -- simulation state only; not a clinical record).
+- A short automatically generated note describing what happened during the session:
+  patient state changes and key interaction moments. This is not a verbatim transcript
+  of what you said.
+- The date and time your session ended.
+
+How it is linked to you: the summary is stored under your assigned student handle (for
+example, "Student-7F2A"), not under your real name. We do not know your real name. See
+the note on handles-only design below.
+
+What it is used for: solely to allow the next session in the same arc to continue
+coherently from where you stopped. No other purpose. Your lecturer does not see the raw
+summary; the platform uses it internally only.
+
+How long we keep it: until the arc is complete (all sessions done) plus 90 days, then
+permanently deleted. The 90-day window allows you to exercise your data rights (see
+Section 8) before the record is removed.
+
+Who can see it: platform technical staff only, under the same access controls as all
+other session data (see Section 6).
+
+---
+
+Note on handles-only pilot design (APS-004 LC-5 posture)
+
+Under the current pilot design the platform stores only your synthetic student handle --
+not your real name, student ID number, or any other identifying information. The link
+between your handle and your real name exists only with your lecturer and the college,
+not with us. Arc session summaries are linked to a handle, not to an identified person
+as far as the platform is concerned. Your lecturer holds the key.
+
+---
+
+**Hebrew draft text -- for inclusion in the final Hebrew-language notice**
+
+[DRAFT -- PENDING OWNER A1 AND FINAL HEBREW REVIEW BEFORE DISTRIBUTION]
+
+**סיכומי מפגש קשת -- מה הם, מה אנחנו שומרים, וכמה זמן**
+
+חלק מתרחישי התרגול בפלטפורמה זו כוללים יותר ממפגש אחד עם אותו/ה מטופל/ת מדומה/ה. אנחנו קוראים לזה "קשת רב-מפגשית". כדי שכל מפגש יוכל להמשיך בצורה רציפה מהנקודה שבה עצרת/ת, המערכת שומרת סיכום קצר בסיום כל מפגש.
+
+**מה כולל סיכום מפגש קשת:**
+
+- רמות האמון, הפתיחות והברית של המטופל/ת המדומה/ה בסוף המפגש (ציונים מספריים פנימיים המשמשים את מנוע הסימולציה בלבד).
+- אילו היבטים של מצב המטופל/ת המדומה/ה נחשפו במהלך המפגש (סמני תסמינים פנימיים -- מצב סימולציה בלבד; לא רשומה קלינית).
+- הערה קצרה שנוצרת אוטומטית ומתארת מה קרה במפגש: שינויים במצב המטופל/ת ורגעי אינטראקציה מרכזיים. זה אינו תמליל של דבריך.
+- תאריך ושעת סיום המפגש.
+
+**כיצד הסיכום מקושר אליך:** הסיכום נשמר תחת כינוי הסטודנט/ית שהוקצה לך (לדוגמה, "Student-7F2A"), לא תחת שמך האמיתי. איננו יודעים את שמך האמיתי. ראה/י את ההערה על עיצוב כינויים-בלבד להלן.
+
+**למה אנחנו שומרים:** אך ורק כדי לאפשר למפגש הבא באותה הקשת להמשיך בצורה רציפה מהנקודה שבה עצרת/ת. אין מטרה אחרת. המרצה/ה שלך אינו/ה רואה את הסיכום הגולמי; המערכת משתמשת בו פנימית בלבד.
+
+**כמה זמן אנחנו שומרים:** עד לסיום הקשת (כל המפגשים הסתיימו) בתוספת 90 יום, ואז נמחק לצמיתות. חלון 90 הימים מאפשר לך לממש את זכויות המידע שלך (ראה/י סעיף 8) לפני הסרת הרשומה.
+
+**מי יכול לראות:** צוות טכני של הפלטפורמה בלבד, בכפוף לאותן בקרות גישה כמו כל שאר נתוני המפגש (ראה/י סעיף 6).
+
+---
+
+**הערה על עיצוב כינויים-בלבד (עיצוב פיילוט)**
+
+בעיצוב הפיילוט הנוכחי, הפלטפורמה שומרת אך ורק את הכינוי הסינתטי שלך -- לא את שמך האמיתי, מספר הסטודנט/ית, או כל מידע מזהה אחר. הקישור בין הכינוי שלך לשמך האמיתי קיים רק אצל המרצה/ה שלך ובמוסד הלימודי, ולא אצלנו. סיכומי מפגש קשת מקושרים לכינוי, לא לאדם מזוהה מבחינת הפלטפורמה. המרצה/ה שלך מחזיק/ה את המפתח.
+
+---
+
 ## Document control
 
 DRAFT outline only. All content is internal.
 A1 required before any version is shown to students or the college.
 Owner fills in: entity name, contact address, storage provider details.
 Eyal refines the full Hebrew-ready draft on owner instruction.
+Section ARC-SUMMARIES added 2026-07-12; pending owner A1 before distribution.

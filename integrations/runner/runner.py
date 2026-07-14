@@ -28,6 +28,10 @@ ROOT = Path(r"C:\Users\Jecki\DEV\projects\eco-synthetic")
 PROMPTS = ROOT / "integrations" / "runner" / "agent-prompts.md"
 AUDIT_SCRIPT = ROOT / "integrations" / "git-hygiene" / "audit.py"
 GIT_HYGIENE_KEY = "Shir:git-hygiene-audit"
+# APS-022 retention purge (S8-SHIR-PURGEJOB, Sprint 8 envelope 2026-07-13)
+PURGE_ARC_JOB_KEY = "purge_expired_arc_summaries"
+APS_APP_DIR = ROOT / "projects" / "ai-patient-simulator" / "app"
+PURGE_SCRIPT = APS_APP_DIR / "apps" / "api" / "src" / "scripts" / "purge-expired-arc-summaries.mjs"
 BOARD = ROOT / "memory" / "board.md"
 RUNLOG = ROOT / "memory" / "agent-runs.jsonl"
 STATE = ROOT / "memory" / "runner-state.json"
@@ -56,10 +60,50 @@ PER_JOB_TOOLS = {
 # NOTE: the job stays inert until the owner completes the eco.synthetic.org@gmail.com
 # OAuth consent into eco-creds -- until then Gmail calls fail and the job reports
 # GMAIL_TOOLS_UNAVAILABLE per its prompt.
-DISABLED_JOBS = {}
+DISABLED_JOBS = {
+    # APS-022 retention purge. Deletes ArcSessionSummary rows WHERE
+    # retainUntil IS NOT NULL AND retainUntil < NOW(). DISABLED: enable
+    # only at pilot go-live (owner A1) when real student data exists.
+    # Zero-token (node script, not LLM). Ref: Sprint 8 envelope 2026-07-13.
+    PURGE_ARC_JOB_KEY: (
+        "APS-022 retention purge -- enable only at pilot go-live (owner A1) "
+        "when real student data exists. Deletes ArcSessionSummary rows "
+        "(retainUntil IS NOT NULL AND retainUntil < NOW()). Zero-token script. "
+        "Ref: Sprint 8 envelope 2026-07-13."
+    ),
+    # GR-014 time-boxed exception LAPSED per its own terms: Adam replied 2026-07-10
+    # (shared/handoff/inbox-screened/adam-reply-2026-07-10.md) and the 2026-07-14
+    # expiry date is reached. The prompt-level step-0 self-expiry still exists; this
+    # entry is the runner-layer hard stop (owner directive 2026-07-14, decisions-log).
+    # Re-enabling ANY standing Gmail automation requires a fresh owner A1 + privacy
+    # review per GR-014 M4/C-E5.
+    "Rambo:Adam Inbox Screen (every 2h; EXPIRES 2026-07-14 or on Adam reply)": (
+        "GR-014 exception lapsed 2026-07-14 (Adam replied 2026-07-10; time-box "
+        "reached). Fresh owner A1 + privacy review required to re-enable any "
+        "standing Gmail automation."
+    ),
+}
 HOLD = ("on hold", "on-hold", "blocked on", "blocked-until", "waiting on",
         "waiting-on", "pending owner", "queued until")
-CLAUDE_TIMEOUT = 300
+
+# SHIR-FIX-02: per-model timeout table (seconds)
+MODEL_TIMEOUTS = {"opus": 600, "sonnet": 300, "haiku": 180}
+CLAUDE_TIMEOUT_DEFAULT = 300
+
+# SHIR-FIX-03: Eco runner-path model override (interactive-session model unchanged).
+# Eco's role file typically specifies Opus; the runner uses Sonnet by default to avoid
+# session-limit + timeout failures (Ido A3 pre-approved 2026-07-11).
+# Override via env: RUNNER_MODEL_OVERRIDE=<model-id>
+RUNNER_ECO_MODEL = os.environ.get("RUNNER_MODEL_OVERRIDE", "claude-sonnet-4-6")
+
+# SHIR-FIX-06: patterns in combined stdout+stderr that trigger one bounded retry
+RETRY_PATTERNS = (
+    "session limit",
+    "connection refused",
+    "failedtoopensocket",
+    "stalled mid-stream",
+    "response stalled",
+)
 
 # Path safety (2026-06-28): Claude Code reserves a bare relative "memory/" path as its own
 # MANAGED per-project store (~/.claude/projects/<hash>/memory/). A runner agent writing a NEW
@@ -112,10 +156,51 @@ def load_state() -> dict:
 
 
 def save_state(state: dict):
+    # SHIR-FIX-01: atomic write-temp-then-rename; a crash mid-write never corrupts STATE
     try:
-        STATE.write_text(json.dumps(state, indent=2), encoding="utf-8")
+        tmp = STATE.with_suffix(".tmp")
+        tmp.write_text(json.dumps(state, indent=2), encoding="utf-8")
+        tmp.replace(STATE)
     except OSError:
         pass
+
+
+def _model_timeout(model: str) -> int:
+    """SHIR-FIX-02: return per-model timeout from MODEL_TIMEOUTS table."""
+    ml = model.lower()
+    for key, val in MODEL_TIMEOUTS.items():
+        if key in ml:
+            return val
+    return CLAUDE_TIMEOUT_DEFAULT
+
+
+def _invoke_claude(cmd: list, stdin_data: bytes, env: dict, timeout: int, cwd: str) -> tuple:
+    """SHIR-FIX-06: single claude CLI invocation. Returns (rc, raw_stdout, err_tag).
+    err_tag is None on a clean run or a short string identifying a retryable failure."""
+    try:
+        r = subprocess.run(cmd, input=stdin_data, capture_output=True,
+                           timeout=timeout, cwd=cwd, check=False, env=env)
+        raw = r.stdout.decode("utf-8", "replace").strip()
+        combined = (raw + " " + r.stderr.decode("utf-8", "replace")).lower()
+        for pat in RETRY_PATTERNS:
+            if pat in combined:
+                return r.returncode, raw, pat
+        return r.returncode, raw, None
+    except subprocess.TimeoutExpired:
+        return -1, "", "TimeoutExpired"
+    except Exception as e:
+        return -1, "", f"{type(e).__name__}: {str(e)[:100]}"
+
+
+def _parse_json_output(raw: str) -> tuple:
+    """SHIR-FIX-07: parse --output-format json stdout.
+    Returns (text, cost_usd, model_used, usage_dict). Graceful fallback on non-JSON."""
+    try:
+        data = json.loads(raw)
+        return (data.get("result", raw), data.get("cost_usd"),
+                data.get("model"), data.get("usage", {}))
+    except (json.JSONDecodeError, AttributeError, TypeError):
+        return raw, None, None, {}
 
 
 def agent_model(agent: str) -> str:
@@ -192,6 +277,9 @@ def is_due(job: dict, state: dict, t: datetime) -> bool:
             return False
         return not (last_dt and (last_dt.year, last_dt.month) == (t.year, t.month))
     if "week" in cad or "monday" in cad:
+        # SHIR-FIX-04: catch-up -- fire regardless of weekday if >8 days since last successful run
+        if last_dt and (t.date() - last_dt.date()).days > 8:
+            return True
         if t.weekday() != 0:  # Monday
             return False
         return not (last_dt and last_dt.isocalendar()[:2] == t.isocalendar()[:2])
@@ -270,31 +358,44 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
             log({"key": key, "event": "job_disabled", "reason": disabled_reason[:200]})
         return {"ran": False, "reason": "disabled"}
     model = agent_model(agent)
+    # SHIR-FIX-03: on the runner path, Eco jobs use RUNNER_ECO_MODEL (default: sonnet).
+    # Interactive-session model defined in Eco's role file is never modified here.
+    if agent.lower() == "eco":
+        model = RUNNER_ECO_MODEL
     # Per-job tool override: some jobs need tools beyond the runner default (e.g., Gmail MCP).
     tools = PER_JOB_TOOLS.get(key, TOOLS[mode])
+    timeout = _model_timeout(model)  # SHIR-FIX-02
     if dry:
         print(f"  WOULD RUN {key} | cadence={job['cadence']} | tg={job['tg']} | model={model} | tools={tools}")
         return {"ran": False, "reason": "dry"}
     prompt = f"[Scheduled run: {now().isoformat()}]\n\n{PATH_DIRECTIVE}\n\n{job['prompt']}"
     log({"key": key, "event": "start", "mode": mode, "model": model, "tg": job["tg"]})
-    try:
-        # Tag the spawned agent so the PreToolUse guard can enforce the runner
-        # policy (no Bash, no sub-agent spawns; in readonly, no writes at all).
-        # This is the real enforcement layer -- --allowedTools alone does NOT
-        # strip Bash and does NOT guarantee read-only (verified 2026-06-28).
-        env = {**os.environ, "RUNNER_CONTEXT": "1", "RUNNER_MODE": mode}
-        r = subprocess.run(
-            [find_claude(), "--print", "--model", model, "--allowedTools", tools,
-             "--append-system-prompt", role_text(agent)],
-            input=prompt.encode("utf-8"),
-            capture_output=True, timeout=CLAUDE_TIMEOUT, cwd=str(ROOT), check=False,
-            env=env,
-        )
-        out = r.stdout.decode("utf-8", "replace").strip()
-    except Exception as e:
-        log({"key": key, "event": "error", "err": f"{type(e).__name__}: {str(e)[:150]}"})
-        return {"ran": True, "error": True}
-
+    # Tag the spawned agent so the PreToolUse guard can enforce the runner policy
+    # (no Bash, no sub-agent spawns; in readonly, no writes at all). This is the real
+    # enforcement layer -- --allowedTools alone does NOT strip Bash (verified 2026-06-28).
+    env = {**os.environ, "RUNNER_CONTEXT": "1", "RUNNER_MODE": mode}
+    # SHIR-FIX-07: --output-format json to capture cost_usd + model + token counts
+    cmd = [find_claude(), "--print", "--output-format", "json", "--model", model,
+           "--allowedTools", tools, "--append-system-prompt", role_text(agent)]
+    stdin_data = prompt.encode("utf-8")
+    # SHIR-FIX-06: one bounded retry on session-limit / connection / stall errors
+    rc, raw, err_tag = _invoke_claude(cmd, stdin_data, env, timeout, str(ROOT))
+    if err_tag:
+        log({"key": key, "event": "retry", "err": err_tag})
+        rc, raw, err_tag2 = _invoke_claude(cmd, stdin_data, env, timeout, str(ROOT))
+        if err_tag2:
+            final_err = f"{err_tag} -> {err_tag2}"
+            log({"key": key, "event": "error_final", "err": final_err})
+            # Alert via the existing Telegram pathway; failure is also in agent-runs.jsonl.
+            send_telegram(
+                f"[Runner FAIL -- {agent}]\n"
+                f"Job failed after 1 retry.\n"
+                f"Key: {key}\n"
+                f"Error: {final_err}"
+            )
+            return {"ran": True, "error": True}
+    # SHIR-FIX-07: extract text + cost fields from JSON envelope
+    out, cost_usd, model_used, usage = _parse_json_output(raw)
     last_line = out.splitlines()[-1].strip() if out else ""
     escalate = last_line.startswith("ESCALATE_TO_ECO")
     sent = False
@@ -306,8 +407,11 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
             log({"key": key, "event": "tg_muted_2h"})  # work ran; owner ping suppressed
         else:
             sent = send_telegram(f"[Proactivity -- {agent}]\n\n{out}")
-    log({"key": key, "event": "done", "rc": r.returncode, "out_chars": len(out),
-         "sent": sent, "escalate": escalate, "summary": out[-600:]})
+    log({"key": key, "event": "done", "rc": rc, "out_chars": len(out),
+         "sent": sent, "escalate": escalate, "summary": out[-600:],
+         "cost_usd": cost_usd, "model": model_used,
+         "input_tokens": (usage or {}).get("input_tokens"),
+         "output_tokens": (usage or {}).get("output_tokens")})
     return {"ran": True, "escalate": escalate}
 
 
@@ -346,6 +450,59 @@ def run_git_hygiene(state: dict, t: datetime, dry: bool) -> None:
     state.setdefault(GIT_HYGIENE_KEY, {})["last"] = t.isoformat()
     log({"key": GIT_HYGIENE_KEY, "event": "done", "rc": r.returncode,
          "attention": attention, "sent": sent})
+
+
+def run_purge_arc_summaries(state: dict, t: datetime, dry: bool) -> None:
+    """Weekly ZERO-TOKEN ArcSessionSummary retention purge (APS-022).
+
+    Invokes node purge-expired-arc-summaries.mjs --apply from the APS app dir.
+    CWD must be APS_APP_DIR so the script resolves logs/ correctly.
+    Job is registered in DISABLED_JOBS and will not fire until the owner removes
+    the key (owner A1 at pilot go-live when real student data exists).
+    """
+    key = PURGE_ARC_JOB_KEY
+    disabled_reason = DISABLED_JOBS.get(key)
+    if disabled_reason:
+        if dry:
+            print(f"  DISABLED {key} -- {disabled_reason[:120]}")
+        else:
+            log({"key": key, "event": "job_disabled", "reason": disabled_reason[:200]})
+        return
+    # Weekly cadence: fire on Mondays; catch-up if >8 days since last run (SHIR-FIX-04 pattern).
+    last = state.get(key, {}).get("last")
+    last_dt = None
+    if last:
+        try:
+            last_dt = datetime.fromisoformat(last)
+        except ValueError:
+            pass
+    if last_dt and (t.date() - last_dt.date()).days > 8:
+        pass  # catch-up: fire regardless of weekday
+    elif t.weekday() != 0:  # Monday only
+        return
+    elif last_dt and last_dt.isocalendar()[:2] == t.isocalendar()[:2]:
+        return  # already ran this week
+    if dry:
+        print(f"  WOULD RUN {key} (weekly, zero-token node script, --apply)")
+        return
+    log({"key": key, "event": "start", "mode": "script"})
+    try:
+        r = subprocess.run(
+            ["node", str(PURGE_SCRIPT), "--apply"],
+            capture_output=True, timeout=120,
+            cwd=str(APS_APP_DIR), check=False,
+        )
+        out = r.stdout.decode("utf-8", "replace").strip()
+    except Exception as e:
+        log({"key": key, "event": "error",
+             "err": f"{type(e).__name__}: {str(e)[:150]}"})
+        return
+    attention = r.returncode != 0
+    if attention and out:
+        send_telegram(f"[Purge arc summaries -- Shir]\n\nExit {r.returncode}\n{out[:800]}")
+    state.setdefault(key, {})["last"] = t.isoformat()
+    log({"key": key, "event": "done", "rc": r.returncode,
+         "attention": attention, "out_chars": len(out)})
 
 
 def run_readiness_check(dry: bool):
@@ -395,6 +552,15 @@ def main() -> int:
     # or when explicitly targeted; independent of the LLM agent jobs below.
     if not a.only or a.only.lower() in ("shir", "git", "git-hygiene"):
         run_git_hygiene(state, t, a.dry_run)
+        if not a.dry_run:
+            save_state(state)  # SHIR-FIX-01: persist after git hygiene updates state
+
+    # Weekly zero-token ArcSessionSummary purge (APS-022 -- DISABLED until pilot go-live).
+    # Enabling this job requires removing PURGE_ARC_JOB_KEY from DISABLED_JOBS (owner A1).
+    if not a.only or a.only.lower() in ("shir", "purge", "purge-arc"):
+        run_purge_arc_summaries(state, t, a.dry_run)
+        if not a.dry_run:
+            save_state(state)
 
     escalated = False
     for job in jobs:  # file order -> Lital before Eyal
@@ -405,6 +571,7 @@ def main() -> int:
         res = run_job(job, a.mode, a.dry_run)
         if res.get("ran") and not a.dry_run:
             state.setdefault(job["key"], {})["last"] = t.isoformat()
+            save_state(state)  # SHIR-FIX-01: persist after each completed job
         if res.get("escalate"):
             escalated = True
 
@@ -415,6 +582,7 @@ def main() -> int:
             log({"event": "escalation_triggered_eco"})
             run_job(eco_2h, a.mode, False)
             state.setdefault(eco_2h["key"], {})["last"] = t.isoformat()
+            save_state(state)  # SHIR-FIX-01: persist after escalation-triggered Eco run
 
     # Enforce-readiness gate (SEC-0001) -- silent until GREEN, then one owner surface.
     if not a.only or a.only.lower() in ("readiness", "enforce"):

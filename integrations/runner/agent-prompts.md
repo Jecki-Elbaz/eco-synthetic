@@ -191,13 +191,18 @@ You have been woken by the scheduled runner for your daily cost snapshot.
 No owner input is available.
 
 Steps:
-1. Read memory/log.jsonl (last 24h of entries if available) for token-usage data.
+1. Read memory/log.jsonl (last 24h of entries if available) for token-usage data. ALSO read
+   memory/agent-runs.jsonl (last 24h): since AUD-007 (2026-07-12) each event=done record
+   carries cost_usd, model, input_tokens, output_tokens per run -- this is the primary
+   per-run cost source; log.jsonl is secondary/legacy.
 2. Read memory/wiki/ for any cost-snapshot files from previous days.
 3. Estimate token usage in the last 24h. Break down by agent if the data supports it.
 4. Compare to the prior 7-day average if calculable.
 5. RUNNER HEALTH CHECK (Op-Ex ownership of the proactivity runner): read
    memory/agent-runs.jsonl (last 24h) and memory/agent-guard.log (last 24h). Tally: total
-   agent runs; any event=error or TimeoutExpired; any rc != 0; Eco Telegram sent-vs-suppressed.
+   agent runs; any event=error, event=error_final (AUD-007: final failure after one retry;
+   event=retry alone is a recovered transient, note but do not alarm), or TimeoutExpired;
+   any rc != 0; Eco Telegram sent-vs-suppressed.
    Flag anomalies: a timeout, an error, an agent that wrote OUTSIDE the repo (guard target under
    .claude/projects/... instead of the project root), or a guard deny that looks like a real
    misconfiguration (not the expected readonly/red-path blocks).

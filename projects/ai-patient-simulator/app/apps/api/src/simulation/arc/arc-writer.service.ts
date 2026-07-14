@@ -154,8 +154,13 @@ export class ArcWriterService {
       unlockedFactIds: lastLog.unlockedFactIds,
     };
 
-    // notableMomentsSummary: contextSummary from last log (or empty if no summarisation ran)
-    const notableMomentsSummary = lastLog.contextSummary ?? "";
+    // notableMomentsSummary: contextSummary from last log (or empty if no summarisation ran).
+    // S7-GAL-CONTENT: sanitize before every write (2000-char cap, no student PII beyond userId).
+    const notableMomentsSummary = this.sanitizeNotableMoments(lastLog.contextSummary ?? "");
+
+    // S7-GAL-RETAIN: retainUntil = sessionCompletedAt + 90 days.
+    const sessionCompletedAt = attempt.finishedAt ?? new Date();
+    const retainUntil = new Date(sessionCompletedAt.getTime() + 90 * 24 * 60 * 60 * 1000);
 
     // Upsert: if a summary for this (userId, templateId, sessionNumber) exists,
     // update it. This handles the edge case where the attempt completes twice (rare).
@@ -173,7 +178,8 @@ export class ArcWriterService {
         finalAllianceLevel: clampedAlliance,
         symptomMarkerState,
         notableMomentsSummary,
-        sessionCompletedAt: attempt.finishedAt ?? new Date(),
+        sessionCompletedAt,
+        retainUntil,
       },
       update: {
         trustDeltaApplied,
@@ -182,12 +188,36 @@ export class ArcWriterService {
         finalAllianceLevel: clampedAlliance,
         symptomMarkerState,
         notableMomentsSummary,
-        sessionCompletedAt: attempt.finishedAt ?? new Date(),
+        sessionCompletedAt,
+        retainUntil,
       },
     });
 
     this.logger.log(
       `ArcWriter: persisted session-${sessionNumber} summary for user ${userId} template ${templateId}`,
     );
+  }
+
+  /**
+   * S7-GAL-CONTENT: sanitize notableMomentsSummary before every Prisma write.
+   * Content-scope rule (APS-022 / Eyal item 5 / 2026-07-11):
+   *   Source: contextSummary from PatientStateLog only (patient/clinical narrative).
+   *   No student PII beyond the userId DB key (no names, emails, handles, or
+   *     student-identifying text added by the writer).
+   *   Max 2000 characters enforced here before every Prisma write.
+   * HONESTY NOTE (Oren S7 MINOR-1): this method enforces LENGTH ONLY. The
+   * no-student-PII guarantee is a source-restriction claim (contextSummary
+   * provenance from PatientStateLog), NOT a content-inspection guarantee --
+   * nothing here scans or filters the text.
+   */
+  private sanitizeNotableMoments(raw: string): string {
+    const trimmed = raw.trim();
+    if (trimmed.length > 2000) {
+      this.logger.warn(
+        `[ArcWriter] notableMomentsSummary truncated from ${trimmed.length} to 2000 chars`,
+      );
+      return trimmed.substring(0, 2000);
+    }
+    return trimmed;
   }
 }

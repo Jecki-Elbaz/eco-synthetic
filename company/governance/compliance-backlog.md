@@ -5,7 +5,31 @@ prioritized on the roadmap and never appears as a sudden critical issue.
 Source: constitution section 13. Populated as T-0008.
 
 Last legal-leg review: Eyal, 2026-06-29 (scheduled runner).
-Last finance-leg review: Lital, 2026-07-06 (scheduled runner, run 5).
+Last finance-leg review: Lital, 2026-07-13 (scheduled runner, run 6).
+
+---
+
+## OVERDUE -- ACTION REQUIRED
+
+Reviewed by Lital: 2026-07-13 (run 6)
+
+**ITEM-6 / APS-004 -- Anthropic config 3 owner steps (target was 2026-07-07; NOW 6 DAYS PAST)**
+
+Owner: jecki (A1). Responsible party: jecki.
+
+Three A1 steps were targeted for completion before APS Sprint 2 (2026-07-07):
+1. Confirm Anthropic account is on commercial plan (DPA applies).
+2. Confirm/enable zero data-retention in Anthropic console.
+3. Download and retain a copy of the Anthropic DPA.
+
+None confirmed completed as of this review. APS is now on Sprint 8 (2026-07-13) and
+active simulation code (arc-writer.service.ts, simulation.service.ts) is being modified.
+A new migration (arc_session_summary_retain_until, 2026-07-12) and purge scripts confirm
+that student data retention logic is being implemented in code -- the compliance gate must
+close before student data enters the LLM pipeline. This is no longer preventive; it is
+overdue relative to its own internal target and APS's rate of progress.
+
+ESCALATE_TO_ECO_OVERDUE
 Format: each item has a LEGAL LEG block (Eyal) and a FINANCE LEG block (Lital).
 Eyal fills legal-leg; Lital fills finance-leg. Neither overwrites the other's block.
 
@@ -709,7 +733,42 @@ SHIR-005 is built.
 
 ## Lital review log
 
-Last reviewed by Lital: 2026-07-06 (run 5)
+Last reviewed by Lital: 2026-07-13 (run 6)
+
+Status summary (2026-07-13, run 6):
+
+OVERDUE items: ONE. See top-of-file OVERDUE section.
+- ITEM-6 / APS-004 Anthropic config (3 owner A1 steps): target was 2026-07-07; now 6 days past.
+  Steps: (1) confirm commercial plan; (2) confirm/enable zero-retention; (3) download DPA copy.
+  Owner: jecki. No completion confirmed in any file reviewed.
+  Context: APS is on Sprint 8. New migration (20260712000001_arc_session_summary_retain_until)
+  and purge scripts (purge-arc-summaries.ts, purge-expired-arc-summaries.mjs) confirm that
+  retention logic is being coded. DSR test files (dsr.spec.ts, dsr-live.integration.spec.ts)
+  show data-subject rights handling is being built. The compliance gate must close before
+  student data enters the LLM pipeline. APS's pace is outrunning the open gate.
+  ESCALATED to Eco.
+
+APPROACHING (30-day calendar window, by 2026-08-12):
+- No additional items have hard calendar dates within 30 days. All remaining deadlines are
+  event-triggered. However, the APS September pilot implies a soft window of ~7-8 weeks.
+
+Soft flags (updated from run 5):
+- Item 3 (DPA template v0.1-DRAFT, company/legal/dpa-template.md): drafted 2026-06-23;
+  now 20 days pending owner A1 review. APS Sprint 8 is underway. Urgency: HIGH. The team
+  is implementing data-subject rights and retention logic in code; if the pilot approaches
+  with student data, this gate must close first. Lital re-flags to Eco: owner A1 review
+  has been pending 20 days -- scheduling is overdue by attention, not by hard deadline.
+- Item 6 (Anthropic DPA compliance-backlog track): now formally OVERDUE (see above).
+- APS M16 (transcript retention): New migration arc_session_summary_retain_until (2026-07-12)
+  suggests R&D has moved ahead implementing retention dates in the schema. The owner input on
+  the retention period is now MORE urgent -- code is being written around an unconfirmed
+  compliance decision. Phase 1b notable_mistakes field also still blocked.
+- APS M21 (data residency): Israeli region preference still unconfirmed. Sprint 8 indicates
+  infrastructure decisions will be needed before the September pilot window.
+- No new compliance items identified from file review. No spend authorized.
+- Budget-0 policy holds. All A1 items remain with jecki.
+
+Previous run: 2026-07-06 (run 5)
 
 Status summary (2026-07-06, run 5):
 - OVERDUE items: NONE. All deadlines remain event-triggered (first customer / first contract /

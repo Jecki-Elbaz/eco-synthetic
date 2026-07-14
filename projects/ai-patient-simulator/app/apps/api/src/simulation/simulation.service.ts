@@ -56,6 +56,14 @@ interface RunPipelineContext {
 
 @Injectable()
 export class SimulationService {
+  /**
+   * S7-GAL-M5: arc context cache keyed by attemptId.
+   * SimulationService is DEFAULT scope (singleton); Map class field is correct.
+   * Arc context is static within a session (loader reads prior summary once at session start).
+   * Evicted on attempt COMPLETED to prevent memory growth.
+   */
+  private readonly arcContextCache = new Map<string, ArcSessionContext | null>();
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly pipeline: TurnPipeline,
@@ -100,11 +108,13 @@ export class SimulationService {
       where: { courseId: assignment.courseId },
     });
 
-    // S5-GAL-ARC-LOADER: load prior session context for arc-enabled STUDENT attempts.
+    // S5-GAL-ARC-LOADER / S7-GAL-M5: load prior session context for arc-enabled STUDENT attempts.
     // attempt.sessionNumber is null for non-arc templates (maxSessions <= 1); skip in that case.
+    // S7-GAL-M5: getCachedArcContext memoizes per attemptId (arc context is static within a session).
     let arcContext: ArcSessionContext | null = null;
     if (attempt.type === "STUDENT" && attempt.sessionNumber != null && template.maxSessions > 1) {
-      arcContext = await this.arcLoaderService.loadArcContext(
+      arcContext = await this.getCachedArcContext(
+        dto.attemptId,
         actorId,
         template.id,
         attempt.sessionNumber,
@@ -324,6 +334,8 @@ export class SimulationService {
         where: { id: attemptId },
         data: { status: "COMPLETED", finishedAt: new Date() },
       });
+      // S7-GAL-M5: evict arc context cache on COMPLETED (prevent memory growth).
+      this.arcContextCache.delete(attemptId);
       // S5-GAL-ARC-WRITER: persist per-session arc summary on auto-complete (turn limit).
       await this.arcWriterService.writeSessionSummary(attemptId);
     }
@@ -510,6 +522,8 @@ export class SimulationService {
       data: { status: "COMPLETED", finishedAt: new Date() },
     });
 
+    // S7-GAL-M5: evict arc context cache on COMPLETED (prevent memory growth).
+    this.arcContextCache.delete(attemptId);
     // Persist arc session summary (no-op for AUTHOR_PREVIEW or non-arc attempts)
     await this.arcWriterService.writeSessionSummary(attemptId);
 
@@ -613,5 +627,89 @@ export class SimulationService {
       default:
         return "Session unavailable.";
     }
+  }
+
+  /**
+   * S7-GAL-M5: load arc context with per-attemptId memoization.
+   * Arc context is static within a session; the loader reads the prior-session summary
+   * exactly once at session start. Cached in arcContextCache (Map) for the attempt lifetime.
+   * Evicted when attempt transitions to COMPLETED.
+   * Transparent to callers -- behaviour is identical to calling arcLoaderService directly.
+   */
+  private async getCachedArcContext(
+    attemptId: string,
+    userId: string,
+    templateId: string,
+    sessionNumber: number,
+  ): Promise<ArcSessionContext | null> {
+    if (!this.arcContextCache.has(attemptId)) {
+      const ctx = await this.arcLoaderService.loadArcContext(userId, templateId, sessionNumber);
+      this.arcContextCache.set(attemptId, ctx);
+    }
+    return this.arcContextCache.get(attemptId) ?? null;
+  }
+
+  /**
+   * S7-GAL-DSR: delete all simulation data for a student.
+   * Runs in a single Prisma transaction for atomicity.
+   *
+   * Cascade analysis (schema.prisma, verified 2026-07-12):
+   *   ArcSessionSummary -- keyed by userId directly; no FK to Attempt.
+   *   Attempt children with FK to Attempt -- NONE have onDelete: Cascade:
+   *     Message, PatientStateLog, Evaluation, DebriefChat, UsageLog, SupportTicket.
+   *   All non-cascading children are deleted explicitly before Attempt rows.
+   *
+   * NOTE: Prisma deleteMany does not support nested relation filters; attempt IDs are
+   * resolved first within the transaction, then used for child deletes.
+   *
+   * NOTE: User account, invite tokens, and org enrollment are NOT deleted here.
+   * Full DSR tooling (export, access-request, account deletion) = pre-production item.
+   * Ref: APS-022 / Eyal item 4 / APS-004 residual checklist.
+   */
+  async deleteStudentData(userId: string): Promise<void> {
+    await this.prisma.$transaction(async (tx) => {
+      // 1. Delete ArcSessionSummary rows (keyed by userId directly; no FK to Attempt).
+      //    Key pillar of APS-022 privacy readiness.
+      await tx.arcSessionSummary.deleteMany({ where: { userId } });
+
+      // 2. Resolve attempt IDs for this student (needed for child deletes).
+      //    Prisma deleteMany does not support nested relation filters.
+      const attempts = await tx.attempt.findMany({
+        where: { userId },
+        select: { id: true },
+      });
+      const attemptIds = attempts.map((a: { id: string }) => a.id);
+
+      if (attemptIds.length > 0) {
+        // 3. Explicit deleteMany for every non-cascading Attempt child.
+        //    Order: leaf tables first to avoid FK violations.
+        await tx.debriefChat.deleteMany({ where: { attemptId: { in: attemptIds } } });
+        await tx.evaluation.deleteMany({ where: { attemptId: { in: attemptIds } } });
+        await tx.usageLog.deleteMany({ where: { attemptId: { in: attemptIds } } });
+        await tx.patientStateLog.deleteMany({ where: { attemptId: { in: attemptIds } } });
+        await tx.message.deleteMany({ where: { attemptId: { in: attemptIds } } });
+      }
+
+      // 3b. SupportTicket keyed by userId, not attemptId (Oren S7 MAJOR-1):
+      //     attemptId is a nullable FK, so a student's general tickets
+      //     (attemptId = null) would survive an attempt-scoped delete.
+      //     userId-scoped delete is a strict superset of the attempt-scoped one.
+      //     DiagnosticLog rows linked to those tickets are swept too (they have
+      //     no user/attempt FK of their own and would otherwise orphan).
+      const tickets = await tx.supportTicket.findMany({
+        where: { userId },
+        select: { diagnosticLogId: true },
+      });
+      const diagnosticLogIds = tickets
+        .map((t: { diagnosticLogId: string | null }) => t.diagnosticLogId)
+        .filter((x: string | null): x is string => x != null);
+      await tx.supportTicket.deleteMany({ where: { userId } });
+      if (diagnosticLogIds.length > 0) {
+        await tx.diagnosticLog.deleteMany({ where: { id: { in: diagnosticLogIds } } });
+      }
+
+      // 4. Delete Attempt rows last.
+      await tx.attempt.deleteMany({ where: { userId } });
+    });
   }
 }
