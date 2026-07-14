@@ -46,7 +46,7 @@ TOOLS = {"readonly": "Read", "act": "Read,Write,Edit"}
 # store), so the screen job uses mcp__google_workspace__* Gmail READ tools instead of the
 # claude.ai connector tools (which attach only in claude.ai web sessions -- SHIR-007).
 PER_JOB_TOOLS = {
-    "Rambo:Adam Inbox Screen (every 2h; EXPIRES 2026-07-14 or on Adam reply)": (
+    "Rambo:Adam Inbox Screen (every 2h; EXPIRES 2026-07-28 or on Adam reply)": (
         "Read,Write,Edit,"
         "mcp__google_workspace__search_gmail_messages,"
         "mcp__google_workspace__get_gmail_message_content,"
@@ -71,17 +71,10 @@ DISABLED_JOBS = {
         "(retainUntil IS NOT NULL AND retainUntil < NOW()). Zero-token script. "
         "Ref: Sprint 8 envelope 2026-07-13."
     ),
-    # GR-014 time-boxed exception LAPSED per its own terms: Adam replied 2026-07-10
-    # (shared/handoff/inbox-screened/adam-reply-2026-07-10.md) and the 2026-07-14
-    # expiry date is reached. The prompt-level step-0 self-expiry still exists; this
-    # entry is the runner-layer hard stop (owner directive 2026-07-14, decisions-log).
-    # Re-enabling ANY standing Gmail automation requires a fresh owner A1 + privacy
-    # review per GR-014 M4/C-E5.
-    "Rambo:Adam Inbox Screen (every 2h; EXPIRES 2026-07-14 or on Adam reply)": (
-        "GR-014 exception lapsed 2026-07-14 (Adam replied 2026-07-10; time-box "
-        "reached). Fresh owner A1 + privacy review required to re-enable any "
-        "standing Gmail automation."
-    ),
+    # NOTE 2026-07-14: an earlier same-day lapse entry for the Rambo Adam Inbox
+    # Screen job was REMOVED -- superseded by the fresh owner A1 extension to
+    # 2026-07-28 (agent-prompts.md AUTHORITY block, Phase 8 audit F-S815). The
+    # job's prompt-level step-0 expiry now carries the extended terms.
 }
 HOLD = ("on hold", "on-hold", "blocked on", "blocked-until", "waiting on",
         "waiting-on", "pending owner", "queued until")
