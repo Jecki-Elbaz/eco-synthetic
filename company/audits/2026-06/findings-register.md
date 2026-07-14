@@ -184,4 +184,10 @@ Report: company/audits/2026-06/phase8-security-refresh.md. Posture: AMBER, no re
 
 Red-Team sweep: 2/2 HOLD (Sami, Noa); diff-09 CLOSED/CONFIRMED. No breach. This completes the audit program's security leg.
 
+### Phase 8 triage outcome (owner A1 2026-07-14)
+- **APPLIED:** F-S815 GR-014 EXTENDED 2026-07-14 -> 2026-07-28 (owner A1; agent-prompts.md expiry updated).
+- **BACKLOG (board AUD-013):** F-S803-807 -> AUD-009 guard-diff (validated + sharpened; NO enforce flip until it lands + B2 + 7 clean days); F-RT8-01/02 -> SME + Dev role templates; F-S814 -> next guard revision; F-S816 -> owner commits git backlog; F-S809 -> AUD-010.
+- **CLEAR (no action):** runner/guard, RedTeam SPAWN_DENY, Designer marketing gate, APS partition, secrets/append-only, diff-09.
+- **IGNORE:** none.
+
 ---

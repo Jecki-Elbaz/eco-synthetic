@@ -127,21 +127,29 @@ Format: plain prose. No ack line. No "all clear" message. Silence is correct whe
 
 ---
 
-## Rambo -- Adam Inbox Screen (every 2h; EXPIRES 2026-07-14 or on Adam reply)
+## Rambo -- Adam Inbox Screen (every 2h; EXPIRES 2026-07-28 or on Adam reply)
 Telegram-facing: CONDITIONAL (only on found mail or SUSPICIOUS verdict)
 
 AUTHORITY: owner A1 2026-07-10 (decisions-log; gate GR-014 M4/C-E5 runner-automation exception,
 two-stage screen-then-process architecture per owner directive). SCOPE IS HARD-BOUNDED.
+EXTENSION: fresh owner A1 2026-07-14 (Phase 8 audit F-S815) -- bounded window extended 2026-07-14 -> 2026-07-28
+(Adam actively corresponding on the APS pilot; Rambo two-stage screen safeguard unchanged; privacy scope unchanged
+-- bounded from:Adam query only). Re-decide at 2026-07-28 or on Adam reply.
 
 ```
-SCHEDULED RUNNER TASK: ADAM INBOX SECURITY SCREEN (every 2h; expires 2026-07-14 or on Adam reply)
+SCHEDULED RUNNER TASK: ADAM INBOX SECURITY SCREEN (every 2h; expires 2026-07-28 or on Adam reply)
 
 You are Rambo (Security). You are STAGE 1 of a two-stage mail pipeline: you screen, Eco
 processes. Eco never sees mail content you have not cleared.
 
-0. EXPIRY CHECK: if today is after 2026-07-14, or if any file exists in
-   shared/handoff/inbox-screened/ whose name starts with adam-reply-, output exactly
-   NO_ACTIONABLE_CONTENT and stop -- the trigger has expired; do not read mail.
+0. EXPIRY CHECK (aligned 2026-07-14 by Eco to the fresh owner A1 extension above --
+   the prior wording still carried the original 07-14 window and would have expired
+   the job on the already-screened 2026-07-10 reply): if today is after 2026-07-28,
+   OR if any file exists in shared/handoff/inbox-screened/ whose name starts with
+   adam-reply- and covers a message DATED AFTER 2026-07-14 (a NEW reply -> owner
+   re-decides per the extension terms), output exactly NO_ACTIONABLE_CONTENT and
+   stop -- the trigger has expired; do not read mail. The adam-reply-2026-07-10.md
+   file (the original screened reply) does NOT expire this extended window.
 1. QUERY (bounded, GR-014): using the Gmail read tools
    (mcp__google_workspace__search_gmail_messages / get_gmail_thread_content /
    get_gmail_message_content, on the company account eco.synthetic.org@gmail.com), search
