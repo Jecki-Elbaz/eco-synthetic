@@ -125,6 +125,37 @@ describe("S7-GAL-M5: SimulationService arc context cache", () => {
     expect(arcLoader.loadArcContext).toHaveBeenCalledTimes(1);
   });
 
+  // S9-GAL-EVICT (H1): max-entries size bound -- Oren S7 INFO-1 + Ido S9 H1 ruling.
+  // Terminal transitions (ABANDONED etc.) live in SupportService, not SimulationService,
+  // so COMPLETED eviction alone cannot bound growth. A size cap is the agreed guard.
+  it("arcContextCache evicts oldest entry when size exceeds MAX_ARC_CACHE_ENTRIES", async () => {
+    const arcLoader = makeArcLoaderMock();
+    const service = makeService(arcLoader);
+
+    const cache = (service as any).arcContextCache as Map<string, ArcSessionContext | null>;
+    const MAX = (service as any).MAX_ARC_CACHE_ENTRIES as number;
+
+    // Seed exactly MAX entries; insertion order means key "0" is the oldest.
+    const oldestKey = "attempt-evict-0";
+    for (let i = 0; i < MAX; i++) {
+      cache.set(`attempt-evict-${i}`, MOCK_ARC_CTX);
+    }
+    expect(cache.size).toBe(MAX);
+
+    // Trigger one additional .set() via getCachedArcContext on a brand-new key.
+    const newKey = "attempt-evict-NEW";
+    type CacheMethod = (a: string, b: string, c: string, d: number) => Promise<ArcSessionContext | null>;
+    const getCached = (service as any).getCachedArcContext.bind(service) as CacheMethod;
+    await getCached(newKey, USER_ID, TEMPLATE_ID, 2);
+
+    // Bound enforced: size must not exceed MAX.
+    expect(cache.size).toBe(MAX);
+    // Oldest entry evicted.
+    expect(cache.has(oldestKey)).toBe(false);
+    // New entry is present.
+    expect(cache.has(newKey)).toBe(true);
+  });
+
   it("M5 (Oren S7 MINOR-4 / Adi FLAG-3): finishAttempt itself evicts the cache entry", async () => {
     const arcLoader = makeArcLoaderMock();
     const prisma = {

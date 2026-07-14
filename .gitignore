@@ -84,3 +84,6 @@ projects/ai-patient-simulator/app/packages/engine-test-harness/coverage/
 
 # Obsidian plugin bundles -- minified vendor JS; not project code (Rambo SEC clearance 2026-07-02)
 memory/wiki/.obsidian/plugins/
+
+# AUD-001 file-lock sentinels -- runtime-only, never commit (2026-07-14)
+.*.lock

@@ -35,6 +35,11 @@ Produce a morning brief for jecki covering:
 - One key focus recommendation for the day (your judgment as CEO).
 - Any trigger health alert (fired vs expected from schedules.md).
 
+SHARED-FILE WRITE RULE (AUD-001): before writing to memory/board.md or
+company/decisions/decisions-log.md, check for .board.md.lock or .decisions-log.md.lock in
+the project root. If present and < 30s old: wait up to 30s. Write your sentinel first, then
+the file, then delete the sentinel. See integrations/file-lock/procedure.md.
+
 Format: plain prose, short paragraphs, max 250 words. No markdown tables, no headers with ##.
 Start directly with the brief -- no ack line needed (this is a scheduled push, not a reply).
 This output will be sent to jecki's Telegram channel by the runner.
@@ -63,6 +68,11 @@ Produce an evening summary for jecki covering:
 - HEALTH BLOCK: list each ACTIVE trigger row, its cadence, and whether it fired today as expected.
   Format per row: "Agent -- Task -- Expected: daily/weekly -- Status: FIRED / MISSED / UNKNOWN"
   A missed fire is a process miss: note it and I will escalate if needed.
+
+SHARED-FILE WRITE RULE (AUD-001): before writing to memory/board.md or
+company/decisions/decisions-log.md, check for .board.md.lock or .decisions-log.md.lock in
+the project root. If present and < 30s old: wait up to 30s. Write your sentinel first, then
+the file, then delete the sentinel. See integrations/file-lock/procedure.md.
 
 Format: plain prose, max 300 words. No markdown tables. Lead with summary, end with health block.
 This output will be sent to jecki's Telegram channel by the runner.
@@ -111,16 +121,31 @@ Read memory/board.md. Check only for these conditions:
    NEVER read raw mail yourself; only Rambo-screened files. Quarantined files (verdict
    SUSPICIOUS) are owner-only -- do not process them.
 
-If ANY condition 1-4 is true OR a Shelly message requires a jecki decision OR condition 6
+7. STALE-TASK SWEEP (owner directive 2026-07-14, board T-0045 -- the default reactivation
+   trigger): scan memory/board.md for any task with status open or in-progress whose row
+   shows NO dated progress in the last 72h AND no stated good reason to wait (a named
+   blocker, a gate, a future due date, waiting-on-owner, or a recurring cadence all count
+   as good reasons). Each hit is a process miss: name it in the Telegram output with the
+   task_id, the responsible agent, and a one-line reactivation step. If this is a write
+   (act) cycle, also append a dated "REACTIVATED <YYYY-MM-DD> by Eco stale-sweep:
+   <next step>" note into that row's detailed_desc. A company of agents leaves nothing
+   sitting without a stated reason.
+
+If ANY condition 1-4 or 7 is true OR a Shelly message requires a jecki decision OR condition 6
 staged new screened mail: produce a brief message (max 80 words) describing the specific
 issue and what jecki needs to do or decide. Start with the most urgent item.
 
-If NO condition 1-4 is true AND no jecki decision is needed from handoff: your reply must END
+If NO condition 1-4 or 7 is true AND no jecki decision is needed from handoff: your reply must END
 with the exact line NO_ACTIONABLE_CONTENT (ideally that IS your entire reply, with no preamble).
 The runner suppresses the Telegram send whenever the last line is NO_ACTIONABLE_CONTENT --
 so never add any text after it. Handoff writes you made this cycle are fine even when suppressed.
 NOTE: repeating a still-pending OWNER ACTION every cycle is correct and wanted (keep pushing
 until the owner acts) -- that is an actionable condition, not "no content".
+
+SHARED-FILE WRITE RULE (AUD-001): before writing to memory/board.md or
+company/decisions/decisions-log.md, check for .board.md.lock or .decisions-log.md.lock in
+the project root. If present and < 30s old: wait up to 30s. Write your sentinel first, then
+the file, then delete the sentinel. See integrations/file-lock/procedure.md.
 
 Format: plain prose. No ack line. No "all clear" message. Silence is correct when nothing is wrong.
 ```
@@ -518,7 +543,14 @@ FIRST, decide your mode by reading the ORC-001 progress ledger:
 If that file does NOT exist, this is the very first run: create it listing the seven
 batches below, each marked PENDING, before doing anything else.
 
-ORC-001 BATCH CHECKLIST (the full-history retrospective -- ONE batch per run):
+CATCH-UP DIRECTIVE (owner A1 2026-07-14): the one-batch-per-run pace is SUSPENDED until the
+ORC-001 backlog is cleared. Owner target: ALL batches DONE by 2026-07-18 (3-4 days). Per run,
+process up to THREE batches or ~30 files, whichever comes first (still bounded -- do not sweep
+the whole history in one run; if a run approaches its time budget, stop cleanly and update the
+ledger). After ALL batches are DONE, MODE B daily incremental applies with a HARD freshness
+rule: no build moment may sit uncaptured for more than 48 hours.
+
+ORC-001 BATCH CHECKLIST (the full-history retrospective):
   B1  company/decisions/decisions-log.md
   B2  memory/board-archive.md
   B3  company/hr/
@@ -529,15 +561,15 @@ ORC-001 BATCH CHECKLIST (the full-history retrospective -- ONE batch per run):
 
 MODE A -- ORC-001 SWEEP (while ANY batch is still PENDING):
 1. Pick the FIRST batch not marked DONE in the ledger.
-2. Read ONLY that batch's sources. If the batch is a folder with more than ~10 files,
-   sweep at most ~10 not-yet-swept files this run and note exactly which files you swept.
+2. Read ONLY that batch's sources. Per the CATCH-UP DIRECTIVE above, sweep up to ~30
+   not-yet-swept files (or 3 batches) this run and note exactly which files you swept.
 3. Append dated, TAGGED entries (tag: decision / mistake / win / pattern; with source
    refs) for that batch to company/chronicle/<YYYY-MM-DD>.md.
 4. Append owner-shareable wins/success-stories to company/chronicle/wins-for-hila.md.
-5. Update company/chronicle/_orc001-progress.md: mark the batch DONE -- or, for a
+5. Update company/chronicle/_orc001-progress.md: mark each batch DONE -- or, for a
    partially-swept folder, list the files done and leave it PENDING for next run.
-   Do NOT start a second batch in the same run; one batch per run keeps each run within
-   its time budget.
+   Catch-up mode: continue to the next batch within the same run until the ~30-file /
+   3-batch cap is reached, then stop cleanly.
 6. Output a 3-line summary: which batch you did, entries added, batches remaining.
 
 MODE B -- DAILY INCREMENTAL (only once ALL seven batches are DONE):
@@ -548,6 +580,11 @@ MODE B -- DAILY INCREMENTAL (only once ALL seven batches are DONE):
    wins, patterns), dated and tagged, to company/chronicle/<YYYY-MM-DD>.md; add wins to
    company/chronicle/wins-for-hila.md.
 4. Output a 3-line summary of what you captured.
+
+SHARED-FILE WRITE RULE (AUD-001): before writing to memory/board.md or
+company/decisions/decisions-log.md, check for .board.md.lock or .decisions-log.md.lock in
+the project root. If present and < 30s old: wait up to 30s. Write your sentinel first, then
+the file, then delete the sentinel. See integrations/file-lock/procedure.md.
 
 Do not send to Telegram.
 ```

@@ -32,6 +32,12 @@
  * Run via: pnpm --filter @aps/api test:integration
  */
 
+// CONVENTION (Sprint 9, S9-ADI-TRYFIN): all integration specs MUST wrap
+// beforeAll/afterAll seed+teardown in try/finally (afterAll) and try/catch (beforeAll)
+// to prevent partial-seed orphan rows on test failure.
+// Exemplar: this file. Pattern applies to all new integration specs from Sprint 9 onward.
+// Ref: Oren S8 MINOR-2, review-sprint-8-oren.md.
+
 import { PrismaClient } from "@aps/db";
 import { PrismaService } from "../db/prisma.service.js";
 import { SimulationService } from "../simulation/simulation.service.js";
@@ -68,8 +74,9 @@ let otherDiagnosticLogId: string;
 // ---------------------------------------------------------------------------
 
 beforeAll(async () => {
-  await prisma.$connect();
-  suffix = uid();
+  try {
+    await prisma.$connect();
+    suffix = uid();
 
   // Shared hierarchy
   const college = await prisma.college.create({
@@ -301,43 +308,77 @@ beforeAll(async () => {
       diagnosticLogId: otherDiagnosticLogId,
     },
   });
+  } catch (err) {
+    // cleanup on seed failure to avoid orphan rows
+    await prisma.$disconnect();
+    throw err;
+  }
 });
 
 // ---------------------------------------------------------------------------
 // Outer teardown: FK-safe order (children before parents)
+// Per-table try/catch so one failure does not abort the rest of teardown.
+// Guards check each id before use -- may be undefined on partial-seed failure.
 // ---------------------------------------------------------------------------
 
 afterAll(async () => {
-  // Other student rows (deleteStudentData did NOT touch these)
-  await prisma.arcSessionSummary.deleteMany({ where: { userId: otherUserId } });
-  await prisma.supportTicket.deleteMany({ where: { userId: otherUserId } });
-  // DiagnosticLog after SupportTicket (SupportTicket holds FK to DiagnosticLog)
-  await prisma.diagnosticLog.deleteMany({ where: { id: otherDiagnosticLogId } });
+  try {
+    // Other student rows (deleteStudentData did NOT touch these)
+    if (otherUserId) {
+      try { await prisma.arcSessionSummary.deleteMany({ where: { userId: otherUserId } }); } catch (_) {}
+      try { await prisma.supportTicket.deleteMany({ where: { userId: otherUserId } }); } catch (_) {}
+    }
+    // DiagnosticLog after SupportTicket (SupportTicket holds FK to DiagnosticLog)
+    if (otherDiagnosticLogId) {
+      try { await prisma.diagnosticLog.deleteMany({ where: { id: otherDiagnosticLogId } }); } catch (_) {}
+    }
 
-  // Target student rows (safety deletes -- deleteStudentData should have removed these;
-  // these are no-ops if the test passed, defensive cleanup if it failed mid-way)
-  await prisma.arcSessionSummary.deleteMany({ where: { userId: targetUserId } });
-  await prisma.supportTicket.deleteMany({ where: { userId: targetUserId } });
-  await prisma.diagnosticLog.deleteMany({ where: { id: seededDiagnosticLogId } });
-  // Attempt children (FK to Attempt)
-  await prisma.debriefChat.deleteMany({ where: { attemptId: seededAttemptId } });
-  await prisma.evaluation.deleteMany({ where: { attemptId: seededAttemptId } });
-  await prisma.usageLog.deleteMany({ where: { attemptId: seededAttemptId } });
-  await prisma.patientStateLog.deleteMany({ where: { attemptId: seededAttemptId } });
-  await prisma.message.deleteMany({ where: { attemptId: seededAttemptId } });
-  // Attempt before Assignment and User
-  await prisma.attempt.deleteMany({ where: { id: seededAttemptId } });
+    // Target student rows (safety deletes -- deleteStudentData should have removed these;
+    // these are no-ops if the test passed, defensive cleanup if it failed mid-way)
+    if (targetUserId) {
+      try { await prisma.arcSessionSummary.deleteMany({ where: { userId: targetUserId } }); } catch (_) {}
+      try { await prisma.supportTicket.deleteMany({ where: { userId: targetUserId } }); } catch (_) {}
+    }
+    if (seededDiagnosticLogId) {
+      try { await prisma.diagnosticLog.deleteMany({ where: { id: seededDiagnosticLogId } }); } catch (_) {}
+    }
+    // Attempt children (FK to Attempt)
+    if (seededAttemptId) {
+      try { await prisma.debriefChat.deleteMany({ where: { attemptId: seededAttemptId } }); } catch (_) {}
+      try { await prisma.evaluation.deleteMany({ where: { attemptId: seededAttemptId } }); } catch (_) {}
+      try { await prisma.usageLog.deleteMany({ where: { attemptId: seededAttemptId } }); } catch (_) {}
+      try { await prisma.patientStateLog.deleteMany({ where: { attemptId: seededAttemptId } }); } catch (_) {}
+      try { await prisma.message.deleteMany({ where: { attemptId: seededAttemptId } }); } catch (_) {}
+      // Attempt before Assignment and User
+      try { await prisma.attempt.deleteMany({ where: { id: seededAttemptId } }); } catch (_) {}
+    }
 
-  // Hierarchy (reverse FK order -- see arc.integration.spec.ts teardown pattern)
-  await prisma.assignment.deleteMany({ where: { id: assignmentId } });
-  await prisma.rubricVersion.deleteMany({ where: { id: rubricVersionId } });
-  await prisma.simulationTemplate.deleteMany({ where: { id: templateId } });
-  await prisma.groundTruth.deleteMany({ where: { id: groundTruthId } });
-  await prisma.user.deleteMany({ where: { id: { in: [targetUserId, otherUserId] } } });
-  await prisma.course.deleteMany({ where: { id: courseId } });
-  await prisma.college.deleteMany({ where: { id: collegeId } });
-
-  await prisma.$disconnect();
+    // Hierarchy (reverse FK order -- see arc.integration.spec.ts teardown pattern)
+    if (assignmentId) {
+      try { await prisma.assignment.deleteMany({ where: { id: assignmentId } }); } catch (_) {}
+    }
+    if (rubricVersionId) {
+      try { await prisma.rubricVersion.deleteMany({ where: { id: rubricVersionId } }); } catch (_) {}
+    }
+    if (templateId) {
+      try { await prisma.simulationTemplate.deleteMany({ where: { id: templateId } }); } catch (_) {}
+    }
+    if (groundTruthId) {
+      try { await prisma.groundTruth.deleteMany({ where: { id: groundTruthId } }); } catch (_) {}
+    }
+    const userIds = [targetUserId, otherUserId].filter(Boolean);
+    if (userIds.length > 0) {
+      try { await prisma.user.deleteMany({ where: { id: { in: userIds } } }); } catch (_) {}
+    }
+    if (courseId) {
+      try { await prisma.course.deleteMany({ where: { id: courseId } }); } catch (_) {}
+    }
+    if (collegeId) {
+      try { await prisma.college.deleteMany({ where: { id: collegeId } }); } catch (_) {}
+    }
+  } finally {
+    await prisma.$disconnect();
+  }
 });
 
 // ---------------------------------------------------------------------------

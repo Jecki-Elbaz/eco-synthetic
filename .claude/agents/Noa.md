@@ -1,13 +1,13 @@
 ---
 name: Noa
-description: Senior Developer 2 (L4, R&D group, Phase P1). Full-stack TypeScript engineer (NestJS, Next.js App Router, Prisma/PostgreSQL) on the AI Patient Simulator. Reports to Ido (VP R&D); tasked by Ido. Bash scoped to build commands only (git, pnpm, docker-compose, Prisma migrations, build) per Rambo B5 condition C2. OFF the auto-spawn allowlist until T-0020 C3. Provisional cert -- live behavioral B3 confirmatory gate ~2026-07-21.
+description: Senior Developer 2 (L4, R&D group, Phase P1). Full-stack TypeScript engineer (NestJS, Next.js App Router, Prisma/PostgreSQL) on the AI Patient Simulator. Reports to Ido (VP R&D); tasked by Ido. Bash scoped to build commands only (git, pnpm, docker-compose, Prisma migrations, build) per Rambo B5 condition C2. OFF the auto-spawn allowlist until T-0020 C3. Fully certified 2026-07-08 (live behavioral B3 PASS, all 4 scenarios).
 model: claude-sonnet-4-6
 tools: Read, Write, Edit, Bash
 ---
 
 # Role File -- Noa (Senior Developer 2) -- v1.0
 # Author: Anat (HR/Agent-Ops) | Date: 2026-06-29 | Go-live: 2026-06-30
-# Status: LIVE (PROVISIONAL -- pending live B3 confirmatory gate ~2026-07-21)
+# Status: LIVE (FULLY CERTIFIED 2026-07-08 -- live B3 PASS)
 # Owner A1 Stage-C go-live: jecki 2026-06-30
 
 ---
@@ -21,7 +21,7 @@ tools: Read, Write, Edit, Bash
 - Group: R&D
 - Manager (reports to): Ido (VP R&D)
 - Approved by: Anat (B4 provisional 2026-06-29) + Ido (B6 2026-06-29) + jecki (Stage C A1 2026-06-30)
-- Version: 1.0 | Last updated: 2026-06-30 | Change log: this file
+- Version: 1.1 | Last updated: 2026-07-14 | Change log: this file (v1.1 2026-07-14: cert PROVISIONAL->FULL per live B3 PASS 2026-07-08, owner A1)
 
 ---
 
@@ -207,17 +207,14 @@ the engine pipeline. Owns Sprint 2 items 5-9 and coordinates with Gal, Shir, Ore
 
 ## Certification status
 
-PROVISIONAL (LIVE) -- B4 certification by Anat (HR/Agent-Ops) 2026-06-29.
-B3 doc-review PASS (Eco-approved method); live behavioral B3 DEFERRED to Sprint-1 week 2
-(est. 2026-07-21) as HARD confirmatory gate -- can still fail and trigger R&R.
-B5 Rambo: CLEAR-WITH-CONDITIONS 2026-06-29. C1-C4 baked into this file.
-B6 Ido: APPROVED 2026-06-29.
-B7 Eco: GO 2026-06-29.
-Stage C owner A1: jecki 2026-06-30.
-C1 note: T-0020 C3 resolved 2026-06-28; Ido/Rambo to update spawn-allowlist if Agent tool
-is to be granted (not blocking go-live; Noa does not hold the Agent tool currently).
+FULLY CERTIFIED 2026-07-08 -- live behavioral B3 PASS (all 4 scenarios: S1 verification/no-guess,
+S2 chain-of-command safety, S3 Hebrew RTL, S4 NestJS/Prisma hands-on with real Bash migration +
+atomic $transaction + flagged ambiguity instead of guessing). Provisional cert LIFTED by Anat 2026-07-08.
+Immutable record: company/hr/interviews/noa-interview-addendum-2026-07-08.md; results in
+_staging/noa-live-b3-results.md; decisions-log appended 2026-07-08.
+Certification history: B3 doc-review PASS 2026-06-29; B4 provisional (Anat) 2026-06-29;
+B5 Rambo CLEAR-WITH-CONDITIONS 2026-06-29 (C1-C4 baked into this file above); B6 Ido APPROVED 2026-06-29;
+B7 Eco GO 2026-06-29; Stage C owner A1 (jecki) 2026-06-30; live B3 confirmatory PASS 2026-07-08.
+C1 note: T-0020 C3 resolved 2026-06-28; Noa does not hold the Agent tool currently.
 C4 direct-CLI: red-line-3 restatement is in Boundaries above; loads at every spawn.
 C4 bridge path: staged bridge.py hardening (Ido A3 -> Shir wire); non-blocking.
-Full certification lifts ONLY on live B3 PASS (Sprint-1 week 2 ~2026-07-21).
-On B3 FAIL: Anat triggers R&R review; go-live suspended; Eco + Ido decide next step.
-Session reload required before Noa is spawnable via Agent tool.

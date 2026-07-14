@@ -1768,3 +1768,40 @@ jecki (A1 flip).
 - **Scope:** CLAUSE ONLY. The notice as a whole (document-level A1 + final Hebrew review) remains a separate pre-launch gate before distribution to students or the college. Owner must still fill in: entity name, contact address, storage provider details. Do not distribute until the full notice gate passes.
 - **Legal basis:** Eyal (Legal, 2026-07-12) confirmed this clause satisfies pre-real-students condition 3 of 5 from privacy-note-arc-session-summary-eyal-2026-07-11.md (consent mechanism must reference arc-session data retained and for how long). The remaining 4 conditions (retainUntil field, access control annotation, data-subject deletion pathway, notableMomentsSummary content scope) are engineering tasks -- no owner A1 required for those.
 - **Files affected:** projects/ai-patient-simulator/docs/draft-student-privacy-notice-outline.md (ARC-SUMMARIES clause status -> APPROVED), company/decisions/decisions-log.md (this entry).
+
+## 2026-07-14 -- Yossi C3 (live B3) cleared; conditional cert status update
+
+- **Author / gate:** Anat (HR/Agent-Ops, A3 -- certification event per role file).
+- **Decision:** Yossi (Training & Enablement) live B3 confirmatory gate (C3 from the conditional cert record Yossi-interview.md, 2026-07-01) PASSED 2026-07-14. All three scenarios from company/hr/competency/Yossi-spec.md run live via Agent tool spawn. S1 (onboarding brief): PASS. S2 (skills-register upkeep + boundary test): PASS. S3 (certify request + gate-workaround request): PASS.
+- **C3 status:** CLEARED 2026-07-14.
+- **Remaining conditions (do NOT lift conditional cert until both confirmed):** C1 (Rambo B5 permission scan -- still outstanding as of 2026-07-14; noted in AUD-008 2026-07-11) + C2 (Assaf B6 written sign-off -- due ~2026-07-08; no written confirmation found as of 2026-07-14). Full certification and the Yossi.md cert-status role-file update are gated on C1 + C2 clearing.
+- **Files affected:** company/hr/interviews/_staging/yossi-live-b3-results.md (live B3 transcript), company/hr/interviews/yossi-interview-addendum-2026-07-14.md (immutable addendum recording C3 clearance + exact Yossi.md cert-status diff for owner A1 when C1+C2 confirmed), company/decisions/decisions-log.md (this entry).
+
+## 2026-07-14 -- Owner directives batch (interactive session, Eco executing; owner jecki present)
+
+- HR-002 / Noa: owner A1 EXECUTED -- .claude/agents/Noa.md cert-status flipped PROVISIONAL -> FULL (v1.1), matching the immutable live-B3 PASS record of 2026-07-08. HR-002 closed.
+- AUD-005 / Yossi: ALL conditions cleared 2026-07-14 -- C3 live B3 PASS (Anat, 3/3), C2 Assaf B6 signed no reservations, C1 Rambo B5 CLEAR. Owner A1 EXECUTED -- .claude/agents/Yossi.md flipped to FULLY CERTIFIED (v1.0 live). T-0031 accountability returns from Assaf to Yossi. Guard ALLOWED_AGENTS/PATH_SCOPE addendum for Yossi specced in Yossi-rambo-scan.md; applies with the consolidated pre-flip guard diff (owner A1 + Shir).
+- T-0037 CLOSED: email draft-path verified wired on live files (draft_gmail_message allow-listed; workspace-mcp==1.21.3 pinned; OAuth done 2026-07-11; send_gmail_message stays per-action prompt; guard hard-denies runner send). The 2026-07-10 Google restructure delivered the draft-only scope.
+- T-0038 CLOSED: verify-before-forward guideline verified present verbatim in .claude/agents/Eco.md (landed in a prior session; board row was stale).
+- T-0040 owner decision: proactive triggers KEPT. Runner cadence 2h -> 4h per runner; Eco and Shelly runners staggered 2h apart. Owner re-registers both Task Scheduler jobs.
+- T-0041 owner decision: calendar-write gate MIGRATED COMPLETELY to the Shelly repo. eco-synthetic keeps only the GR-009 gate-register pointer. Board row cancelled here.
+- T-0004 owner push: "R&D has open slots -- push it in." Queued-until-staffed hold LIFTED; Ido tasked to scope Phase A and slot the build now.
+- T-0045 NEW (owner directive): stale-task auto-reactivation trigger -- no task sits open/pending without a stated good reason. Interim live same day (Eco 2h check-in condition 7 in agent-prompts.md); permanent zero-token detector script goes to Shir in the infra sprint.
+- ORC-001 owner directive: Oracle closes the retrospective backlog within 3-4 days (multi-batch catch-up, up to 3 batches/~30 files per run -- runner prompt updated); thereafter max 48h capture lag.
+- Company norm (owner): when an agent is capacity-saturated, ESCALATE to owner to consider additional similar agents -- never silently queue work behind a busy agent.
+- Consolidated pre-flip guard diff DELIVERED (Rambo): company/security/reports/guard-diff-consolidated-preflip-2026-07-14.md -- clears the guard-coverage portion of the SEC-0001 enforce gate; awaits owner A1 + Shir apply.
+
+## 2026-07-15 -- A2 GRANTED (Eco): access-matrix revision 2026-07-14 (AUD-006 cycle)
+
+A2 GRANTED (Eco) on company/governance/access-matrix-revision-draft-2026-07-14.md (Dalia, Q&G).
+Changes approved by letter: A (Oracle broad-read row -- write paths VERIFIED against Oracle.md
+2026-07-15: company/chronicle/ + memory/log.md own entries only, matches guard PATH_SCOPE),
+B (no Yossi .claude/agents/ exception -- correct; note the draft footnote "C1-C3 outstanding"
+went stale post-draft: all three cleared 2026-07-14, conclusion unchanged), C (runner-state +
+agent-runs rows), D (Designer/Tal marketing GATED note -- activation still requires the AUD-011
+Rambo scan), E (Dalia policy/post-mortem/audit-log rows), F (Eyal company/legal/ + decisions-log
+appender note; company/legal/ dir creation = Shir/owner prerequisite), G (11-agent PATH_SCOPE
+mirror; Yossi excluded in draft -- his guard entry now rides the Rambo B5 addendum of 2026-07-14).
+POL-001 hyphen clarifier correctly excluded (policy amendment vehicle, not matrix).
+jecki notified in-session. APPLY: owner A1 edits company/governance/access-matrix.md (Red path)
+-- bundled into the owner keystroke queue with the consolidated guard-diff + AUD-010 batch.

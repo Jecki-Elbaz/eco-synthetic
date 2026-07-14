@@ -571,3 +571,42 @@ a security question. Rambo flags it; Eco may route to Eyal if owner wants a term
 proceeding. For the demo duration and scale, Rambo treats this as LOW risk and does not block.
 
 **Opened by:** Rambo | **Date:** 2026-07-14 | **Triggered by:** GR-016 DEMO-C10 (Shir deploy plan 2026-07-12)
+
+---
+
+## GR-017 -- skill-scout (brainai.co.il) -- GATE BLOCKED 2026-07-14
+
+**Task:** T-0036
+**Requested by:** Eco (CEO), owner reactivated 2026-07-14
+**Rambo verdict:** BLOCK -- source inaccessible; gate cannot pass what cannot be read.
+**Eyal posture:** CANNOT PROCEED -- no license or terms text retrieved; Eyal leg must not open until Rambo unblocks.
+**Owner A1 required:** Not applicable until gate reopens.
+
+**Fetch log (all attempts 2026-07-14):**
+
+| URL | Result |
+|-----|--------|
+| https://go.brainai.co.il/skill-scout | HTTP 403 Forbidden |
+| https://go.brainai.co.il/ | HTTP 403 Forbidden |
+| https://brainai.co.il/ | HTTP 403 Forbidden |
+
+No redirect was observed. No body was returned on any attempt. Zero content retrieved.
+
+**Why BLOCK and not pending:** A PENDING status means review is in progress. BLOCK means the gate cannot
+proceed at all until a prerequisite is satisfied. The prerequisite here is source access. Until the
+actual SKILL.md and any referenced scripts are provided to Rambo as readable content, every mandatory
+security check is NA. Listing the gate as pending would imply review is progressing -- it is not.
+
+**To reopen the gate:**
+(a) Owner or Eco obtains the canonical GitHub or package-registry URL that is publicly accessible; OR
+(b) Owner or Eco obtains the SKILL.md content directly from the vendor and provides it to Rambo as a
+    local file or paste for inspection.
+Then: fresh Rambo security scan, then Eyal legal leg, then normal adoption path.
+
+**What must NOT happen before gate reopens:** no installation, no use, no trial run, no evaluation by
+any agent. The source is unknown. The injection surface is unknown. The egress posture is unknown.
+Red line 4 and CLAUDE.md section 6 apply fully.
+
+**Full findings:** company/security/reports/gate-skill-scout-rambo-2026-07-14.md
+
+**Opened by:** Rambo | **Date:** 2026-07-14 | **Triggered by:** T-0036 (owner reactivated 2026-07-14)

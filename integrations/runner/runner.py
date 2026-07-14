@@ -20,11 +20,24 @@ Usage: runner.py [--mode readonly|act] [--dry-run] [--only AgentName]
 Run by Task Scheduler ~every 2h. The PreToolUse guard (.claude/hooks/guard.py) still
 evaluates every write inside each spawned agent session.
 """
-import sys, os, re, json, subprocess, shutil, argparse
+import sys, os, re, json, subprocess, shutil, argparse, contextlib
 from pathlib import Path
 from datetime import datetime, timezone
 
 ROOT = Path(r"C:\Users\Jecki\DEV\projects\eco-synthetic")
+DECISIONS_LOG = ROOT / "company" / "decisions" / "decisions-log.md"
+
+# AUD-001: load file-lock helper via importlib (directory name contains a hyphen).
+import importlib.util as _ilu
+_fl_spec = _ilu.spec_from_file_location(
+    "file_lock",
+    ROOT / "integrations" / "file-lock" / "file_lock.py",
+)
+_fl_mod = _ilu.module_from_spec(_fl_spec)
+_fl_spec.loader.exec_module(_fl_mod)  # type: ignore[union-attr]
+acquire_file_lock = _fl_mod.acquire_file_lock
+release_all_held_locks = _fl_mod.release_all_held_locks
+
 PROMPTS = ROOT / "integrations" / "runner" / "agent-prompts.md"
 AUDIT_SCRIPT = ROOT / "integrations" / "git-hygiene" / "audit.py"
 GIT_HYGIENE_KEY = "Shir:git-hygiene-audit"
@@ -33,6 +46,13 @@ PURGE_ARC_JOB_KEY = "purge_expired_arc_summaries"
 APS_APP_DIR = ROOT / "projects" / "ai-patient-simulator" / "app"
 PURGE_SCRIPT = APS_APP_DIR / "apps" / "api" / "src" / "scripts" / "purge-expired-arc-summaries.mjs"
 BOARD = ROOT / "memory" / "board.md"
+# AUD-001: agent -> shared files map (populated here because BOARD and DECISIONS_LOG
+# must be defined first).  Add new entries when a new runner-path agent writes board.md
+# or decisions-log.md.  Values are lists of Path objects passed to acquire_file_lock().
+_AGENT_LOCKS: dict[str, list] = {
+    "eco": [BOARD, DECISIONS_LOG],   # Eco updates board rows + may log decisions
+    "oracle": [DECISIONS_LOG],       # Oracle writes chronicle entries to decisions-log
+}
 RUNLOG = ROOT / "memory" / "agent-runs.jsonl"
 STATE = ROOT / "memory" / "runner-state.json"
 SAFE_MODE_FILE = ROOT / "memory" / "SAFE_MODE"
@@ -555,27 +575,57 @@ def main() -> int:
         if not a.dry_run:
             save_state(state)
 
+    # AUD-001: wrap job loop + escalation in try/finally so that sentinel files are
+    # always cleaned up even on KeyboardInterrupt or unexpected exception.
     escalated = False
-    for job in jobs:  # file order -> Lital before Eyal
-        if a.only and job["agent"].lower() != a.only.lower():
-            continue
-        if not a.only and not is_due(job, state, t):
-            continue
-        res = run_job(job, a.mode, a.dry_run)
-        if res.get("ran") and not a.dry_run:
-            state.setdefault(job["key"], {})["last"] = t.isoformat()
-            save_state(state)  # SHIR-FIX-01: persist after each completed job
-        if res.get("escalate"):
-            escalated = True
+    try:
+        for job in jobs:  # file order -> Lital before Eyal
+            if a.only and job["agent"].lower() != a.only.lower():
+                continue
+            if not a.only and not is_due(job, state, t):
+                continue
+            # AUD-001: acquire sentinel lock(s) for agents known to write shared files.
+            # Lock is held for the full duration of the spawned agent subprocess so that
+            # two concurrent runner cycles cannot overlap their board/decisions-log writes.
+            lock_targets = _AGENT_LOCKS.get(job["agent"].lower(), [])
+            with contextlib.ExitStack() as stack:
+                for tgt in lock_targets:
+                    if a.dry_run:
+                        print(f"  [file-lock] ACQUIRE .{tgt.name}.lock for {job['agent']} (dry-run)")
+                    stack.enter_context(
+                        acquire_file_lock(tgt,
+                                          writer=f"{job['agent']}:{job['key'][:40]}",
+                                          timeout=30)
+                    )
+                res = run_job(job, a.mode, a.dry_run)
+            if res.get("ran") and not a.dry_run:
+                state.setdefault(job["key"], {})["last"] = t.isoformat()
+                save_state(state)  # SHIR-FIX-01: persist after each completed job
+            if res.get("escalate"):
+                escalated = True
 
-    # If a file-output agent escalated, ensure Eco surfaces it this cycle.
-    if escalated and not a.dry_run:
-        eco_2h = next((j for j in jobs if j["agent"].lower() == "eco" and "2h" in j["cadence"]), None)
-        if eco_2h:
-            log({"event": "escalation_triggered_eco"})
-            run_job(eco_2h, a.mode, False)
-            state.setdefault(eco_2h["key"], {})["last"] = t.isoformat()
-            save_state(state)  # SHIR-FIX-01: persist after escalation-triggered Eco run
+        # If a file-output agent escalated, ensure Eco surfaces it this cycle.
+        if escalated and not a.dry_run:
+            eco_2h = next(
+                (j for j in jobs if j["agent"].lower() == "eco" and "2h" in j["cadence"]),
+                None,
+            )
+            if eco_2h:
+                log({"event": "escalation_triggered_eco"})
+                # AUD-001: lock the escalation-triggered Eco run as well.
+                with contextlib.ExitStack() as stack:
+                    for tgt in _AGENT_LOCKS.get("eco", []):
+                        stack.enter_context(
+                            acquire_file_lock(tgt,
+                                              writer="Eco:escalation-triggered",
+                                              timeout=30)
+                        )
+                    run_job(eco_2h, a.mode, False)
+                state.setdefault(eco_2h["key"], {})["last"] = t.isoformat()
+                save_state(state)  # SHIR-FIX-01: persist after escalation-triggered Eco run
+    finally:
+        # AUD-001: clean up any sentinel files left by an unexpected exit.
+        release_all_held_locks()
 
     # Enforce-readiness gate (SEC-0001) -- silent until GREEN, then one owner surface.
     if not a.only or a.only.lower() in ("readiness", "enforce"):

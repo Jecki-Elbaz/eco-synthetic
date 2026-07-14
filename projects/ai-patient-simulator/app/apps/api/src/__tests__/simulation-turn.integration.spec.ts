@@ -254,6 +254,21 @@ describe("SimulationService -- turn integration (live Postgres)", () => {
     expect((log as any)["trust"]).toBeLessThanOrEqual(1);
   });
 
+  // S9-GAL-GAP1 (Track R, R1): closes rehearsal-readiness Gap-1 (criterion c).
+  // Asserts that processTurn persists a non-null analyserOutput to PatientStateLog.
+  // Column name confirmed from schema.prisma PatientStateLog.analyserOutput (Json).
+  // Engine-level population is asserted in turn-pipeline.spec.ts; this assertion
+  // covers the DB-column persistence leg (the gap Adi identified 2026-07-11).
+  it("PatientStateLog.analyserOutput is non-null after processTurn (S9-GAL-GAP1)", async () => {
+    const logs = await prisma.patientStateLog.findMany({
+      where: { attemptId },
+    });
+
+    const log = logs.find((l: Record<string, unknown>) => l["turnNumber"] === 1);
+    expect(log).toBeDefined();
+    expect((log as any)["analyserOutput"]).not.toBeNull();
+  });
+
   it("UsageLog row written with real (non-placeholder) token counts", async () => {
     const usageLogs = await prisma.usageLog.findMany({
       where: { attemptId },

@@ -64,6 +64,20 @@ export class SimulationService {
    */
   private readonly arcContextCache = new Map<string, ArcSessionContext | null>();
 
+  /**
+   * S9-GAL-EVICT / Oren S7 INFO-1 / Ido S9 H1 ruling:
+   * Hard upper bound on arcContextCache size. Prevents unbounded growth when
+   * terminal transitions (ABANDONED, TECHNICALLY_AFFECTED, etc.) are applied via
+   * SupportService rather than SimulationService -- those paths never call the
+   * COMPLETED eviction above. Value 500 is far above any expected pilot concurrency
+   * (< 50 concurrent attempts). On .set(), if size exceeds this bound, the oldest
+   * entry (Map insertion order = first key) is evicted before the next read.
+   * FIFO, not LRU (Oren S9 F3): Map.get() does not refresh insertion order, so a
+   * frequently-accessed entry is still evicted if it was oldest-inserted. Acceptable
+   * because a hot entry re-loads from DB on the next miss (one extra findUnique).
+   */
+  private readonly MAX_ARC_CACHE_ENTRIES = 500;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly pipeline: TurnPipeline,
@@ -645,6 +659,13 @@ export class SimulationService {
     if (!this.arcContextCache.has(attemptId)) {
       const ctx = await this.arcLoaderService.loadArcContext(userId, templateId, sessionNumber);
       this.arcContextCache.set(attemptId, ctx);
+      // S9-GAL-EVICT: evict oldest entry when size bound is exceeded.
+      // Map iteration order = insertion order; first key = oldest entry.
+      // Ref: Oren S7 INFO-1 + Ido S9 H1 ruling.
+      if (this.arcContextCache.size > this.MAX_ARC_CACHE_ENTRIES) {
+        const oldestKey = this.arcContextCache.keys().next().value;
+        this.arcContextCache.delete(oldestKey);
+      }
     }
     return this.arcContextCache.get(attemptId) ?? null;
   }
