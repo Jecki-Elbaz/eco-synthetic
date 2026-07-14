@@ -460,3 +460,114 @@ Full legal findings: projects/ai-patient-simulator/docs/gate-supertest-legal-eya
 STATUS: DRAFT -- PENDING owner A1. Do not install until owner approves in-session.
 
 **Opened by:** Eco | **Date:** 2026-07-11 | **Triggered by:** APS Sprint 4 Item 5 (CA-INT-002/003 unblock)
+
+---
+
+## GR-016 -- APS Hosted Demo Surface (Adam external access) 2026-07-12
+
+**Purpose:** expose a HOSTED DEMO instance of the AI Patient Simulator to Adam (design partner)
+so he can log in and try the product himself. This is a DEMO, not the pilot instance.
+Distinct from APS-004 (pilot gate): no real student data, StubProvider only (no real LLM),
+single external user (Adam), time-boxed revocable login.
+
+**Triggered by:** owner A1 direction 2026-07-12 (decisions-log 2026-07-12 entry)
+**Opened by:** Rambo (Security) | **Date:** 2026-07-12
+**Rambo verdict:** CLEAR-WITH-CONDITIONS -- conditions DEMO-C1 through DEMO-C10 below
+**Eyal review:** NOT REQUIRED. No real student PII on the instance; no real LLM; no
+third-party data processor engaged for student data; no PPL obligation on synthetic data.
+No legal terms gap. If the hosting platform has non-standard data-handling terms, Eco routes
+to Eyal before adoption.
+**Owner A1 required:** YES -- for the actual go-live deploy (decisions-log standing requirement).
+Any paid hosting tier also requires owner A1 (decisions-log hard guardrail 6; Lital tracks cost).
+
+**Hosting platform:** PENDING Shir deployment plan. When Shir names the platform:
+if new to gate-register, Eco routes to Rambo for a fast gate check before provisioning.
+Free tier preferred.
+
+**Conditions (all must be met before any go-live; none block the planning/build phase):**
+
+DEMO-C1 (network topology): Shir documents the network topology. Confirm: (a) DB is NOT
+internet-reachable; (b) no admin panel or debug endpoint is accessible via Adam's student-role
+URL path; (c) HTTPS enforced (no plain HTTP). Shir delivers topology note to Eco.
+
+DEMO-C2 (auth hardening): Confirm on the demo instance: (a) login rate-limit active (max 5
+failed attempts per 15 min; already in codebase from pilot gate M8 -- Shir confirms at
+demo instance level); (b) Adam's password stored hashed (bcrypt or equiv; no plaintext);
+(c) JWT/session expiry <= 24h inactivity; (d) no session token written to any log. These
+controls are already in the codebase (pilot gate M8/M10/M11 must-fix items, confirmed in
+Sprint 6 close baseline). Shir confirms they are active on the demo instance.
+
+DEMO-C3 (kill switch): Shir documents and tests the revocation procedure before go-live:
+(a) steps to disable or delete Adam's account; (b) confirm session is invalidated on account
+disable. This runbook must exist BEFORE go-live, not after.
+
+DEMO-C4 (HARD -- synthetic data only): Before go-live, Shir confirms the demo DB contains
+ONLY seed/synthetic data. Method: run the seed script on a fresh DB; spot-check query result
+(e.g. SELECT email, name FROM users showing all entries clearly synthetic). Shir provides
+spot-check output to Eco; Rambo counter-sign required. Do not go live if any real data found.
+
+DEMO-C5 (DB isolation): The demo DB must be a SEPARATE instance from any future pilot or
+production DB (not a separate schema in the same DB). Shir documents the DB name/host so
+isolation is verifiable without reading .env contents.
+
+DEMO-C6 (StubProvider only): Shir confirms the host secret store contains NO OpenAI or
+Anthropic API key for the demo instance; LLM_PROVIDER=stub (or equivalent) is set and active.
+Verify by running one simulation turn and confirming no outbound LLM API call occurs.
+
+DEMO-C7 (no secrets in tracked files): Rambo scans all deployment config files (render.yaml,
+fly.toml, Dockerfile, compose file, etc.) for inline secrets BEFORE those files are committed
+to git. DB credentials, JWT secret, and any API key must be in the host secret store only.
+No .env file committed to git; if created for local testing it must be gitignored.
+
+DEMO-C8 (Adam is student-role only): Confirm Adam's demo account is student-role only. No
+admin panel or debug endpoint accessible via his credential without additional auth Adam does
+not hold. Shir confirms and documents.
+
+DEMO-C9 (teardown runbook): Shir delivers a teardown runbook before go-live covering:
+(1) disable/delete Adam's account (steps + estimated execution time);
+(2) shut down the demo hosting instance (steps);
+(3) disposition of demo DB on teardown (leave it -- synthetic data only, no PPL risk; or
+delete it -- either acceptable). Runbook must exist before go-live; owner or Eco executes.
+
+DEMO-C10 (hosting platform gate): Shir names the hosting platform in the deployment plan.
+If the platform is NOT already in gate-register: Eco routes to Rambo for a fast gate check;
+no provisioning until Rambo clears. Free tier preferred (decisions-log hard guardrail 6).
+
+**Risk delta vs APS-004 pilot gate (summary):**
+APS-004 was CLEAR-WITH-CONDITIONS with 21 must-fix items and 6 Eyal-only legal/DPA items.
+For this demo surface: 16 of 21 must-fix items are ELIMINATED (no real LLM -> M1/M3/M4/M5
+gone; no student invite emails -> M2/M6/M7/M17/M18/M19 gone; synthetic data -> M16/M21
+gone; demo likely no S3 -> M12/M13/M14 gone; synthetic data reduces M15 to non-blocking).
+All 6 Eyal-only items eliminated (no real student PII, no real LLM, no PPL obligations).
+5 items carry forward (M8/M9/M10/M11/M20) all already implemented in the codebase at pilot
+quality. Net: materially lower risk than the pilot gate. Prompt-injection risk drops from HIGH
+to LOW (StubProvider: no real LLM to inject against; stub returns deterministic responses
+regardless of student input).
+
+---
+
+## GR-016 addendum -- DEMO-C10 platform gate verdicts (Rambo, 2026-07-14)
+
+Appended per DEMO-C10. Shir's deploy plan names Vercel (web) + Render (API) + Supabase (Postgres)
+as the hosting stack. None were in gate-register with an active security verdict for this project.
+Assessed as a fast gate check (demo scope: synthetic data only, one external user, free tier,
+short-lived, no real LLM). Eyal review not required per GR-016 header (no real PII, no PPL
+obligation on synthetic data). Owner A1 for go-live still required.
+
+Supabase was previously Deferred ("not yet needed"). This addendum activates it for the demo use.
+
+| Platform | Type | Tier | Verdict | Conditions | Risk notes |
+|----------|------|------|---------|------------|-----------|
+| Vercel | Static/Next.js host (US) | Hobby (free) | CLEAR-WITH-CONDITIONS | C-V1: Hobby plan ToS restricts commercial use; demo is for a business design partner -- acceptable for a short-lived single-user demo; if owner wants strict ToS compliance, upgrade to Pro ($20/mo, A1 required); C-V2: only non-secret env var (NEXT_PUBLIC_API_URL) is baked at build -- no secret touches Vercel's build environment; C-V3: no auto-promotion to Pro or any paid tier without owner A1; C-V4: delete Vercel project on teardown per DEMO-C9 | Security risk: LOW. No secrets in Vercel env. No real PII in the built app. HTTPS automatic. CDN delivery only -- Vercel never touches the database or auth secrets. ToS risk LOW-MEDIUM (Hobby + commercial-ish demo); mitigated by short duration and single user. |
+| Render | PaaS / Node.js host (US) | Free web service | CLEAR-WITH-CONDITIONS | C-R1: secrets (DATABASE_URL, JWT_SECRET, DEMO_TEACHER_PASSWORD) set in Render dashboard only -- never in render.yaml or any committed file (verified: all three use sync:false); C-R2: free tier only; no credit card, no payment; if owner needs paid tier (sleep workaround) = owner A1 first; C-R3: rotate or delete JWT_SECRET and DEMO_TEACHER_PASSWORD on teardown (Option 1 kill switch); C-R4: Render's secret store is the sole holder of DB credentials -- Render has access to secrets at rest; acceptable for synthetic-data-only demo | Security risk: LOW-MEDIUM. Render's secret store holds DATABASE_URL + JWT_SECRET -- Render is a trusted US PaaS (ISO 27001 in progress; SOC 2). For synthetic data only, a Render-side compromise exposes no real PII. Free tier cold-start (30-60s) is an availability issue, not a security issue. |
+| Supabase | Managed Postgres (US) | Free (1 project, 500MB) | CLEAR-WITH-CONDITIONS | C-S1 (DEMO-C5): demo MUST use a SEPARATE Supabase project -- not a schema in any future pilot or production DB; owner documents project ID/name; C-S2: DB connection string goes into Render secret store only (never git); C-S3: delete Supabase project on teardown per DEMO-C9 -- this is the primary data disposal method (all synthetic, no PPL risk, but clean teardown is mandatory); C-S4: free tier only; any paid tier = owner A1; C-S5: Supabase free project pauses after 7 days inactivity -- owner must unpause if demo spans idle period | Security risk: LOW. Database is NOT internet-reachable from the web (Render connects via Supabase direct connection string; Supabase dashboard is owner-only). Encryption at rest + TLS in transit on Supabase free tier. Synthetic data only -- worst-case credential compromise exposes zero real PII. Supabase was DEFERRED; this gate activates it for the demo surface only. Pilot use requires a fresh gate row (separate instance, may have real student data -- full APS-004 security review applies). |
+
+**Overall DEMO-C10 verdict: CLEAR-WITH-CONDITIONS (all three platforms).**
+Provisioning is unblocked from the security gate perspective. Owner A1 for go-live still required
+(decisions-log standing requirement; no credit card entered without explicit owner approval).
+
+**Eyal note for Vercel:** The Hobby ToS commercial-use restriction (C-V1) is a terms question, not
+a security question. Rambo flags it; Eco may route to Eyal if owner wants a terms opinion before
+proceeding. For the demo duration and scale, Rambo treats this as LOW risk and does not block.
+
+**Opened by:** Rambo | **Date:** 2026-07-14 | **Triggered by:** GR-016 DEMO-C10 (Shir deploy plan 2026-07-12)

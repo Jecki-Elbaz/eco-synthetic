@@ -535,6 +535,13 @@ model PersonaBranch {
 // S5 -- 3-Session Arc Runtime
 // ---------------------------------------------------------------------------
 
+// PII-HIGH: per-student arc state (clinical simulation behavioral data).
+// Access: TEACHER (own-course students only) + SYSTEM_ADMIN.
+// Internal only: ArcLoaderService reads; ArcWriterService writes.
+// NO direct user-facing API endpoint. Any future endpoint MUST scope to
+//   teacher-of-course (same rule as StudentPersonaHistory). Ref: APS-022.
+// Teacher arc-history view: explicitly deferred to pre-production envelope.
+//
 // ArcSessionSummary: per-session arc state snapshot persisted at COMPLETED.
 // Written by ArcWriterService; read by ArcLoaderService at session N+1 start.
 //
@@ -561,8 +568,16 @@ model ArcSessionSummary {
   finalAllianceLevel    Float
   // symptomMarkerState: unlockedFactIds from last PatientStateLog (pilot proxy).
   symptomMarkerState    Json     @default("{}")
-  // notableMomentsSummary: contextSummary from last PatientStateLog or empty string.
+  // Content scope (APS-022): patient/clinical session narrative only. No student PII
+  // beyond userId -- a SOURCE-RESTRICTION claim (text comes from PatientStateLog
+  // contextSummary), not content inspection (Oren S7 MINOR-1). Max 2000 chars
+  // enforced by ArcWriterService.sanitizeNotableMoments (length only).
   notableMomentsSummary String   @default("")
+  // Retention policy (APS-022 / Eyal 2026-07-11): end-of-arc + 90 days.
+  // Set by ArcWriterService on every session write. Nullable until first write.
+  // Purge: WHERE retainUntil IS NOT NULL AND retainUntil < NOW().
+  // Live purge cron deferred to pre-production (runner-hosted zero-token script).
+  retainUntil           DateTime?
   sessionCompletedAt    DateTime @default(now())
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt

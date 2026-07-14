@@ -24,7 +24,10 @@
     "migrate": "dotenv -e ../../.env.local -- prisma migrate dev",
     "migrate:deploy": "dotenv -e ../../.env.local -- prisma migrate deploy",
     "typecheck": "tsc --noEmit",
-    "seed": "dotenv -e ../../.env.local -- node prisma/seed.mjs"
+    "seed": "dotenv -e ../../.env.local -- node prisma/seed.mjs",
+    "seed:hosted": "node prisma/seed.mjs",
+    "seed:demo": "dotenv -e ../../.env.local -- node prisma/seed-demo.mjs",
+    "seed:demo:hosted": "node prisma/seed-demo.mjs"
   },
   "dependencies": {
     "@prisma/client": "5.22.0"

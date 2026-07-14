@@ -1,0 +1,110 @@
+# render.yaml -- APS Demo API (Render Free Web Service)
+#
+# STATUS: STAGED -- NOT PROVISIONED. Awaiting Rambo secret-scan (DEMO-C7) + owner A1.
+# DO NOT COMMIT until Rambo has scanned this file for inline secrets (DEMO-C7).
+# This file MUST pass Rambo's scan before it is merged to the repo.
+#
+# Rambo scan checklist (DEMO-C7):
+#   - Confirm no DATABASE_URL value inline (sync: false = must be set in dashboard).
+#   - Confirm no JWT_SECRET inline (sync: false).
+#   - Confirm no DEMO_TEACHER_PASSWORD inline (sync: false).
+#   - Confirm LLM_PROVIDER=stub and NO OpenAI/Anthropic key present (DEMO-C6).
+#   - Confirm S3 values are dummy noop strings, not real credentials.
+#
+# Two-pass deploy (deploy plan Section 7):
+#   Pass 1: Deploy API with WEB_ORIGIN=http://localhost:3000 (placeholder).
+#           Note the assigned <service>.onrender.com URL.
+#   Pass 2: Deploy web on Vercel with NEXT_PUBLIC_API_URL=<render-url>.
+#           Note the assigned <project>.vercel.app URL.
+#   Pass 3: Update WEB_ORIGIN in Render dashboard to real Vercel URL. Redeploy.
+#
+# Platform gate: DEMO-C10 -- Rambo must clear Vercel + Render + Supabase before provisioning.
+# These platforms are not yet in the gate-register. Fast gate check required.
+
+services:
+  - type: web
+    name: aps-demo-api
+    runtime: node
+    plan: free
+
+    # Build command (Path A: APS-016 fix is committed as c5aee1c)
+    buildCommand: pnpm install --frozen-lockfile && pnpm --filter @aps/engine build && pnpm --filter @aps/db generate && pnpm --filter @aps/api build
+
+    # Start command (Path A: compiled dist)
+    startCommand: node apps/api/dist/src/main.js
+
+    # No healthCheckPath: /health endpoint not implemented in this codebase.
+    # Render marks the service healthy when the process starts and stays alive.
+    # Owner can verify manually: GET /auth/me should return 401 (unauthorized) = API is up.
+
+    # postDeployCommand is NOT set here. Run migrations + seed manually from a local terminal:
+    #   Step 1: DATABASE_URL=<supabase-url> pnpm --filter @aps/db exec prisma migrate deploy
+    #   Step 2: DATABASE_URL=<supabase-url> pnpm --filter @aps/db seed:hosted
+    #   Step 3: DATABASE_URL=<supabase-url> DEMO_TEACHER_EMAIL=adam.demo@synthetic.test
+    #             DEMO_TEACHER_PASSWORD=<password> pnpm --filter @aps/db seed:demo:hosted
+    # (See deploy plan Steps 9-11 for exact commands)
+
+    envVars:
+      # -----------------------------------------------------------------------
+      # Non-secret env vars -- safe to have inline
+      # -----------------------------------------------------------------------
+
+      - key: NODE_ENV
+        value: production
+
+      - key: LLM_PROVIDER
+        value: stub
+        # DEMO-C6: stub enforced. No OpenAI/Anthropic key is set on this instance.
+        # buildProvider() in llm.module.ts falls back to StubProvider for any unknown value;
+        # "stub" is the only explicitly handled case. Structurally prevents real LLM calls.
+
+      - key: JWT_EXPIRES_IN
+        value: 1d
+        # DEMO-C2c: token expiry = 24h (1d). Satisfies <= 24h inactivity requirement.
+
+      - key: REDIS_URL
+        value: redis://noop:6379
+        # AppConfig.getRequired("REDIS_URL") demands this var.
+        # No Redis module consumes it at runtime (confirmed: grep found zero config.redisUrl usages).
+
+      - key: S3_ENDPOINT
+        value: http://noop:9000
+      - key: S3_BUCKET
+        value: noop
+      - key: S3_ACCESS_KEY_ID
+        value: noop
+      - key: S3_SIGNING_KEY
+        value: noop
+        # S3 vars: required by env validation; no demo flow uses object storage.
+        # These are dummy strings, not real AWS credentials.
+
+      - key: DEMO_TEACHER_EMAIL
+        value: adam.demo@synthetic.test
+        # DEMO-C4: synthetic domain. Not a real email address.
+
+      - key: WEB_ORIGIN
+        value: http://localhost:3000
+        # PLACEHOLDER -- update to real Vercel URL after Pass 2.
+        # CORS enforcement: API rejects browser requests from any other origin (DEMO-C1b).
+        # Owner must update this in Render dashboard (not here) after Vercel URL is known.
+
+      # -----------------------------------------------------------------------
+      # Secret env vars: sync: false = NOT stored in this file.
+      # Owner sets these in Render Dashboard -> Environment before first deploy.
+      # -----------------------------------------------------------------------
+
+      - key: DATABASE_URL
+        sync: false
+        # Supabase direct connection string (not the pooled pgbouncer URL).
+        # Example format: postgresql://postgres.<project-id>:<password>@db.<project-id>.supabase.co:5432/postgres
+        # DEMO-C5: must point to a SEPARATE Supabase project (not any future pilot DB).
+
+      - key: JWT_SECRET
+        sync: false
+        # Generate: openssl rand -hex 32
+        # DEMO-C3 kill switch Option 1: rotating this value invalidates ALL active sessions immediately.
+
+      - key: DEMO_TEACHER_PASSWORD
+        sync: false
+        # Strong password (12+ chars, mixed upper/lower/digit/symbol).
+        # Owner holds plaintext. Owner relays to Adam directly. Never written to any file.
