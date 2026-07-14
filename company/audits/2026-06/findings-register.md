@@ -155,4 +155,9 @@ Verdict: fleet is doing its job -- quality STRONG, delivery on-track; all "gaps"
 
 Fitness scorecard: overwhelmingly FIT or correctly IDLE-BY-DESIGN; no agent "NEITHER". The two program questions ("can each agent do its job / is each doing it") are answered YES with evidence.
 
+### Phase 7 triage outcome (owner A1 2026-07-13)
+- **FIX-NOW (applied) + R&R:** F-QUAL01 -- SOURCE-READ RULE added to Assaf.md fitness-loop (must read cert record + decisions-log + roster before asserting live-status; never infer not-live from a "Phase:" label); routed to Anat for Assaf's next R&R.
+- **BACKLOG (board AUD-012):** F-QUAL02 Ido (read schema before naming fields), F-QUAL03 Oren (bounded reading list default), F-QUAL04 sample Oracle/Yael next cycle, F-QUAL05 Mike CS-0001 fold-in (AUD-004).
+- **IGNORE:** none. F-PERF-NONE: no real delivery misses (infra recovers on AUD-007; owner-gated + idle-by-design are correct).
+
 ---
