@@ -1805,3 +1805,9 @@ mirror; Yossi excluded in draft -- his guard entry now rides the Rambo B5 addend
 POL-001 hyphen clarifier correctly excluded (policy amendment vehicle, not matrix).
 jecki notified in-session. APPLY: owner A1 edits company/governance/access-matrix.md (Red path)
 -- bundled into the owner keystroke queue with the consolidated guard-diff + AUD-010 batch.
+
+## 2026-07-15 -- supertest adopted (gate GR-015, owner A1)
+
+- **Author / gate:** Eco executing owner A1 given in-session 2026-07-15 ("i approve the supertest adoption, pin it and close the CA-INT suites"). Both gate legs were already CLEAR (2026-07-11): Rambo CLEAR-WITH-CONDITIONS C1-C5 (gate-supertest-security-rambo-2026-07-11.md; zero CVEs on supertest, superagent CVE resolved at the pinned range) + Eyal CLEAR (gate-supertest-legal-eyal-2026-07-11.md; MIT both packages, no copyleft, dev-only commercial use clean).
+- **Decision:** supertest ADOPTED for the AI Patient Simulator, per Rambo conditions: EXACT pin supertest@7.2.2 (no caret) in apps/api devDependencies ONLY; @types/supertest pinned exact at 7.2.1 (recorded here per C3); never imported in src/ production code (test files only); no version bump without advance Rambo review (C4); Rambo weekly drift scan covers it (C5). Purpose: HTTP-layer test harness (TestingModule + supertest) to implement the two remaining skipped credit-admin integration suites CA-INT-002/003 (STUDENT/TEACHER JWT -> 403 guard-layer tests).
+- **Files affected:** apps/api/package.json + pnpm-lock.yaml (pins), company/governance/gate-register.md (GR-015 DRAFT -> ADOPTED), apps/api/src/__tests__/credit-admin.integration.spec.ts (CA-INT-002/003 implemented, skips removed), company/decisions/decisions-log.md (this entry).

@@ -432,7 +432,14 @@ three credential-store directories (unexpected token files = drift), both projec
 
 ---
 
-## GR-015 -- supertest@7.2.2 (npm devDependency, APS API) -- DRAFT, PENDING owner A1
+## GR-015 -- supertest@7.2.2 (npm devDependency, APS API) -- ADOPTED (owner A1 2026-07-15)
+
+ADOPTION RECORD 2026-07-15: owner A1 given in-session ("i approve the supertest
+adoption, pin it and close the CA-INT suites"); decisions-log entry same date.
+Installed by Eco: apps/api devDependencies, exact pins supertest@7.2.2 +
+@types/supertest@7.2.1 (C3 satisfied). API server stopped before install (EPERM
+lesson); no store corruption. C1/C2 verified in package.json; C4/C5 standing
+(Rambo weekly drift scan).
 
 Project: AI Patient Simulator (apps/api devDependencies only). Purpose: enable HTTP-layer
 integration tests (CA-INT-002/003) against NestJS controllers via @nestjs/testing +

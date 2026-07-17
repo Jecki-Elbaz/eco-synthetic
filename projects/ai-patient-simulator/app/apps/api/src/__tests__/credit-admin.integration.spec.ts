@@ -2,18 +2,20 @@
  * CreditAdminService integration tests (APS-REQ-139..148)
  *
  * IMPLEMENTED 2026-07-09 (Adi, Sprint 2 hardening).
+ * CA-INT-002/003 closed 2026-07-17 (Adi, GR-015 A1, supertest@7.2.2).
  * Extracted from the describe.skip block in credit-admin.spec.ts.
  *
  * Run with: pnpm --filter @aps/api test:integration
  *
- * 6 of 8 original stubs are implemented here at service level (direct
- * CreditAdminService calls against live Postgres). 2 stubs require a full
- * NestJS HTTP supertest setup with JWT tokens (guard-layer RBAC); those
- * are left skipped with rationale below -- RBAC is already unit-covered.
+ * All 8 stubs implemented:
+ * - 6 at service level (direct CreditAdminService calls against live Postgres)
+ * - 2 via NestJS TestingModule + supertest HTTP layer (CA-INT-002, CA-INT-003)
+ *   GR-015 A1 (supertest@7.2.2). Service-level mocks cannot test guards;
+ *   a real HTTP call through JwtAuthGuard + RolesGuard is required.
  *
  * CA-INT-001: ADMIN_ADD persisted to DB with correct balance + CreditEntry
- * CA-INT-002: STUDENT JWT -> 403 [STILL-SKIPPED -- HTTP/guard layer required]
- * CA-INT-003: TEACHER JWT -> 403 [STILL-SKIPPED -- HTTP/guard layer required]
+ * CA-INT-002: STUDENT JWT -> 403 [NestJS TestingModule + supertest, GR-015 A1]
+ * CA-INT-003: TEACHER JWT -> 403 [NestJS TestingModule + supertest, GR-015 A1]
  * CA-INT-004: empty reason -> 400 BadRequestException
  * CA-INT-005: setLimits persists softLimit + ADMIN_SET_LIMITS CreditEntry
  * CA-INT-006: overrideHardLimit persists hardLimit + ADMIN_OVERRIDE_HARD_LIMIT CreditEntry
@@ -24,6 +26,14 @@
 import { PrismaClient } from "@aps/db";
 import { CreditAdminService } from "../credit-admin/credit-admin.service.js";
 import { BadRequestException } from "@nestjs/common";
+import type { INestApplication } from "@nestjs/common";
+import { Test } from "@nestjs/testing";
+import { JwtService } from "@nestjs/jwt";
+import supertest from "supertest";
+import { ConfigModule } from "../config/config.module.js";
+import { DbModule } from "../db/db.module.js";
+import { AuthModule } from "../auth/auth.module.js";
+import { CreditAdminModule } from "../credit-admin/credit-admin.module.js";
 
 // ---------------------------------------------------------------------------
 // Shared Prisma instance
@@ -137,33 +147,84 @@ describe("CA-INT-001: ADMIN_ADD persisted to DB (live Postgres)", () => {
 });
 
 // ---------------------------------------------------------------------------
-// CA-INT-002: STUDENT JWT -> 403 [STILL-SKIPPED]
-// Reason: RolesGuard is enforced at the HTTP controller layer, not in
-// CreditAdminService. Testing this requires a full NestJS supertest setup with
-// JWT token generation. This scope is outside service-level integration tests.
-// Unit coverage: credit-admin.spec.ts describe "(a) RBAC -- STUDENT and TEACHER
-// forbidden on credit-admin endpoints" (covers all 6 endpoints). That unit test
-// exercises the same RolesGuard logic that the HTTP layer invokes.
-// To implement: create a supertest NestJS HTTP integration test with real JWT,
-// which requires wiring AuthModule + CreditAdminModule + seeded UserRoleAssignment.
+// CA-INT-002 + CA-INT-003: HTTP guard RBAC (NestJS TestingModule + supertest)
+// GR-015 A1 -- supertest@7.2.2 (2026-07-17, Adi).
+// JwtAuthGuard + RolesGuard are HTTP-layer constructs; a real HTTP call through
+// the controller is the only way to prove they block at the correct layer.
+// S9 try/finally convention: guarded beforeAll, $disconnect deferred to finally.
 // ---------------------------------------------------------------------------
 
-describe.skip("CA-INT-002: STUDENT JWT returns 403 [STILL-SKIPPED]", () => {
-  it("STUDENT JWT -> 403 Forbidden", () => {
-    // Requires NestJS HTTP supertest + JWT token for STUDENT role.
-    // See rationale in file header.
+describe("CA-INT-002 + CA-INT-003: HTTP guard RBAC (NestJS TestingModule + supertest)", () => {
+  let app: INestApplication;
+  let jwtService: JwtService;
+
+  beforeAll(async () => {
+    try {
+      const moduleRef = await Test.createTestingModule({
+        imports: [ConfigModule, DbModule, AuthModule, CreditAdminModule],
+      }).compile();
+      app = moduleRef.createNestApplication();
+      await app.init();
+      jwtService = moduleRef.get<JwtService>(JwtService);
+    } catch (err) {
+      if (app) await app.close().catch(() => {});
+      throw err;
+    }
   });
-});
 
-// ---------------------------------------------------------------------------
-// CA-INT-003: TEACHER JWT -> 403 [STILL-SKIPPED]
-// Same reason as CA-INT-002.
-// ---------------------------------------------------------------------------
+  afterAll(async () => {
+    // No DB rows created by these HTTP tests -- nothing to delete.
+    try {
+      // intentionally empty
+    } finally {
+      if (app) await app.close().catch(() => {});
+    }
+  });
 
-describe.skip("CA-INT-003: TEACHER JWT returns 403 [STILL-SKIPPED]", () => {
-  it("TEACHER JWT -> 403 Forbidden", () => {
-    // Requires NestJS HTTP supertest + JWT token for TEACHER role.
-    // See rationale in file header.
+  /**
+   * Mint a signed JWT accepted by the real JwtAuthGuard + JwtStrategy.
+   * The secret is sourced from AppConfig (process.env.JWT_SECRET) -- same secret
+   * the integration harness loaded via dotenv -e ../../.env.local.
+   */
+  function mintJwt(role: string, scopeType = "COURSE", scopeId = "guard-test-scope"): string {
+    return jwtService.sign({
+      sub: `ca-int-guard-${role.toLowerCase()}`,
+      email: `ca-int-guard-${role.toLowerCase()}@test.local`,
+      scopes: [{ role, scopeType, scopeId }],
+    });
+  }
+
+  // Positive control: SYSTEM_ADMIN reaches the handler and gets 200.
+  // Establishes that the route exists -- so the 403s below are guard-driven,
+  // not route-miss 404s.
+  it("positive control: SYSTEM_ADMIN JWT -> 200 on GET /admin/credits/low-balance", async () => {
+    const token = mintJwt("SYSTEM_ADMIN", "COLLEGE", "guard-test-college");
+    const res = await supertest(app.getHttpServer())
+      .get("/admin/credits/low-balance")
+      .set("Authorization", `Bearer ${token}`);
+    expect(res.status).toBe(200);
+  });
+
+  describe("CA-INT-002: STUDENT JWT -> 403", () => {
+    it("STUDENT JWT returns 403 Forbidden on POST /admin/credits/:ledgerId/actions", async () => {
+      const token = mintJwt("STUDENT");
+      const res = await supertest(app.getHttpServer())
+        .post(`/admin/credits/${ledgerId}/actions`)
+        .set("Authorization", `Bearer ${token}`)
+        .send({ actionType: "ADMIN_ADD", amount: 1, reason: "guard test" });
+      expect(res.status).toBe(403);
+    });
+  });
+
+  describe("CA-INT-003: TEACHER JWT -> 403", () => {
+    it("TEACHER JWT returns 403 Forbidden on POST /admin/credits/:ledgerId/actions", async () => {
+      const token = mintJwt("TEACHER");
+      const res = await supertest(app.getHttpServer())
+        .post(`/admin/credits/${ledgerId}/actions`)
+        .set("Authorization", `Bearer ${token}`)
+        .send({ actionType: "ADMIN_ADD", amount: 1, reason: "guard test" });
+      expect(res.status).toBe(403);
+    });
   });
 });
 

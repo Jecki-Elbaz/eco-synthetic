@@ -1,13 +1,16 @@
 # Git Hygiene -- Last Audit
 
-Date: 2026-07-15 | Run by: audit.py (deterministic, zero-token) | Verdict: CLEAN
+Date: 2026-07-17 | Run by: audit.py (deterministic, zero-token) | Verdict: CLEAN
 
 ## State
 - Branch: master
 - Upstream: yes | ahead 0 | behind 0
-- Changed entries: 1 (staged 0 / unstaged 1 / untracked 0)
+- Changed entries: 4 (staged 0 / unstaged 3 / untracked 1)
 - Top areas:
-  - emory/enforce-readiness-state.json: 1
+  - ntegrations/git-hygiene: 1
+  - integrations/git-hygiene: 1
+  - memory/enforce-readiness-state.json: 1
+  - company/chronicle: 1
 
 ## Flags (CLEAN)
 - none

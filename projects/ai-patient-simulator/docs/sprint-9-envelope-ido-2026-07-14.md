@@ -849,3 +849,31 @@ Legacy suites: arc, authoring, credit-admin, dsr-live (this file), evaluation-de
   Ido H3 ruling. Not mass-retrofitted this sprint.
 
 *Adi (QA Engineer) | 2026-07-14 | S9-ADI-TRYFIN CP-DONE*
+
+---
+
+## Post-sprint addendum -- CA-INT-002/003 closed (2026-07-17, Adi)
+
+Gate: GR-015 A1 (supertest@7.2.2, @types/supertest@7.2.1 -- already installed by Eco).
+
+Both previously-skipped stubs in credit-admin.integration.spec.ts are now implemented:
+
+CA-INT-002: STUDENT JWT -> 403
+CA-INT-003: TEACHER JWT -> 403
+
+Implementation: NestJS TestingModule (ConfigModule + DbModule + AuthModule + CreditAdminModule)
++ supertest against app.getHttpServer(). The real JwtAuthGuard + RolesGuard chain is
+exercised. JWTs are minted via JwtService.sign() sourced from the app's AppConfig
+(process.env.JWT_SECRET -- same secret loaded by the integration harness via dotenv).
+Positive control: SYSTEM_ADMIN JWT -> 200 on GET /admin/credits/low-balance confirms
+the route exists, proving 403s are guard-driven and not route-miss 404s.
+S9 try/finally convention applied to the nested beforeAll/afterAll.
+
+tsc: 0 errors.
+api unit: 23/23 suites, 317 passed, 8 skipped -- no regression.
+integration suite: BLOCKED -- localhost:5433 not reachable at execution time (port not
+  listening). All 9 existing suites also failed. This is an infrastructure issue
+  (DB container down), not a code defect. Owner needs to restart the Postgres container
+  before integration results can be confirmed.
+
+*Adi (QA Engineer) | 2026-07-17 | CA-INT-002/003 closed under GR-015 A1*
