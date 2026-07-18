@@ -543,12 +543,12 @@ FIRST, decide your mode by reading the ORC-001 progress ledger:
 If that file does NOT exist, this is the very first run: create it listing the seven
 batches below, each marked PENDING, before doing anything else.
 
-CATCH-UP DIRECTIVE (owner A1 2026-07-14): the one-batch-per-run pace is SUSPENDED until the
-ORC-001 backlog is cleared. Owner target: ALL batches DONE by 2026-07-18 (3-4 days). Per run,
-process up to THREE batches or ~30 files, whichever comes first (still bounded -- do not sweep
-the whole history in one run; if a run approaches its time budget, stop cleanly and update the
-ledger). After ALL batches are DONE, MODE B daily incremental applies with a HARD freshness
-rule: no build moment may sit uncaptured for more than 48 hours.
+CATCH-UP PACE (Eco A2 update 2026-07-18 -- catch-up deadline reached; THREE-batch runs caused
+TimeoutExpired on every cycle so ORC-001 made no progress): reverted to ONE batch per run.
+Per run, process up to ONE batch or ~15 files, whichever comes first. If a run approaches its
+time budget, stop cleanly and update the ledger. After ALL batches are DONE, MODE B daily
+incremental applies with a HARD freshness rule: no build moment may sit uncaptured for more
+than 48 hours. (Original owner A1 2026-07-14 catch-up directive: completed its window.)
 
 ORC-001 BATCH CHECKLIST (the full-history retrospective):
   B1  company/decisions/decisions-log.md

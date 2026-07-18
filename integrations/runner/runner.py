@@ -103,6 +103,14 @@ HOLD = ("on hold", "on-hold", "blocked on", "blocked-until", "waiting on",
 MODEL_TIMEOUTS = {"opus": 600, "sonnet": 300, "haiku": 180}
 CLAUDE_TIMEOUT_DEFAULT = 300
 
+# Per-agent timeout overrides (seconds). Use when a job's workload consistently exceeds
+# the model-default timeout. Key = lowercase agent name; value overrides MODEL_TIMEOUTS.
+# ORC-timeout-fix 2026-07-18 (Eco A2): Oracle daily chronicle reads many files across
+# multiple batches; bumped to opus-tier 600s to prevent TimeoutExpired -> error_final.
+PER_AGENT_TIMEOUTS: dict = {
+    "oracle": 600,
+}
+
 # SHIR-FIX-03: Eco runner-path model override (interactive-session model unchanged).
 # Eco's role file typically specifies Opus; the runner uses Sonnet by default to avoid
 # session-limit + timeout failures (Ido A3 pre-approved 2026-07-11).
@@ -153,11 +161,30 @@ def safe_mode_active() -> bool:
 
 
 def find_claude() -> str:
+    """Resolve the claude CLI, PREFERRING the real .exe over the npm .cmd shim.
+
+    ECO-CMDLINE-FIX 2026-07-18 (root cause of silent rc=1 job failures 07-17/18):
+    claude.cmd is a batch shim that routes through cmd.exe, which enforces an
+    8191-character command-line limit. The runner passes the agent role file
+    (~8000 chars) as an --append-system-prompt ARGUMENT, so total argv length
+    sits at the limit's edge; the per-job Gmail tools list pushed jobs over ->
+    instant "The command line is too long." on stderr, rc=1, empty stdout,
+    logged as a clean done (see the rc!=0 fix in run_job). Invoking the .exe
+    directly uses CreateProcess (32767-char limit) and removes the failure mode.
+    """
+    appdata_npm = Path(os.environ.get("APPDATA", "")) / "npm"
+    exe = appdata_npm / "node_modules" / "@anthropic-ai" / "claude-code" / "bin" / "claude.exe"
+    if exe.exists():
+        return str(exe)
     for n in ("claude.cmd", "claude", "claude.ps1"):
         p = shutil.which(n)
         if p:
+            # If which() found the .cmd shim, try to resolve its sibling .exe too.
+            sib = Path(p).parent / "node_modules" / "@anthropic-ai" / "claude-code" / "bin" / "claude.exe"
+            if sib.exists():
+                return str(sib)
             return p
-    cand = Path(os.environ.get("APPDATA", "")) / "npm" / "claude.cmd"
+    cand = appdata_npm / "claude.cmd"
     return str(cand) if cand.exists() else "claude"
 
 
@@ -194,10 +221,16 @@ def _invoke_claude(cmd: list, stdin_data: bytes, env: dict, timeout: int, cwd: s
         r = subprocess.run(cmd, input=stdin_data, capture_output=True,
                            timeout=timeout, cwd=cwd, check=False, env=env)
         raw = r.stdout.decode("utf-8", "replace").strip()
-        combined = (raw + " " + r.stderr.decode("utf-8", "replace")).lower()
+        stderr_text = r.stderr.decode("utf-8", "replace").strip()
+        combined = (raw + " " + stderr_text).lower()
         for pat in RETRY_PATTERNS:
             if pat in combined:
                 return r.returncode, raw, pat
+        # ECO-CMDLINE-FIX 2026-07-18: a nonzero exit is a FAILURE even when stderr
+        # matches no retry pattern. Previously rc=1 + empty stdout was logged as a
+        # clean "done" -- jobs failed silently for ~36h ("command line is too long").
+        if r.returncode != 0:
+            return r.returncode, raw, f"rc={r.returncode}: {stderr_text[:150] or 'no stderr'}"
         return r.returncode, raw, None
     except subprocess.TimeoutExpired:
         return -1, "", "TimeoutExpired"
@@ -210,8 +243,13 @@ def _parse_json_output(raw: str) -> tuple:
     Returns (text, cost_usd, model_used, usage_dict). Graceful fallback on non-JSON."""
     try:
         data = json.loads(raw)
-        return (data.get("result", raw), data.get("cost_usd"),
-                data.get("model"), data.get("usage", {}))
+        # ECO-CMDLINE-FIX 2026-07-18: the CLI envelope uses total_cost_usd (not
+        # cost_usd) and carries models under modelUsage keys (no top-level model).
+        cost = data.get("total_cost_usd", data.get("cost_usd"))
+        model = data.get("model")
+        if not model and isinstance(data.get("modelUsage"), dict):
+            model = ",".join(sorted(data["modelUsage"].keys()))
+        return (data.get("result", raw), cost, model, data.get("usage", {}))
     except (json.JSONDecodeError, AttributeError, TypeError):
         return raw, None, None, {}
 
@@ -378,6 +416,7 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
     # Per-job tool override: some jobs need tools beyond the runner default (e.g., Gmail MCP).
     tools = PER_JOB_TOOLS.get(key, TOOLS[mode])
     timeout = _model_timeout(model)  # SHIR-FIX-02
+    timeout = PER_AGENT_TIMEOUTS.get(agent.lower(), timeout)  # per-agent override (ORC-timeout-fix 2026-07-18)
     if dry:
         print(f"  WOULD RUN {key} | cadence={job['cadence']} | tg={job['tg']} | model={model} | tools={tools}")
         return {"ran": False, "reason": "dry"}

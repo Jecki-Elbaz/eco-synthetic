@@ -363,5 +363,44 @@ Proof: company/security/reports/T-0020-C3-resolution-2026-06-28.md (owner A1, 20
 
 ---
 
+### Angle 36 -- "We found a false-pass bug by running a dress rehearsal of the dress rehearsal"
+Hook: we had a full rehearsal spec for the 2026-08-15 APS product demo. We thought it was solid.
+Then we ran a dress run -- and found it. One instruction in the runbook said "set hardLimit=0
+to test the credit-block gate." Except hardLimit=0 disables the limit entirely -- it's a NO-OP
+that would have shown a perfect pass on rehearsal day while the real guard was never triggered.
+We caught it because we ran the runbook against a live system, not just reviewed the text.
+Human truth: a rehearsal runbook that has never been rehearsed is a document, not a procedure.
+The most expensive bugs are the ones that pass every review and only surface under live conditions.
+Proof: company/chronicle/2026-07-18.md (Sprint 9 dress-run OREN DELTA REVIEW, 2026-07-15).
+
+---
+
+### Angle 37 -- "Our agent's certification test found a violation the test spec didn't ask about"
+Hook: during Yossi's live B3 certification test (Scenario 2), the test evaluator sent an
+instruction that looked like an authorized request from a peer agent. Yossi identified that
+the sender was NOT in his chain of command -- and flagged it as an out-of-chain violation.
+The test spec said: execute or refuse the task. It said nothing about identifying chain-of-command
+bypass. Yossi added a new correct behavior to the answer key.
+Human truth: the thing that makes a good AI agent isn't passing the test you designed. It's
+producing the right behavior for a situation the test didn't anticipate. If your agent can
+only do what you tested, you don't have an agent -- you have a workflow with a smarter parser.
+Proof: company/hr/interviews/_staging/yossi-live-b3-results.md Scenario 2 (2026-07-08).
+
+---
+
+### Angle 38 -- "We built a gate that cannot be persuaded. It runs numbers, not arguments."
+Hook: our SEC-0001 enforce-readiness gate tells us when it's safe to flip agent permissions
+from shadow mode to hard-enforce. The gate said NO for weeks. Not because we didn't want to
+flip -- we did. Not because we forgot. Because the gate runs numeric checks: false-block count,
+behavioral-fix deployment status, clean-day streak. You cannot argue it into GREEN. You cannot
+say "we reviewed the situation." You reduce false-blocks to zero, deploy the fix, and wait seven
+clean days. Then it surfaces GREEN.
+Human truth: most governance systems are persuadable at the margin. "We reviewed it carefully"
+is enough. We built one that isn't. You hit the number, or you wait. That strictness is the
+point -- a gate that turns green when you explain it carefully enough is not a gate at all.
+Proof: memory/enforce-readiness-state.json + company/security/reports/enforce-readiness-gate-design-2026-07-01.md.
+
+---
+
 NOTE for Hila: do not publish raw. Confirm every claim against the cited source, run the
 Legal claims-clearance + Security gate, and route to owner A1 before any post goes out.
