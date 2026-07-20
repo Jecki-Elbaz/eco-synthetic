@@ -4,16 +4,16 @@ Owned jointly by Eyal (Legal) and Lital (CFO). Surfaced to Eco proactively so it
 prioritized on the roadmap and never appears as a sudden critical issue.
 Source: constitution section 13. Populated as T-0008.
 
-Last legal-leg review: Eyal, 2026-06-29 (scheduled runner).
-Last finance-leg review: Lital, 2026-07-13 (scheduled runner, run 6).
+Last legal-leg review: Eyal, 2026-07-20 (scheduled runner, run 5).
+Last finance-leg review: Lital, 2026-07-20 (scheduled runner, run 7).
 
 ---
 
 ## OVERDUE -- ACTION REQUIRED
 
-Reviewed by Lital: 2026-07-13 (run 6)
+Reviewed by Lital: 2026-07-20 (run 7)
 
-**ITEM-6 / APS-004 -- Anthropic config 3 owner steps (target was 2026-07-07; NOW 6 DAYS PAST)**
+**ITEM-6 / APS-004 -- Anthropic config 3 owner steps (target was 2026-07-07; NOW 13 DAYS PAST)**
 
 Owner: jecki (A1). Responsible party: jecki.
 
@@ -22,12 +22,12 @@ Three A1 steps were targeted for completion before APS Sprint 2 (2026-07-07):
 2. Confirm/enable zero data-retention in Anthropic console.
 3. Download and retain a copy of the Anthropic DPA.
 
-None confirmed completed as of this review. APS is now on Sprint 8 (2026-07-13) and
-active simulation code (arc-writer.service.ts, simulation.service.ts) is being modified.
-A new migration (arc_session_summary_retain_until, 2026-07-12) and purge scripts confirm
-that student data retention logic is being implemented in code -- the compliance gate must
-close before student data enters the LLM pipeline. This is no longer preventive; it is
-overdue relative to its own internal target and APS's rate of progress.
+None confirmed completed as of this review (run 7, 2026-07-20). APS is on Sprint 9
+per last confirmed run (run 6, 2026-07-13). Student data retention logic implementation
+confirmed as of run 6 (migration arc_session_summary_retain_until, purge scripts,
+DSR tests in place). The compliance gate must close before student data enters the LLM
+pipeline. Gap between code progress and compliance gate is widening. 13 days past the
+owner's own internal target.
 
 ESCALATE_TO_ECO_OVERDUE
 Format: each item has a LEGAL LEG block (Eyal) and a FINANCE LEG block (Lital).
@@ -733,7 +733,35 @@ SHIR-005 is built.
 
 ## Lital review log
 
-Last reviewed by Lital: 2026-07-13 (run 6)
+Last reviewed by Lital: 2026-07-20 (run 7)
+
+Status summary (2026-07-20, run 7):
+
+OVERDUE items: ONE (13 days past target). See top-of-file OVERDUE section.
+- ITEM-6 / APS-004 Anthropic config (3 owner A1 steps): target was 2026-07-07; now 13 days past.
+  Steps: (1) confirm commercial plan; (2) confirm/enable zero-retention; (3) download DPA copy.
+  Owner: jecki. No completion confirmed in any file reviewed this run.
+  Context: APS on Sprint 9 per run 6 (2026-07-13). Retention logic and DSR handling confirmed
+  implemented in code as of run 6. Gap between code progress and compliance gate is widening.
+  ESCALATED to Eco.
+
+APPROACHING (30-day calendar window, by 2026-08-19):
+- No items have hard calendar dates within 30 days. All remaining deadlines are event-triggered.
+- APS September pilot soft window narrowing -- approximately 6-7 weeks remaining.
+
+Soft flags (updated from run 6):
+- Item 3 (DPA template v0.1-DRAFT, company/legal/dpa-template.md): drafted 2026-06-23;
+  now 27 days pending owner A1 review. Urgency: HIGH. Nearly one month pending with no
+  scheduling action. Lital re-flags to Eco: request immediate owner A1 scheduling.
+- Item 6 (Anthropic DPA compliance-backlog track): OVERDUE (see above). 13 days past target.
+- APS M16 (transcript retention): owner input still unconfirmed. Phase 1b notable_mistakes
+  field still blocked. Pilot window approximately 6-7 weeks.
+- APS M21 (data residency): Israeli region preference still unconfirmed. Must confirm before
+  pilot infrastructure is provisioned.
+- No new compliance items identified from file review. No spend authorized.
+- Budget-0 policy holds. All A1 items remain with jecki.
+
+Previous run: 2026-07-13 (run 6)
 
 Status summary (2026-07-13, run 6):
 
@@ -1053,3 +1081,84 @@ EYAL-Q2 -- CS ticket-summary retention window (unblocks CS-0001 / AUD-004 owner 
   Amendment 13). This is legal guidance from PPL knowledge -- no external fetch required.
 - State the window (e.g. "N months after ticket close") + the legal basis, and write it so
   Mike can insert it into company/cs/cs-0001-customer-communication-policy.md before owner A1.
+
+---
+
+## Eyal review log -- Run 5 (2026-07-20)
+
+Weekly scheduled runner. No owner input available.
+
+OVERDUE items: ONE (13 days past target). Consistent with Lital run 7 (2026-07-20).
+ITEM-6 / APS-004 Anthropic config: target was 2026-07-07. No completion confirmed in any
+file reviewed this run. Three steps remain outstanding:
+(1) confirm account is on commercial plan (DPA applies);
+(2) confirm/enable zero-retention in Anthropic console;
+(3) download and retain a copy of the Anthropic DPA.
+APS on Sprint 9 per last confirmed state (run 6, 2026-07-13). Retention logic, purge
+scripts, and DSR tests confirmed implemented in code. Compliance gate has not kept pace.
+ESCALATED to Eco.
+
+APPROACHING (30-day calendar window, by 2026-08-19):
+- No items have hard calendar dates within 30 days. All deadlines remain event-triggered.
+- APS September pilot soft window: approximately 6 weeks remaining. 6 weeks is insufficient
+  margin if open compliance items are not actioned immediately. Items that must close before
+  any real student data enters the LLM pipeline or the pilot goes live: Item 3 (DPA template
+  A1), Item 6 (Anthropic DPA formal close), APS M16 (retention), APS M21 (data residency).
+
+NEW since last Eyal review (2026-07-06, run 4):
+- GR-013 (Cloudflare Pages + DNS, 2026-07-10): Eyal CLEAR-WITH-CONDITIONS confirmed in gate
+  register. No outstanding Eyal action.
+- GR-016 addendum (Vercel Hobby ToS, 2026-07-14): Rambo flagged commercial-use restriction
+  on Vercel Hobby plan for APS demo. Rambo treats as LOW risk; does not block. Eyal terms
+  opinion is OPTIONAL -- Eco may route to Eyal only if owner requests. Not a blocking Eyal
+  item today.
+- GR-014 (Gmail READ-ONLY, 2026-07-10): Eyal CLEAR-WITH-CONDITIONS confirmed in gate
+  register. No outstanding Eyal action. Owner OAuth consent still pending (owner action).
+- GR-015 (supertest@7.2.2, 2026-07-11): Eyal CLEAR -- no conditions. ADOPTED owner A1
+  2026-07-15. No outstanding Eyal action.
+- GR-016 (APS Hosted Demo, 2026-07-12): Eyal review NOT REQUIRED per gate-register header
+  (synthetic data only, no real LLM, no PPL obligation). No Eyal action.
+- EA-1 (WhatsApp ToS confirm) / EYAL-Q1: DONE 2026-07-11 per ECO-ASSIGNED section above.
+  Verdict filed; gate owner-side only (record SHA + ban-risk acceptance in decisions-log).
+- EA-2 (CS ticket retention) / EYAL-Q2: DONE 2026-07-11 per ECO-ASSIGNED section above.
+  Guidance filed; CS-0001 Eyal leg closed.
+
+GATE-REGISTER PENDING EYAL (no hard dates -- Eyal action outstanding):
+- nspady/google-calendar-mcp: Eyal PENDING since 2026-06-18 (>32 days). MIT expected clear.
+  No hard deadline. Flagged at runs 2, 3, 4. Still unresolved. Flag to Eco to schedule
+  Eyal review in next live session when this tool is the subject.
+- Agent tool for Eco (T-0020): Eyal PENDING since 2026-06-15 (>35 days). Same subscription;
+  no new terms expected. Non-blocking for current operations. Needs resolution.
+
+SOFT FLAGS (high urgency):
+- Item 3 (DPA template v0.1-DRAFT, company/legal/dpa-template.md): drafted 2026-06-23;
+  now 27 days pending owner A1 review. September pilot ~6 weeks out. Urgency: VERY HIGH.
+  Nearly one month pending with no scheduling action observed in any file reviewed.
+  No customer or student data may be collected without this approval.
+  Eyal re-flags to Eco: owner A1 review of the DPA template is urgently overdue.
+- Item 6 (Anthropic DPA formal close): Blocked on owner executing 3 APS config steps
+  (OVERDUE 13 days). Once owner confirms and Eyal reviews in a subsequent session,
+  Item 6 on the compliance-backlog track can close. No Eyal action available until then.
+- APS M16 (transcript retention): Owner input still unconfirmed. Phase 1b notable_mistakes
+  field blocked. Code being written around an unconfirmed compliance decision.
+- APS M21 (data residency): Israeli region preference unconfirmed. Must confirm before
+  pilot infrastructure is provisioned.
+
+A1 ITEMS -- summary for owner (via Eco), run 5 (priority order):
+1. APS Anthropic config (3 steps) -- OVERDUE 13 days. Most urgent. Must close before any
+   student data enters LLM pipeline.
+2. Item 3 (DPA template v0.1-DRAFT) -- 27 days pending A1 review. September pilot ~6 weeks.
+   No customer or student data may be collected until owner-approved.
+3. Item 6 (Anthropic DPA formal close) -- Dependent on owner completing item 1.
+4. APS M16 (transcript retention period) -- Owner input required. Blocks Phase 1b.
+5. APS M21 (data residency) -- Must confirm before pilot infra is provisioned.
+6. Item 1 (company registration, Ltd) -- A1 required to file; 1-3 business day lead time.
+   No contract or invoice legally valid without a registered entity.
+7. GR-012/GR-014 (Gmail OAuth re-consent) -- Owner must complete browser consent for
+   eco.synthetic.org@gmail.com. create_draft and Gmail read tools non-functional until done.
+
+ECO-ASSIGNED ACTION ITEMS -- EYAL: EA-1 and EA-2 both DONE 2026-07-11.
+ECO-QUEUED ACTION ITEMS (EYAL-Q1/EYAL-Q2): same tasks, DONE 2026-07-11.
+No new Eco-assigned items observed in files reviewed this run.
+
+Last reviewed by Eyal: 2026-07-20 (run 5).

@@ -259,3 +259,19 @@ NOT the DISABLED line. Confirm DATABASE_URL is set in the runner environment so 
 node script can reach Postgres.
 
 No other file changed. No live runner invoked. No purge script invoked with --apply.
+
+---
+
+## SHIR-008 cross-reference -- Gmail OAuth durability (2026-07-18)
+
+The 2026-07-18 Gmail outage (TOKEN-EXPIRED, all sessions) was diagnosed as a direct
+consequence of the workspace-mcp re-auth that was unblocked by the runner hardening above
+(SHIR-FIX-06 alert pathway + ECO-CMDLINE-FIX making auth failures visible as FAIL alerts
+rather than silent rc=1 exits). Root cause: GCP OAuth app in Testing status -> Google
+enforces a 7-day refresh-token expiry; consent completed ~2026-07-11, expiry landed 2026-07-18.
+
+Owner runbook (verify publishing status, durable fix, re-consent, verification, recurrence
+guard):
+  integrations/runner/gmail-oauth-durability-shir-2026-07-18.md
+
+Tasked as SHIR-008 (Eco 2026-07-18). Board row: memory/board.md, DevOps table.

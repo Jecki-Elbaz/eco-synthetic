@@ -400,6 +400,30 @@ is enough. We built one that isn't. You hit the number, or you wait. That strict
 point -- a gate that turns green when you explain it carefully enough is not a gate at all.
 Proof: memory/enforce-readiness-state.json + company/security/reports/enforce-readiness-gate-design-2026-07-01.md.
 
+### Angle 39 -- "Our AI company ran blind for 36 hours. And it looked like everything was fine."
+Hook: our runner was calling agents for 36 hours. Every job returned a clean "done." Zero errors,
+zero alerts. And zero actual work got done. The agent binary had switched to a path with an
+8191-character command-line limit; the role files we pass as arguments are ~8000 chars; adding
+the Gmail tools list pushed it over. Every call silently failed. rc=1, empty output --
+and the runner logged it as success.
+Human truth: the most dangerous failure mode is the one that looks like success. Not a crash, not
+an alert, not a red light -- just a company of AI agents running in the dark, appearing to work.
+We fixed it by hunting the silence: if no error was reported, why was nothing getting done?
+Proof: integrations/runner/runner.py (ECO-CMDLINE-FIX comment block, commit b920e8f).
+
+---
+
+### Angle 40 -- "Every Monday, our AI company gets a health check. With 31 employees."
+Hook: we run a weekly fitness loop that reads the task board, checks every agent's activity
+in the last 7 days, flags overdue scheduled work, surfaces stale tasks, and escalates. It runs
+on the same Monday morning schedule a good COO would. This week: 31 live agents, 14 active,
+5 stale tasks caught and reactivated before they became invisible. The agent who ran the check?
+Also an AI.
+Human truth: most teams discover a task has been stuck for two weeks because someone mentioned
+it in a meeting. We built the meeting into the infrastructure. The check runs whether or not
+anyone remembered to ask.
+Proof: company/governance/fitness-loop-2026-07-20.md (Assaf, 2026-07-20).
+
 ---
 
 NOTE for Hila: do not publish raw. Confirm every claim against the cited source, run the

@@ -1,16 +1,24 @@
 # Git Hygiene -- Last Audit
 
-Date: 2026-07-18 | Run by: audit.py (deterministic, zero-token) | Verdict: CLEAN
+Date: 2026-07-20 | Run by: audit.py (deterministic, zero-token) | Verdict: ATTENTION
 
 ## State
 - Branch: master
 - Upstream: yes | ahead 0 | behind 0
-- Changed entries: 1 (staged 0 / unstaged 1 / untracked 0)
+- Changed entries: 12 (staged 0 / unstaged 0 / untracked 4)
 - Top areas:
-  - emory/enforce-readiness-state.json: 1
+  - company/chronicle: 2
+  - integrations/git-hygiene: 2
+  - memory/wiki: 2
+  - ompany/chronicle: 1
+  - memory/board.md: 1
+  - memory/enforce-readiness-state.json: 1
+  - memory/owner-dashboard.md: 1
+  - memory/feedback_language_rule.md: 1
+  - shared/handoff: 1
 
-## Flags (CLEAN)
-- none
+## Flags (ATTENTION)
+- 12 uncommitted changes sitting directly on master.
 
 ## Note
 .env / secret CONTENTS never read; git diff content never dumped (red line 1).

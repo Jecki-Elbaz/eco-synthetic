@@ -11,14 +11,14 @@
 
 | File Path | Purpose | Owner | Last Reviewed |
 |-----------|---------|-------|----------------|
-| company/constitution.md | Company mission, hierarchy, red lines, approval gates, standards, compliance framework | jecki (owner) | 2026-07-06 |
-| company/soul.md | Agent culture, behavioral standards, Core Block (inline in all agent role files), Voice block convention | Dalia (Q&G) + Anat (HR) | 2026-07-06 |
-| company/roster.md | Organization chart, all agent names/roles/levels/phases, reporting structure | Anat (HR) | 2026-07-06 |
-| company/md-style.md | Internal machine-facing markdown style guide (caveman, lean, ASCII, token-efficiency) | [no single owner specified; governance under Yael/Dalia] | 2026-07-06 |
-| company/governance/access-matrix.md | Path-level ACL matrix, read/write permissions by role, scan policy | Dalia (Q&G defines structure); Rambo (Security enforces) | 2026-07-06 |
-| company/governance/gate-register.md | Tool and service registry; security risk + legal terms clearance; adoption record; deferred/shelved/approved status | Eyal (Legal maintains); Rambo (Security clears) | 2026-07-06 |
-| company/governance/schedules.md | Approved scheduled agent wake-ups and recurring tasks; cadence, status, approver | Assaf (Operational Excellence) | 2026-07-06 |
-| company/governance/compliance-backlog.md | Compliance readiness items (registration, invoicing, privacy, ISO, email migration, Anthropic DPA); legal + finance legs | Eyal (Legal leg) + Lital (CFO, finance leg) | 2026-07-06 |
+| company/constitution.md | Company mission, hierarchy, red lines, approval gates, standards, compliance framework | jecki (owner) | 2026-07-20 |
+| company/soul.md | Agent culture, behavioral standards, Core Block (inline in all agent role files), Voice block convention | Dalia (Q&G) + Anat (HR) | 2026-07-20 |
+| company/roster.md | Organization chart, all agent names/roles/levels/phases, reporting structure | Anat (HR) | 2026-07-20 |
+| company/md-style.md | Internal machine-facing markdown style guide (caveman, lean, ASCII, token-efficiency) | [no single owner specified; governance under Yael/Dalia] | 2026-07-20 |
+| company/governance/access-matrix.md | Path-level ACL matrix, read/write permissions by role, scan policy | Dalia (Q&G defines structure); Rambo (Security enforces) | 2026-07-20 |
+| company/governance/gate-register.md | Tool and service registry; security risk + legal terms clearance; adoption record; deferred/shelved/approved status | Eyal (Legal maintains); Rambo (Security clears) | 2026-07-20 |
+| company/governance/schedules.md | Approved scheduled agent wake-ups and recurring tasks; cadence, status, approver | Assaf (Operational Excellence) | 2026-07-20 |
+| company/governance/compliance-backlog.md | Compliance readiness items (registration, invoicing, privacy, ISO, email migration, Anthropic DPA); legal + finance legs | Eyal (Legal leg) + Lital (CFO, finance leg) | 2026-07-20 |
 | company/decisions/decisions-log.md | Append-only decision record; all A1/A2/A3 decisions with rationale, alternatives, files affected | Dalia (Q&G) | 2026-07-06 |
 
 ---

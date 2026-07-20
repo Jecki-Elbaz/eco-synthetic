@@ -4,6 +4,8 @@ Daily cost and token usage summaries.
 
 | Date | Summary |
 |------|---------|
+| 2026-07-20 | 0.3 USD (Rambo inbox only, 14-min window). Shir git-hygiene rc=1 (FAILURE), Eco 2h Check-in TimeoutExpired (2nd day), Rambo Adam inbox Gmail OAuth blocked (3rd day). Readiness NOT green (false_blocks=15, regression). ESCALATE_TO_ECO. -- DEGRADED. |
+| 2026-07-19 | CRITICAL: Runner telemetry offline (20-day gap since 2026-06-29; agent-runs.jsonl + agent-guard.log not updated). 7-day cost snapshot gap (2026-07-13 through 2026-07-18 unobserved). Token logging incomplete; cannot assess 24h consumption. Previous snapshot (2026-07-12) flagged DEGRADED (Shir rc=1, Rambo 100% failure, weekly triggers frozen) - status remains UNKNOWN. ESCALATE_TO_ECO. -- DEGRADED. |
 | 2026-07-12 | ~9.9k tokens (2026-07-11 only; 13h+ logging gap); Shir rc=1 endemic (4+ days, no recovery), Rambo inbox 100% failing (7/7 fires rc=1), weekly triggers frozen (13 days, 2 Monday slots missed), token logging offline, readiness NOT green (3 unmet, false_blocks=3). ESCALATE_TO_ECO. -- DEGRADED. |
 | 2026-07-11 | ~4.1k tokens (2026-07-10 only); Shir rc=1 recurring (3+ days), NEW Eco 2h timeout at 00:10, Rambo inbox rc=1 ongoing (3/3 fires failed), weekly triggers completely dark (12 days since 06-29, missed 07-06 Monday), readiness NOT green (4 unmet). ESCALATE_TO_ECO. -- DEGRADED. |
 | 2026-07-10 | Logging infrastructure offline (9-day gap); zero token entries for 24h window; Shir git-hygiene rc=1 (3-day recurring); 5 weekly triggers completely stalled (10 days since last fire); daily jobs stable (7 runs). ESCALATE_TO_ECO. -- DEGRADED. |

@@ -1,5 +1,5 @@
 {
-  "last_run": "2026-07-18T15:57:17.716672+00:00",
+  "last_run": "2026-07-19T06:04:29.306416+00:00",
   "green": false,
   "checks": {
     "B1_deployed": true,
@@ -11,12 +11,12 @@
     "C4_pure_append": false
   },
   "metrics": {
-    "false_blocks": 10,
-    "C1": 157,
+    "false_blocks": 15,
+    "C1": 161,
     "C2": 18,
     "C3": 71,
     "C4": 0,
-    "guard_events_in_window": 679
+    "guard_events_in_window": 748
   },
   "surfaced": false,
   "first_green": null
