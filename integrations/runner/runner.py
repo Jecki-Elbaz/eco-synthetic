@@ -111,11 +111,18 @@ PER_AGENT_TIMEOUTS: dict = {
     "oracle": 600,
 }
 
+# Default model id for runner-path agents. ECO-MODEL-FIX 2026-07-24: bumped from the
+# retired "claude-sonnet-4-6" id (an unavailable model id makes `claude --print` exit 1
+# with the error on STDOUT and an EMPTY stderr -- exactly the "rc=1: no stderr" class of
+# silent failures the Eco 2h job was hitting) to the current Sonnet tier. Keep a "sonnet"
+# substring so _model_timeout() still resolves to the 300s Sonnet timeout.
+DEFAULT_MODEL = "claude-sonnet-5"
+
 # SHIR-FIX-03: Eco runner-path model override (interactive-session model unchanged).
 # Eco's role file typically specifies Opus; the runner uses Sonnet by default to avoid
 # session-limit + timeout failures (Ido A3 pre-approved 2026-07-11).
 # Override via env: RUNNER_MODEL_OVERRIDE=<model-id>
-RUNNER_ECO_MODEL = os.environ.get("RUNNER_MODEL_OVERRIDE", "claude-sonnet-4-6")
+RUNNER_ECO_MODEL = os.environ.get("RUNNER_MODEL_OVERRIDE", DEFAULT_MODEL)
 
 # SHIR-FIX-06: patterns in combined stdout+stderr that trigger one bounded retry
 RETRY_PATTERNS = (
@@ -238,6 +245,27 @@ def _invoke_claude(cmd: list, stdin_data: bytes, env: dict, timeout: int, cwd: s
         return -1, "", f"{type(e).__name__}: {str(e)[:100]}"
 
 
+def _extract_error_detail(raw: str) -> str:
+    """ECO-STDOUT-SURFACE 2026-07-24: pull a human-readable error snippet from the
+    `claude --output-format json` STDOUT. With --output-format json the CLI writes its
+    real failure to STDOUT (a JSON envelope), NOT stderr -- so the runner's stderr-only
+    err_tag reports "rc=1: no stderr" while the actual cause sits unshown in stdout.
+    Best-effort: parse the envelope for an error/result field; fall back to a truncated
+    raw string. Returns '' when stdout is empty (nothing to add to the alert)."""
+    if not raw:
+        return ""
+    try:
+        data = json.loads(raw)
+        if isinstance(data, dict):
+            for k in ("error", "result", "message", "subtype"):
+                v = data.get(k)
+                if isinstance(v, str) and v.strip():
+                    return v.strip()[:300]
+    except (json.JSONDecodeError, TypeError):
+        pass
+    return raw.strip()[:300]
+
+
 def _parse_json_output(raw: str) -> tuple:
     """SHIR-FIX-07: parse --output-format json stdout.
     Returns (text, cost_usd, model_used, usage_dict). Graceful fallback on non-JSON."""
@@ -258,9 +286,9 @@ def agent_model(agent: str) -> str:
     try:
         txt = (AGENTS_DIR / f"{agent}.md").read_text(encoding="utf-8")
         m = re.search(r"(?mi)^model:\s*([A-Za-z0-9._-]+)", txt)
-        return m.group(1) if m else "claude-sonnet-4-6"
+        return m.group(1) if m else DEFAULT_MODEL
     except OSError:
-        return "claude-sonnet-4-6"
+        return DEFAULT_MODEL
 
 
 def role_text(agent: str) -> str:
@@ -437,13 +465,21 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
         rc, raw, err_tag2 = _invoke_claude(cmd, stdin_data, env, timeout, str(ROOT))
         if err_tag2:
             final_err = f"{err_tag} -> {err_tag2}"
-            log({"key": key, "event": "error_final", "err": final_err})
+            # ECO-STDOUT-SURFACE 2026-07-24: with --output-format json the CLI's real
+            # error lands on STDOUT, not stderr; err_tag only carries stderr (hence the
+            # opaque "rc=1: no stderr"). Surface a bounded stdout snippet so the alert and
+            # the agent-runs.jsonl record are self-diagnosing. `raw` here is the retry's
+            # stdout (empty stdout => empty snippet => alert unchanged).
+            stdout_snip = _extract_error_detail(raw)
+            log({"key": key, "event": "error_final", "err": final_err,
+                 "stdout": raw[:600]})
             # Alert via the existing Telegram pathway; failure is also in agent-runs.jsonl.
             send_telegram(
                 f"[Runner FAIL -- {agent}]\n"
                 f"Job failed after 1 retry.\n"
                 f"Key: {key}\n"
                 f"Error: {final_err}"
+                + (f"\nStdout: {stdout_snip}" if stdout_snip else "")
             )
             return {"ran": True, "error": True}
     # SHIR-FIX-07: extract text + cost fields from JSON envelope
