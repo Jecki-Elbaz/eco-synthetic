@@ -41,6 +41,13 @@ release_all_held_locks = _fl_mod.release_all_held_locks
 PROMPTS = ROOT / "integrations" / "runner" / "agent-prompts.md"
 AUDIT_SCRIPT = ROOT / "integrations" / "git-hygiene" / "audit.py"
 GIT_HYGIENE_KEY = "Shir:git-hygiene-audit"
+# Guard proof-suite check (Rambo advisory 2026-07-26). The autonomy guard's own test
+# suite had never once executed -- pytest was named as the framework in the global
+# CLAUDE.md but was not installed in any interpreter, so 15 stale failures sat unseen
+# for an unknown period while the C1 clearance rested on that suite as evidence.
+# This job makes "the proof suite is green" a daily zero-token fact instead of a memory.
+GUARD_SUITE_KEY = "Rambo:guard-proof-suite"
+GUARD_SUITE_TEST = ROOT / ".claude" / "hooks" / "test_guard.py"
 # APS-022 retention purge (S8-SHIR-PURGEJOB, Sprint 8 envelope 2026-07-13)
 PURGE_ARC_JOB_KEY = "purge_expired_arc_summaries"
 APS_APP_DIR = ROOT / "projects" / "ai-patient-simulator" / "app"
@@ -568,6 +575,73 @@ def run_git_hygiene(state: dict, t: datetime, dry: bool) -> None:
          "attention": attention, "sent": sent})
 
 
+def run_guard_suite(state: dict, t: datetime, dry: bool) -> None:
+    """Daily ZERO-TOKEN check that the autonomy guard's proof suite is green.
+
+    Runs pytest over .claude/hooks/test_guard.py as a plain subprocess -- not an LLM
+    call -- so it costs no tokens. GREEN is silent; anything else alerts the owner on
+    Telegram. Deliberately distinguishes the failure modes, because the one that hid
+    this problem for months was the boring one:
+      rc 0        -> suite green, silent
+      pytest gone -> the check itself is dead; that is the recurrence we are preventing
+      rc 5        -> no tests collected; the suite has been emptied or collection broke
+      other rc    -> real failures, send the tail of the output
+    """
+    last = state.get(GUARD_SUITE_KEY, {}).get("last")
+    if last:
+        try:
+            if datetime.fromisoformat(last).date() == t.date():
+                return  # already checked today
+        except ValueError:
+            pass
+    if dry:
+        print(f"  WOULD RUN {GUARD_SUITE_KEY} (daily, zero-token pytest on the guard suite)")
+        return
+    if not GUARD_SUITE_TEST.is_file():
+        log({"key": GUARD_SUITE_KEY, "event": "error", "err": "suite file missing"})
+        send_telegram(
+            "[Guard proof suite -- Rambo]\n\n"
+            f"The guard's test suite is MISSING at {GUARD_SUITE_TEST.name}. "
+            "The autonomy guard is running with no proof it denies anything."
+        )
+        return
+    log({"key": GUARD_SUITE_KEY, "event": "start", "mode": "script"})
+    try:
+        r = subprocess.run([sys.executable, "-m", "pytest", str(GUARD_SUITE_TEST), "-q"],
+                           capture_output=True, timeout=300, cwd=str(ROOT), check=False)
+        out = (r.stdout.decode("utf-8", "replace")
+               + r.stderr.decode("utf-8", "replace")).strip()
+    except Exception as e:
+        log({"key": GUARD_SUITE_KEY, "event": "error",
+             "err": f"{type(e).__name__}: {str(e)[:150]}"})
+        send_telegram(
+            "[Guard proof suite -- Rambo]\n\n"
+            f"Could not run the guard proof suite: {type(e).__name__}. "
+            "The guard may be fine, but nothing is verifying it."
+        )
+        return
+    # pytest absent looks like an ordinary failure on the exit code alone, so name it.
+    pytest_missing = "No module named pytest" in out
+    if pytest_missing:
+        msg = ("pytest is NOT INSTALLED in the runner interpreter, so the guard proof "
+               "suite cannot run at all. This is exactly how 15 stale failures went "
+               "unnoticed. Fix: python -m pip install -r requirements-dev.txt")
+    elif r.returncode == 5:
+        msg = ("The guard proof suite collected NO TESTS. The suite has been emptied or "
+               "collection is broken -- the guard is unproven.")
+    elif r.returncode != 0:
+        tail = "\n".join(out.splitlines()[-12:])
+        msg = f"The guard proof suite is RED (exit {r.returncode}):\n\n{tail}"
+    else:
+        msg = None
+    sent = False
+    if msg:
+        sent = send_telegram(f"[Guard proof suite -- Rambo]\n\n{msg[:900]}")
+    state.setdefault(GUARD_SUITE_KEY, {})["last"] = t.isoformat()
+    log({"key": GUARD_SUITE_KEY, "event": "done", "rc": r.returncode,
+         "green": msg is None, "pytest_missing": pytest_missing, "sent": sent})
+
+
 def run_purge_arc_summaries(state: dict, t: datetime, dry: bool) -> None:
     """Weekly ZERO-TOKEN ArcSessionSummary retention purge (APS-022).
 
@@ -670,6 +744,13 @@ def main() -> int:
         run_git_hygiene(state, t, a.dry_run)
         if not a.dry_run:
             save_state(state)  # SHIR-FIX-01: persist after git hygiene updates state
+
+    # Daily zero-token check that the autonomy guard's proof suite is still green
+    # (Rambo advisory 2026-07-26). Independent of the LLM agent jobs below.
+    if not a.only or a.only.lower() in ("rambo", "guard", "guard-suite"):
+        run_guard_suite(state, t, a.dry_run)
+        if not a.dry_run:
+            save_state(state)
 
     # Weekly zero-token ArcSessionSummary purge (APS-022 -- DISABLED until pilot go-live).
     # Enabling this job requires removing PURGE_ARC_JOB_KEY from DISABLED_JOBS (owner A1).

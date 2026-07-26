@@ -29,6 +29,15 @@ def d(event):
 
 
 # --- Red path writes are denied (5.1) ---
+#
+# Structural note: every allowlisted sub-agent is also in PATH_SCOPE, and no red path is
+# inside any agent's allowed prefixes. PATH_SCOPE fires BEFORE _is_red in evaluate(), so
+# there is no (allowlisted agent, red path) pair where _is_red is the blocking rule for a
+# sub-agent write. The suite proves _is_red specifically via the runner path:
+# RUNNER_CONTEXT=1 with no agent_type skips PATH_SCOPE (origin is empty) so _is_red is the
+# only candidate; the reason string pins it. test_path_scope_blocks_red_paths_for_sub_agents
+# covers the sub-agent angle (PATH_SCOPE fires, not _is_red). B1 exemption is documented
+# by test_red_write_allowed_for_owner_interactive_session.
 
 @pytest.mark.parametrize("path", [
     ".claude/agents/Eco.md",
@@ -38,28 +47,66 @@ def d(event):
     "company/governance/access-matrix.md",
     "company/constitution.md",
 ])
-def test_red_write_denied(path):
-    assert d(ev("Write", file_path=path, content="x")) == guard.DENY
-    assert d(ev("Edit", file_path=path)) == guard.DENY
+def test_red_write_denied_on_runner_path(monkeypatch, path):
+    # RUNNER_CONTEXT=1 + no agent_type: B1 owner exemption does not apply (condition checks
+    # RUNNER_CONTEXT != "1"), PATH_SCOPE is skipped (origin empty), _is_red is the only rule
+    # that can produce this denial. Reason string assertion pins the rule.
+    monkeypatch.setenv("RUNNER_CONTEXT", "1")
+    decision, reason = guard.decide(ev("Write", file_path=path, content="x"), "enforce")
+    assert decision == guard.DENY
+    assert "Red path" in reason
+
+    decision2, reason2 = guard.decide(ev("Edit", file_path=path), "enforce")
+    assert decision2 == guard.DENY
+    assert "Red path" in reason2
 
 
-def test_red_denied_via_absolute_path():
+def test_red_denied_via_absolute_path(monkeypatch):
+    # Same runner-path proof with an absolute file path; also verifies _relpath() normalisation.
+    monkeypatch.setenv("RUNNER_CONTEXT", "1")
     abs_path = str(ROOT / ".claude" / "agents" / "Eco.md")
-    assert d(ev("Write", file_path=abs_path, content="x")) == guard.DENY
+    decision, reason = guard.decide(ev("Write", file_path=abs_path, content="x"), "enforce")
+    assert decision == guard.DENY
+    assert "Red path" in reason
+
+
+def test_red_write_allowed_for_owner_interactive_session():
+    # B1 exemption (SEC-0001 2026-07-01): no agent_type + no RUNNER_CONTEXT = owner live
+    # interactive session. Red path writes are intentionally allowed so the owner can edit
+    # role files out-of-band (A1 action). _is_red still fires; the branch passes through.
+    decision, _ = guard.decide(
+        ev("Write", file_path=".claude/agents/Eco.md", content="x"), "enforce"
+    )
+    assert decision == guard.ALLOW
+
+
+def test_path_scope_blocks_red_paths_for_sub_agents():
+    # Sub-agents cannot reach red paths because PATH_SCOPE fires before _is_red: no allowlisted
+    # agent has a red path in its allowed prefixes. The reason string confirms PATH_SCOPE is the
+    # blocking rule, not _is_red. This is belt-and-suspenders with the runner-path test above.
+    decision, reason = guard.decide(
+        ev("Write", _agent_type="anat", file_path=".claude/settings.json", content="x"),
+        "enforce",
+    )
+    assert decision == guard.DENY
+    assert "path-scope violation" in reason
+    assert "anat" in reason
 
 
 # --- Agent allow-list (5.2) ---
 
-@pytest.mark.parametrize("agent", ["gal", "shir", "ido", "claude", "general-purpose",
-                                   "meetingprep", "explore", "plan", ""])
+@pytest.mark.parametrize("agent", ["claude", "general-purpose", "explore", "plan", ""])
 def test_non_allowlisted_agent_denied(agent):
+    # Removed: gal, shir, ido, meetingprep -- added to ALLOWED_AGENTS (AUD-009 / SEC-0001).
+    # They are allowed to spawn from an owner session; see test_allowlisted_agent_allowed.
     assert d(ev("Task", subagent_type=agent)) == guard.DENY
     assert d(ev("Agent", subagent_type=agent)) == guard.DENY
 
 
 @pytest.mark.parametrize("agent", ["anat", "assaf", "dalia", "eyal", "rambo",
-                                   "lital", "noam", "Rambo", "ANAT"])
+                                   "lital", "perry", "Rambo", "ANAT"])
 def test_allowlisted_agent_allowed(agent):
+    # "noam" replaced with "perry": noam was renamed to perry (Phase 1 audit F-R01).
     assert d(ev("Task", subagent_type=agent)) == guard.ALLOW
 
 
@@ -121,13 +168,31 @@ def test_fail_closed_on_bad_input_enforce():
 # --- Origin enforcement: acting sub-agent allow-list (5.2, C2/C5) ---
 
 def test_non_allowlisted_acting_agent_denied():
-    # A code agent acting as a sub-agent cannot write even to an ungoverned path.
-    assert d(ev("Write", _agent_type="gal", file_path="projects/x.md", content="y")) == guard.DENY
-    assert d(ev("Edit", _agent_type="general-purpose", file_path="memory/wiki/home.md")) == guard.DENY
+    # An agent not on the acting allowlist (5.2) cannot write even to an ungoverned path.
+    # "gal" was removed: gal is now in ALLOWED_AGENTS (AUD-009) so it would pass here and
+    # then be allowed by PATH_SCOPE ("projects/" is in gal's scope). Use "noam" (removed from
+    # the list, F-R01) and "general-purpose" (never listed). Reason string pins the allowlist
+    # rule (5.2), not PATH_SCOPE, so a future PATH_SCOPE-only deletion would surface here.
+    decision, reason = guard.decide(
+        ev("Write", _agent_type="noam", file_path="projects/x.md", content="y"), "enforce"
+    )
+    assert decision == guard.DENY
+    assert "non-code allow-list" in reason
+
+    decision2, reason2 = guard.decide(
+        ev("Edit", _agent_type="general-purpose", file_path="memory/wiki/home.md"), "enforce"
+    )
+    assert decision2 == guard.DENY
+    assert "non-code allow-list" in reason2
 
 
 def test_allowlisted_acting_agent_allowed():
-    assert d(ev("Write", _agent_type="anat", file_path="projects/x.md", content="y")) == guard.ALLOW
+    # Each allowlisted agent must write within its own PATH_SCOPE to be allowed.
+    # "anat" writing "projects/x.md" fails PATH_SCOPE (not her scope); use agents whose
+    # PATH_SCOPE actually covers the target path.
+    # gal has "projects/" in PATH_SCOPE; anat has "company/hr/" in PATH_SCOPE.
+    assert d(ev("Write", _agent_type="gal", file_path="projects/x.md", content="y")) == guard.ALLOW
+    assert d(ev("Write", _agent_type="anat", file_path="company/hr/test.md", content="y")) == guard.ALLOW
 
 
 def test_main_thread_has_no_origin_and_is_allowed_on_working_paths():
@@ -136,8 +201,14 @@ def test_main_thread_has_no_origin_and_is_allowed_on_working_paths():
 
 
 def test_shadow_never_blocks():
-    # In shadow mode even a Red path is allowed (but logged as would-deny).
-    decision, reason = guard.decide(ev("Write", file_path=".claude/settings.json",
-                                       content="x"), "shadow")
+    # In shadow mode, denials are wrapped as would-DENY rather than hard-blocking.
+    # Main-session Red path writes are ALLOWED outright via the B1 exemption and never
+    # produce a would-DENY -- that is not a shadow case. Use a sub-agent writing a Red path:
+    # PATH_SCOPE denies it in enforce (see test_path_scope_blocks_red_paths_for_sub_agents);
+    # shadow wraps that denial. Property proved: shadow never hard-blocks non-runner paths.
+    decision, reason = guard.decide(
+        ev("Write", _agent_type="anat", file_path=".claude/settings.json", content="x"),
+        "shadow",
+    )
     assert decision == guard.ALLOW
     assert "would-DENY" in reason
