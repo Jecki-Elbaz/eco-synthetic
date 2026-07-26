@@ -634,3 +634,76 @@ Red line 4 and CLAUDE.md section 6 apply fully.
 Conditions C1-C9 (Rambo) and C-L1 to C-L4 (Eyal) remain binding in perpetuity. No auto-update without advance Rambo approval. Not global-scope. Prior pending-review row (above) is superseded; this section is the authoritative gate-closed record.
 
 **Opened by:** Eco (forwarding Shelly C9 handoff request) | **Date:** 2026-07-20 | **Triggered by:** shared/handoff/shelly-outbox/gate-register-whatsapp-row-2026-07-20.md
+
+---
+
+## GR-009 addendum -- 2026-07-26 (T-0042: dedicated OAuth client swap, Shelly -> Eco-Synthetic)
+
+Appended, not edited. The GR-009 rows above stand as written. Same pinned server
+(workspace-mcp==1.21.3); NO version bump, no new repo, no new vendor. This addendum records an
+OAuth-client identity change plus a publishing-status change on the existing eco-synthetic
+google_workspace gate.
+
+**What changed.** Eco's google_workspace server (eco.synthetic.org@gmail.com) now authenticates
+via a new dedicated Desktop-app OAuth client "Eco-Synthetic" (GCP project EcoSynthetic, id
+ecosynthetic, owned by eco.synthetic.org@gmail.com), replacing the prior shared "Shelly" client
+(GCP project shelly-pa, different Google account). Credentials come from
+ECO_GOOGLE_OAUTH_CLIENT_ID / ECO_GOOGLE_OAUTH_CLIENT_SECRET (.mcp.json rewired accordingly).
+The new client was published to "In production" in the GCP console BEFORE consent, closing
+SHIR-008 (the ~7-day Testing-status refresh-token expiry). The eco account's third-party grant
+to the old "Shelly" app was revoked; that grant had carried Gmail send scopes nothing in this
+architecture needed.
+
+**Unchanged.** workspace-mcp pin (1.21.3), WORKSPACE_MCP_CREDENTIALS_DIR (eco-creds,
+per-identity isolated per the 2026-07-10 addendum), guard.py's ECO_GOOGLE_ACCOUNT hard-pin and
+runner-path send-deny (both key off account email, not client identity, so unaffected),
+send_gmail_message posture (prompt-only interactive, auto-denied on runner/bridge paths).
+
+**Rambo (Security) verdict:** CLEAR-WITH-CONDITIONS. Net risk reduction -- a dedicated
+single-project client replaces a cross-identity shared client, and an unneeded send-capable
+grant was revoked. Conditions C1-C5: (C1) guard against any config regressing to the bare
+GOOGLE_OAUTH_CLIENT_ID / GOOGLE_OAUTH_CLIENT_SECRET names (Shir); (C2) move the misplaced
+eco-synthetic-audit-mid-summary.pptx out of eco-creds/ (Shir/owner -- Rambo does not access
+credential directories); (C3) extend the weekly permission-drift scan to flag any non-token file
+in a credential-store directory (Rambo); (C4) standing no-auto-update / re-pin-on-change rule
+continues to apply; (C5) informational -- guard.py's Google-boundary block is not itself
+Red-path protected; flagged for a future hardening pass, not blocking. Full findings:
+company/security/reports/gr-009-addendum-oauth-client-swap-rambo-2026-07-26.md.
+
+**Eyal (Legal) verdict:** CLEAR-WITH-CONDITIONS. Swapping the connector's OAuth client from the
+shared "Shelly" client to a dedicated "Eco-Synthetic" client creates no new DPA, no new vendor,
+and no new data-processing obligation -- Google remains the processor of Gmail/Calendar/Drive
+data under the same Google Workspace/API Terms and User Data Policy already cleared at this
+row's base determination (2026-07-01 / 2026-07-08). Net effect is a data-controller and
+accountability improvement: the developer-of-record accepting Google's User Data Policy for the
+client touching eco's mailbox is now the company's own account. Publishing the new client to "In
+production" while UNVERIFIED (EXTERNAL user type, 1 of 100 unverified-app users) triggers no
+Google verification obligation today; watch item C-OA4 applies if this client is ever used for
+any account beyond eco.synthetic.org@gmail.com. All prior binding conditions (GR-009 base,
+GR-012 C-G1-C-G6, GR-014 M1-M6 / C-E1-C-E5, compliance-backlog Item 6 / C-E4 residual) carry
+forward unchanged. Conditions C-OA1 to C-OA5 binding. Full analysis:
+company/legal/gr-009-addendum-oauth-client-swap-eyal-2026-07-26.md.
+
+**C-OA3 CLOSED 2026-07-26 (Eco, verified in console this session).** Eyal's only near-term open
+action was to confirm whether a privacy-policy URL was required or entered for the Eco-Synthetic
+consent screen. Verified directly on the Google Auth Platform Branding page for project
+ecosynthetic: "Application privacy policy link" is EMPTY, as are "Application home page" and
+"Application terms of service link"; no authorized domains are registered; no logo uploaded.
+No URL was required and none was entered -- Eyal's second case. No action needed, and no risk of
+overstating the company's public privacy posture while compliance-backlog Item 3 is still
+DRAFT/unapproved. Consent-screen fields as configured: app name "Eco-Synthetic", user type
+EXTERNAL, user support + developer contact eco.synthetic.org@gmail.com.
+
+**C-OA5 note carried forward.** Eyal could not retrieve Google's full verification-exemption list
+or the precise Testing-vs-Production refresh-token-expiry mechanic via WebFetch (partial page
+content only, three attempts). The Testing-token-expiry conclusion rests on this company's own
+SHIR-008 engineering record plus the live-confirmed 1-of-100 unverified-user cap, not an
+independent live confirmation of that specific mechanic. Recorded per NO GUESS; does not change
+the verdict. Practical check: if Gmail auth survives past ~2026-08-02 without re-consent, the
+production-status fix is empirically confirmed.
+
+**Gate status:** BOTH LEGS CLEAR (Rambo + Eyal, 2026-07-26). Addendum applied by Eco under owner
+jecki's explicit in-session direction (2026-07-26). Not self-granted: Security cleared risk,
+Legal cleared terms, owner directed application.
+
+**Opened by:** Eco/owner (T-0042) | **Date:** 2026-07-26 | **Applied by:** Eco, 2026-07-26
