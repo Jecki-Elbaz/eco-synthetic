@@ -1891,3 +1891,42 @@ jecki notified in-session. APPLY: owner A1 edits company/governance/access-matri
   (3) an unrelated file, eco-synthetic-audit-mid-summary.pptx (169 KB, dated 2026-07-14), is sitting
   inside the credential store directory eco-creds/ -- a Drive download appears to have been written to
   the token folder. Not touched. Shir/Rambo should move it out; credential dirs should hold tokens only.
+
+## 2026-07-26 -- Auth B: long-lived Claude MAX runner token set (owner jecki, in-session); runner auth failure NOT yet proven fixed
+
+- **Decision:** owner ran `claude setup-token` and set the user env var CLAUDE_CODE_OAUTH_TOKEN,
+  giving the scheduled runner its own durable Anthropic auth on the MAX plan instead of borrowing
+  the interactive CLI's periodically-refreshed session. Verified present: 108 chars, no whitespace.
+  The value was never read, printed, logged or written to any file by any agent -- verification was
+  presence + length only. The owner performed the browser Allow and the setx himself.
+- **Why it should work:** the observed error is "Failed to authenticate: OAuth session expired and
+  could not be refreshed" -- a refresh failure. A long-lived token removes the refresh path the
+  error names. The scheduled task "Eco-Synthetic Runner" runs as user Jecki (S4U, verified via
+  Get-ScheduledTask), so a user-scope env var IS visible to it, and each cycle spawns a fresh
+  process that picks it up.
+- **HONEST STATUS -- THE FIX IS UNPROVEN. Recorded because the earlier in-session claim that this
+  "fixes the :57 runner failures" was an overstatement, corrected before close.** Log evidence from
+  memory/agent-runs.jsonl: 16 failure records, first 2026-07-25T16:29Z, last 2026-07-26T07:57Z.
+  The failures STOPPED about 10 hours BEFORE the token was set. Six-plus Eco cycles (10:00, 12:00,
+  14:01, 16:01, 18:01, 20:01 UTC) succeeded without it -- most plausibly because an interactive
+  claude session refreshed ~/.claude/.credentials.json in that window. So the token repaired nothing
+  observable; it is a durable preventative, not a demonstrated repair. Tracked as T-0048 with status
+  "monitoring", not "done".
+- **Correction to the prior diagnosis of record.** integrations/runner/eco-2h-auth-failure-diagnosis-2026-07-25.md
+  concluded the failure was "ECO-JOB-SPECIFIC, not a global dead token", on the evidence that Rambo
+  succeeded seconds after Eco failed in the same cycle. The fuller log does not support that as
+  stated: of the 16 failures, 12 are Eco 2h Check-in, 2 are Eco PM Summary, and 2 are Rambo Adam
+  Inbox Screen. Rambo DID fail. The doc was written 2026-07-25 before the Rambo failures
+  accumulated, so it was reasonable then and is stale now, not wrong-headed. The Eco concentration
+  is still real and still unexplained; the doc's residual candidates (Eco role-file size in argv,
+  Eco-only file locks, Eco-only cost-gate path) remain live and are carried into T-0048.
+- **Unblocked side effect:** that diagnosis doc's own stated limitation -- "the Claude Code Bash
+  shell available here has BROKEN claude CLI auth of its own: CLAUDE_CODE_OAUTH_TOKEN is unset" --
+  is now resolved. The discriminating A/B test it proposed (RUNNER_MODEL_OVERRIDE=claude-sonnet-4-6,
+  one Eco cycle) can finally run from an agent shell. Deliberately NOT run this session: with the
+  symptom dormant it would pass regardless and prove nothing. Run it when a failure recurs.
+- **Close criterion for T-0048:** no new "OAuth session expired" record in memory/agent-runs.jsonl
+  for 5+ consecutive days from 2026-07-26. The failure ran roughly 2-hourly across 07-25/07-26, so
+  several clean days is a meaningful signal.
+- **Files affected:** memory/board.md (new T-0048 row), company/decisions/decisions-log.md (this
+  entry). No code changed.
