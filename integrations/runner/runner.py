@@ -274,6 +274,27 @@ def _invoke_claude(cmd: list, stdin_data: bytes, env: dict, timeout: int, cwd: s
         return -1, "", f"{type(e).__name__}: {str(e)[:100]}"
 
 
+def _extract_error_detail(raw: str) -> str:
+    """ECO-STDOUT-SURFACE 2026-07-24: pull a human-readable error snippet from the
+    `claude --output-format json` STDOUT. With --output-format json the CLI writes its
+    real failure to STDOUT (a JSON envelope), NOT stderr -- so the runner's stderr-only
+    err_tag reports "rc=1: no stderr" while the actual cause sits unshown in stdout.
+    Best-effort: parse the envelope for an error/result field; fall back to a truncated
+    raw string. Returns '' when stdout is empty (nothing to add to the alert)."""
+    if not raw:
+        return ""
+    try:
+        data = json.loads(raw)
+        if isinstance(data, dict):
+            for k in ("error", "result", "message", "subtype"):
+                v = data.get(k)
+                if isinstance(v, str) and v.strip():
+                    return v.strip()[:300]
+    except (json.JSONDecodeError, TypeError):
+        pass
+    return raw.strip()[:300]
+
+
 def _parse_json_output(raw: str) -> tuple:
     """SHIR-FIX-07: parse --output-format json stdout.
     Returns (text, cost_usd, model_used, usage_dict). Graceful fallback on non-JSON."""
