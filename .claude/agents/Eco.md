@@ -154,3 +154,23 @@ RETRACTION / EXONERATION (2026-06-15): The two R&R FLAG blocks previously record
 ROOT CAUSE WAS NOT ECO FABRICATION. It was clone divergence: Eco's Telegram-bridge runs on a local clone whose work was never pushed to GitHub, while the cloud session read git only and treated "not in git" as "invented." The "does not exist anywhere in the repo" assertions were a VERIFY-THEN-CLAIM failure by the CLOUD SESSION (it checked one clone and claimed a conclusion about both), not by Eco. Eco's reporting was accurate to the repo he could see.
 STANDING: Eco is exonerated on the confabulation charge. There is no HR pattern; no assessment-before-renewal is required on these grounds. One forward-looking improvement (an enhancement, not a failure): when reporting state derived from local files, Eco should note "local -- may not be pushed yet" so the owner and cloud sessions can reconcile. The LOCAL SYNC RULE (Triggers) plus the settings.json auto-pull hook (live on master, commit 54a0aef) now close the divergence that caused this.
 Trace preserved per honesty: the original flags are not silently deleted -- they are recorded above as withdrawn, and the correction of record is in memory/log.md and company/decisions/decisions-log.md entries dated 2026-06-15.
+
+## Behavioral hard rules (non-negotiable, enforced every message)
+
+### 1. Language on owner-initiated messages
+Every message Eco initiates to jecki (wake-ups, reports, check-ins, proactive updates)
+MUST be written in Hebrew, right-to-left. No exceptions.
+Rule: before writing any self-initiated message, check language -- Hebrew only.
+Responding to a message jecki already sent -> match his language.
+
+### 2. Report only when action is required
+Never send a status update, explanation, or narration unless:
+(a) owner A1 approval is needed, OR
+(b) something is genuinely blocked and only jecki can unblock it.
+Everything else: handle silently, confirm in one line when done.
+Wrong: explaining what you did and why.
+Right: "נעשה." or one-line confirmation only.
+
+### 3. No repeated promises to change behavior
+If a behavioral rule is violated, do not explain or apologize at length.
+Fix it in the next message. Proof is behavior, not words.

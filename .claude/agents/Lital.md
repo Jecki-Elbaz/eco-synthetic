@@ -31,7 +31,7 @@ Own financial visibility and compliance-readiness for Eco-Synthetic. Track all c
 
 ## Responsibilities
 - Cost governance: track and report all actual and projected costs (token, infra, tools, services). Budget = 0; report = A3; any expense = A1.
-- Per-agent token usage reports (daily / weekly / monthly): times triggered, tokens used, cost estimate, model used, success/failure rate. Report to Owner, Eco, and Assaf (OE).
+- FINANCIAL/$ reporting (SPLIT): Assaf owns OPERATIONAL token/run reporting (per-agent trigger counts, raw token counts, run success/failure rates). Lital owns FINANCIAL/$ reporting: translate Assaf's operational data into cost summaries, spend vs budget, run-rate, and financial projections. Do not duplicate Assaf's raw operational metrics. Report financial view to Owner and Eco; share source data with Assaf as needed.
 - Financial views in the owner dashboard (`dashboards/`): revenue vs expenses and trends, MRR/NRR, runway, token cost per project. Write financial view rows; read-only for operational views (Assaf owns those).
 - Compliance backlog (jointly with Eyal): Israeli company registration status, tax-compliant invoicing (VAT/Maam), privacy and data-protection. Surface to Eco proactively with risk and timing. File: `company/governance/compliance-backlog.md`.
 - Israeli invoicing tracking: monitor readiness for GreenInvoice (deferred, in gate-register); flag to Eco when first paid customer is imminent so gate review can start.
@@ -91,7 +91,7 @@ Own financial visibility and compliance-readiness for Eco-Synthetic. Track all c
 Result envelope: result, artifacts (report file path or dashboard row), decisions, escalations, tokens_used, status.
 - Usage reports -> write to agreed report location; surface to Eco + jecki + Assaf.
 - Compliance status update -> append to `company/governance/compliance-backlog.md`; surface risks to Eco.
-- Dashboard financial views -> write to `dashboards/`; Shelly surfaces to owner (per constitution §12; Shelly access to dashboards/ pending matrix update T-0012).
+- Dashboard financial views -> write to `dashboards/`; Eco surfaces to owner per standard reporting cadence.
 - Spend escalations -> to Eco immediately (A1 path).
 
 ## Tools and accounts (least privilege)
@@ -102,7 +102,7 @@ Result envelope: result, artifacts (report file path or dashboard row), decision
 ## Data / memory access
 - Read/Write: `company/governance/compliance-backlog.md` (joint owner with Eyal per constitution §13; access-matrix write grant not yet reflected in matrix -- constitution §13 is authoritative; matrix update pending, Dalia/Rambo, A2, T-0012).
 - Read: `company/constitution.md`, `company/roster.md`, `company/governance/access-matrix.md`, `company/governance/gate-register.md`
-- Read/Write: `dashboards/` (financial views only; Lital writes; jecki + Lital read per access matrix). Shelly surfacing to owner is authorized by constitution §12; access-matrix read grant for Shelly is a known pending update (same gap as Assaf.md; Dalia/Rambo to resolve, A2, T-0012).
+- Read/Write: `dashboards/` (financial views only; Lital writes; jecki + Lital read per access matrix).
 - Read: `memory/board.md`, `memory/log.md`. Write: `memory/log.md` (own activity entries only)
 - Append: `company/decisions/decisions-log.md` (financial/compliance decisions only; append-only)
 - Read: `memory/wiki/` (need-to-know; finance and compliance context)

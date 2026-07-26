@@ -49,6 +49,13 @@ ALLOWED_AGENTS = {
     # enforce mode does not block their legitimate project/infra writes. Design:
     # company/security/reports/guard-write-scoping-design-2026-06-30.md (Rambo).
     "gal", "shir", "adi", "oren",
+    # AUD-009 F-S804 (owner A1 2026-07-26): oracle + yael -- PATH_SCOPE existed but
+    # ALLOWED_AGENTS was missing (entries were dead code).
+    "oracle", "yael",
+    # AUD-009 F-S807 (owner A1 2026-07-26): all certified-live write-capable agents.
+    # Yossi deliberately EXCLUDED pending Rambo B5 + C2/C3 (see guard-diff report Part 3).
+    "sally", "alex", "mike", "jenny", "jack", "ella",
+    "sami", "roman", "zvika", "designer", "meetingprep",
 }
 
 # Agents that may ACT (above) but may NOT be spawned via the Agent/Task tool. RedTeam is OFF
@@ -60,7 +67,7 @@ SPAWN_DENY = {"redteam"}
 # may be launched by the owner's own Claude Code session (origin empty), but an allow-listed
 # sub-agent (e.g. anat) may NOT spawn them. The runner cannot spawn anyone (RUNNER_CONTEXT) and
 # the Telegram bridge has no Agent tool, so "origin empty" reliably means the owner's session.
-OWNER_SPAWN_ONLY = {"gal", "shir", "adi", "oren"}
+OWNER_SPAWN_ONLY = {"gal", "shir", "adi", "oren", "noa"}
 
 # Per-agent write-path scope (SEC-0001, 2026-06-30; Rambo design). For any KNOWN sub-agent
 # (origin set) that is in this map, a governed write whose repo-relative path does not start
@@ -78,6 +85,9 @@ PATH_SCOPE: dict[str, list[str]] = {
     "dalia": [
         "company/governance/access-matrix.md", "company/soul.md", "memory/wiki/",
         "memory/board.md", "memory/log.md", "company/decisions/decisions-log.md",
+        # AUD-009 F-S805 (owner A1 2026-07-26):
+        "company/policies/", "company/post-mortems/",
+        "company/governance/quality-audit-log.md",
     ],
     "assaf": [
         "company/model-matrix.md", "dashboards/",
@@ -91,6 +101,9 @@ PATH_SCOPE: dict[str, list[str]] = {
     "eyal": [
         "company/governance/gate-register.md", "company/governance/compliance-backlog.md",
         "memory/board.md", "memory/log.md",
+        # AUD-009 F-S806 (owner A1 2026-07-26): decisions-log reaches the append-only
+        # check (both rules compose); company/legal/ is the legal-drafts home.
+        "company/decisions/decisions-log.md", "company/legal/",
     ],
     "lital": [
         "company/governance/compliance-backlog.md", "dashboards/",
@@ -138,6 +151,49 @@ PATH_SCOPE: dict[str, list[str]] = {
     ],
     "redteam": [
         "company/audits/redteam/", "memory/log.md",
+    ],
+    # AUD-009 F-S807 (owner A1 2026-07-26): Sales + CS group
+    "sally": [
+        "marketing/", "memory/board.md", "memory/log.md",
+        "company/decisions/decisions-log.md",
+    ],
+    "alex": [
+        "memory/board.md", "memory/log.md",
+        "company/decisions/decisions-log.md",
+    ],
+    "mike": [
+        "company/cs/", "memory/board.md", "memory/log.md",
+        "company/decisions/decisions-log.md",
+    ],
+    "jenny": [
+        "company/cs/tickets/", "memory/log.md",
+    ],
+    "jack": [
+        "company/cs/accounts/", "memory/log.md",
+    ],
+    "ella": [
+        "company/cs/training/", "memory/log.md",
+    ],
+    # AUD-009 F-S807: on-demand / SME agents
+    "sami": [
+        "projects/", "memory/log.md",
+    ],
+    "roman": [
+        "projects/delivery-saas/docs/algorithms/", "memory/log.md",
+    ],
+    "zvika": [
+        "projects/", "company/research/", "memory/log.md",
+    ],
+    # AUD-009 F-S807: Design
+    "designer": [
+        "projects/delivery-saas/docs/", "memory/log.md",
+        # NOTE: marketing/ is GATED -- add only after AUD-011 activates (Rambo scan
+        # delivered 2026-07-25 CLEAR-WITH-CONDITIONS C1: marketing/brand/ +
+        # marketing/avatars/ only; Dalia A2 leg still pending -> separate guard edit).
+    ],
+    # AUD-009 F-S807: read-only agent; PATH_SCOPE is belt-and-suspenders (no Write tool)
+    "meetingprep": [
+        "memory/log.md",
     ],
 }
 
@@ -257,6 +313,10 @@ def evaluate(event: dict) -> tuple[str, str]:
         email = str(ti.get("user_google_email") or "").strip().lower()
         if short == "send_gmail_message" and os.environ.get("RUNNER_CONTEXT") == "1":
             return DENY, "google boundary: send_gmail_message never available on the runner path"
+        # AUD-013 F-S814 (owner A1 2026-07-26): forwarding rules are send-equivalent
+        # blast radius; explicit hard deny mirrors send_gmail_message posture.
+        if short == "manage_gmail_filter" and os.environ.get("RUNNER_CONTEXT") == "1":
+            return DENY, "google boundary: manage_gmail_filter never available on the runner path"
         if email and email != ECO_GOOGLE_ACCOUNT:
             return DENY, (
                 f"google boundary: google_workspace is pinned to {ECO_GOOGLE_ACCOUNT}; "

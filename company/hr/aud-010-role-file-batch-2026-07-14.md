@@ -753,3 +753,78 @@ Total: 42 distinct before/after pairs
 ---
 
 *Anat (HR/Agent-Ops) | 2026-07-14 | Pending owner A1 before any role file is touched*
+
+---
+
+## VERIFICATION ADDENDUM 2026-07-25 (Anat)
+
+Re-verification date: 2026-07-25
+Session: owner-interactive, Anat live-read of all 20 affected role files.
+Items spot-checked: 26 of 42 (covering at least one item from each of the 5 sections;
+  all Noa items; confirmed Yossi.md is not in this batch -- no Yossi items exist).
+Result: 39 of 42 items fully verified MATCH. 3 items have BEFORE text that would fail
+  an exact-text search due to minor transcription errors. Corrected pairs below.
+  For all other 39 items: BEFORE snippets match live file contents exactly. Apply-ready.
+
+Noa note: Noa.md is v1.1 / last updated 2026-07-14 (cert flip PROVISIONAL->FULL per live
+B3 PASS 2026-07-08). The missing RL9/10/11 block and Voice section (items 3.7, 3.8)
+are confirmed still absent from the live file. Both items remain valid and apply-ready.
+
+---
+
+### CORRECTION A -- Item 2.8 (Ido.md chain of command communicates line)
+Issue: BEFORE and AFTER in the original batch are missing the leading "- " bullet.
+The actual file line starts with "- ". Exact-text substitution would fail without the fix.
+
+CORRECTED BEFORE|||
+- Communicates within R&D group: Gal, Shir, Adi, Roman (on-demand), Senior Dev.
+|||
+
+CORRECTED AFTER|||
+- Communicates within R&D group: Gal, Shir, Adi, Roman (on-demand), Oren, Noa.
+|||
+
+---
+
+### CORRECTION B -- Item 3.5 (Luci.md -- add Tools section anchor line)
+Issue: BEFORE shows the first Escalation path bullet truncated (ending at "(jecki or Eco).").
+The actual file line continues: "- Normal: return challenge to requester (jecki or Eco). Owner or CEO decides."
+For a human-applied commit the original item is still clear (insert before ## Escalation path);
+for any exact-match tool, use the corrected BEFORE below.
+
+CORRECTED BEFORE (use as anchor only; the insertion point is the ## Escalation path header)|||
+## Escalation path
+
+- Normal: return challenge to requester (jecki or Eco). Owner or CEO decides.
+|||
+
+CORRECTED AFTER (the Tools block is inserted; Escalation path content is unchanged)|||
+## Tools and accounts
+- Read, Write, Edit (Claude Code runtime -- approved; least privilege).
+- No Bash. No network tools (no curl/wget/WebFetch). External tool adoption follows the Security + Legal gate. [const §6]
+
+## Escalation path
+
+- Normal: return challenge to requester (jecki or Eco). Owner or CEO decides.
+|||
+
+---
+
+### CORRECTION C -- Item 4.2 (Adi.md chain of command cross-group line)
+Issue: BEFORE and AFTER in the original batch are missing the leading "- " bullet.
+The actual file line starts with "- ". Exact-text substitution would fail without the fix.
+
+CORRECTED BEFORE|||
+- Cross-group contacts: via Ido only. Quality-trend data to Dalia is output (not a tasking channel); route via Ido.
+|||
+
+CORRECTED AFTER|||
+- Quality-trend data goes to Ido (engineering action) AND independently to Dalia (Q&G, quality governance) -- both, not either/or. Dalia does not task Adi; this is an output line only. All other cross-group contacts: via Ido only.
+|||
+
+---
+
+BATCH STATUS: APPLY-READY with the three corrections above substituted for items 2.8, 3.5, 4.2.
+All other 39 items verified against live file contents 2026-07-25 -- no further changes needed.
+
+*Anat (HR/Agent-Ops) | 2026-07-25 | Re-verification complete*
