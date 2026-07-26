@@ -1,7 +1,8 @@
 # CS-0001: Customer Communication Policy
 
 - **Policy ID:** CS-0001
-- **Version:** 0.1-DRAFT
+- **Version:** 0.2-DRAFT
+- **Last updated:** 2026-07-25 -- Eyal EA-2 retention text folded in, AUD-012 F-QUAL05 / AUD-004 item 5 closed
 - **Status:** DRAFT -- awaiting owner A1 to activate
 - **Owner:** Mike (VP Customer Success)
 - **Manager review:** Eco (CEO) -- A2 required before A1 package
@@ -194,6 +195,7 @@ If a customer contacts the company before CS-0001 is A1-approved or before a pro
 - No customer personal data is stored verbatim in any tracked file (board, log, CS ticket summaries only).
 - No customer data is shared with third-party tools or services without owner A1 and a gate review (Rambo security + Eyal legal).
 - Any suspected data breach or privacy incident: Mike escalates to Eco immediately. Eco escalates to owner. The 72-hour PPL breach notification clock (AUD-002) is relevant; Eyal handles legal notification.
+- CS ticket summaries are retained for 2 years from ticket close date, then deleted or anonymized (all identifying fields removed). Customers may exercise their PPL data-subject rights (access, correction, deletion, objection) at any time during the retention window by contacting [support contact]. Retention beyond 2 years is permitted only if the ticket is the subject of an active legal dispute, and only until the dispute is resolved plus 1 year. This retention period will be stated in the company privacy notice (Item 3, compliance backlog) before any CS data is collected.
 
 ---
 
@@ -241,6 +243,7 @@ A1 package readiness: ready once (a) owner confirms the section 11 item 4 author
 | Version | Date | Author | Change |
 |---------|------|--------|--------|
 | 0.1-DRAFT | 2026-07-08 | Mike (VP CS) | Initial draft per AUD-004 / T-0037 scope split (owner 2026-06-29). Covers all 6 required areas: permitted/prohibited content, tone/address, data-sharing limits, escalation, email-send procedure, hard gate restatement. |
+| 0.2-DRAFT | 2026-07-25 | Mike (VP CS) | Eyal EA-2 retention text folded into section 8 (after breach-notification sentence). AUD-012 F-QUAL05 / AUD-004 item 5 closed. Retention: 2 years from ticket close, delete/anonymize; dispute exception +1 year; rights: access, correction, deletion, objection; must be stated in privacy notice before any CS data collected. |
 
 ---
 

@@ -426,5 +426,48 @@ Proof: company/governance/fitness-loop-2026-07-20.md (Assaf, 2026-07-20).
 
 ---
 
+### Angle 41 -- "We spent 7 weeks, 9 security conditions, and 4 legal conditions to add a WhatsApp tool"
+Hook: our office manager agent (Shelly) asked to add WhatsApp. We said: gate first. What followed
+was a 7-week review: Rambo ran a full security scan (9 conditions), Eyal ran a full legal review
+(4 conditions). The WhatsApp Terms of Service explicitly prohibit unofficial/automated clients.
+The owner accepted that ban risk -- in writing -- in the decisions log, with a secondary number
+strategy and low-volume commitment. Then the SHA was pinned. Then and only then: GR-018 added
+to the gate register. Tool: gated. Install: pending.
+Human truth: a tool you adopted without thinking is a liability you don't know you have. We made
+it slow on purpose. Every condition we resolved is a future incident we didn't have.
+Proof: memory/board.md T-0039 row; company/governance/gate-register.md GR-018 (2026-07-20).
+
+---
+
+### Angle 42 -- "Our Gmail went down for 8 days. We fixed it in 15 minutes -- once the owner sat down."
+Hook: the Adam inbox screen had been blocked for 8 consecutive days. Every 2 hours, the
+runner tried and was denied. The fix required exactly one thing: the owner opening a
+browser and clicking through an OAuth consent screen. Once he did, the first screen ran
+clean -- no new mail, nothing missed, everything in order.
+Human truth: even a well-architected AI system has a single point that only a human can
+unlock. The Google OAuth flow is a designed forcing function -- no agent can consent on
+a human's behalf, by design. Knowing that in advance is why the runbook was already
+written.
+Proof: shared/handoff/inbox-screened/SCREEN-CLEAR-2026-07-24.md;
+integrations/runner/gmail-oauth-durability-shir-2026-07-18.md.
+
+---
+
+### Angle 43 -- "We ran 7 consecutive CRITICAL alerts about our system being down. It was never down."
+
+Hook: for 7 days straight, our daily monitoring fired a CRITICAL alert: "runner offline 26 days,
+observability blackout." We escalated it in the chronicle. We escalated it in the dashboard.
+Every alert was false. The runner had been healthy the entire time. The bug was in the monitoring
+itself: it read an append-only log from the beginning instead of the end, saw entries from 26
+days ago, and concluded the system was dark. It wasn't. It was running fine.
+Human truth: a false alert that runs for 7 days is not a monitoring win. It's a monitoring
+failure that happens to have no casualties. We fixed the read direction. Now every read of that
+log starts from the tail. But the lesson is wider: any "current state" check that reads from
+line 1 of a growing file is measuring the past.
+Proof: memory/wiki/cost-snapshots/2026-07-26.md (CORRECTION section); agent-prompts.md
+Assaf TAIL RULE fix (SHIR-007 commit scope 2026-07-25).
+
+---
+
 NOTE for Hila: do not publish raw. Confirm every claim against the cited source, run the
 Legal claims-clearance + Security gate, and route to owner A1 before any post goes out.

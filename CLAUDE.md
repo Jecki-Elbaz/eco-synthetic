@@ -82,11 +82,16 @@ Structural safeguards (all live 2026-07-10):
   C:\Users\Jecki\.google_workspace_mcp\eco-creds (WORKSPACE_MCP_CREDENTIALS_DIR).
   That store holds at most the eco.synthetic.org token. The owner's personal token and
   Shelly's token live in other stores this project cannot reach.
-  OAUTH STATUS: PENDING -- the owner must complete the eco.synthetic.org@gmail.com
-  browser consent (start_google_auth) before any Google call works. RETRACTION: the
-  2026-07-10 line claiming the server was already "OAuth'd to eco.synthetic.org@gmail.com"
-  was WRONG -- verified on disk there was NO eco token; earlier auth attempts were
-  abandoned. Google tools fail until the consent is done.
+  OAUTH STATUS: LIVE 2026-07-24 -- owner completed the eco.synthetic.org@gmail.com
+  browser consent in an interactive session; verified same session by a bounded
+  list_gmail_labels call (14 labels returned, no auth error). Supersedes the PENDING
+  state that held 2026-07-18..2026-07-24.
+  EXPIRY WARNING (SHIR-008): the GCP OAuth app is still in TESTING publishing status,
+  so this refresh token expires ~7 days out (~2026-07-31) and Gmail will break again.
+  The durable fix is the owner switching the app to "In production" in the GCP console
+  and re-consenting once more -- steps in integrations/runner/gmail-oauth-durability-shir-2026-07-18.md.
+  HISTORY: the 2026-07-10 line claiming the server was already "OAuth'd" was WRONG --
+  verified on disk there was NO eco token then; those earlier auth attempts were abandoned.
 - GUARD PINNING (hard-enforced regardless of GUARD_MODE): guard.py denies any
   mcp__google_workspace__* call whose user_google_email is not eco.synthetic.org@gmail.com,
   and denies send_gmail_message on the runner path unconditionally.

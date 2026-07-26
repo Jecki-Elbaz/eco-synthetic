@@ -111,11 +111,19 @@ PER_AGENT_TIMEOUTS: dict = {
     "oracle": 600,
 }
 
+# Default model id for runner-path agents. ECO-MODEL-FIX 2026-07-24 (adopted from
+# origin/master 293a9c8 during the 2026-07-25 reconcile): bumped from the retired
+# "claude-sonnet-4-6" id (an unavailable model id makes `claude --print` exit 1 with the
+# error on STDOUT and an EMPTY stderr -- the "rc=1: no stderr" class of silent failures
+# the Eco 2h job was hitting) to the current Sonnet tier. Keep a "sonnet" substring so
+# _model_timeout() still resolves to the 300s Sonnet timeout.
+DEFAULT_MODEL = "claude-sonnet-5"
+
 # SHIR-FIX-03: Eco runner-path model override (interactive-session model unchanged).
 # Eco's role file typically specifies Opus; the runner uses Sonnet by default to avoid
 # session-limit + timeout failures (Ido A3 pre-approved 2026-07-11).
 # Override via env: RUNNER_MODEL_OVERRIDE=<model-id>
-RUNNER_ECO_MODEL = os.environ.get("RUNNER_MODEL_OVERRIDE", "claude-sonnet-4-6")
+RUNNER_ECO_MODEL = os.environ.get("RUNNER_MODEL_OVERRIDE", DEFAULT_MODEL)
 
 # SHIR-FIX-06: patterns in combined stdout+stderr that trigger one bounded retry
 RETRY_PATTERNS = (
@@ -214,6 +222,29 @@ def _model_timeout(model: str) -> int:
     return CLAUDE_TIMEOUT_DEFAULT
 
 
+def _stdout_diag(raw: str) -> str:
+    """Extract a human-readable error message from CLI stdout for failure logging.
+
+    ECO-STDOUT-FIX 2026-07-25 (same class of bug SHIR-001 found in the bridge on
+    2026-06-22): the claude CLI writes fatal errors to STDOUT, not stderr -- e.g.
+    "Failed to authenticate: OAuth session expired and could not be refreshed" --
+    often with EMPTY stderr. Under --output-format json a failure may arrive as a
+    JSON envelope ({is_error, result}); a pre-JSON fatal (auth) arrives as plain
+    text. Return the most meaningful bounded snippet, or '' when stdout is empty."""
+    raw = (raw or "").strip()
+    if not raw:
+        return ""
+    try:
+        data = json.loads(raw)
+        if isinstance(data, dict):
+            msg = data.get("result") or data.get("error") or data.get("message")
+            if msg:
+                return " ".join(str(msg).split())
+    except (json.JSONDecodeError, TypeError):
+        pass
+    return " ".join(raw.split())
+
+
 def _invoke_claude(cmd: list, stdin_data: bytes, env: dict, timeout: int, cwd: str) -> tuple:
     """SHIR-FIX-06: single claude CLI invocation. Returns (rc, raw_stdout, err_tag).
     err_tag is None on a clean run or a short string identifying a retryable failure."""
@@ -229,8 +260,13 @@ def _invoke_claude(cmd: list, stdin_data: bytes, env: dict, timeout: int, cwd: s
         # ECO-CMDLINE-FIX 2026-07-18: a nonzero exit is a FAILURE even when stderr
         # matches no retry pattern. Previously rc=1 + empty stdout was logged as a
         # clean "done" -- jobs failed silently for ~36h ("command line is too long").
+        # ECO-STDOUT-FIX 2026-07-25: the CLI emits auth and other fatal errors on
+        # STDOUT with empty stderr, so the old stderr-only tag logged "no stderr"
+        # and discarded the real cause (e.g. the OAuth-expired message). Prefer
+        # stderr, then fall back to a stdout-extracted diagnostic.
         if r.returncode != 0:
-            return r.returncode, raw, f"rc={r.returncode}: {stderr_text[:150] or 'no stderr'}"
+            diag = stderr_text or _stdout_diag(raw) or "no stderr/stdout"
+            return r.returncode, raw, f"rc={r.returncode}: {diag[:200]}"
         return r.returncode, raw, None
     except subprocess.TimeoutExpired:
         return -1, "", "TimeoutExpired"
@@ -258,9 +294,9 @@ def agent_model(agent: str) -> str:
     try:
         txt = (AGENTS_DIR / f"{agent}.md").read_text(encoding="utf-8")
         m = re.search(r"(?mi)^model:\s*([A-Za-z0-9._-]+)", txt)
-        return m.group(1) if m else "claude-sonnet-4-6"
+        return m.group(1) if m else DEFAULT_MODEL
     except OSError:
-        return "claude-sonnet-4-6"
+        return DEFAULT_MODEL
 
 
 def role_text(agent: str) -> str:
@@ -437,13 +473,20 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
         rc, raw, err_tag2 = _invoke_claude(cmd, stdin_data, env, timeout, str(ROOT))
         if err_tag2:
             final_err = f"{err_tag} -> {err_tag2}"
-            log({"key": key, "event": "error_final", "err": final_err})
+            # ECO-STDOUT-SURFACE 2026-07-24 (origin 293a9c8) + ECO-STDOUT-FIX 2026-07-25:
+            # the err_tag now embeds a stdout-derived diagnostic; additionally persist a
+            # bounded raw-stdout snippet on the error_final record and in the Telegram
+            # alert so failures are self-diagnosing even when the tag is truncated.
+            stdout_snip = _stdout_diag(raw)
+            log({"key": key, "event": "error_final", "err": final_err,
+                 "stdout": raw[:600]})
             # Alert via the existing Telegram pathway; failure is also in agent-runs.jsonl.
             send_telegram(
                 f"[Runner FAIL -- {agent}]\n"
                 f"Job failed after 1 retry.\n"
                 f"Key: {key}\n"
                 f"Error: {final_err}"
+                + (f"\nStdout: {stdout_snip[:300]}" if stdout_snip else "")
             )
             return {"ran": True, "error": True}
     # SHIR-FIX-07: extract text + cost fields from JSON envelope

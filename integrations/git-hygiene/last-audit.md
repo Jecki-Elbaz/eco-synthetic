@@ -1,24 +1,28 @@
 # Git Hygiene -- Last Audit
 
-Date: 2026-07-20 | Run by: audit.py (deterministic, zero-token) | Verdict: ATTENTION
+Date: 2026-07-26 | Run by: audit.py (deterministic, zero-token) | Verdict: ATTENTION
 
 ## State
 - Branch: master
-- Upstream: yes | ahead 0 | behind 0
-- Changed entries: 12 (staged 0 / unstaged 0 / untracked 4)
+- Upstream: yes | ahead 0 | behind 1
+- Changed entries: 38 (staged 0 / unstaged 15 / untracked 23)
 - Top areas:
-  - company/chronicle: 2
+  - shared/handoff: 8
+  - company/chronicle: 7
+  - memory/wiki: 6
+  - integrations/runner: 5
   - integrations/git-hygiene: 2
-  - memory/wiki: 2
-  - ompany/chronicle: 1
-  - memory/board.md: 1
-  - memory/enforce-readiness-state.json: 1
-  - memory/owner-dashboard.md: 1
-  - memory/feedback_language_rule.md: 1
-  - shared/handoff: 1
+  - claude/agents: 1
+  - CLAUDE.md: 1
+  - company/cs: 1
+  - company/governance: 1
+  - company/hr: 1
 
 ## Flags (ATTENTION)
-- 12 uncommitted changes sitting directly on master.
+- 1 commit(s) on the remote not pulled in yet.
+- 38 changed files uncommitted -- large unsaved pile.
+- 23 new untracked files never added to git.
+- 38 uncommitted changes sitting directly on master.
 
 ## Note
 .env / secret CONTENTS never read; git diff content never dumped (red line 1).

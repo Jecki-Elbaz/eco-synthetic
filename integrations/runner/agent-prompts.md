@@ -130,6 +130,16 @@ Read memory/board.md. Check only for these conditions:
    (act) cycle, also append a dated "REACTIVATED <YYYY-MM-DD> by Eco stale-sweep:
    <next step>" note into that row's detailed_desc. A company of agents leaves nothing
    sitting without a stated reason.
+   VERIFY-BEFORE-REACTIVATE (ECO-FIX 2026-07-25, red line 11): BEFORE reactivating, if the
+   row names a target deliverable file, CHECK whether that file already exists on disk and
+   when it was last written. AUD-010 was reactivated 4 times (07-19..07-25) while its
+   deliverable (company/hr/aud-010-role-file-batch-2026-07-14.md) had existed since
+   2026-07-14 -- the stall was a bookkeeping gap, not a work gap. If the deliverable
+   exists: do NOT reactivate; instead append a dated note that the deliverable is on disk
+   and the row needs closure/next-step routing, and surface THAT to the owner. Also state
+   in every reactivation which execution path is expected to pick it up -- a reactivation
+   note alone executes nothing; if the same row hits a 3rd cycle, escalate to the owner to
+   dispatch it in an interactive session instead of appending a 4th note.
 
 If ANY condition 1-4 or 7 is true OR a Shelly message requires a jecki decision OR condition 6
 staged new screened mail: produce a brief message (max 80 words) describing the specific
@@ -228,11 +238,19 @@ Steps:
    memory/agent-runs.jsonl (last 24h): since AUD-007 (2026-07-12) each event=done record
    carries cost_usd, model, input_tokens, output_tokens per run -- this is the primary
    per-run cost source; log.jsonl is secondary/legacy.
+   TAIL RULE (ECO-FIX 2026-07-25): agent-runs.jsonl is APPEND-ONLY and LARGE (1600+ lines).
+   A plain Read shows only the FIRST page (oldest entries, starting 2026-06-29) -- judging
+   staleness from that page caused 7 consecutive false "runner offline 26 days" CRITICAL
+   alerts (2026-07-19..25) while the runner was actually running every cycle. You MUST page
+   to the END of the file: when Read reports "showing lines 1-X of N total", re-Read with
+   offset = N minus ~150 and base "last entry" / last-24h analysis ONLY on those final lines.
+   Never report the log as stale unless the FINAL line of the file is older than 24h.
 2. Read memory/wiki/ for any cost-snapshot files from previous days.
 3. Estimate token usage in the last 24h. Break down by agent if the data supports it.
 4. Compare to the prior 7-day average if calculable.
 5. RUNNER HEALTH CHECK (Op-Ex ownership of the proactivity runner): read
-   memory/agent-runs.jsonl (last 24h) and memory/agent-guard.log (last 24h). Tally: total
+   memory/agent-runs.jsonl (last 24h; TAIL RULE from step 1 applies -- read the END of the
+   file) and memory/agent-guard.log (last 24h). Tally: total
    agent runs; any event=error, event=error_final (AUD-007: final failure after one retry;
    event=retry alone is a recovered transient, note but do not alarm), or TimeoutExpired;
    any rc != 0; Eco Telegram sent-vs-suppressed.

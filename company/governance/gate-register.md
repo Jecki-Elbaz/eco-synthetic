@@ -617,3 +617,20 @@ Red line 4 and CLAUDE.md section 6 apply fully.
 **Full findings:** company/security/reports/gate-skill-scout-rambo-2026-07-14.md
 
 **Opened by:** Rambo | **Date:** 2026-07-14 | **Triggered by:** T-0036 (owner reactivated 2026-07-14)
+
+---
+
+## GR-018 -- lharries/whatsapp-mcp -- GATE CLOSED 2026-07-20 (owner A1)
+
+**Tool:** lharries/whatsapp-mcp (Go + Python; local SQLite; unofficial WhatsApp API)
+**Pinned SHA:** 7d6a06dcdce1f01dfb24f60e1030d5efba9f3b88
+**Scope:** Shelly project only (C:\Users\Jecki\DEV\projects\whatsapp-mcp). NOT global.
+**Security review:** Rambo PARTIAL-CLEAR 2026-06-17 + re-assessment 2026-07-01; conditions C1-C9 in force (full findings: company/governance/gate-review-whatsapp-mcp-rambo.md; C8 SHA-pin satisfied by this record).
+**Legal review:** Eyal CLEAR-WITH-CONDITIONS 2026-07-01/2026-07-08/2026-07-11; conditions C-L1 to C-L4 in force (eyal-whatsapp-tos-confirm-2026-07-09.md; C-L1 ban-risk formally accepted by owner 2026-07-20).
+**Owner A1:** jecki -- granted 2026-07-15, confirmed 2026-07-19 via Telegram.
+**Ban risk accepted:** 2026-07-20 by owner (secondary number only, low volume). Full entry in Shelly memory/owner-office/decisions-log.md (Shelly project; not replicated here per privacy rule).
+**Gate closed:** 2026-07-20.
+
+Conditions C1-C9 (Rambo) and C-L1 to C-L4 (Eyal) remain binding in perpetuity. No auto-update without advance Rambo approval. Not global-scope. Prior pending-review row (above) is superseded; this section is the authoritative gate-closed record.
+
+**Opened by:** Eco (forwarding Shelly C9 handoff request) | **Date:** 2026-07-20 | **Triggered by:** shared/handoff/shelly-outbox/gate-register-whatsapp-row-2026-07-20.md
