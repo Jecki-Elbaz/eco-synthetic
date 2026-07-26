@@ -82,14 +82,20 @@ Structural safeguards (all live 2026-07-10):
   C:\Users\Jecki\.google_workspace_mcp\eco-creds (WORKSPACE_MCP_CREDENTIALS_DIR).
   That store holds at most the eco.synthetic.org token. The owner's personal token and
   Shelly's token live in other stores this project cannot reach.
-  OAUTH STATUS: LIVE 2026-07-24 -- owner completed the eco.synthetic.org@gmail.com
-  browser consent in an interactive session; verified same session by a bounded
-  list_gmail_labels call (14 labels returned, no auth error). Supersedes the PENDING
-  state that held 2026-07-18..2026-07-24.
-  EXPIRY WARNING (SHIR-008): the GCP OAuth app is still in TESTING publishing status,
-  so this refresh token expires ~7 days out (~2026-07-31) and Gmail will break again.
-  The durable fix is the owner switching the app to "In production" in the GCP console
-  and re-consenting once more -- steps in integrations/runner/gmail-oauth-durability-shir-2026-07-18.md.
+  OAUTH STATUS: LIVE 2026-07-26 -- re-consented onto the new dedicated "Eco-Synthetic"
+  OAuth client (T-0042). Client lives in GCP project EcoSynthetic (id ecosynthetic) owned
+  by eco.synthetic.org@gmail.com; credentials come from ECO_GOOGLE_OAUTH_CLIENT_ID /
+  ECO_GOOGLE_OAUTH_CLIENT_SECRET (see .mcp.json). Supersedes the 2026-07-24 consent, which
+  ran on the old shared "Shelly" client; the eco account's grant to that app was revoked
+  2026-07-26.
+  SHIR-008 EXPIRY WARNING: RESOLVED 2026-07-26. The Eco-Synthetic app was published to
+  "In production" in the GCP console BEFORE consent, so refresh tokens no longer carry the
+  ~7-day Testing expiry. The ~2026-07-31 breakage date is void; no weekly re-consent needed.
+  Verified in console: publishing status reads "In production".
+  RE-CONSENT GOTCHA (learned 2026-07-26): if a token file already exists in eco-creds, the
+  server reuses it and NO consent browser tab opens -- a successful label call then proves
+  nothing about which client is in use. To force a genuine re-consent, move the existing
+  eco.synthetic.org@gmail.com.json aside first, then confirm a NEW token file was written.
   HISTORY: the 2026-07-10 line claiming the server was already "OAuth'd" was WRONG --
   verified on disk there was NO eco token then; those earlier auth attempts were abandoned.
 - GUARD PINNING (hard-enforced regardless of GUARD_MODE): guard.py denies any

@@ -1842,3 +1842,52 @@ jecki notified in-session. APPLY: owner A1 edits company/governance/access-matri
 - **Files affected:** integrations/telegram-bridge/bridge-git-sync.py (sequencer pre-flight; empty --git-path fix; watchdog fallback), integrations/git-hygiene/audit.py (mid-merge + template-subject flags), .claude/settings.json (UserPromptSubmit pull hook now states when it skipped), .claude/hooks/test_guard.py (15 stale tests repaired, 2 added), integrations/runner/runner.py (daily zero-token run_guard_suite job), pytest.ini, requirements-dev.txt, integrations/git-hygiene/test_audit.py (new), integrations/telegram-bridge/test_bridge_git_sync.py (new), company/decisions/decisions-log.md (this entry).
 - **Commits:** ae3a6bb, d6eac48, 9fc6444, 73f8f1c. Full repo suite at close: 86 passed, 0 failed.
 - **Open items (owner / named agent):** (1) gate-register entry for pytest==9.1.1 -- Eyal (Legal terms) + Rambo (Security), pattern of GR-015 supertest; NOT self-added (red line 9). (2) Rambo's PATH_SCOPE excludes .claude/hooks/, so Rambo cannot maintain its own proof suite -- widening it is a guard change requiring the gate. (3) bridge-git-sync.py on_any_event skips git internals with the POSIX-only check "/.git/" in path -- would not filter .git writes on a Windows bridge host; Shir, pre-Phase-B. (4) watchdog==4.0.1 install + requirements.txt entry at Phase B deploy; git-sync-deploy-checklist.md does NOT currently carry that step.
+
+## 2026-07-26 -- T-0042 dedicated "Eco-Synthetic" OAuth client MIGRATED + published In production (owner A1, in-session)
+
+- **Decision:** executed T-0042 (Option B, one-OAuth-app-per-identity) with the SHIR-008 production
+  switch folded in as step 1b, per the 2026-07-24 sequencing recommendation. Eco's GR-009
+  workspace-mcp server no longer authenticates through the OAuth client named "Shelly".
+- **Scope change vs the runbook (owner A1 in-session):** the runbook said create a new GCP project
+  named "eco-synthetic". Verified in console first: eco.synthetic.org@gmail.com already owned exactly
+  ONE project, EcoSynthetic (id ecosynthetic), with Google Auth Platform unconfigured and zero OAuth
+  clients. Creating a second, near-identically-named project would have been a duplicate. Owner chose
+  REUSE. Step 1 skipped; everything else executed as written.
+- **What was done:** Gmail + Calendar + Drive APIs enabled in project ecosynthetic. OAuth consent
+  screen created -- app name "Eco-Synthetic", user type External, support + contact address
+  eco.synthetic.org@gmail.com. App PUBLISHED TO "IN PRODUCTION" BEFORE any consent. Desktop-app OAuth
+  client "Eco-Synthetic" created. Owner set ECO_GOOGLE_OAUTH_CLIENT_ID / ECO_GOOGLE_OAUTH_CLIENT_SECRET
+  by setx, pasting both values himself. .mcp.json env rewired to the ECO_ var names.
+- **SHIR-008 CLOSED by this entry.** Root cause was the OAuth app sitting in TESTING publishing status,
+  which caps refresh tokens at ~7 days. The new client was published to In production BEFORE consent,
+  so the token minted 2026-07-26 does NOT carry the ~2026-07-31 expiry. Verified in console: publishing
+  status reads "In production" (control now offers "Back to testing"). The old weekly Gmail breakage
+  is structurally gone, not deferred.
+- **Consent gotcha worth remembering:** the first re-consent attempt produced NO browser tab and
+  silently succeeded. Cause: the old client's token was still at
+  C:\Users\Jecki\.google_workspace_mcp\eco-creds\eco.synthetic.org@gmail.com.json, and workspace-mcp
+  reused it rather than re-authorizing. Moving it to .old-client.bak was REQUIRED before the new client
+  took effect. Verified by disk state: backup 1439 bytes 17:01 (old), fresh token 1430 bytes 18:32 (new).
+  A green "it worked" from a label call is NOT evidence the new client is in use -- check for a new
+  token file.
+- **Old grant revoked:** the eco account's third-party grant to the "Shelly" app was removed
+  (myaccount linked apps 3 -> 2; Claude for Gmail + Eco-Synthetic remain). SECURITY NOTE: that grant
+  carried Gmail send scopes ("read, compose and send", "manage drafts and send emails", +10 more) on
+  the eco mailbox. Revoking it also closed a send-capable grant that nothing needed -- consistent with
+  the "no agent sends autonomously" posture.
+- **Unchanged:** pin workspace-mcp==1.21.3 (no version bump, no new gate -- this is naming/governance
+  hygiene, security boundary is per credential store and did not move).
+  WORKSPACE_MCP_CREDENTIALS_DIR unchanged. send_gmail_message still neither allowed nor denied in
+  settings.json, so it prompts interactively and is auto-denied on runner/bridge paths.
+- **Secret handling:** the agent never read, printed, logged or wrote the client secret or any token.
+  Env vars were verified by presence + length only (ID 72 chars, secret 35 chars). All sensitive clicks
+  (Enable, terms checkbox, Create, Publish, Allow, Remove access) were performed by the owner.
+- **Files affected:** .mcp.json (env var names only), memory/board.md (T-0042 -> done), CLAUDE.md
+  (SHIR-008 expiry warning -> resolved), company/decisions/decisions-log.md (this entry).
+- **Open items:** (1) the machine-wide GOOGLE_OAUTH_CLIENT_ID / GOOGLE_OAUTH_CLIENT_SECRET user env
+  vars still exist and still point at the old Shelly client -- left in place because other projects may
+  consume them; someone should confirm ownership before removing. (2) GR-009 addendum in
+  gate-register.md recording the client swap -- not self-added here (red line 9); Rambo + Eyal.
+  (3) an unrelated file, eco-synthetic-audit-mid-summary.pptx (169 KB, dated 2026-07-14), is sitting
+  inside the credential store directory eco-creds/ -- a Drive download appears to have been written to
+  the token folder. Not touched. Shir/Rambo should move it out; credential dirs should hold tokens only.

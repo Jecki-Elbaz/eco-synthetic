@@ -8,8 +8,8 @@
         "--tools", "gmail", "calendar", "drive"
       ],
       "env": {
-        "GOOGLE_OAUTH_CLIENT_ID": "${GOOGLE_OAUTH_CLIENT_ID}",
-        "GOOGLE_OAUTH_CLIENT_SECRET": "${GOOGLE_OAUTH_CLIENT_SECRET}",
+        "GOOGLE_OAUTH_CLIENT_ID": "${ECO_GOOGLE_OAUTH_CLIENT_ID}",
+        "GOOGLE_OAUTH_CLIENT_SECRET": "${ECO_GOOGLE_OAUTH_CLIENT_SECRET}",
         "WORKSPACE_MCP_CREDENTIALS_DIR": "C:\\Users\\Jecki\\.google_workspace_mcp\\eco-creds"
       }
     }
