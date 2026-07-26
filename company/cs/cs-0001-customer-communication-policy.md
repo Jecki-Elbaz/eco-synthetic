@@ -1,14 +1,14 @@
 # CS-0001: Customer Communication Policy
 
 - **Policy ID:** CS-0001
-- **Version:** 0.2-DRAFT
-- **Last updated:** 2026-07-25 -- Eyal EA-2 retention text folded in, AUD-012 F-QUAL05 / AUD-004 item 5 closed
-- **Status:** DRAFT -- awaiting owner A1 to activate
+- **Version:** 1.0
+- **Last updated:** 2026-07-26 -- owner A1 granted; authorization list set (Mike + Jenny); policy armed, customer contact still gated on product-live
+- **Status:** APPROVED (owner A1 2026-07-26). ARMED; customer contact remains GATED on product-live per section 2 -- no product live today, so no customer contact is authorized yet.
 - **Owner:** Mike (VP Customer Success)
 - **Manager review:** Eco (CEO) -- A2 required before A1 package
 - **References:** company/policies/human-communication-policy.md (POL-001 v0.4), company/soul.md, company/constitution.md section 5, memory/board.md AUD-004 / T-0037
 - **Created:** 2026-07-08
-- **Hard gate:** This policy is NOT active until owner A1. No customer contact by any agent until CS-0001 is A1-approved AND a product is live. No exceptions.
+- **Hard gate:** CS-0001 is A1-APPROVED (owner, 2026-07-26). No customer contact by any agent until a product is live. No exceptions.
 
 ---
 
@@ -118,7 +118,9 @@ Only agents who are:
 
 Until the above are all true for a given agent: that agent may NOT send customer email, regardless of whether the email-send technical capability (T-0037) is enabled on their account.
 
-At the time this policy is drafted, no agent meets all three conditions (CS-0001 is not yet A1-approved, no product is live). This section activates only when the hard gate in section 2 is fully open.
+Authorized agents as of CS-0001 v1.0 (owner A1 2026-07-26): Mike (VP Customer Success) and Jenny (tier-1 CS support) ONLY. Jack and Ella are NOT authorized at this time; they may be added as volume warrants via a future owner A1. All customer email drafts by Jenny route through Mike for review before placement in the owner's draft folder. No agent outside this list may draft or place customer email under this policy.
+
+Customer contact by authorized agents remains GATED on a product being live (section 2 condition 2 -- not yet met as of 2026-07-26). No customer contact is permitted until that gate opens.
 
 ### 6.2 Approved channel and model
 
@@ -209,7 +211,7 @@ These must be resolved before this policy goes to the A1 package:
 
 3. **Approved channel list.** This draft covers email (the only active send channel). When additional channels become relevant (e.g., WhatsApp after T-0039 closes, a product-embedded chat), each requires a new or updated A1 and a Rambo+Eyal gate. Owner to confirm: is email the ONLY permitted channel at CS-0001 activation, or are others pre-approved?
 
-4. **Agent authorization list.** Section 6.1 states only agents explicitly authorized by the owner may send customer email. At activation, which agents (Mike? Jenny? Jack? Ella?) are authorized? Owner to name them in the A1 decision or via a separate A1 list.
+4. **Agent authorization list.** RESOLVED (owner A1 2026-07-26): Mike (VP CS) and Jenny (tier-1 support) are the authorized agents at activation. Jack and Ella are NOT authorized at this time; they may be added later as volume warrants via a future owner A1. All customer email drafts route through Mike for review. Authorization named in the A1 decision 2026-07-26 (decisions-log).
 
 5. **Customer data retention.** Section 8 references PPL. Specific retention periods for CS ticket summaries and support records are not set in this draft. Eyal (Legal) should confirm the PPL-compliant retention window before A1 so this policy can state a specific period rather than deferring.
 
@@ -233,10 +235,10 @@ Reviewed by Eco (CEO). Draft APPROVED at A2, subject to the owner A1 items below
 1. Response-time targets -- DEFERRED to first-product-live. Interim standard: same-cycle ack (already set). Proposed resolution targets for owner to confirm at launch: 24h for standard support, same-cycle for critical issues. Not a blocker to A1.
 2. Complaint / refund / credit authority -- RESOLVED (Eco A2). Company budget is 0. No pre-authorized discretionary credit. Every compensation or credit gesture is A1 per instance until the owner sets an explicit ceiling. Reps offer none.
 3. Approved channel list -- RESOLVED (Eco A2). Email only at CS-0001 activation. Any additional channel (WhatsApp per T-0039, product-embedded chat) requires a fresh A1 plus a Rambo (security) + Eyal (legal) gate before use.
-4. Agent authorization list -- ESCALATE to owner A1. Eco recommendation: authorize Mike and Jenny only at activation; add Jack and Ella later as volume warrants; all customer email drafts route through Mike. Owner names the authorized agents in the A1 decision.
+4. Agent authorization list -- RESOLVED (owner A1 2026-07-26): Mike (VP CS) and Jenny (tier-1 support) authorized at activation. Jack and Ella NOT authorized; added later as volume warrants via a future owner A1. All customer email drafts route through Mike for review.
 5. Data retention window -- ROUTED to Eyal (Legal) to confirm the PPL-compliant retention period for CS ticket summaries, to be stated explicitly before the A1 package goes to the owner.
 
-A1 package readiness: ready once (a) owner confirms the section 11 item 4 authorization list, and (b) Eyal returns the item 5 retention period. Items 1-3 need no further work.
+A1 package readiness: COMPLETE. Both pre-A1 dependencies closed -- (a) owner confirmed authorization list 2026-07-26 (item 4 above); (b) Eyal returned item 5 retention window (v0.2-DRAFT 2026-07-25). Items 1-3 resolved at Eco A2 (2026-07-08). Owner A1 GRANTED 2026-07-26; policy v1.0 ARMED.
 
 ## Version history
 
@@ -244,6 +246,7 @@ A1 package readiness: ready once (a) owner confirms the section 11 item 4 author
 |---------|------|--------|--------|
 | 0.1-DRAFT | 2026-07-08 | Mike (VP CS) | Initial draft per AUD-004 / T-0037 scope split (owner 2026-06-29). Covers all 6 required areas: permitted/prohibited content, tone/address, data-sharing limits, escalation, email-send procedure, hard gate restatement. |
 | 0.2-DRAFT | 2026-07-25 | Mike (VP CS) | Eyal EA-2 retention text folded into section 8 (after breach-notification sentence). AUD-012 F-QUAL05 / AUD-004 item 5 closed. Retention: 2 years from ticket close, delete/anonymize; dispute exception +1 year; rights: access, correction, deletion, objection; must be stated in privacy notice before any CS data collected. |
+| 1.0 | 2026-07-26 | Mike (VP CS) | Owner A1 granted; authorized agents Mike+Jenny; policy armed, customer contact still gated on product-live. |
 
 ---
 
