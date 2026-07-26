@@ -255,7 +255,11 @@ def pending_sequencer_state():
     # A rebase leaves no ref, only a state directory.
     for d in ("rebase-merge", "rebase-apply"):
         r = git("rev-parse", "--git-path", d, check=False)
-        if r.returncode == 0 and os.path.isdir(os.path.join(REPO_ROOT, r.stdout.strip())):
+        # The empty-path check is load-bearing: os.path.join(REPO_ROOT, "") is REPO_ROOT
+        # itself, which always isdir, so a blank reply would report a phantom rebase and
+        # wedge the bridge shut permanently. Blank reply means "cannot tell" -> not pending.
+        rel = r.stdout.strip() if r.returncode == 0 else ""
+        if rel and os.path.isdir(os.path.join(REPO_ROOT, rel)):
             return "rebase"
     return None
 

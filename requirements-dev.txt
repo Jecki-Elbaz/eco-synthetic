@@ -1,0 +1,16 @@
+# Dev/test dependencies for eco-synthetic.
+#
+# Install into the venv the runner already uses (see integrations/runner/runner-install.ps1):
+#   integrations/telegram-bridge/.venv/Scripts/python.exe -m pip install -r requirements-dev.txt
+#
+# Exact pins per CLAUDE.md security notes ("Pin all dependency versions. Never use
+# `latest` or unversioned references"). Resolved 2026-07-26 against CPython 3.14.4.
+
+pytest==9.1.1
+
+# pytest transitive deps, pinned so a reinstall reproduces this exact environment.
+colorama==0.4.6
+iniconfig==2.3.0
+packaging==26.2
+pluggy==1.6.0
+Pygments==2.20.0
