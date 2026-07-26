@@ -234,6 +234,32 @@ def is_behind_origin():
     except Exception:
         return False
 
+def pending_sequencer_state():
+    """
+    Returns a label for any half-finished git sequencer operation, or None if clean.
+
+    Why this exists: `git commit` while MERGE_HEAD is present silently FINALIZES
+    somebody else's in-progress merge under whatever message this script passes, and
+    `git pull --ff-only` cannot run at all in that state ("Cannot fast-forward to
+    multiple branches"). Detected via rev-parse / --git-path so it stays correct in
+    linked worktrees instead of hardcoding .git/ paths.
+    """
+    for ref, label in (
+        ("MERGE_HEAD", "merge"),
+        ("CHERRY_PICK_HEAD", "cherry-pick"),
+        ("REVERT_HEAD", "revert"),
+    ):
+        r = git("rev-parse", "--verify", "--quiet", ref, check=False)
+        if r.returncode == 0 and r.stdout.strip():
+            return label
+    # A rebase leaves no ref, only a state directory.
+    for d in ("rebase-merge", "rebase-apply"):
+        r = git("rev-parse", "--git-path", d, check=False)
+        if r.returncode == 0 and os.path.isdir(os.path.join(REPO_ROOT, r.stdout.strip())):
+            return "rebase"
+    return None
+
+
 # ---------------------------------------------------------------------------
 # Pull logic (Direction C and pull-before-push)
 # ---------------------------------------------------------------------------
@@ -331,6 +357,21 @@ def commit_and_push():
     Pull-before-push, then stage, commit, and push with retry.
     Returns True on success, False on failure after all retries.
     """
+    # SEQUENCER PRE-FLIGHT: refuse to touch git while a merge/rebase/cherry-pick is
+    # half finished. Committing in that state would absorb an unrelated in-progress
+    # merge into this bridge's auto-commit. Fail closed and signal the owner.
+    pending = pending_sequencer_state()
+    if pending:
+        ts = utc_now_iso()
+        logger.error("PUSH: %s in progress -- refusing to pull, stage, or commit", pending)
+        append_audit_log(
+            f"{ts} | BRIDGE-PUSH | ACTION=BLOCKED | REASON=SEQUENCER-IN-PROGRESS | STATE={pending}"
+        )
+        append_board_blocked(
+            f"bridge blocked: {pending} in progress; owner must finish or abort it"
+        )
+        return False
+
     # Pull-before-push: get latest remote state first
     if not pull_data_plane_only():
         logger.warning("PUSH: pull-before-push failed or blocked -- skipping commit cycle")

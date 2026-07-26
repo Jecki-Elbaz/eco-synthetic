@@ -100,7 +100,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "git pull --ff-only origin master 2>&1 | tail -2 || true"
+            "command": "if git rev-parse --verify --quiet MERGE_HEAD >/dev/null 2>&1; then echo \"GIT SYNC SKIPPED: merge in progress, repo NOT synced with origin. Finish it with: git commit --no-edit --cleanup=strip\"; else git pull --ff-only origin master 2>&1 | tail -2; fi || true"
           }
         ]
       }

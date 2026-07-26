@@ -36,6 +36,11 @@ UNCOMMITTED_ALERT = 25      # total changed entries
 UNTRACKED_ALERT = 15        # new files never added
 MASTER_DIRTY_ALERT = 10     # uncommitted entries while sitting on master
 
+# ASCII field/record separators for parsing `git log` output. Used instead of
+# newlines because a commit message body contains newlines; these two bytes cannot.
+_FLD = chr(31)   # git format %x1f
+_REC = chr(30)   # git format %x1e
+
 
 def _git(*args: str) -> str:
     """Run a read-only git command from the repo root; return stripped stdout ('' on error)."""
@@ -74,6 +79,27 @@ def collect() -> dict:
         )
         behind = int(_git("rev-list", "--count", "HEAD..@{u}") or 0)
 
+    # Half-finished merge state. This is what silently breaks pulls and lets a plain
+    # `git commit` absorb an unrelated in-progress merge, so it earns a same-day alert.
+    mid_merge = bool(_git("rev-parse", "--verify", "--quiet", "MERGE_HEAD"))
+
+    # Commits whose message still carries the git editor template. `git commit --no-edit`
+    # finalizing a merge does NOT strip the "# Please enter..." block, and because the
+    # template has no blank line before it, the whole block folds into the SUBJECT line.
+    # UNPUSHED commits only, deliberately: those are still fixable with a plain --amend.
+    # Already-pushed ones would need a force-push (an A1 action), so flagging them would
+    # be permanent un-actionable noise. SHAs only -- message text never enters a report.
+    bad_msgs: list[str] = []
+    if has_upstream:
+        raw = _git("log", "@{u}..HEAD", "--format=%h" + "%x1f" + "%B" + "%x1e")
+        for rec in raw.split(_REC):
+            if _FLD not in rec:
+                continue
+            sha, body = rec.split(_FLD, 1)
+            if any(ln.startswith(("# Please enter", "# Lines starting with"))
+                   for ln in body.splitlines()):
+                bad_msgs.append(sha.strip())
+
     # Top areas by change concentration (paths only, never content).
     areas: dict[str, int] = {}
     for ln in porcelain.splitlines():
@@ -94,6 +120,8 @@ def collect() -> dict:
         "staged": _count(staged),
         "unstaged": _count(unstaged),
         "untracked": _count(untracked),
+        "mid_merge": mid_merge,
+        "bad_msgs": bad_msgs,
         "top_areas": top_areas,
     }
 
@@ -113,6 +141,17 @@ def judge(s: dict) -> tuple[str, list[str]]:
         flags.append(f"{s['untracked']} new untracked files never added to git.")
     if s["branch"] == "master" and s["total"] >= MASTER_DIRTY_ALERT:
         flags.append(f"{s['total']} uncommitted changes sitting directly on master.")
+    if s["mid_merge"]:
+        flags.append(
+            "A merge is started but not finished -- pulls will keep failing until it is "
+            "committed (git commit --no-edit --cleanup=strip) or aborted."
+        )
+    if s["bad_msgs"]:
+        flags.append(
+            f"{len(s['bad_msgs'])} unpushed commit(s) have the git message template stuck "
+            f"in the subject line ({', '.join(s['bad_msgs'])}) -- fix with "
+            "git commit --amend --cleanup=strip BEFORE pushing."
+        )
     return ("ATTENTION" if flags else "CLEAN", flags)
 
 
@@ -144,6 +183,8 @@ Date: {_today()} | Run by: audit.py (deterministic, zero-token) | Verdict: {verd
 - Branch: {s['branch']}
 - Upstream: {'yes' if s['has_upstream'] else 'none'} | ahead {s['ahead']} | behind {s['behind']}
 - Changed entries: {s['total']} (staged {s['staged']} / unstaged {s['unstaged']} / untracked {s['untracked']})
+- Merge in progress: {'YES -- unfinished' if s['mid_merge'] else 'no'}
+- Unpushed commits with template text in the subject: {len(s['bad_msgs'])}
 - Top areas:
 {areas}
 
