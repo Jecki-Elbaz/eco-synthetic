@@ -55,6 +55,14 @@ try:
     from watchdog.events import FileSystemEventHandler
     WATCHDOG_AVAILABLE = True
 except ImportError:
+    # watchdog is OPTIONAL by design: main() falls back to a polling loop for
+    # Direction B when it is absent. Bind the names anyway. AgentWriteHandler
+    # subclasses FileSystemEventHandler at MODULE level, so leaving it undefined
+    # turned a missing optional dependency into an import-time NameError and made
+    # the documented fallback unreachable -- the module could not even load.
+    # object is a valid base here: the handler only touches duck-typed events.
+    Observer = None
+    FileSystemEventHandler = object
     WATCHDOG_AVAILABLE = False
 
 # ---------------------------------------------------------------------------

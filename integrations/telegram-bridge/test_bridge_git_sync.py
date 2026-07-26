@@ -8,14 +8,18 @@ unrelated merge under the bridge's own auto message. These tests pin the guard s
 
 Every git call is stubbed -- no test here touches a real repository, and REPO_ROOT is
 redirected to a temp dir before import so the module's path constants stay inert.
+
+The module imports with or without the optional watchdog dependency installed; the
+"optional watchdog" section below pins that, since it was an import-time NameError
+until the FileSystemEventHandler fallback landed.
 """
 from __future__ import annotations
 
 import importlib.util
 import os
 import subprocess
-import sys
 import tempfile
+import threading
 import types
 from pathlib import Path
 
@@ -26,35 +30,7 @@ _TMP_ROOT = tempfile.mkdtemp(prefix="bridge-git-sync-test-")
 os.environ["GIT_SYNC_REPO_ROOT"] = _TMP_ROOT
 
 
-def _stub_watchdog_if_missing():
-    """Let these tests run without the watchdog daemon dependency installed.
-
-    bridge-git-sync.py imports watchdog in a try/except but then uses
-    FileSystemEventHandler as an unconditional base class at module level, so a missing
-    watchdog is an import-time NameError, not a graceful degrade. The sync logic under
-    test does not touch watchdog at all, so stub just enough to let the module load.
-    """
-    try:
-        import watchdog.events  # noqa: F401
-        import watchdog.observers  # noqa: F401
-        return False
-    except ImportError:
-        pass
-    pkg = types.ModuleType("watchdog")
-    pkg.__path__ = []
-    events = types.ModuleType("watchdog.events")
-    events.FileSystemEventHandler = type("FileSystemEventHandler", (), {})
-    observers = types.ModuleType("watchdog.observers")
-    observers.Observer = type("Observer", (), {})
-    sys.modules.update({
-        "watchdog": pkg,
-        "watchdog.events": events,
-        "watchdog.observers": observers,
-    })
-    return True
-
-
-WATCHDOG_STUBBED = _stub_watchdog_if_missing()
+WATCHDOG_INSTALLED = importlib.util.find_spec("watchdog") is not None
 
 _spec = importlib.util.spec_from_file_location(
     "bridge_git_sync", Path(__file__).with_name("bridge-git-sync.py")
@@ -220,3 +196,72 @@ def test_env_redirect_kept_repo_root_out_of_the_real_repo():
     """Guard against these tests ever pointing at the live checkout."""
     assert bgs.REPO_ROOT == _TMP_ROOT
     assert "eco-synthetic" not in str(Path(bgs.LOG_PATH).parents[1].name)
+
+
+# --- optional watchdog dependency ---
+#
+# watchdog is documented as optional: main() runs a polling fallback for Direction B
+# when it is absent. It was NOT actually optional -- AgentWriteHandler subclasses
+# FileSystemEventHandler at module level, so a missing watchdog raised NameError at
+# import and the fallback could never run. These tests pin the module importable and
+# the handler usable either way.
+
+def test_module_imported_regardless_of_watchdog():
+    """The import at the top of this file is the assertion; this documents it."""
+    assert bgs.pending_sequencer_state is not None
+    assert bgs.commit_and_push is not None
+
+
+def test_availability_flag_matches_the_environment():
+    assert bgs.WATCHDOG_AVAILABLE is WATCHDOG_INSTALLED
+
+
+@pytest.mark.skipif(WATCHDOG_INSTALLED, reason="fallback only applies without watchdog")
+def test_fallback_names_are_bound_when_watchdog_is_absent():
+    assert bgs.FileSystemEventHandler is object
+    assert bgs.Observer is None
+
+
+def test_handler_class_is_defined_and_instantiable():
+    """This is the exact construction that used to fail at import time."""
+    handler = bgs.AgentWriteHandler(trigger_callback=lambda: None)
+    assert handler._timer is None
+
+
+def _event(path, is_directory=False):
+    return types.SimpleNamespace(
+        src_path=path, is_directory=is_directory, event_type="modified"
+    )
+
+
+def test_relevant_event_schedules_a_debounced_commit():
+    """Assert on the scheduled timer rather than sleeping, so there is no timing flake."""
+    handler = bgs.AgentWriteHandler(trigger_callback=lambda: None)
+    handler.on_any_event(_event("memory/board.md"))
+    try:
+        assert isinstance(handler._timer, threading.Timer)
+        assert handler._timer.interval == bgs.DEBOUNCE_SECONDS
+    finally:
+        handler._timer.cancel()
+
+
+@pytest.mark.parametrize("path,is_dir", [
+    ("memory/", True),                 # directory events carry no useful file
+    ("/repo/.git/index", False),       # git internals must never trigger a cycle
+    ("memory/board.md.swp", False),    # editor swap file
+    ("memory/board.md~", False),       # editor backup file
+])
+def test_irrelevant_events_are_ignored(path, is_dir):
+    handler = bgs.AgentWriteHandler(trigger_callback=lambda: None)
+    handler.on_any_event(_event(path, is_directory=is_dir))
+    assert handler._timer is None
+
+
+def test_debounce_collapses_a_burst_into_one_pending_commit():
+    handler = bgs.AgentWriteHandler(trigger_callback=lambda: None)
+    for i in range(5):
+        handler.on_any_event(_event(f"memory/file{i}.md"))
+    try:
+        assert isinstance(handler._timer, threading.Timer)
+    finally:
+        handler._timer.cancel()
