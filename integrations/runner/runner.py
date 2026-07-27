@@ -22,7 +22,7 @@ evaluates every write inside each spawned agent session.
 """
 import sys, os, re, json, subprocess, shutil, argparse, contextlib
 from pathlib import Path
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 ROOT = Path(r"C:\Users\Jecki\DEV\projects\eco-synthetic")
 DECISIONS_LOG = ROOT / "company" / "decisions" / "decisions-log.md"
@@ -459,6 +459,70 @@ def send_telegram(text: str) -> bool:
         return False
 
 
+def _last_sunday(year: int, month: int) -> datetime:
+    """Naive date (00:00) of the last Sunday of a given month."""
+    if month == 12:
+        d = datetime(year, 12, 31)
+    else:
+        d = datetime(year, month + 1, 1) - timedelta(days=1)
+    return d - timedelta(days=(d.weekday() - 6) % 7)
+
+
+def _israel_offset_hours(t: datetime) -> int:
+    """UTC offset for Israel: +3 in DST, else +2. Dependency-free on purpose -- this box
+    has no system tz database and tzdata is not installed, so zoneinfo cannot resolve
+    'Asia/Jerusalem' (verified 2026-07-27, Python 3.14). Israel DST runs from the Friday
+    before the last Sunday of March (02:00 local) to the last Sunday of October (02:00
+    local); boundaries are approximated to the hour, which never matters for the broad
+    22:00-09:00 quiet window."""
+    year = t.year
+    dst_start = (_last_sunday(year, 3) - timedelta(days=2)).replace(tzinfo=timezone.utc)
+    dst_end = _last_sunday(year, 10).replace(tzinfo=timezone.utc)
+    return 3 if dst_start <= t < dst_end else 2
+
+
+def owner_local(t: datetime | None = None) -> datetime:
+    """Owner-local (Israel) wall-clock for a UTC instant. Used for the quiet-hours check;
+    the returned datetime's .hour is owner-local."""
+    t = t or now()
+    if t.tzinfo is None:
+        t = t.replace(tzinfo=timezone.utc)
+    return t + timedelta(hours=_israel_offset_hours(t))
+
+
+QUIET_START_HOUR = 22  # inclusive, owner-local
+QUIET_END_HOUR = 9     # exclusive, owner-local
+
+
+def quiet_hours_active(t: datetime | None = None) -> bool:
+    """True during the owner-local quiet window [22:00, 09:00). The owner is out of office
+    then; only EMERGENCY notifications pierce it (owner directive 2026-07-27). Everything
+    held is re-derived by the ~09:00 digest."""
+    h = owner_local(t).hour
+    return h >= QUIET_START_HOUR or h < QUIET_END_HOUR
+
+
+def _is_no_actionable(out: str) -> bool:
+    """True when the agent output signals 'nothing to send' -- the sentinel appears as the
+    FIRST or LAST non-empty line. Robust to a trailing note after the sentinel (Rambo's inbox
+    screen) or a reasoning preamble before it (Eco). Replaces a fragile endswith() that shipped
+    the 'no new mail' spam whenever any text followed the sentinel (fixed 2026-07-27)."""
+    lines = [ln.strip() for ln in out.splitlines() if ln.strip()]
+    return bool(lines) and (
+        lines[0] == "NO_ACTIONABLE_CONTENT" or lines[-1] == "NO_ACTIONABLE_CONTENT"
+    )
+
+
+def owner_notify(text: str, *, emergency: bool = False) -> bool:
+    """Single owner-facing Telegram gate. Non-emergency pushes are dropped during quiet
+    hours (the morning digest re-derives state); emergencies always go through. Returns
+    True if a message was actually sent."""
+    if not emergency and quiet_hours_active():
+        log({"event": "notify_quiet_hours_drop", "chars": len(text)})
+        return False
+    return send_telegram(text)
+
+
 def run_job(job: dict, mode: str, dry: bool) -> dict:
     agent, key = job["agent"], job["key"]
     # Cost gate on the frequent Eco 2h check-in only.
@@ -524,14 +588,13 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
     last_line = out.splitlines()[-1].strip() if out else ""
     escalate = last_line.startswith("ESCALATE_TO_ECO")
     sent = False
-    # Suppress on the sentinel even when the agent prepended reasoning (Opus often does):
-    # treat output whose LAST non-empty line is the sentinel as "nothing actionable".
-    no_actionable = out.rstrip().endswith("NO_ACTIONABLE_CONTENT")
+    no_actionable = _is_no_actionable(out)
     if job["tg"].startswith(("YES", "CONDITIONAL")) and out and not no_actionable:
         if agent.lower() == "eco" and "2h" in job["cadence"] and two_h_notify_muted():
             log({"key": key, "event": "tg_muted_2h"})  # work ran; owner ping suppressed
         else:
-            sent = send_telegram(f"[Proactivity -- {agent}]\n\n{out}")
+            # Routine cadence content: held during owner quiet hours (22:00-09:00 local).
+            sent = owner_notify(f"[Proactivity -- {agent}]\n\n{out}")
     log({"key": key, "event": "done", "rc": rc, "out_chars": len(out),
          "sent": sent, "escalate": escalate, "summary": out[-600:],
          "cost_usd": cost_usd, "model": model_used,

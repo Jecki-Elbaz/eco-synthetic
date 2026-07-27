@@ -19,7 +19,7 @@
 
 import { Module } from "@nestjs/common";
 import { AppConfig } from "../config/app.config.js";
-import { StubProvider } from "@aps/engine";
+import { StubProvider, ClaudeCodeProvider } from "@aps/engine";
 import type { LLMProvider } from "@aps/engine";
 
 /** Backward-compat token (LLM_PROVIDER_TOKEN still exported for existing consumers). */
@@ -35,6 +35,16 @@ function buildProvider(config: AppConfig): LLMProvider {
   switch (config.llmProvider) {
     case "stub":
       return new StubProvider();
+    case "claude-code":
+      // DEV-ONLY. Drives the owner's local Claude Code CLI on their Max
+      // subscription. NOT an APS-004 path: a hosted deploy cannot depend on a
+      // developer desktop binary or a personal subscription. Local use only.
+      console.warn(
+        "[LlmModule] LLM_PROVIDER=claude-code -- DEV-ONLY provider active. " +
+          "Calls run through the local Claude Code CLI on the owner's Max plan. " +
+          "Not valid for hosted/pilot deployment (APS-004 still required).",
+      );
+      return new ClaudeCodeProvider();
     // case "anthropic": return new AnthropicProvider(config); // APS-004 gate required
     // case "openai":    return new OpenAIProvider(config);    // APS-004 gate required
     default:

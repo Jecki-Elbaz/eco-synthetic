@@ -1,80 +1,81 @@
 # Owner Dashboard
 
-Last refreshed: 2026-07-26 02:04
+Last refreshed: 2026-07-27 04:05
 
 ---
 
-## P1 Tasks
+## P1 Tasks (open / in-progress)
 
-- T-0042 | OAuth migration | open | owner keystrokes | ~2026-07-31 HARD DEADLINE (Gmail breaks)
-- T-0004 | Model router Phase A build | in-progress | Gal | Sprint 10
-- T-0045 | Stale-task auto-reactivation | in-progress | Eco + Shir | interim live; script Sprint 10
-- T-0040 | Shelly comms check wiring | in-progress | Shir + Eco | recurring
-- T-0020 | Security gate - Agent tool bridge | in-progress | Rambo | bridge path still open
-- SEC-0001 | Guard enforce-mode flip | in-progress | Shir/Rambo/jecki | B2 + 7 clean days pending
-- AUD-007 | Runner hardening | in-progress | owner FIX-05 pending | Task Scheduler flag needed
-- AUD-009 | Guard pre-flip checklist | open | spec done 2026-07-14 | needs A1 + Shir apply
-- AUD-002 | Production-readiness SOPs | open | Shir + Assaf | backlog, target 2026-08-15
-- AUD-004 / CS-0001 | Customer comms policy | in-progress | Mike fold done | owner A1 package ready
-- SHIR-007 | Git housekeeping | open | Shir | immediate -- 12 days overdue, no action yet
-- AUD-013 | Phase 8 security follow-ups | open | Dalia templates outstanding | 4th reactivation pending
+- **T-0004** | Model router Phase A build | in-progress | Gal | sprint in progress
+- **T-0020** | Agent-tool security gate | in-progress | Rambo | R&D (Shir) sub-items pending
+- **SEC-0001** | Guard enforce-mode flip | in-progress | Shir (B2 fix) + owner (A1 flip) | awaiting 7-day clean window after B2
+- **AUD-007** | Runner hardening | in-progress | Shir done; owner: Task Scheduler FIX-05 flag + keep machine on Mondays
+- **AUD-009** | Guard pre-flip checklist | open | jecki | changes applied 2026-07-26; owner terminal commit pending
+- **AUD-002** | Production-readiness SOPs | open | Shir + Assaf | backlog, target 2026-08-15 rehearsal
+- **T-0045** | Stale-task auto-reactivation | in-progress | Eco (interim live) + Shir (script, next sprint)
+- **APS-027** | Adam 3-session review checkpoint | open | jecki (relay) | package ready; relay first days Aug; HARD before 15-Aug
+- **SHIR-001** | Bridge async-ack | in-progress | ESCALATED to owner 2026-07-26 - dispatch Shir or deprioritize
+- **SHIR-007** | Git housekeeping | open | Shir | immediate; owner already waiting
 
 ---
 
 ## Pending Owner Actions
 
-- T-0042: GCP console + setx env vars + browser consent for Eco-Synthetic OAuth app -- URGENT, ~2026-07-31
-- AUD-009 + AUD-013: A1 for consolidated guard-diff + Shir apply (guard-diff-consolidated-preflip-2026-07-14.md)
-- AUD-010: A1 for role-file batch (aud-010-role-file-batch-2026-07-14.md, 42 changes, apply-ready)
-- AUD-004 / CS-0001: A1 for CS comms policy + name authorized agents (Eco recommends Mike+Jenny)
-- AUD-007: Task Scheduler FIX-05 -- "run ASAP after missed start" on Eco-Synthetic Runner
-- SHIR-007: Git commit from terminal -- scanner blocks agents; ~36 files staged
+1. **Terminal commit batch** (AUD-009 guard.py + AUD-010 role-files + AUD-013 redteam clauses + AUD-006 access-matrix) -- all applied, just need `git commit` from your terminal. No secrets.
+2. **APS-027 relay** -- send Adam the 3-session review package (docs/adam-review-package-3session-draft-2026-07-15.md); must land before 15-Aug rehearsal. Package ready, regen Section 4 live numbers first.
+3. **SHIR-001** -- dispatch Shir for async-ack in next sprint OR formally mark deprioritized on board. 2 reactivation notes ignored.
+4. **AUD-007 FIX-05** -- set "run task ASAP after missed start" on the Eco-Synthetic Runner Task Scheduler job + keep machine on Mondays.
+5. **T-0047 decision** -- inbox-triage re-scope blocked: pick Path A (close Anthropic DPA compliance Item 6) or Path B (fresh in-session residual-risk A1) to unblock whole-inbox triage after GR-014 Adam-only expires 2026-07-28 (tomorrow).
+6. **HR-001** (Anat) -- next R&R sweep due 2026-07-31 (4 days).
 
 ---
 
-## Run-Queue (pending by lane)
+## Run-Queue (pending actions by lane)
 
-Runner lane: NOT ARMED (queue executor not yet live)
+**Runner lane:** (queue executor NOT ARMED -- no items run autonomously yet)
+- No runner-lane items pending.
 
-- RQ-002 | desktop | Land verify-before-forward in Eco.md | queued
-- RQ-003 | desktop | Commit Noa role file | queued (likely stale -- Noa is live)
-- RQ-004 | desktop | Email-send gate | queued (likely stale -- T-0037 done)
-- RQ-005 | desktop | whatsapp-mcp gate | queued (likely stale -- T-0039 done)
+**Desktop lane:**
+- RQ-002 | Land verify-before-forward guideline in Eco.md | queued
+- RQ-003 | Commit Noa.md + make spawnable | queued
+- RQ-004 | Email-send gate for Eco account | queued
+- RQ-005 | WhatsApp-mcp gate review | queued
 
 ---
 
 ## Per-Trigger Health
 
-- Eco 2h check-in | 2h | last 2026-07-26 01:57 | OK
-- Eco AM brief | daily | last 2026-07-25 09:57 | OK
-- Eco PM summary | daily | last 2026-07-25 21:57 | OK
-- Assaf cost snapshot | daily | last 2026-07-26 01:57 | OK
-- Assaf fitness loop | weekly (Mon) | last 2026-07-20 | OK (next 2026-07-27)
-- Assaf T-0009 review | monthly | last 2026-07-01 | OK (next 2026-08-01)
-- Rambo permission scan | weekly (Mon) | last 2026-07-20 | OK (next 2026-07-27)
-- Rambo Adam inbox screen | 2h (exp 2026-07-28) | last 2026-07-26 01:57 | OK
-- Oracle chronicle | daily | last 2026-07-25 01:57 | OK
-- Ido DASH-001 | daily | last 2026-07-25 01:57 | OK
-- Lital compliance | weekly | last 2026-07-20 | OK
-- Eyal compliance | weekly | last 2026-07-20 | OK
-- Dalia quality audit | weekly | last 2026-07-20 | OK
-- Yael doc hygiene | weekly (Mon) | last 2026-07-20 | OK
-- Shir git hygiene | daily | last 2026-07-26 01:57 | OK
+| Agent | Cadence | Last Run | Status |
+|-------|---------|----------|--------|
+| Eco 2h Check-in | 2h | 2026-07-27 03:57Z | OK |
+| Eco AM Brief | Daily | 2026-07-26 09:57Z | OK |
+| Eco PM Summary | Daily | 2026-07-26 21:57Z | OK |
+| Assaf Cost Snapshot | Daily | 2026-07-27 01:57Z | OK |
+| Assaf Fitness Loop | Weekly (Mon) | 2026-07-27 01:57Z | OK |
+| Assaf On-demand Review | Monthly | 2026-07-01 01:57Z | OK (26d/30d) |
+| Rambo Permission-Drift Scan | Weekly (Mon) | 2026-07-27 01:57Z | OK |
+| Rambo Adam Inbox Screen | 2h (EXPIRES 07-28) | 2026-07-27 03:57Z | ** EXPIRES TOMORROW ** |
+| Rambo Guard-proof suite | Daily | 2026-07-27 01:57Z | OK |
+| Lital Compliance Check | Weekly | 2026-07-27 01:57Z | OK |
+| Eyal Compliance Check | Weekly | 2026-07-27 01:57Z | OK |
+| Dalia Quality/Tone Audit | Weekly | 2026-07-27 03:57Z | OK |
+| Yael Doc-Hygiene Audit | Weekly (Mon) | 2026-07-27 03:57Z | OK |
+| Ido DASH-001 Refresh | Daily | 2026-07-26 01:57Z | OK |
+| Oracle Chronicle Capture | Daily | 2026-07-26 01:57Z | OK |
+| Shir Git-Hygiene Audit | Daily | 2026-07-27 01:57Z | OK |
 
-No triggers OVERDUE (all within 1.5x cadence).
+No OVERDUE triggers. Rambo Adam Inbox Screen expires 2026-07-28 -- T-0047 owner decision needed today.
 
 ---
 
-## Agent Roster (open task count)
+## Agent Roster (active task count)
 
-- Eco: 8+ (board + queue + orchestration)
-- Gal: 2 (T-0004 build, APS-013 pre-prod)
-- Shir: 3 (SHIR-007 overdue, AUD-007 FIX-05 owner-side, SHIR-006 ongoing)
-- Rambo: 3 (T-0020, T-0046 gate reactivated today, AUD-013 items)
-- Anat: 2 (HR-001 due 2026-07-31, AUD-010 apply-ready)
-- Dalia: 3 (AUD-006, AUD-011 A2, AUD-013 templates overdue)
-- Mike: 1 (CS-0001 A1 package ready for owner)
-- Eyal: 2 (T-0046 gate, AUD-003 backlog)
-- Assaf: 2 (T-0031 ongoing, T-0033 triggers)
-- Ido: 2 (T-0004 oversight, APS-022 pre-prod mandate)
-- Noa: 1 (APS-022 pre-prod mandates)
+- **Eco** -- 4 open tasks (T-0003, T-0006, T-0045, T-0047)
+- **Gal** -- 1 (T-0004 build, in sprint)
+- **Shir** -- 4 (SEC-0001 B2, AUD-007 owner pending, SHIR-001 escalated, SHIR-007 immediate)
+- **Ido** -- 1 (T-0004 oversight; APS-022 pre-prod mandates queued)
+- **Rambo** -- 2 (T-0020, T-0046 gate pending)
+- **Eyal** -- 1 (T-0046 gate pending)
+- **Anat** -- 1 (HR-001 R&R due 2026-07-31)
+- **Oracle** -- 1 (ORC-001 chronicle, daily)
+- **jecki** -- 6 pending actions listed above

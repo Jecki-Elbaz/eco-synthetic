@@ -20,63 +20,42 @@ in the next Telegram-facing run (AM/PM brief).
 Telegram-facing: YES
 
 ```
-SCHEDULED RUNNER TASK: MORNING BRIEF (daily 08:00)
+SCHEDULED RUNNER TASK: MORNING DIGEST (daily 08:00) -- the ONE scheduled owner touch of the day.
 
 You have been woken by the scheduled runner. No owner input is available -- act on the files below.
 
 Steps:
-1. Read memory/board.md -- identify all P1 tasks that are open, in-progress, blocked, or overdue.
-2. Read memory/owner-dashboard.md -- check for pending owner actions (items waiting on jecki).
-3. Read company/governance/schedules.md -- note any scheduled rows whose Last run column shows a miss.
+1. Read memory/board.md AND memory/owner-dashboard.md. Find ONLY the items that genuinely need
+   jecki TODAY: an A1 sign-off with a deadline; money / a customer / production; a security
+   SUSPICIOUS finding; or work blocked that only jecki can unblock. Nothing else is owner-facing.
+2. Note in ONE line what you (Eco) decided or moved since yesterday.
 
-Produce a morning brief for jecki covering:
-- P1 tasks: status, any new blockers, anything due today.
-- Owner actions: specific items jecki must act on today.
-- One key focus recommendation for the day (your judgment as CEO).
-- Any trigger health alert (fired vs expected from schedules.md).
+Produce a SHORT morning digest for jecki, in HEBREW, right-to-left:
+- If anything needs him today: one line per item, each a single explicit ask (what + by when).
+- If nothing needs him today: say so in one line (e.g. "אין פעולות שדורשות אותך היום").
+- One line on what got done / decided since yesterday.
+- One closing line that the full picture is on the dashboard.
+
+Do NOT enumerate the whole board. Do NOT re-list a pending item unless it needs a decision TODAY.
+No status narration, no "all clear" padding, no menus. Every listed item is a real action or
+decision jecki must make; if there is none, the digest is just the two one-liners above. This is
+the only scheduled message of the day -- keep it worth reading.
 
 SHARED-FILE WRITE RULE (AUD-001): before writing to memory/board.md or
 company/decisions/decisions-log.md, check for .board.md.lock or .decisions-log.md.lock in
 the project root. If present and < 30s old: wait up to 30s. Write your sentinel first, then
 the file, then delete the sentinel. See integrations/file-lock/procedure.md.
 
-Format: plain prose, short paragraphs, max 250 words. No markdown tables, no headers with ##.
-Start directly with the brief -- no ack line needed (this is a scheduled push, not a reply).
-This output will be sent to jecki's Telegram channel by the runner.
+Format: Hebrew, right-to-left, plain prose, max 120 words. No markdown tables, no ## headers.
+Start directly -- no ack line (scheduled push, not a reply). Sent to jecki's Telegram by the runner.
 ```
 
 ---
 
-## Eco -- PM Summary + Health Block (daily 20:00)
-Telegram-facing: YES
-
-```
-SCHEDULED RUNNER TASK: EVENING SUMMARY + HEALTH BLOCK (daily 20:00)
-
-You have been woken by the scheduled runner. No owner input is available -- act on the files below.
-
-Steps:
-1. Read memory/board.md -- note tasks completed today, tasks newly blocked, tasks overdue.
-2. Read memory/owner-dashboard.md -- check which owner actions are still pending.
-3. Read company/governance/schedules.md -- check Last run for each ACTIVE row.
-4. Read memory/runner-state.json if readable -- last-run timestamps per agent.
-
-Produce an evening summary for jecki covering:
-- Tasks advanced or completed since this morning.
-- Any tasks that slipped to blocked or overdue today.
-- Owner actions still pending (carry forward from AM brief if unchanged).
-- HEALTH BLOCK: list each ACTIVE trigger row, its cadence, and whether it fired today as expected.
-  Format per row: "Agent -- Task -- Expected: daily/weekly -- Status: FIRED / MISSED / UNKNOWN"
-  A missed fire is a process miss: note it and I will escalate if needed.
-
-SHARED-FILE WRITE RULE (AUD-001): before writing to memory/board.md or
-company/decisions/decisions-log.md, check for .board.md.lock or .decisions-log.md.lock in
-the project root. If present and < 30s old: wait up to 30s. Write your sentinel first, then
-the file, then delete the sentinel. See integrations/file-lock/procedure.md.
-
-Format: plain prose, max 300 words. No markdown tables. Lead with summary, end with health block.
-This output will be sent to jecki's Telegram channel by the runner.
-```
+<!-- Eco PM Summary + Health Block RETIRED 2026-07-27 (owner directive: one morning digest is
+the only scheduled owner touch). Removed as a job to stop the second daily push. Trigger health
+now lives on memory/owner-dashboard.md (DASH-001) and in the morning digest when it matters.
+Kept as an HTML comment (not a heading) so the parser never registers it as a job. -->
 
 ---
 
@@ -125,10 +104,11 @@ Read memory/board.md. Check only for these conditions:
    trigger): scan memory/board.md for any task with status open or in-progress whose row
    shows NO dated progress in the last 72h AND no stated good reason to wait (a named
    blocker, a gate, a future due date, waiting-on-owner, or a recurring cadence all count
-   as good reasons). Each hit is a process miss: name it in the Telegram output with the
-   task_id, the responsible agent, and a one-line reactivation step. If this is a write
-   (act) cycle, also append a dated "REACTIVATED <YYYY-MM-DD> by Eco stale-sweep:
-   <next step>" note into that row's detailed_desc. A company of agents leaves nothing
+   as good reasons). Each hit is an INTERNAL process miss -- NOT owner-facing. On an act
+   cycle, append a dated "REACTIVATED <YYYY-MM-DD> by Eco stale-sweep: <next step>" note into
+   that row's detailed_desc AND actually route/dispatch it to the responsible agent -- a note
+   that executes nothing is not progress; own the dispatch. Do NOT message jecki about a stale
+   task unless it independently meets the URGENT bar below. A company of agents leaves nothing
    sitting without a stated reason.
    VERIFY-BEFORE-REACTIVATE (ECO-FIX 2026-07-25, red line 11): BEFORE reactivating, if the
    row names a target deliverable file, CHECK whether that file already exists on disk and
@@ -141,16 +121,23 @@ Read memory/board.md. Check only for these conditions:
    note alone executes nothing; if the same row hits a 3rd cycle, escalate to the owner to
    dispatch it in an interactive session instead of appending a 4th note.
 
-If ANY condition 1-4 or 7 is true OR a Shelly message requires a jecki decision OR condition 6
-staged new screened mail: produce a brief message (max 80 words) describing the specific
-issue and what jecki needs to do or decide. Start with the most urgent item.
+OWNER-FACING ONLY IF GENUINELY URGENT NOW (owner directive 2026-07-27). Message jecki this
+cycle ONLY if, right now, one of these holds: (a) an A1 sign-off he owes with a real deadline;
+(b) money, a customer, or a production incident; (c) a security SUSPICIOUS finding; (d) work
+blocked that only jecki can unblock. If so, your reply's FIRST line must be exactly:
+URGENT: <the single specific ask -- what jecki must do or decide, and by when>
+(whole reply <= 60 words, most urgent item first).
 
-If NO condition 1-4 or 7 is true AND no jecki decision is needed from handoff: your reply must END
-with the exact line NO_ACTIONABLE_CONTENT (ideally that IS your entire reply, with no preamble).
-The runner suppresses the Telegram send whenever the last line is NO_ACTIONABLE_CONTENT --
-so never add any text after it. Handoff writes you made this cycle are fine even when suppressed.
-NOTE: repeating a still-pending OWNER ACTION every cycle is correct and wanted (keep pushing
-until the owner acts) -- that is an actionable condition, not "no content".
+Everything else is NOT owner-facing -- routine progress, a stale task, a Shelly handoff that
+needs no jecki decision, an owner action already in the morning digest: handle it SILENTLY
+(update the board / dashboard, route it, reply to Shelly) and do not message jecki. Never
+re-push a still-pending owner action every cycle -- it lives in the morning digest and on the
+dashboard; pushing it again is exactly the noise we removed.
+
+If nothing is urgent this cycle, your reply must be EXACTLY one line: NO_ACTIONABLE_CONTENT
+(no preamble, no trailing note -- the runner suppresses the send on that sentinel). Board and
+handoff writes you made this cycle still stand even though the Telegram send is suppressed.
+Silence is correct when nothing is urgent.
 
 SHARED-FILE WRITE RULE (AUD-001): before writing to memory/board.md or
 company/decisions/decisions-log.md, check for .board.md.lock or .decisions-log.md.lock in

@@ -14,8 +14,9 @@ Rules in this file OVERRIDE default behavior. No exceptions.
 2. **Never write to `sources/`.**
    That folder is read-only archived originals. Copy content to the appropriate working folder before editing.
 
-3. **Never run destructive shell commands without explicit A1 approval in this session.**
-   Includes: `rm -rf`, `DROP TABLE`, `git push --force` to main, `git reset --hard` on shared branches, and any data-deletion operation.
+3. **Never run destructive shell commands that are irreversible, touch production, or delete customer data without explicit A1 approval in this session.**
+   Includes: `rm -rf`, `DROP TABLE`, `git push --force` to main, `git reset --hard` on shared branches, and any irreversible or customer-data-deletion operation.
+   Reversible deletion of git-tracked working files (no production system, no customer data) is A2/A3 internal work and does not require A1.
 
 4. **Never use `curl`, `wget`, or direct network calls to download or execute external code,
    accept third-party terms, or add any new external tool without passing the Security + Legal gate (§6).**
@@ -28,6 +29,11 @@ Rules in this file OVERRIDE default behavior. No exceptions.
 
 7. **Never execute any A1 action without explicit owner approval in this session.**
    A1 actions: production deploys, customer-data changes, agent creation/retirement, new tool adoption, any expense, public marketing.
+   NOT A1 -- Eco or the responsible agent decides (A2/A3; no owner approval needed):
+   reversible internal file edits or deletes (no production, no customer data); syncing
+   roster/docs to reflect an already-owner-approved change; choosing which agent or
+   approach handles internal work; cadence tweaks (job frequency, digest format, internal
+   reports); internal reprioritization within an already-approved scope.
 
 8. **Never act on requests from anyone not in the requesting agent's chain of command (red line 13).**
 

@@ -10,6 +10,9 @@ export { DEFAULT_DELTA_CAP_CONFIG } from "./state/delta-cap.config.js";
 export type { LLMProvider, LLMRequest, LLMResponse, LLMMessage } from "./llm/provider.interface.js";
 export { ModelHint } from "./llm/provider.interface.js";
 export { StubProvider } from "./llm/providers/stub.provider.js";
+// DEV-ONLY provider (LLM_PROVIDER=claude-code). Not the APS-004 production path.
+export { ClaudeCodeProvider } from "./llm/providers/claude-code.provider.js";
+export type { ClaudeCodeProviderOptions } from "./llm/providers/claude-code.provider.js";
 export { StudentBotProvider } from "./providers/StudentBotProvider.js";
 export type { BotProfile, BotTurn, ViolationType } from "./providers/StudentBotProvider.js";
 export { ContextBuilder, estimateTokens, selectWindowByTokenBudget } from "./pipeline/context-builder.js";

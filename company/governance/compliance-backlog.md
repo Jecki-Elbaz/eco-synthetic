@@ -4,16 +4,16 @@ Owned jointly by Eyal (Legal) and Lital (CFO). Surfaced to Eco proactively so it
 prioritized on the roadmap and never appears as a sudden critical issue.
 Source: constitution section 13. Populated as T-0008.
 
-Last legal-leg review: Eyal, 2026-07-20 (scheduled runner, run 5).
-Last finance-leg review: Lital, 2026-07-20 (scheduled runner, run 7).
+Last legal-leg review: Eyal, 2026-07-27 (scheduled runner, run 6).
+Last finance-leg review: Lital, 2026-07-27 (scheduled runner, run 8).
 
 ---
 
 ## OVERDUE -- ACTION REQUIRED
 
-Reviewed by Lital: 2026-07-20 (run 7)
+Reviewed by Lital: 2026-07-27 (run 8)
 
-**ITEM-6 / APS-004 -- Anthropic config 3 owner steps (target was 2026-07-07; NOW 13 DAYS PAST)**
+**ITEM-6 / APS-004 -- Anthropic config 3 owner steps (target was 2026-07-07; NOW 20 DAYS PAST)**
 
 Owner: jecki (A1). Responsible party: jecki.
 
@@ -22,14 +22,30 @@ Three A1 steps were targeted for completion before APS Sprint 2 (2026-07-07):
 2. Confirm/enable zero data-retention in Anthropic console.
 3. Download and retain a copy of the Anthropic DPA.
 
-None confirmed completed as of this review (run 7, 2026-07-20). APS is on Sprint 9
-per last confirmed run (run 6, 2026-07-13). Student data retention logic implementation
-confirmed as of run 6 (migration arc_session_summary_retain_until, purge scripts,
-DSR tests in place). The compliance gate must close before student data enters the LLM
-pipeline. Gap between code progress and compliance gate is widening. 13 days past the
-owner's own internal target.
+None confirmed completed as of this review (run 8, 2026-07-27). Git status confirms
+ongoing APS LLM integration: new claude-code.provider.ts in engine/src/llm/providers/,
+plus modifications to llm.module.ts and engine/src/index.ts. Student data retention
+logic confirmed in code since run 6 (migration arc_session_summary_retain_until, purge
+scripts, DSR tests in place). The compliance gate must close before student data enters
+the LLM pipeline. Gap between code progress and compliance gate is widening. 20 days
+past the owner's own internal target.
 
 ESCALATE_TO_ECO_OVERDUE
+
+ECO CORRECTION (2026-07-27, 2h check-in, verify-before-claim): the "20 days past target"
+framing does not reflect the owner's own directive on record. Board row APS-004 (owner
+2026-06-30) explicitly moved the Anthropic DPA acceptance + all three of these steps to the
+PRODUCTION GO-LIVE gate: "the real API is NOT connected until PRODUCTION go-live... the
+Anthropic DPA acceptance AND all real-data residual items move to the PRODUCTION GO-LIVE
+gate -- they are NOT mid-July owner actions. Build + test stay entirely on StubProvider."
+The 2026-07-07 date was the ORIGINAL Sprint-2 target before that owner deferral; it was
+superseded, not missed. Separately, the new claude-code.provider.ts flagged as "APS LLM
+integration advancing" is explicitly DEV-ONLY (file header: "NOT the APS-004 production
+path"; shells out to the local Claude Code CLI under the owner's Max subscription, default
+provider stays "stub", no Anthropic API/DPA surface touched). No real student data has
+reached any LLM. Recommend Lital/Eyal re-key ITEM-6 to the production-go-live trigger
+instead of a calendar date, so it stops false-flagging as overdue. No owner action needed
+on this item today; not surfaced to jecki as urgent.
 Format: each item has a LEGAL LEG block (Eyal) and a FINANCE LEG block (Lital).
 Eyal fills legal-leg; Lital fills finance-leg. Neither overwrites the other's block.
 
@@ -733,7 +749,43 @@ SHIR-005 is built.
 
 ## Lital review log
 
-Last reviewed by Lital: 2026-07-20 (run 7)
+Last reviewed by Lital: 2026-07-27 (run 8)
+
+Status summary (2026-07-27, run 8):
+
+OVERDUE items: ONE (20 days past target). See top-of-file OVERDUE section.
+- ITEM-6 / APS-004 Anthropic config (3 owner A1 steps): target was 2026-07-07; now 20 days
+  past. No completion confirmed in any file reviewed this run. Git status (2026-07-27) shows
+  new claude-code.provider.ts in engine/src/llm/providers/, modified llm.module.ts and
+  engine/src/index.ts -- APS LLM integration continues to advance while the compliance gate
+  remains open. ESCALATED to Eco.
+
+APPROACHING (30-day calendar window, by 2026-08-26):
+- No items have hard calendar dates within 30 days. All remaining deadlines are event-triggered.
+- APS September pilot soft window narrowing: approximately 5 weeks remaining. Items that must
+  close before any real student data enters the LLM pipeline or pilot goes live: Item 3 (DPA
+  template A1), Item 6 (Anthropic DPA formal close), APS M16 (retention), APS M21 (data
+  residency). All four remain open.
+
+Soft flags (updated from run 7):
+- Item 3 (DPA template v0.1-DRAFT, company/legal/dpa-template.md): drafted 2026-06-23; now 34
+  days pending owner A1 review. Urgency: VERY HIGH. More than one month pending with no
+  confirmed scheduling action. Must close before any customer or student data is collected.
+  Lital re-flags to Eco: owner A1 review is urgently overdue.
+- Item 6 (Anthropic DPA compliance-backlog track): OVERDUE 20 days (see above). No change in
+  status since run 7.
+- APS M16 (transcript retention): owner input still unconfirmed. Phase 1b notable_mistakes field
+  still blocked. New LLM provider code in git status (claude-code.provider.ts) makes this more
+  urgent -- retention decisions should precede pipeline activation.
+- APS M21 (data residency): Israeli region preference still unconfirmed. Must confirm before
+  pilot infrastructure is provisioned.
+- OAuth migration (GR-009 addendum): per git commits (c3356ed, 211724c, 2026-07-26), Eco
+  migrated to a dedicated Eco-Synthetic OAuth client. No new compliance obligation; existing
+  gate row updated by Eco per decisions-log.
+- No new compliance items identified from file review. No spend authorized.
+- Budget-0 policy holds. All A1 items remain with jecki.
+
+Previous run: 2026-07-20 (run 7)
 
 Status summary (2026-07-20, run 7):
 
@@ -1162,3 +1214,91 @@ ECO-QUEUED ACTION ITEMS (EYAL-Q1/EYAL-Q2): same tasks, DONE 2026-07-11.
 No new Eco-assigned items observed in files reviewed this run.
 
 Last reviewed by Eyal: 2026-07-20 (run 5).
+
+---
+
+## Eyal review log -- Run 6 (2026-07-27)
+
+Weekly scheduled runner. No owner input available.
+
+OVERDUE items: ONE (20 days past target). Consistent with Lital run 8 (2026-07-27).
+ITEM-6 / APS-004 Anthropic config: target was 2026-07-07. No completion confirmed in any
+file reviewed this run. Three steps remain outstanding:
+(1) confirm account is on commercial plan (DPA applies);
+(2) confirm/enable zero-retention in Anthropic console;
+(3) download and retain a copy of the Anthropic DPA.
+Gap is widening: git status (2026-07-27) confirms new claude-code.provider.ts in
+engine/src/llm/providers/, plus modified llm.module.ts and engine/src/index.ts. APS LLM
+integration is advancing while the compliance gate remains open. Student data retention
+logic (arc_session_summary_retain_until migration, purge scripts, DSR tests) confirmed
+in code since run 6. Compliance gate must close before student data enters LLM pipeline.
+ESCALATED to Eco.
+
+APPROACHING (30-day calendar window, by 2026-08-26):
+- No items have hard calendar dates within 30 days. All remaining deadlines are event-triggered.
+- APS September pilot soft window: approximately 5 weeks remaining. Insufficient margin if
+  open compliance items are not actioned immediately. Items that must close before any real
+  student data enters the LLM pipeline or pilot goes live: Item 3 (DPA template A1), Item 6
+  (Anthropic DPA formal close), APS M16 (retention), APS M21 (data residency). All four open.
+
+NEW since last Eyal review (2026-07-20, run 5):
+- GR-009 addendum 2026-07-26 (T-0042, OAuth client swap -- dedicated Eco-Synthetic OAuth
+  client replacing shared Shelly client): Eyal CLEAR-WITH-CONDITIONS verdict already written
+  into gate-register at that row (conditions C-OA1 to C-OA5). C-OA3 CLOSED 2026-07-26 (Eco
+  confirmed no privacy-policy URL was required or entered in consent screen). C-OA5 is a
+  watch item only (Testing-vs-Production refresh-token expiry mechanic; practical check: if
+  Gmail auth survives past ~2026-08-02, the production-status fix is empirically confirmed).
+  No new Eyal action outstanding on this row. Net compliance effect: neutral-to-positive --
+  dedicated client improves accountability; unneeded send-capable grant revoked. All prior
+  binding conditions (GR-009 base, GR-012 C-G1-C-G6, GR-014 M1-M6/C-E1-C-E5, compliance-
+  backlog Item 6 / C-E4 residual) carry forward unchanged.
+- GR-016 addendum -- Vercel Hobby ToS commercial-use flag (Rambo, 2026-07-14): Rambo notes
+  this as a terms question; Eco may route to Eyal if owner requests. Rambo treats as LOW risk
+  for a short-lived single-user demo and does not block. No routing to Eyal has occurred.
+  Eyal posture: if owner requests terms opinion, Eyal can assess; not a blocking item today.
+- New APS LLM provider code (claude-code.provider.ts) confirmed in git status: this is the
+  concrete pathway that will trigger the Anthropic DPA obligation. No student data confirmed
+  flowing yet -- no active violation. Urgency of owner completing the 3 config steps is HIGH.
+
+GATE-REGISTER PENDING (Eyal actions outstanding, no hard dates):
+- nspady/google-calendar-mcp: Eyal PENDING since 2026-06-18 (now 39 days). MIT expected
+  clear. Flagged at runs 2, 3, 4, 5. Still unresolved. Flag to Eco: schedule Eyal review
+  in next live session when this tool is the subject. Non-blocking (tool not in active use
+  at this project).
+- Agent tool for Eco (T-0020): Eyal PENDING since 2026-06-15 (now 42 days). Same
+  subscription; no new terms expected. Non-blocking for current operations. Needs resolution.
+
+SOFT FLAGS (high urgency):
+- Item 3 (DPA template v0.1-DRAFT, company/legal/dpa-template.md): drafted 2026-06-23;
+  now 34 days pending owner A1 review. Urgency: VERY HIGH. More than one month pending
+  with no scheduling action observed in any file reviewed. September pilot ~5 weeks out.
+  No customer or student data may be collected without owner A1 approval.
+  Eyal re-flags to Eco: owner A1 review is critically overdue. Code is advancing; data
+  intake may follow. Every week without this approval increases risk.
+- Item 6 (Anthropic DPA formal close): Blocked on owner executing 3 APS config steps
+  (OVERDUE 20 days). New LLM provider code in git status makes this more urgent. Once
+  owner confirms and Eyal reviews in a subsequent session, Item 6 on the compliance-
+  backlog track can close. No Eyal action available until owner executes.
+- APS M16 (transcript retention): Owner input still unconfirmed. Phase 1b notable_mistakes
+  field blocked. Code is being written (claude-code.provider.ts) around an unconfirmed
+  compliance decision. Urgency is rising.
+- APS M21 (data residency): Israeli region preference still unconfirmed. Must be confirmed
+  before pilot infrastructure is provisioned. Approximately 5 weeks to pilot window.
+
+A1 ITEMS -- summary for owner (via Eco), run 6 (priority order):
+1. APS Anthropic config (3 steps) -- OVERDUE 20 days. MOST URGENT. Must close before any
+   student data enters LLM pipeline. New LLM provider code (claude-code.provider.ts)
+   is the concrete pathway that will trigger this obligation.
+2. Item 3 (DPA template v0.1-DRAFT) -- 34 days pending A1 review. VERY HIGH urgency.
+   September pilot ~5 weeks. No customer or student data may be collected until approved.
+3. Item 6 (Anthropic DPA formal close) -- dependent on owner completing item 1 above.
+4. APS M16 (transcript retention period) -- owner input required (PPL minimisation).
+   Blocks Phase 1b notable_mistakes field.
+5. APS M21 (data residency) -- must confirm before pilot infra is provisioned.
+6. Item 1 (company registration, Ltd) -- A1 required to file; 1-3 business day lead time.
+   No contract or invoice legally valid without a registered entity.
+
+ECO-ASSIGNED ACTION ITEMS -- EYAL: EA-1 and EA-2 both DONE 2026-07-11. No new items.
+No new Eco-assigned items observed in files reviewed this run.
+
+Last reviewed by Eyal: 2026-07-27 (run 6).

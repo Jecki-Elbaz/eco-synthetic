@@ -4,6 +4,7 @@ Daily cost and token usage summaries.
 
 | Date | Summary |
 |------|---------|
+| 2026-07-27 | ~$3-5 USD est (partial cycle data from last 24h). 6+ runs, 3+ rc=0 (Rambo guard-suite green, Rambo Adam inbox stable), 1 rc=1 (Shir endemic, flagged to owner). 0 timeouts. Readiness NOT green (3 unmet, false_blocks=12). Eco model upgraded to claude-sonnet-5. Runner HEALTHY. |
 | 2026-07-26 | $10.1 USD (40+ runs, 24h). 15+ rc=0 (Rambo, Oracle, Ido stable), 20+ rc=1 (Eco OAuth expired, Shir endemic). 1 timeout (recovered). Readiness NOT green (false_blocks 11). Runner HEALTHY. CORRECTION to prior 7 snapshots: false "offline" claim due to tail-rule violation on agent-runs.jsonl. |
 | 2026-07-25 | CRITICAL (retracted): false "runner offline 26 days" claim due to reading agent-runs.jsonl from start (oldest entries) instead of end (current entries). File was actually updated through 2026-07-25. Tail rule violation caused erroneous infrastructure CRITICAL. Prior 6 snapshots (2026-07-19..07-25) also affected. -- RETRACTED. |
 | 2026-07-24 | CRITICAL: Runner telemetry offline 25 days; brief recovery window 2026-07-24 00:14-00:29 (human mode only). agent-runs.jsonl stale, agent-guard.log last scheduled entry 2026-06-29 + manual activity 2026-07-24 00:14-00:29. log.jsonl last entry 2026-07-24 00:20:13. Zero scheduled runner activity for 24h. Scheduled automation still dark. Fitness-loop/T-0009 blocked. ESCALATE_TO_ECO. -- CRITICAL. |

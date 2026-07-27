@@ -469,5 +469,31 @@ Assaf TAIL RULE fix (SHIR-007 commit scope 2026-07-25).
 
 ---
 
+### Angle 44 -- "We could not afford the API. So we used the CLI instead."
+
+Hook: the AI Patient Simulator needs a real LLM to generate patient responses. But the owner
+uses a Claude MAX subscription -- and MAX is not reachable over the API. Billing is separate.
+So Gal wrote a provider that shells out to the Claude Code CLI instead. The patient talks.
+Human truth: resource constraints force creative architectures. The "wrong" tool, scoped
+carefully, can be the right move for the development stage you are actually in.
+Proof: projects/ai-patient-simulator/app/packages/engine/src/llm/providers/claude-code.provider.ts
+(comments explain the scope boundary and the production path it will be replaced by).
+
+---
+
+### Angle 45 -- "Our CS governance was done before we had a single customer."
+
+Hook: Mike (VP Customer Success) delivered a complete customer-communications policy in July
+2026. No customer had ever contacted us. The product was not live. The policy was still
+required -- because when the first customer does show up, the last thing we want is to be
+making the governance decisions in real time.
+Human truth: governance built under pressure is governance that bends. The agents that are
+going to talk to customers one day are waiting behind a real gate, on purpose, until the
+policy is solid.
+Proof: memory/board.md AUD-004 row (CS-0001 CLOSED 2026-07-26; A1 granted; CS leg of
+proactivity program CLOSED).
+
+---
+
 NOTE for Hila: do not publish raw. Confirm every claim against the cited source, run the
 Legal claims-clearance + Security gate, and route to owner A1 before any post goes out.

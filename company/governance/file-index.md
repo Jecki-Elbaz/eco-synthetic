@@ -11,8 +11,8 @@
 
 | File Path | Purpose | Owner | Last Reviewed |
 |-----------|---------|-------|----------------|
-| company/constitution.md | Company mission, hierarchy, red lines, approval gates, standards, compliance framework | jecki (owner) | 2026-07-20 |
-| company/soul.md | Agent culture, behavioral standards, Core Block (inline in all agent role files), Voice block convention | Dalia (Q&G) + Anat (HR) | 2026-07-20 |
+| company/constitution.md | Company mission, hierarchy, red lines, approval gates, standards, compliance framework | jecki (owner) | 2026-07-27 |
+| company/soul.md | Agent culture, behavioral standards, Core Block (inline in all agent role files), Voice block convention | Dalia (Q&G) + Anat (HR) | 2026-07-27 |
 | company/roster.md | Organization chart, all agent names/roles/levels/phases, reporting structure | Anat (HR) | 2026-07-20 |
 | company/md-style.md | Internal machine-facing markdown style guide (caveman, lean, ASCII, token-efficiency) | [no single owner specified; governance under Yael/Dalia] | 2026-07-20 |
 | company/governance/access-matrix.md | Path-level ACL matrix, read/write permissions by role, scan policy | Dalia (Q&G defines structure); Rambo (Security enforces) | 2026-07-20 |
@@ -27,8 +27,8 @@
 
 | File Path | Purpose | Owner | Last Reviewed |
 |-----------|---------|-------|----------------|
-| memory/board.md | Cross-company task board; all open/in-progress/blocked/done tasks by team/project; accountability | Eco (CEO) | 2026-07-06 |
-| memory/owner-dashboard.md | Owner-facing views: P1 tasks, pending owner actions, trigger health, agent roster status | Assaf (OE) / Ido (R&D, DASH-001 refresh) | 2026-07-06 |
+| memory/board.md | Cross-company task board; all open/in-progress/blocked/done tasks by team/project; accountability | Eco (CEO) | 2026-07-27 |
+| memory/owner-dashboard.md | Owner-facing views: P1 tasks, pending owner actions, trigger health, agent roster status | Assaf (OE) / Ido (R&D, DASH-001 refresh) | 2026-07-27 |
 
 ---
 
@@ -36,10 +36,10 @@
 
 | File Path | Purpose | Owner | Last Reviewed |
 |-----------|---------|-------|----------------|
-| company/governance/quality-audit-log.md | Append-only weekly quality/tone audit findings; soul.md + voice-block compliance checks | Dalia (Q&G) | 2026-07-06 |
-| company/governance/fitness-loop-2026-06-29.md | Weekly Monday agent activity + workload health scan; identifies idle/overloaded agents + runner cadence | Assaf (OE) | 2026-07-06 |
-| company/security/reports/permission-drift-2026-06-29.md | Weekly Monday security audit; tool permits vs gate-register, roster vs agent files, spawn-allowlist sync | Rambo (Security) | 2026-07-06 |
-| memory/wiki/cost-snapshots/index.md | Daily cost + token usage summaries; runner health dashboard; escalations | Assaf (OE) | 2026-07-06 |
+| company/governance/quality-audit-log.md | Append-only weekly quality/tone audit findings; soul.md + voice-block compliance checks | Dalia (Q&G) | 2026-07-27 |
+| company/governance/fitness-loop-2026-07-27.md | Weekly Monday agent activity + workload health scan; identifies idle/overloaded agents + runner cadence (dated run, supersedes 2026-06-29 version) | Assaf (OE) | 2026-07-27 |
+| company/security/reports/permission-drift-2026-07-27.md | Weekly Monday security audit; tool permits vs gate-register, roster vs agent files, spawn-allowlist sync (dated run, supersedes 2026-06-29 version) | Rambo (Security) | 2026-07-27 |
+| memory/wiki/cost-snapshots/index.md | Daily cost + token usage summaries; runner health dashboard; escalations | Assaf (OE) | 2026-07-27 |
 
 ---
 
@@ -55,7 +55,9 @@
 
 **Missing files:** none  
 
-**Last incremental review (2026-07-06):** Yael verified all 14 indexed files (10 core + 4 audit). Key findings: 11 PASS (routine), 3 WARN (roster name gaps + voice-block clarifications), 2 FLAG (cost-snapshot degradation + roster audit blockers). Report: company/governance/doc-hygiene-2026-07-06.md. Escalation flagged for Eco (roster + cost observability).  
+**Last incremental review (2026-07-06):** Yael verified all 14 indexed files (10 core + 4 audit). Key findings: 11 PASS (routine), 3 WARN (roster name gaps + voice-block clarifications), 2 FLAG (cost-snapshot degradation + roster audit blockers). Report: company/governance/doc-hygiene-2026-07-06.md. Escalation flagged for Eco (roster + cost observability).
+
+**Incremental review (2026-07-27):** Yael verified 8 oldest entries (2 core + 6 audit/memory). Key findings: 8 PASS (all files exist, purposes accurate, ASCII-clean, naming compliant). Two dated files (fitness-loop + permission-drift) replaced 2026-06-29 versions; quality-audit-log carries run-header documenting last audit 2026-07-20 (due today). Report: company/governance/doc-hygiene-2026-07-27.md.  
 
 **Next review focus:** 
 - Monthly deep-read of core governance files (full-page read + version + owner + completeness)
