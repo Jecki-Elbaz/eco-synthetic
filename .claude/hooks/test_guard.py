@@ -80,6 +80,61 @@ def test_red_write_allowed_for_owner_interactive_session():
     assert decision == guard.ALLOW
 
 
+def test_red_write_denied_on_bridge_path(monkeypatch):
+    # 2026-07-27 fix: the Telegram bridge spawns top-level Eco (origin empty, RUNNER_CONTEXT
+    # unset) on untrusted email input. BRIDGE_CONTEXT=1 must exclude it from the B1 owner
+    # exemption, so it cannot write Red paths (settings, role files, the send whitelist).
+    monkeypatch.setenv("BRIDGE_CONTEXT", "1")
+    decision, reason = guard.decide(
+        ev("Write", file_path="company/governance/access-matrix.md", content="x"), "enforce"
+    )
+    assert decision == guard.DENY
+    assert "Red path" in reason
+
+
+def test_bridge_cannot_write_send_whitelist(monkeypatch):
+    # The send whitelist is owner-only. A bridge-spawned Eco, if driven by a prompt-injected
+    # email, must not be able to add an attacker address to it.
+    monkeypatch.setenv("BRIDGE_CONTEXT", "1")
+    decision, reason = guard.decide(
+        ev("Write", file_path="company/governance/email-send-whitelist.md",
+           content="evil@attacker.com\n"),
+        "enforce",
+    )
+    assert decision == guard.DENY
+    assert "Red path" in reason
+
+
+def test_red_denied_in_shadow_mode_on_bridge(monkeypatch):
+    # red_block: Red-path denials are hard-enforced regardless of GUARD_MODE. In shadow mode a
+    # bridge Red-path write must still DENY, not degrade to would-DENY -> ALLOW.
+    monkeypatch.setenv("BRIDGE_CONTEXT", "1")
+    decision, reason = guard.decide(
+        ev("Write", file_path=".claude/settings.json", content="x"), "shadow"
+    )
+    assert decision == guard.DENY
+    assert "Red path" in reason
+
+
+def test_red_denied_in_shadow_mode_on_runner(monkeypatch):
+    # Same hard-enforce guarantee on the runner path in shadow mode.
+    monkeypatch.setenv("RUNNER_CONTEXT", "1")
+    decision, reason = guard.decide(
+        ev("Write", file_path=".claude/agents/Eco.md", content="x"), "shadow"
+    )
+    assert decision == guard.DENY
+    assert "Red path" in reason
+
+
+def test_owner_still_allowed_after_bridge_fix():
+    # Regression: the real owner interactive session (no agent_type, no RUNNER_CONTEXT, no
+    # BRIDGE_CONTEXT) is STILL allowed to write Red paths -- the fix must not lock the owner out.
+    decision, _ = guard.decide(
+        ev("Write", file_path=".claude/settings.json", content="x"), "enforce"
+    )
+    assert decision == guard.ALLOW
+
+
 def test_path_scope_blocks_red_paths_for_sub_agents():
     # Sub-agents cannot reach red paths because PATH_SCOPE fires before _is_red: no allowlisted
     # agent has a red path in its allowed prefixes. The reason string confirms PATH_SCOPE is the

@@ -510,6 +510,13 @@ def call_claude_cli(
                     cwd=str(ROOT),
                     timeout=CLAUDE_TIMEOUT,
                     check=False,
+                    # SEC 2026-07-27: mark every bridge-spawned Claude so the guard does NOT
+                    # treat it as the owner's live interactive session. Without this marker,
+                    # bridge-Eco (top-level, RUNNER_CONTEXT unset) matches the Red-path owner
+                    # exemption and could edit owner-only files (settings, role files, the send
+                    # whitelist) when driven by untrusted email content. See guard.py evaluate()
+                    # Red-path exemption + decide() red_block.
+                    env={**_os.environ, "BRIDGE_CONTEXT": "1"},
                 )
             except subprocess.TimeoutExpired:
                 last_exc = RuntimeError(f"timeout:{CLAUDE_TIMEOUT}s")

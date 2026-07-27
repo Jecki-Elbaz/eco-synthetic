@@ -206,6 +206,9 @@ RED_EXACT = {
     ".claude/settings.local.json",
     "company/governance/access-matrix.md",
     "company/constitution.md",
+    # Send whitelist -- owner-only editable (WS4, 2026-07-27). The autonomous-send guard
+    # reads this file at runtime, so an off-owner edit would poison the recipient allowlist.
+    "company/governance/email-send-whitelist.md",
 }
 
 # Section 5.3 -- append-only audit trail.
@@ -411,12 +414,18 @@ def evaluate(event: dict) -> tuple[str, str]:
             return ALLOW, "setting SAFE_MODE flag"
 
         # Red paths (5.1) -- owner-only A1, blocked regardless of SAFE_MODE.
-        # Exemption (B1, SEC-0001 2026-07-01): the owner's LIVE interactive session
-        # (origin empty AND not the scheduled runner) may write Red paths -- the out-of-band
-        # A1 channel for role-file edits. Sub-agents (origin set) and every runner-spawned
-        # agent (RUNNER_CONTEXT=1) are still denied unconditionally.
+        # Exemption (B1, SEC-0001 2026-07-01; tightened 2026-07-27): the owner's LIVE
+        # interactive Claude Code session -- origin empty AND neither the scheduled runner
+        # (RUNNER_CONTEXT) NOR the Telegram bridge (BRIDGE_CONTEXT) -- may write Red paths,
+        # the out-of-band A1 channel for role-file edits. The bridge spawns top-level Eco
+        # (origin empty, RUNNER_CONTEXT unset) on untrusted email input, so it must be
+        # excluded here or the owner-only Red set (incl. the send whitelist) is not actually
+        # owner-only (adversary finding 2026-07-27). Sub-agents (origin set) and every
+        # runner/bridge-spawned agent are denied unconditionally.
         if _is_red(rel):
-            if origin == "" and os.environ.get("RUNNER_CONTEXT") != "1":
+            if (origin == ""
+                    and os.environ.get("RUNNER_CONTEXT") != "1"
+                    and os.environ.get("BRIDGE_CONTEXT") != "1"):
                 pass  # owner interactive session -- allow (falls through to ungoverned ALLOW)
             else:
                 return DENY, f"Red path '{rel}': owner-only A1 (section 4/5.1)"
@@ -477,15 +486,24 @@ def decide(event: dict, mode: str) -> tuple[str, str]:
       hard security control, not a phase-in rule.
     """
     runner = os.environ.get("RUNNER_CONTEXT") == "1"
+    # BRIDGE_CONTEXT marks a Telegram-bridge-spawned Claude (untrusted email input). Like the
+    # runner, it is hard-enforced regardless of GUARD_MODE -- a semi-autonomous path must not
+    # rely on shadow leniency (adversary finding 2026-07-27).
+    bridge = os.environ.get("BRIDGE_CONTEXT") == "1"
     try:
         decision, reason = evaluate(event)
     except Exception as exc:  # noqa: BLE001 -- fail-closed
-        if mode == "enforce" or runner:
+        if mode == "enforce" or runner or bridge:
             return DENY, f"fail-closed: guard could not evaluate ({exc})"
         return ALLOW, f"[shadow] eval-error (would fail-closed): {exc}"
     handoff_block = decision == DENY and "handoff write" in reason
     google_block = decision == DENY and reason.startswith("google boundary")
-    if runner or mode == "enforce" or handoff_block or google_block:
+    # Red-path denials are a hard owner-only-A1 boundary, not a phase-in rule: enforce them
+    # regardless of GUARD_MODE (like the google/handoff boundaries). Without this a bridge or
+    # sub-agent Red-path DENY would degrade to would-DENY -> ALLOW while the guard is still in
+    # shadow, leaving the send whitelist writable off the owner session (adversary 2026-07-27).
+    red_block = decision == DENY and reason.startswith("Red path")
+    if runner or bridge or mode == "enforce" or handoff_block or google_block or red_block:
         return decision, reason
     if decision == DENY:
         return ALLOW, f"[shadow] would-DENY: {reason}"
