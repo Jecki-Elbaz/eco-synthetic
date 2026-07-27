@@ -1975,3 +1975,84 @@ jecki notified in-session. APPLY: owner A1 edits company/governance/access-matri
 - **Files affected:** company/governance/gate-register.md (GR-019, appended), memory/board.md
   (new T-0046 row; T-0020 R1-CODE note), integrations/runner/file-and-flush-design-2026-07-25.md
   (status footer), company/decisions/decisions-log.md (this entry).
+
+---
+
+## SEC-0001 B2 -- Write-append behavioral fix deployed
+Date: 2026-07-27
+Author: Shir (DevOps, L4)
+Authority: Owner A1 directive via Eco (2026-07-27: SEC-0001 must be actively driven)
+Task: SEC-0001
+
+### Decision
+B2 behavioral fix for the enforce-readiness gate deployed. b2_deploy timestamp set in
+memory/enforce-readiness-config.json to 2026-07-27T20:19:05+00:00.
+
+### What was fixed
+Added APPEND_DISCIPLINE constant to integrations/runner/runner.py. All runner agent
+prompts now include an explicit instruction:
+(1) Never use Edit on memory/log.md or company/decisions/decisions-log.md (append-only files).
+(2) Do not write to memory/log.md on runner path -- runner already logs via agent-runs.jsonl.
+(3) Use Write-append (Write tool with full current content + new entry) for decisions-log.md.
+
+### Residual / not yet fixed
+Role file behavior for interactive-session agents (Eco, Rambo, Mike editing append-only files
+via Edit) requires owner A1 + Red-path role file edits (.claude/agents/). Outside Shir scope.
+Flagged to Eco for follow-up.
+
+### Gate state after deploy
+- B2_deployed: true (timestamp set)
+- false_blocks: 13 (pre-b2; age out ~2026-08-03)
+- C4_pure_append: 0 (will be observed in next runner Write-append cycles)
+- Gate status: SILENT; GREEN expected ~2026-08-03 if no new false-blocks after b2_deploy
+
+### What remains before GREEN
+1. Pre-b2 false-blocks age out of 168h window (~2026-08-03)
+2. C4 (pure-append Allow) observed in guard log (next runner cycles)
+3. 7 consecutive clean days with zero false-blocks and C1-C4 all met
+4. Owner A1 flip GUARD_MODE shadow->enforce (after gate surfaces GREEN)
+
+---
+
+## 2026-07-27 -- Owner IM noise reduction + email/calendar autonomy rollout (owner A1, jecki)
+
+Owner directive (jecki, interactive session): cut Telegram noise to the minimum, communicate only
+when it matters, and give Eco email + calendar autonomy. Plan of record:
+~/.claude/plans/i-am-receiving-from-reactive-harbor.md. Executed as a multi-agent workflow.
+
+SHIPPED + LIVE (commits b92851e, c21085f, 2e71517; pushed to origin/master):
+- Phase A noise fix (runner.py + agent-prompts.md): fixed the NO_ACTIONABLE suppression bug
+  (endswith -> first/last non-empty line) that spammed "no new mail from Adam"; added owner-local
+  quiet hours 22:00-09:00 (Asia/Jerusalem, dependency-free DST, emergencies-only) via owner_notify;
+  morning brief -> one short Hebrew digest; retired the PM summary; 2h check-in silenced to
+  URGENT-only, no longer re-nags pending owner actions (stale-sweep now dispatches, not pings).
+  Effect: ~16 owner pushes/day -> ~1/day + genuine urgents.
+- Governance: CLAUDE.md red line 3 narrowed (reversible git-tracked deletes are A2/A3, not A1) +
+  a "NOT A1" counter-list; soul.md Core Block rule 8 RESOLVE-BEFORE-ESCALATE.
+- Security (adversary-found, WS7): the guard treated Telegram-bridge Eco as the owner interactive
+  session (bridge spawned with no marker), so the owner-only Red set was not actually owner-only.
+  Fix: bridge sets BRIDGE_CONTEXT=1; guard excludes it from the Red-path owner exemption; Red-path
+  denials hard-enforced regardless of GUARD_MODE (red_block). Whitelist path added to RED_EXACT.
+
+BUILT BUT INERT (2e71517) -- does NOT activate until go-live:
+- Autonomous send whitelist (guard.py): EXPLICIT_ALLOW + _load_send_whitelist (fail-closed) +
+  _parse_recipients (to/cc/bcc) + homoglyph defense. Runner+all-whitelisted -> auto-send;
+  interactive -> owner prompt (owner directive); non-whitelisted runner -> deny; missing whitelist
+  -> deny all paths. No whitelist file created, so all sends stay denied until go-live. 71 tests green.
+
+GATE GR-019 (Rambo + Eyal, adversary-verified): PASS_WITH_CONDITIONS. BLOCKING for go-live of
+whole-inbox read AND autonomous send:
+- C-E4 (Anthropic DPA). Owner chose PATH A. Eyal: the DPA applies only to Anthropic Commercial/API
+  accounts, not Consumer/Max. Owner is Max-only, so Path A needs opening an API account (an A1 spend
+  decision -- Lital sizing the cost). Until C-E4 closes: no whole-inbox LLM processing, no send go-live.
+- C-S1 Rambo send-guard: CLEARED this session.
+
+Owner A1 decisions (jecki, this session): one morning IM digest; quiet hours 22:00-09:00
+emergencies-only; narrow A1 (both); urgent-to-IM = A1-with-deadline + money/customer/outage +
+security SUSPICIOUS + blocked-only-owner; autonomous send to owner-only whitelist (seed jecki/Adam/
+Shelly); Eco manages calendar; trial an email digest; interactive sends still prompt; commit+push;
+calendar convention-only for now; Path A for C-E4.
+
+REMAINING (staged, not blocking): create whitelist file + generalized inbox screen (gated on C-E4) +
+email digest job + calendar convention + remaining Eco/constitution/POL-001 edits + sync-soul +
+dashboard push-counter. Owner action pending: Path A (open API account after Lital's cost estimate).
