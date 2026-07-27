@@ -242,6 +242,11 @@ _SECRET_PATTERNS = [
 
 ALLOW = "allow"
 DENY = "deny"
+# Guard-issued explicit approval: main() emits permissionDecision:"allow" JSON so the hook
+# owns the grant instead of falling through to settings.json (which has no send_gmail_message
+# allow entry and would auto-deny it on the runner). Only ever produced on the runner path for
+# a fully-whitelisted send (WS4, 2026-07-27).
+EXPLICIT_ALLOW = "explicit_allow"
 
 
 def _relpath(file_path: str) -> str:
@@ -302,6 +307,49 @@ def _current_content(rel: str) -> str:
         return ""
 
 
+# --- Autonomous send whitelist (WS4, 2026-07-27) -------------------------------
+# send_gmail_message is auto-approved on the runner ONLY when every recipient is on this
+# owner-only list. The file is in RED_EXACT, so only the owner's interactive session can edit
+# it. Absent/unreadable = capability not activated = fail-closed (all sends denied).
+SEND_WHITELIST_PATH = ROOT / "company" / "governance" / "email-send-whitelist.md"
+
+
+def _load_send_whitelist() -> "set[str] | None":
+    """Lowercased address set from the owner-only send whitelist, or None if the file is
+    missing/unreadable (caller MUST deny -- fail-closed). Blank lines, comment lines (#...),
+    and Markdown list markers (-/*) are stripped; only lines containing '@' count as an
+    address. ValueError is caught so a corrupt-UTF-8 whitelist also fails closed."""
+    try:
+        text = SEND_WHITELIST_PATH.read_text(encoding="utf-8")
+    except (OSError, ValueError):
+        return None
+    addrs: set[str] = set()
+    for raw in text.splitlines():
+        line = raw.strip().lstrip("-*").strip()
+        if not line or line.startswith("#"):
+            continue
+        if "@" in line:
+            addrs.add(line.lower())
+    return addrs
+
+
+def _parse_recipients(ti: dict) -> "list[str]":
+    """Stripped (raw-case) recipient addresses from to/cc/bcc. Each field may be a str (plain
+    or comma-separated) or a list of str. The whitelist match at the call site case-folds AND
+    rejects non-ASCII, so a homoglyph cannot .lower() into a whitelisted ASCII address."""
+    out: list[str] = []
+    for field in ("to", "cc", "bcc"):
+        val = ti.get(field)
+        if val is None:
+            continue
+        items = val if isinstance(val, list) else str(val).split(",")
+        for item in items:
+            addr = str(item).strip()
+            if addr:
+                out.append(addr)
+    return out
+
+
 def evaluate(event: dict) -> tuple[str, str]:
     """Pure decision function. Returns (allow|deny, reason). Raises on bad input."""
     tool_raw = str(event.get("tool_name", ""))
@@ -314,8 +362,49 @@ def evaluate(event: dict) -> tuple[str, str]:
     if tool_raw.startswith("mcp__google_workspace__"):
         short = tool_raw[len("mcp__google_workspace__"):]
         email = str(ti.get("user_google_email") or "").strip().lower()
-        if short == "send_gmail_message" and os.environ.get("RUNNER_CONTEXT") == "1":
-            return DENY, "google boundary: send_gmail_message never available on the runner path"
+        if short == "send_gmail_message":
+            # Account pin first (independent of the whitelist outcome).
+            if email and email != ECO_GOOGLE_ACCOUNT:
+                return DENY, (
+                    f"google boundary: google_workspace is pinned to {ECO_GOOGLE_ACCOUNT}; "
+                    f"call attempted user_google_email='{email}'"
+                )
+            # Whitelist gate (WS4). Every DENY here starts with "google boundary" so it is
+            # hard-enforced regardless of GUARD_MODE (see decide()).
+            whitelist = _load_send_whitelist()
+            if whitelist is None:
+                return DENY, (
+                    "google boundary: send_gmail_message denied -- send whitelist missing or "
+                    "unreadable (fail-closed; capability not activated)"
+                )
+            recipients = _parse_recipients(ti)
+            if not recipients:
+                return DENY, "google boundary: send_gmail_message denied -- no recipients (WS4)"
+            # A recipient counts as whitelisted only if it is ASCII AND its lowercase form is
+            # on the list. The ASCII check is on the RAW address so a homoglyph cannot
+            # .lower()/fold into a whitelisted ASCII string (adversary finding 2026-07-27).
+            non_wl = [r for r in recipients if not (r.isascii() and r.lower() in whitelist)]
+            runner_send = os.environ.get("RUNNER_CONTEXT") == "1"
+            if non_wl:
+                if runner_send:
+                    return DENY, (
+                        "google boundary: send_gmail_message denied on runner -- "
+                        f"recipient(s) not on whitelist: {', '.join(non_wl)}"
+                    )
+                # Interactive: hand off to the owner prompt (owner may confirm any recipient).
+                return ALLOW, (
+                    "send_gmail_message: non-whitelisted recipient(s) -- interactive owner prompt"
+                )
+            # Every recipient whitelisted:
+            if runner_send:
+                # Autonomous path -> auto-approve via EXPLICIT_ALLOW (main() emits allow JSON).
+                return EXPLICIT_ALLOW, (
+                    "send_gmail_message: all recipients whitelisted -- auto-approved on runner (WS4)"
+                )
+            # Interactive whitelisted send still prompts the owner (owner directive 2026-07-27).
+            return ALLOW, (
+                "send_gmail_message: all recipients whitelisted -- interactive owner prompt (WS4)"
+            )
         # AUD-013 F-S814 (owner A1 2026-07-26): forwarding rules are send-equivalent
         # blast radius; explicit hard deny mirrors send_gmail_message posture.
         if short == "manage_gmail_filter" and os.environ.get("RUNNER_CONTEXT") == "1":
@@ -553,6 +642,17 @@ def main() -> int:
         print(json.dumps(out))
         print(reason, file=sys.stderr)
         return 2
+
+    # Guard-issued explicit approval (a fully-whitelisted send on the runner): emit an allow
+    # decision so the hook owns the grant instead of deferring to settings.json, which would
+    # auto-deny send_gmail_message on the non-interactive path.
+    if decision == EXPLICIT_ALLOW:
+        print(json.dumps({
+            "hookSpecificOutput": {
+                "hookEventName": "PreToolUse",
+                "permissionDecision": "allow",
+            }
+        }))
     return 0
 
 

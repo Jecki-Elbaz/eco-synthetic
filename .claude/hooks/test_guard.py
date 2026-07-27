@@ -135,6 +135,112 @@ def test_owner_still_allowed_after_bridge_fix():
     assert decision == guard.ALLOW
 
 
+# --- send_gmail_message whitelist gate (WS4, 2026-07-27) ---
+
+_WL_SEED = "jecki.elbaz@gmail.com\nleighton.adam@gmail.com\nshelly.synthetic.org@gmail.com\n"
+
+
+@pytest.fixture
+def wl(tmp_path, monkeypatch):
+    f = tmp_path / "email-send-whitelist.md"
+    f.write_text(_WL_SEED, encoding="utf-8")
+    monkeypatch.setattr(guard, "SEND_WHITELIST_PATH", f)
+    return f
+
+
+def _send(to=None, cc=None, bcc=None, account=None):
+    ti = {"user_google_email": account if account is not None else guard.ECO_GOOGLE_ACCOUNT}
+    for k, v in (("to", to), ("cc", cc), ("bcc", bcc)):
+        if v is not None:
+            ti[k] = v
+    return {"tool_name": "mcp__google_workspace__send_gmail_message", "tool_input": ti}
+
+
+def test_send_whitelisted_runner_explicit_allow(monkeypatch, wl):
+    monkeypatch.setenv("RUNNER_CONTEXT", "1")
+    assert guard.decide(_send(to="jecki.elbaz@gmail.com"), "enforce")[0] == guard.EXPLICIT_ALLOW
+
+
+def test_send_whitelisted_interactive_prompts_not_explicit(wl):
+    # Owner directive 2026-07-27: interactive whitelisted sends still prompt (plain ALLOW).
+    decision, reason = guard.decide(_send(to="jecki.elbaz@gmail.com"), "enforce")
+    assert decision == guard.ALLOW
+    assert decision != guard.EXPLICIT_ALLOW
+    assert "interactive owner prompt" in reason
+
+
+def test_send_non_whitelisted_runner_denied(monkeypatch, wl):
+    monkeypatch.setenv("RUNNER_CONTEXT", "1")
+    decision, reason = guard.decide(_send(to="evil@external.com"), "enforce")
+    assert decision == guard.DENY
+    assert "whitelist" in reason
+
+
+def test_send_non_whitelisted_interactive_passthrough(wl):
+    # Interactive: owner can still send anywhere via the confirmation prompt.
+    assert guard.decide(_send(to="stranger@external.com"), "enforce")[0] == guard.ALLOW
+
+
+def test_send_cc_non_whitelisted_runner_denied(monkeypatch, wl):
+    monkeypatch.setenv("RUNNER_CONTEXT", "1")
+    assert guard.decide(_send(to="jecki.elbaz@gmail.com", cc="evil@x.com"), "enforce")[0] == guard.DENY
+
+
+def test_send_bcc_non_whitelisted_runner_denied(monkeypatch, wl):
+    monkeypatch.setenv("RUNNER_CONTEXT", "1")
+    assert guard.decide(_send(to="jecki.elbaz@gmail.com", bcc="evil@x.com"), "enforce")[0] == guard.DENY
+
+
+def test_send_list_all_whitelisted_runner(monkeypatch, wl):
+    monkeypatch.setenv("RUNNER_CONTEXT", "1")
+    ev2 = _send(to=["jecki.elbaz@gmail.com", "leighton.adam@gmail.com"])
+    assert guard.decide(ev2, "enforce")[0] == guard.EXPLICIT_ALLOW
+
+
+def test_send_comma_separated_all_whitelisted_runner(monkeypatch, wl):
+    monkeypatch.setenv("RUNNER_CONTEXT", "1")
+    ev2 = _send(to="jecki.elbaz@gmail.com, leighton.adam@gmail.com")
+    assert guard.decide(ev2, "enforce")[0] == guard.EXPLICIT_ALLOW
+
+
+def test_send_case_insensitive_runner(monkeypatch, wl):
+    monkeypatch.setenv("RUNNER_CONTEXT", "1")
+    assert guard.decide(_send(to="JECKI.ELBAZ@GMAIL.COM"), "enforce")[0] == guard.EXPLICIT_ALLOW
+
+
+def test_send_non_ascii_homoglyph_runner_denied(monkeypatch, wl):
+    # Kelvin sign (U+212A) lowercases to ASCII 'k' but the RAW address is non-ASCII, so it must
+    # NOT match the ASCII whitelist (it would deliver elsewhere). isascii() on raw blocks it.
+    monkeypatch.setenv("RUNNER_CONTEXT", "1")
+    assert guard.decide(_send(to="jecKi.elbaz@gmail.com"), "enforce")[0] == guard.DENY
+
+
+def test_send_missing_whitelist_fail_closed(monkeypatch, tmp_path):
+    monkeypatch.setattr(guard, "SEND_WHITELIST_PATH", tmp_path / "nope.md")
+    assert guard.decide(_send(to="jecki.elbaz@gmail.com"), "enforce")[0] == guard.DENY
+    monkeypatch.setenv("RUNNER_CONTEXT", "1")
+    assert guard.decide(_send(to="jecki.elbaz@gmail.com"), "enforce")[0] == guard.DENY
+
+
+def test_send_no_recipients_denied(wl):
+    ev2 = {"tool_name": "mcp__google_workspace__send_gmail_message",
+           "tool_input": {"user_google_email": guard.ECO_GOOGLE_ACCOUNT}}
+    assert guard.decide(ev2, "enforce")[0] == guard.DENY
+
+
+def test_send_wrong_account_denied(wl):
+    decision, reason = guard.decide(
+        _send(to="jecki.elbaz@gmail.com", account="attacker@gmail.com"), "enforce")
+    assert decision == guard.DENY
+    assert "pinned to" in reason
+
+
+def test_send_whitelist_deny_hard_enforced_in_shadow(monkeypatch, wl):
+    # Whitelist DENY reason starts with "google boundary" -> hard-enforced even in shadow mode.
+    monkeypatch.setenv("RUNNER_CONTEXT", "1")
+    assert guard.decide(_send(to="evil@x.com"), "shadow")[0] == guard.DENY
+
+
 def test_path_scope_blocks_red_paths_for_sub_agents():
     # Sub-agents cannot reach red paths because PATH_SCOPE fires before _is_red: no allowlisted
     # agent has a red path in its allowed prefixes. The reason string confirms PATH_SCOPE is the
