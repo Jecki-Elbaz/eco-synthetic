@@ -155,6 +155,22 @@ PATH_DIRECTIVE = (
     "managed store, so a bare memory/ path will NOT reach this repo. Always use the absolute form."
 )
 
+# B2 fix (SEC-0001 2026-07-27 Shir): runner agents must never Edit append-only files.
+# The guard hard-blocks Edit on APPEND_ONLY targets regardless of GUARD_MODE on the runner
+# path (RUNNER_CONTEXT=1 is hard-enforced). memory/log.md writes are redundant on the runner
+# path -- runner.py already logs every run to memory/agent-runs.jsonl.
+APPEND_DISCIPLINE = (
+    "APPEND-ONLY WRITE RULE (SEC-0001 B2): memory/log.md and "
+    "company/decisions/decisions-log.md are APPEND-ONLY audit files protected by the "
+    "security guard. NEVER use the Edit tool on either file -- the guard hard-blocks it "
+    "on the runner path and logs a violation. "
+    "Do NOT write to memory/log.md from runner-path jobs at all -- the runner already "
+    "logs your run automatically to memory/agent-runs.jsonl; a separate log.md entry is "
+    "redundant and will be blocked. "
+    "If you must append to company/decisions/decisions-log.md, use Write with the FULL "
+    "current file content followed by your new entry at the bottom (Write-append, not Edit)."
+)
+
 
 def now():
     return datetime.now(timezone.utc)
@@ -550,7 +566,7 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
     if dry:
         print(f"  WOULD RUN {key} | cadence={job['cadence']} | tg={job['tg']} | model={model} | tools={tools}")
         return {"ran": False, "reason": "dry"}
-    prompt = f"[Scheduled run: {now().isoformat()}]\n\n{PATH_DIRECTIVE}\n\n{job['prompt']}"
+    prompt = f"[Scheduled run: {now().isoformat()}]\n\n{PATH_DIRECTIVE}\n\n{APPEND_DISCIPLINE}\n\n{job['prompt']}"
     log({"key": key, "event": "start", "mode": mode, "model": model, "tg": job["tg"]})
     # Tag the spawned agent so the PreToolUse guard can enforce the runner policy
     # (no Bash, no sub-agent spawns; in readonly, no writes at all). This is the real
