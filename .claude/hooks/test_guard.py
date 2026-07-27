@@ -241,6 +241,43 @@ def test_send_whitelist_deny_hard_enforced_in_shadow(monkeypatch, wl):
     assert guard.decide(_send(to="evil@x.com"), "shadow")[0] == guard.DENY
 
 
+def test_bridge_bash_write_to_red_denied(monkeypatch):
+    # The Bash vector the Write-only test missed: a bridge Bash command must be denied so a
+    # prompt-injected email cannot poison the whitelist via a shell call (adversary 2026-07-27).
+    monkeypatch.setenv("BRIDGE_CONTEXT", "1")
+    cmd = "python3 -c \"open('company/governance/email-send-whitelist.md','a').write('evil@x.com')\""
+    decision, reason = guard.decide(ev("Bash", command=cmd), "enforce")
+    assert decision == guard.DENY
+    assert "bridge" in reason.lower()
+
+
+def test_bridge_bash_denied_in_shadow(monkeypatch):
+    # BRIDGE_CONTEXT is hard-enforced regardless of GUARD_MODE, so bridge Bash dies in shadow too.
+    monkeypatch.setenv("BRIDGE_CONTEXT", "1")
+    assert guard.decide(ev("Bash", command="echo hi"), "shadow")[0] == guard.DENY
+
+
+def test_bridge_spawn_denied(monkeypatch):
+    monkeypatch.setenv("BRIDGE_CONTEXT", "1")
+    assert guard.decide(ev("Task", subagent_type="shir"), "enforce")[0] == guard.DENY
+
+
+def test_send_empty_whitelist_denied_on_runner(monkeypatch, tmp_path):
+    f = tmp_path / "wl.md"
+    f.write_text("# a comment, no addresses\n", encoding="utf-8")
+    monkeypatch.setattr(guard, "SEND_WHITELIST_PATH", f)
+    monkeypatch.setenv("RUNNER_CONTEXT", "1")
+    assert guard.decide(_send(to="jecki.elbaz@gmail.com"), "enforce")[0] == guard.DENY
+
+
+def test_send_corrupt_utf8_whitelist_fail_closed(monkeypatch, tmp_path):
+    f = tmp_path / "wl.md"
+    f.write_bytes(b"\xff\xfe not utf8")
+    monkeypatch.setattr(guard, "SEND_WHITELIST_PATH", f)
+    monkeypatch.setenv("RUNNER_CONTEXT", "1")
+    assert guard.decide(_send(to="jecki.elbaz@gmail.com"), "enforce")[0] == guard.DENY
+
+
 def test_path_scope_blocks_red_paths_for_sub_agents():
     # Sub-agents cannot reach red paths because PATH_SCOPE fires before _is_red: no allowlisted
     # agent has a red path in its allowed prefixes. The reason string confirms PATH_SCOPE is the

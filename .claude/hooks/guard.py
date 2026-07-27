@@ -436,6 +436,19 @@ def evaluate(event: dict) -> tuple[str, str]:
         # act cycle falls through to the path rules below (Red paths / SAFE_MODE /
         # append-only). Own-scope is not hard-enforced here (path rules only).
 
+    # --- Telegram bridge path (semi-autonomous, untrusted email input) ---
+    # The bridge runs Eco on untrusted email content and legitimately needs NO Bash and NO
+    # sub-agent spawning. Deny both: the Red-path Write protection does NOT cover Bash, so
+    # without this a prompt-injected email could run an allow-listed Bash command
+    # (e.g. python3 -c "...open(whitelist,'a')...") to poison the send whitelist or any Red
+    # file. Mirrors the runner posture. BRIDGE_CONTEXT is hard-enforced in decide() regardless
+    # of GUARD_MODE, so this bites in shadow too (adversary finding 2026-07-27).
+    if os.environ.get("BRIDGE_CONTEXT") == "1":
+        if tool == "bash":
+            return DENY, "telegram bridge: Bash is disabled on the bridge path"
+        if tool in ("task", "agent"):
+            return DENY, "telegram bridge: sub-agent spawning is disabled on the bridge path"
+
     # Origin enforcement (5.2, verified C2/C5): Claude Code populates a top-level
     # agent_type when a tool call is made from inside a sub-agent. A governed action
     # coming from a sub-agent that is NOT on the non-code allow-list is denied -- this
