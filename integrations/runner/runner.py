@@ -41,6 +41,8 @@ release_all_held_locks = _fl_mod.release_all_held_locks
 PROMPTS = ROOT / "integrations" / "runner" / "agent-prompts.md"
 AUDIT_SCRIPT = ROOT / "integrations" / "git-hygiene" / "audit.py"
 GIT_HYGIENE_KEY = "Shir:git-hygiene-audit"
+DASH_SCRIPT = ROOT / "integrations" / "dashboard" / "agent_dashboard.py"
+DASH_KEY = "Eco:agent-perf-dashboard"
 # Guard proof-suite check (Rambo advisory 2026-07-26). The autonomy guard's own test
 # suite had never once executed -- pytest was named as the framework in the global
 # CLAUDE.md but was not installed in any interpreter, so 15 stale failures sat unseen
@@ -575,6 +577,27 @@ def run_git_hygiene(state: dict, t: datetime, dry: bool) -> None:
          "attention": attention, "sent": sent})
 
 
+def run_agent_dashboard(state: dict, t: datetime, dry: bool) -> None:
+    """Per-cycle ZERO-TOKEN agent-performance dashboard snapshot (Eco, owner A1 2026-07-27).
+
+    Runs integrations/dashboard/agent_dashboard.py as a plain subprocess -- no LLM, no tokens,
+    no Bash-in-agent -- to refresh dashboards/agent-performance.html from the live telemetry +
+    board every cycle. The dynamic browser view is the SAME script's `serve` mode, run as a
+    separate always-on local service (127.0.0.1 only, read-only). Silent unless it errors.
+    """
+    if dry:
+        print(f"  WOULD RUN {DASH_KEY} (per-cycle, zero-token dashboard snapshot)")
+        return
+    try:
+        r = subprocess.run([sys.executable, str(DASH_SCRIPT), "snapshot"],
+                           capture_output=True, timeout=60, cwd=str(ROOT), check=False)
+    except Exception as e:
+        log({"key": DASH_KEY, "event": "error", "err": f"{type(e).__name__}: {str(e)[:150]}"})
+        return
+    state.setdefault(DASH_KEY, {})["last"] = t.isoformat()
+    log({"key": DASH_KEY, "event": "done", "rc": r.returncode})
+
+
 def run_guard_suite(state: dict, t: datetime, dry: bool) -> None:
     """Daily ZERO-TOKEN check that the autonomy guard's proof suite is green.
 
@@ -744,6 +767,12 @@ def main() -> int:
         run_git_hygiene(state, t, a.dry_run)
         if not a.dry_run:
             save_state(state)  # SHIR-FIX-01: persist after git hygiene updates state
+
+    # Per-cycle zero-token agent-performance dashboard snapshot (Eco, owner A1 2026-07-27).
+    if not a.only or a.only.lower() in ("eco", "dashboard", "dash"):
+        run_agent_dashboard(state, t, a.dry_run)
+        if not a.dry_run:
+            save_state(state)
 
     # Daily zero-token check that the autonomy guard's proof suite is still green
     # (Rambo advisory 2026-07-26). Independent of the LLM agent jobs below.

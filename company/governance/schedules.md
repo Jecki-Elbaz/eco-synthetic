@@ -25,6 +25,7 @@ Decision logged: decisions-log.md 2026-06-12 -- scheduled wake-ups approved (A1:
 | Ido | DASH-001 dashboard refresh | Hourly / fold into Eco 2h | ACTIVE | jecki (A1) | 2026-06-22 | - |
 | Shir | Bridge + uptime health check | Every 15-30 min | PENDING BUILD -- event trigger + T-0020 C3 + Bash | jecki (A1 intent) | 2026-06-22 | - |
 | Shir | Git/CI-CD hygiene audit (deterministic zero-token script; uncommitted/unpushed/unpulled + drift) | Daily | ACTIVE 2026-07-01 -- runs via runner.py run_git_hygiene() as a subprocess (no LLM/tokens, no Bash-in-agent). Rambo CLEAR-WITH-CONDITIONS (git-hygiene-review-2026-07-01.md). ATTENTION alerts owner Telegram; CLEAN silent. | jecki (A1) | 2026-07-01 | see runner-state.json |
+| Eco | Agent-performance dashboard snapshot (deterministic zero-token script) | Per cycle (every 2h) | ACTIVE 2026-07-27 -- runs via runner.py run_agent_dashboard() as a subprocess (no LLM/tokens, no Bash-in-agent). Recomputes per-agent 7-day metrics from agent-runs.jsonl + board.md; writes dashboards/agent-performance.html. Live browser view = same script's `serve` mode on 127.0.0.1:8787 (read-only, localhost-only), registered via integrations/dashboard/dashboard-install.ps1. Silent unless it errors. Rambo rubber-stamp pending (local-only + no secrets + deterministic). | jecki (A1) | 2026-07-27 | see runner-state.json |
 | MeetingPrep | Pre-meeting prep | Event: T-Xh before external meeting | PENDING BUILD -- event trigger (SHIR-005) | jecki (A1 intent) | 2026-06-22 | - |
 
 ---
