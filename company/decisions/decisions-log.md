@@ -1940,3 +1940,38 @@ jecki notified in-session. APPLY: owner A1 edits company/governance/access-matri
 - **Security posture (Rambo rubber-stamp pending):** localhost-only bind (never network-exposed), GET-only/read-only surface, reads ONLY telemetry/board/state files (never .env or any secret, CLAUDE.md RL1/5), writes only under dashboards/. Deterministic. Low risk; owner-directed. Rambo to bless at next scan (like git-hygiene got git-hygiene-review-2026-07-01.md).
 - **Honesty carried on the page:** token/cost columns show n/a until the AUD-007 cost-capture actually populates (fields exist, still null); "hours" don't map to agents (activations + active-days are the proxies; true compute-time needs a runner duration_ms field); scheduled-only telemetry under-counts project/APS agents (their work shows in the tasks column).
 - **Files affected:** integrations/dashboard/agent_dashboard.py + template.html + dashboard-install.ps1 (new), integrations/runner/runner.py (3 edits: DASH_SCRIPT/DASH_KEY, run_agent_dashboard(), main call), company/governance/schedules.md (new ACTIVE row), dashboards/agent-performance.html (generated), company/decisions/decisions-log.md (this entry). A one-off static snapshot was also published as a private claude.ai artifact for review.
+
+## 2026-07-27 -- File-and-Flush gated (GR-019) + build FROZEN pending SEC-0001 (A1)
+
+- **Author / gate:** owner jecki, A1 in-session ("go ahead, gate it with Rambo"; then decisions
+  1/2/3 below). Coordinated + recorded by Eco. Security review by Rambo.
+- **Context:** owner asked for an easy/effective/safe way to have Telegram asks actually executed.
+  Root problem: the Telegram bridge session has no Agent tool, and the 2h runner is hard-denied
+  Bash + sub-agent spawns by guard.py -- so "heavy" asks stall until a desktop session runs.
+- **Design of record:** "File-and-Flush" (integrations/runner/file-and-flush-design-2026-07-25.md).
+  Eco files every non-live ask to memory/run-queue.md; a `flush` command the owner sends from
+  Telegram launches a SEPARATE full-power local session that drains authorized non-A1 rows; A1
+  items always surface for a live one-tap yes; the always-on autonomous loop stays weak.
+- **Rambo verdict:** PASS-WITH-CONDITIONS (GR-019; company/security/reports/gate-file-and-flush-rambo-2026-07-27.md).
+  Six mandatory conditions M1-M6. Critical finding (T8): in the current GUARD_MODE=shadow state a
+  flush session carries no RUNNER_CONTEXT tag, so guard.py hard-enforces only handoff-secret +
+  google-boundary writes -- Bash, sub-agent spawns, Red-path writes, PATH_SCOPE, APPEND_ONLY, and
+  SAFE_MODE blocks are all shadow-logged and ALLOWED, and SAFE_MODE would NOT halt a flush session.
+  Therefore M1 (GUARD_MODE=enforce + SEC-0001 GREEN) is a hard prerequisite. Residual risks
+  RR-1..RR-5 recorded (RR-1 = bridge-host compromise gives full-power autonomous access; inherent).
+- **Eyal:** NOT REQUIRED -- no new external tool, vendor, or terms (Rambo-confirmed).
+- **Owner decisions 2026-07-27:**
+  (1) Record the gate -- DONE: GR-019 appended to gate-register.md.
+  (2) Fix the bridge owner-auth exposure NOW as a standalone security fix -- routed to Shir (build)
+      + Rambo (verify); folded into T-0020 R1-CODE (no duplicate task). Exposure: OWNER_ONLY_MODE
+      is declared True in bridge.py but never checked in any handler (any Telegram user can message
+      Eco today); /halt,/resume use a spoofable first-registrant owner model. Fix = check sender
+      chat_id against the hardcoded OWNER_CHAT (63160285) constant, reject on unset.
+  (3) FREEZE flush until SEC-0001 lands -- build NOT authorized; RR-1..RR-5 NOT yet accepted.
+      Tracked as board T-0046 (blocked). Unfreeze = SEC-0001 GREEN + owner A1 flips
+      GUARD_MODE=enforce, then Eco re-surfaces M2-M6 build scope + asks owner to accept RR-1..RR-5.
+- **Not self-granted:** Security cleared risk, Legal N/A, owner directed every outcome. No code or
+  bridge/guard/settings change made -- design + gate + tracking only.
+- **Files affected:** company/governance/gate-register.md (GR-019, appended), memory/board.md
+  (new T-0046 row; T-0020 R1-CODE note), integrations/runner/file-and-flush-design-2026-07-25.md
+  (status footer), company/decisions/decisions-log.md (this entry).

@@ -707,3 +707,65 @@ jecki's explicit in-session direction (2026-07-26). Not self-granted: Security c
 Legal cleared terms, owner directed application.
 
 **Opened by:** Eco/owner (T-0042) | **Date:** 2026-07-26 | **Applied by:** Eco, 2026-07-26
+
+---
+
+## GR-019 -- File-and-Flush: Telegram-triggered full-power "flush" session (2026-07-27)
+
+Type: internal architecture / security-posture change (no new external tool, vendor, or terms).
+Flagged by: Eco (design, 2026-07-25). Owner A1 to gate: jecki, 2026-07-27.
+Design doc: integrations/runner/file-and-flush-design-2026-07-25.md.
+
+**What it is.** A single Telegram message from the owner launches a SEPARATE full-power local
+claude session (Agent tool, Bash, gates) that drains authorized rows from memory/run-queue.md.
+The bridge session itself stays weak. Purpose: let owner asks that the weak bridge/runner cannot
+execute get done, without giving the always-on autonomous loop those powers.
+
+**Rambo (Security) verdict: PASS-WITH-CONDITIONS** (2026-07-27). Design sound in principle, no
+fundamental architectural flaw. Full findings:
+company/security/reports/gate-file-and-flush-rambo-2026-07-27.md.
+
+Critical finding (T8): in the CURRENT state (GUARD_MODE=shadow) a flush session carries no
+RUNNER_CONTEXT tag, so guard.py hard-enforces only handoff-secret + google-boundary writes --
+Bash, sub-agent spawns, Red-path writes, PATH_SCOPE, APPEND_ONLY, and SAFE_MODE-triggered blocks
+are all shadow-logged and ALLOWED. SAFE_MODE would NOT halt a flush session. Therefore flush is
+UNSAFE to build or enable until the SEC-0001 GUARD_MODE shadow->enforce flip is live and GREEN.
+
+Six MANDATORY conditions (all required before Phase 2 build):
+- M1: GUARD_MODE in enforce + SEC-0001 readiness GREEN (hard prerequisite; co-dependent on
+  SEC-0001).
+- M2: flush handler checks sender chat_id against the hardcoded OWNER_CHAT (63160285) constant;
+  first-registrant model is insufficient. (Also fixes the existing OWNER_ONLY_MODE-unenforced gap.)
+- M3: code-level SAFE_MODE check in the flush handler before spawning (guard alone is insufficient).
+- M4: code-level A1-action enumeration (agent-create, agent-retire, role-file-write,
+  external-send, production-deploy, spend, tool-adopt, public-publish); any match -> blocked-on-A1,
+  never auto-executed.
+- M5: reject rows whose authorized_by is empty or lacks "jecki" + a date.
+- M6: Phase 3 RedTeam (injection-via-queued-row, spoofed trigger id, unauthorized row, A1
+  auto-run) must all fail closed; Rambo re-clears before go-live. Not self-certifiable.
+
+Recommended hardening (non-blocking): R1 flush.lock (no concurrent flush sessions); R2
+pre-execution log per row; R3 bounded action vocabulary; R4 harden /halt,/resume to the hardcoded
+owner constant; R5 confirm NSSM service account is non-admin; R6 overall flush wall-clock timeout.
+
+Residual risks the owner must accept before ENABLING flush: RR-1 bridge-host compromise = full-
+power autonomous access (blast radius materially higher than today's weak bridge; inherent);
+RR-2 queue poisoning via injection (probabilistic mitigations); RR-3 A1 edge-case
+misclassification; RR-4 flush session has owner-level guard trust (origin="", full spawn
+authority incl. OWNER_SPAWN_ONLY agents); RR-5 in enforce mode origin="" gets the B1 exemption
+and may write Red paths incl. .claude/agents and settings.json (wider than needed for an
+autonomous session).
+
+**Eyal (Legal): NOT REQUIRED** (Rambo-confirmed). No new external tool, vendor, service, or
+subscription; existing gate-register rows cover every capability the flush session would use.
+
+**Owner decisions 2026-07-27:** (1) record this gate -- DONE (this row). (2) fix the bridge
+owner-auth gap now as a standalone security fix -- routed to Shir+Rambo, folded into T-0020
+R1-CODE. (3) FREEZE flush until SEC-0001 lands -- flush build is NOT authorized; RR-1..RR-5 not
+yet accepted; the M1-M6 track is revisited only after SEC-0001 reaches GREEN and owner A1 flips
+GUARD_MODE=enforce.
+
+**Gate status:** SECURITY CLEAR-WITH-CONDITIONS (Rambo). Legal N/A. BUILD FROZEN by owner pending
+SEC-0001. Not self-granted: Security cleared risk, Legal N/A, owner directed the outcome.
+
+**Opened by:** Eco (design) / owner (gate A1) | **Date:** 2026-07-27 | **Recorded by:** Eco, 2026-07-27

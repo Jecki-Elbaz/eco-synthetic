@@ -127,5 +127,16 @@ must assess this in the formal gate.
 
 ## 9. Status footer
 
-NOT BUILT. NOT ARMED. NOT GATED. No code changed by this document. Next step is the owner's
-decision on section 8, then (if go) the Phase 0 Rambo/Eyal gate.
+GATED 2026-07-27 -- Rambo PASS-WITH-CONDITIONS (GR-019; report
+company/security/reports/gate-file-and-flush-rambo-2026-07-27.md). Eyal N/A (no new external
+terms). Six mandatory conditions M1-M6; M1 (GUARD_MODE enforce + SEC-0001 GREEN) is the hard
+prerequisite. Critical finding: in the current shadow-mode state a flush session would be
+effectively unconstrained by guard.py and SAFE_MODE would not halt it.
+
+OWNER DECISION 2026-07-27: BUILD FROZEN pending SEC-0001. Not authorized to build; residual
+risks RR-1..RR-5 not yet accepted. Tracked on the board as T-0046 (blocked). Bridge owner-auth
+hardening (M2 / OWNER_ONLY_MODE-unenforced) split out to T-0020 R1-CODE as a standalone fix.
+Unfreeze: SEC-0001 GREEN + owner A1 flips GUARD_MODE=enforce, then re-surface M2-M6 + RR
+acceptance.
+
+Still NOT BUILT / NOT ARMED. No code changed by this document.
