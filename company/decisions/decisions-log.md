@@ -2119,3 +2119,7 @@ Anthropic-API-account decision.
 - SHIR-007 git sort executed and CLOSED (6 commits pushed to origin/master; branch drift reported: wip/bridge-status-done merge-or-close and chore/ido-sprint-001 cleanup are open owner decisions).
 
 Append method note: entry added via shell EOF-append (corruption-safe for the 313KB log per Rambo 2026-08-01 scalability analysis); no existing entries read into model context or altered.
+
+## 2026-08-02 -- M1 Yael.md role-file fix (owner A1)
+
+Owner A1 granted in interactive session; Eco applied. All 6 file-index references in .claude/agents/Yael.md updated from the superseded company/governance/file-index.md to the canonical memory/wiki/file-index.md (documentation-standard.md s10; index moved 2026-08-02). Closes Rambo guard-delta-scan must-fix M1 (guard-delta-scan-rambo-2026-08-02.md) -- the guard PATH_SCOPE entry and the role file are now consistent. Pre-flip must-fix list is EMPTY; SEC-0001 gate GREEN expected ~2026-08-03, enforce flip remains owner A1 on GREEN. (EOF-append; no existing entries altered.)
