@@ -1,6 +1,11 @@
 # File Index & Legend -- Eco-Synthetic
 
-Living index of every significant informational file in the repo. Updated as files are created, retired, or re-scoped. Owned by Yael (Knowledge/Documentation Manager). Last updated: 2026-06-27.
+Living index of every significant informational file in the repo. Updated as files are created, retired, or re-scoped. Owned by Yael (Knowledge/Documentation Manager). Last updated: 2026-08-02.
+
+> **CANONICAL.** Per `company/governance/documentation-standard.md` section 10, THIS file
+> (`memory/wiki/file-index.md`) is the canonical file index. A second, older index exists at
+> `company/governance/file-index.md` -- it is **SUPERSEDED**, kept for history, and must not be
+> used or updated. Add new rows here only.
 
 ---
 
@@ -10,23 +15,25 @@ Living index of every significant informational file in the repo. Updated as fil
 
 | Path | Owner agent | Purpose (one-line) | Status |
 |------|-------------|-------------------|--------|
-| company/constitution.md | jecki | Governance rules, approval gates, hierarchy, red lines, and agent lifecycle. | live v2.2 |
+| company/constitution.md | jecki | Governance rules, approval gates, hierarchy, red lines, and agent lifecycle. | live v2.4 (section 5 amended 2026-08-02; on-disk header read v2.3 when this index row was written -- the v2.4 amendment is landing in a parallel 2026-08-02 session) |
 | company/soul.md | Dalia (Q&G) | Company culture, tone standards, core behavioral rules for all agents. | live v1.0 |
-| company/roster.md | Eco | Current org structure, role assignments, names, hierarchy, and pending additions. | live v2.2 |
+| company/roster.md | Eco | Full org: every agent in .claude/agents/ with level, group, reports-to, phase, status. | live v2.3 (rebuilt 2026-08-02 from role-file ground truth) |
+| company/org-chart.mermaid | Anat (HR) | Mermaid org chart; reporting solid lines + communication dotted lines. | live (updated 2026-06-28) |
 | company/md-style.md | jecki | Internal machine-facing documentation style guide (caveman, lean, ASCII). | live |
 | company/role-file-template.md | Anat (HR) | Standard template for all agent role files (R&R md format). | live |
-| company/model-matrix.md | Assaf (OE) + Dalia (Q&G) | AI model selection rules, defaults by agent, when to escalate models. | live |
+| company/model-matrix.md | Assaf (OE) + Dalia (Q&G) | Per-agent model mirror of role-file frontmatter + runner-path model resolution. | live v2.0 (rebuilt 2026-08-02, all 32 agents) |
 
 ### company/governance/ (Access control, standards, compliance)
 
 | Path | Owner agent | Purpose (one-line) | Status |
 |------|-------------|-------------------|--------|
 | company/governance/access-matrix.md | Dalia (Q&G) / Rambo (Security) | Path-level ACL, who reads/writes what, per-agent working memory rules. | live v1.0 |
-| company/governance/file-index.md | Yael (Knowledge/Doc Mgr) | [THIS FILE] Living legend of all informational files and their owners. | live |
-| company/governance/documentation-standard.md | Yael (Knowledge/Doc Mgr) | [NEW] Naming conventions, file structure, versioning policy, file-addition checklist. | live v1.0 |
+| company/governance/file-index.md | Yael (Knowledge/Doc Mgr) | Older, competing file index. **SUPERSEDED 2026-08-02** by memory/wiki/file-index.md (this file), per documentation-standard.md section 10. Kept for history; do not update. | SUPERSEDED |
+| company/governance/documentation-standard.md | Yael (Knowledge/Doc Mgr) | Naming conventions, file structure, versioning policy, file-addition checklist. Section 10 names memory/wiki/file-index.md as canonical. | live v1.0 |
+| company/governance/procedures-register.md | Dalia (Q&G) | Every work procedure the company needs, with exists/current/followed status and gap severity. | live |
 | company/governance/gate-register.md | Eyal (Legal) | Tool adoption register; every external tool, MCP, skill with gating verdict and pin. | live |
 | company/governance/security-baseline.md | Rambo (Security) | Security standards, assessment templates, mitigation-solution format. | live |
-| company/governance/agent-tool-spawn-allowlist.md | Eco (A2) | Permitted/denied list for Agent tool bridge spawns (non-Bash vs Bash agents). | live |
+| company/governance/agent-tool-spawn-allowlist.md | Eco (A2) | Bridge Agent-tool allowlist (non-Bash vs Bash) + runner sub-agent dispatch rules (owner A1 2026-08-02). | live |
 | company/governance/schedules.md | Assaf (OE) | Trigger schedule rows; cadence, owner, contact method, success metric per row. | live |
 | company/governance/compliance-backlog.md | Eyal (Legal) + Lital (CFO) | Israeli registration, tax, privacy, invoicing, account-migration items and status. | live |
 
@@ -111,7 +118,7 @@ Living index of every significant informational file in the repo. Updated as fil
 | Path | Owner agent | Purpose (one-line) | Status |
 |------|-------------|-------------------|--------|
 | memory/wiki/agent-roster.md | Eco | Current agent org, personas, Hebrew names, addressing registry, org-by-group. | live v3.0 |
-| memory/wiki/backlog-summary.md | Eco | Open tasks by priority; owner-blocked, P1, P2, blocked, done; updated 2026-06-18. | live |
+| memory/wiki/backlog-summary.md | Eco | Open/in-progress/blocked work by group, generated from memory/board.md. | live (regenerated 2026-08-02) |
 | memory/wiki/file-index.md | Yael (Knowledge/Doc Mgr) | [THIS FILE] Living index of informational files, purpose, owner, status. | live |
 
 ### memory/owner-dashboard.md (Owner-facing views, restricted)
@@ -126,7 +133,9 @@ Living index of every significant informational file in the repo. Updated as fil
 |------|-------------|-------------------|--------|
 | .claude/agents/<Name>.md | jecki (A1 edits), agent manager (R&R changes) | Role file for each agent; purpose, responsibilities, authority, boundaries, data access. | live (per agent) |
 
-Count: 29 internal agents certified + live + 1 external customer (Shelly). Total agent files: 30.
+Count (2026-08-02): 32 internal agent role files in .claude/agents/. Shelly is external
+(separated 2026-06-20) and has no role file here. Full list with level, group, reports-to,
+phase and status: company/roster.md v2.3.
 
 ### marketing/ (Brand, content, public-facing assets)
 
@@ -232,6 +241,16 @@ Per CLAUDE.md red lines and constitution:
 
 ## Recent additions and retirements
 
+**2026-08-02**: Governance truth-reconciliation pass. This index reaffirmed as CANONICAL and
+company/governance/file-index.md marked SUPERSEDED (banner added there too). Refreshed rows:
+constitution (v2.2 -> v2.4), roster (v2.2 -> v2.3 rebuild), model-matrix (-> v2.0 rebuild),
+backlog-summary (regenerated from board.md), agent count (30 -> 32). Added rows for
+company/org-chart.mermaid and company/governance/procedures-register.md; removed a duplicate
+agent-tool-spawn-allowlist row. RETIRED (git rm, self-described error stubs):
+company/governance/agent-spawn-allowlist.md, company/governance/permitted-spawn-list.md,
+company/governance/agent-tool-bridge-spawn-list.md -- all three redirected to
+company/governance/agent-tool-spawn-allowlist.md and carried no content.
+
 **2026-06-27**: Yael (Knowledge/Doc Mgr) created this index (DAL-002 task) and company/governance/documentation-standard.md.
 
 **2026-06-20**: Shelly separated to external customer; company/customers/shelly/profile.md created (migration of owner-office role).
@@ -253,4 +272,4 @@ This index is updated whenever:
 - A file's owner is reassigned (update owner-agent column, log the change).
 - A significant policy change is made (update purpose if needed).
 
-Last review: 2026-06-27 by Yael.
+Last review: 2026-08-02 (governance truth-reconciliation pass). Prior: 2026-06-27 by Yael.

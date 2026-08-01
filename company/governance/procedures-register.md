@@ -16,7 +16,7 @@ FOLLOWED: yes / partial / no / unverified / n/a (not yet triggered). SEV of the 
 | 7 | Backup / restore | unassigned | **no** | n/a | **no** | single machine + one remote; nothing tested | **major** |
 | 8 | On-call / acting-CEO | unassigned | **no** | n/a | **no** | solo Eco/Shir/Ido; no backup designation | **major** |
 | 9 | Audit cadence | Dalia/Rambo/Assaf | partial | yes | **partial/FAILING** | weekly audits not firing since 06-29 (see report) | **critical** |
-| 10 | Customer comms (CS-0001) | Mike | partial | stale | n/a | v0.1 DRAFT, not A1; Eyal EA-2 open | major |
+| 10 | Customer comms (CS-0001) | Mike | yes | yes | n/a | v1.0 APPROVED (owner A1 2026-07-26), ARMED; contact still gated on product-live, so not yet exercised | observation |
 | 11 | Human comms policy (POL-001) | Dalia | yes | yes | partial | live 07-09; local-time bridge dependency | observation |
 | 12 | Chronicle capture (Oracle) | Oracle | partial | yes | yes | embedded in runner prompt; no process file | observation |
 | 13 | Runner / proactivity ops | Assaf + Shir | partial | yes | yes | no runner-down / job-management runbook | minor |
@@ -43,3 +43,12 @@ FOLLOWED: yes / partial / no / unverified / n/a (not yet triggered). SEV of the 
 Detail + findings: company/audits/2026-06/phase5-procedures-audit.md (findings F-P01..F-P20, F-PA01..F-PA13).
 Headline: procedures 6, 9, 15 are the critical gaps; procedure 9 (audit cadence) is actively FAILING in production
 -- the weekly security/quality/compliance audits have not run since 2026-06-29.
+
+Row updates since the 2026-07-11 audit snapshot:
+- 2026-08-02: row 10 (Customer comms / CS-0001) corrected. It read "v0.1 DRAFT, not A1"; the
+  policy has been v1.0 APPROVED since owner A1 2026-07-26
+  (company/cs/cs-0001-customer-communication-policy.md). Exists -> yes, Current -> yes,
+  Sev major -> observation. Followed stays n/a: the policy is ARMED but customer contact is
+  still gated on product-live, so the procedure has not been exercised. Doc-accuracy fix only.
+  Note: CS-0001 lives under company/cs/, not company/policies/ -- exception recorded in
+  company/policies/policy-framework.md section 6.

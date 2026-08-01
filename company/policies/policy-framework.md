@@ -1,7 +1,7 @@
 # Eco-Synthetic: Policy Framework
 
 - **Owner:** Dalia (Quality & Governance)
-- **Version:** 0.2 (2026-07-08 -- policy index updated; activation path confirmed; section 8 status note updated)
+- **Version:** 0.3 (2026-08-02 -- section 6 policy index reconciled to reality: POL-001 LIVE v1.1, CS-0001 APPROVED v1.0; CS-0001 location exception recorded)
 - **Status:** A2 GRANTED (Eco, 2026-07-08) -- framework structure approved; awaiting owner A1 for full activation
 - **Authority:** owner direction 2026-06-15 (decisions-log, item 2 of 6-part decision)
 - **Reference:** company/constitution.md (section 3, 5, 13); company/soul.md; CLAUDE.md
@@ -80,8 +80,27 @@ All company policies live in company/policies/.
 
 | Policy ID | Name | File | Owner | Status | Gate | Activated |
 |-----------|------|------|-------|--------|------|-----------|
-| POL-001 | Human-Communication Policy | human-communication-policy.md | Dalia (Q&G) | PRE-A1 READY v0.5 | A1 required | pending owner A1 |
-| CS-0001 | Customer-Communication Policy | (not yet created) | Mike (VP CS) | in-progress (AUD-004) | A2 Eco + A1 owner | blocked on CS-0001 draft completion |
+| POL-001 | Human-Communication Policy | company/policies/human-communication-policy.md | Dalia (Q&G) | **LIVE v1.1** | A1 (granted) | owner A1 2026-07-09; v1.1 2026-08-01 added section 2b (when to message the owner) |
+| CS-0001 | Customer-Communication Policy | company/cs/cs-0001-customer-communication-policy.md **(outside company/policies/ -- see note)** | Mike (VP CS) | **APPROVED v1.0, ARMED** | A2 Eco + A1 owner (both granted) | owner A1 2026-07-26; customer contact still gated on product-live |
+
+### Index notes
+
+- **POL-001** is live company-wide. The earlier "v0.5 pending A1" entry was stale by
+  three weeks and contradicted the policy file's own header.
+- **CS-0001** exists and is approved. The earlier "(not yet created)" entry was wrong.
+  ARMED means the policy is in force; it does NOT authorize contact. No product is live,
+  so no agent may contact a customer today (CS-0001 section 2 hard gate). Authorization
+  list is Mike + Jenny.
+- **LOCATION EXCEPTION (recorded, owner Mike + Dalia):** CS-0001 lives at
+  `company/cs/cs-0001-customer-communication-policy.md`, not in `company/policies/`.
+  This is a real exception to section 2 of this framework ("All company policies live in
+  company/policies/"). It is recorded here rather than silently ignored. The file is NOT
+  being moved in this pass -- a move would break the inbound references in POL-001,
+  board AUD-004/T-0037, and the CS-0001 A1 package. TRACKED FOLLOW-UP for Dalia + Mike:
+  decide either (a) formalize the exception in section 2 as a named carve-out for
+  domain-owned policies that live with their domain folder, or (b) move the file and
+  update every reference in one pass. Until that decision, section 2 has one known
+  exception and this row is the record of it.
 
 ---
 

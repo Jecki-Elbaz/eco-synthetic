@@ -1,9 +1,20 @@
-# Eco-Synthetic: File Index
+# Eco-Synthetic: File Index -- SUPERSEDED, DO NOT USE
 
-**Owner:** Yael (Knowledge/Documentation Manager, under Dalia/Q&G)  
-**Purpose:** living index of every informational file — location, purpose, owner, last-reviewed date  
-**Authority:** A3 write (Yael); used for QC + naming review only, never to edit owned content  
-**Last updated:** 2026-06-29
+> **SUPERSEDED 2026-08-02. THIS IS NOT THE CANONICAL FILE INDEX.**
+>
+> The canonical file index is **`memory/wiki/file-index.md`**, as named by
+> `company/governance/documentation-standard.md` section 10.
+>
+> Two competing indexes existed side by side; this is the losing one. It is kept for
+> history only. Do NOT read it as current state, do NOT add rows to it, and do NOT cite
+> it. Every new or changed file goes into `memory/wiki/file-index.md`.
+>
+> Content below this banner is frozen as of 2026-06-29 and is known to be stale.
+
+**Owner:** Yael (Knowledge/Documentation Manager, under Dalia/Q&G)
+**Purpose:** (historical) living index of every informational file -- location, purpose, owner, last-reviewed date
+**Authority:** frozen; no further writes
+**Last updated:** 2026-06-29 (frozen 2026-08-02)
 
 ---
 
