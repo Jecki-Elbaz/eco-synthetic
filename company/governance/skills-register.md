@@ -41,12 +41,12 @@ recurs before its owner is live.
 |-----------|-----------------|-----------------|------------------|
 | /fitness-loop | agent fitness check (skills, efficiency, role adherence) | Assaf | when Assaf live |
 | /ondemand-review | monthly T-0009 review of on-demand agents | Assaf | when Assaf live |
-| /prd | mini-PRD to company structure | Noam | when Noam live + 2nd PRD |
-| /mvp-scope | RICE-based MVP scoping | Noam | when Noam live |
+| /prd | mini-PRD to company structure | Perry | live since 2026-06-17; build on 2nd PRD |
+| /mvp-scope | RICE-based MVP scoping | Perry | live since 2026-06-17; ready to build |
 | /release-gate | run the R&D release gate (DOD check) | Ido | when Ido live + 2nd release |
 | /compliance-flag | proactive compliance backlog flag (30-day rule) | Eyal + Lital | on 2nd use |
 | /decision-log | append a well-formed decisions-log entry (format guard) | any (Dalia owns format) | on owner confirm |
-| /pricing-proposal | pricing/packaging proposal | Tim | when Tim live |
+| /pricing-proposal | pricing/packaging proposal | Sally | live since 2026-06-17; ready to build |
 
 ## Notes
 - Skills are A2 to create; this register is the proposal-and-approval record.
