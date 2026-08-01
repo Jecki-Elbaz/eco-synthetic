@@ -24,11 +24,11 @@
 ## Pending Owner Actions
 
 - **APS-027 TODAY**: dispatch Eco/Ido/Gal/Adi (interactive session) to regenerate fresh live 3-session run; owner relays package to Adam. First days of August = now open. Hard gate: 15-Aug rehearsal.
-- **SHIR-007 + SHIR-001**: dispatch Shir in interactive session (escalated 07-26/27; runner cannot spawn)
+- **ONE DECISION, THREE GATES (new 2026-08-02, Eyal)**: open an Anthropic API/Console account (~13-28 USD/month per Lital). This single action closes the DPA condition blocking **GR-021** (Shelly autonomous send), **T-0047**, and the **GR-020** Path A action. It was being carried as three separate asks; it is one. Supersedes the old standalone T-0047 line below.
+- **SHIR-001**: dispatch Shir in interactive session (escalated 07-26). SHIR-007 CLOSED 2026-08-02 -- git sort complete, 5 commits pushed.
 - **T-0020 R1-CODE**: dispatch Shir to enforce OWNER_ONLY_MODE in bridge (any Telegram user can message Eco now)
-- **T-0046 + T-0049** (Gmail filter gate + autonomous-send gate): dispatch Rambo+Eyal in interactive session
-- **T-0047**: check console.anthropic.com tier (API vs Consumer) -- closes Eyal C-E4 blocker
-- **AUD-013**: apply Anat red-team coaching clause batch to 6 role files (batch ready 07-26; A1 required)
+- ~~**T-0046 + T-0049**: dispatch Rambo+Eyal~~ -- **DONE 2026-08-02.** Both scanned and reviewed. T-0046: Rambo CLEAR-WITH-CONDITIONS + Eyal CLEAR-WITH-CONDITIONS -> ready for Eco A2 grant with conditions. T-0049 (registered **GR-021**, not GR-020 -- that number was taken): Rambo **FLAG**, not cleared -- BCC alone is detective, not preventive, without a hold window before the send job fires. Not an owner action until the architecture answers that.
+- **AUD-011**: A1 -- add Designer.md marketing/brand + marketing/avatars write scope (Rambo C2)
 - **AUD-011**: A1 -- add Designer.md marketing/brand + marketing/avatars write scope (Rambo C2)
 - **SEC-0001**: A1 flip when gate surfaces GREEN (~08-03)
 - **AUD-007 residual (FIX-05)**: tick "Run task as soon as possible after a scheduled start is missed" on the Eco-Synthetic Runner Task Scheduler job (exact steps: integrations/runner/aud-007-delivery-shir-2026-07-12.md). Carried forward when AUD-007 closed 2026-08-02; low urgency -- no observed miss is attributable to it.
