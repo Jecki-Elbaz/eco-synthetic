@@ -1,4 +1,4 @@
-"""Regression tests for the owner-notification gate (2026-07-27 noise-reduction rollout).
+"""Regression tests for the owner-notification gate (2026-08-01 noise-reduction rollout).
 
 Covers the three mechanics that cut the ~16 pushes/day to ~1: the robust NO_ACTIONABLE
 suppression (the old endswith() shipped the 'no new mail' spam), the owner-local quiet-hours

@@ -206,7 +206,7 @@ RED_EXACT = {
     ".claude/settings.local.json",
     "company/governance/access-matrix.md",
     "company/constitution.md",
-    # Send whitelist -- owner-only editable (WS4, 2026-07-27). The autonomous-send guard
+    # Send whitelist -- owner-only editable (WS4, 2026-08-01). The autonomous-send guard
     # reads this file at runtime, so an off-owner edit would poison the recipient allowlist.
     "company/governance/email-send-whitelist.md",
 }
@@ -245,7 +245,7 @@ DENY = "deny"
 # Guard-issued explicit approval: main() emits permissionDecision:"allow" JSON so the hook
 # owns the grant instead of falling through to settings.json (which has no send_gmail_message
 # allow entry and would auto-deny it on the runner). Only ever produced on the runner path for
-# a fully-whitelisted send (WS4, 2026-07-27).
+# a fully-whitelisted send (WS4, 2026-08-01).
 EXPLICIT_ALLOW = "explicit_allow"
 
 
@@ -307,7 +307,7 @@ def _current_content(rel: str) -> str:
         return ""
 
 
-# --- Autonomous send whitelist (WS4, 2026-07-27) -------------------------------
+# --- Autonomous send whitelist (WS4, 2026-08-01) -------------------------------
 # send_gmail_message is auto-approved on the runner ONLY when every recipient is on this
 # owner-only list. The file is in RED_EXACT, so only the owner's interactive session can edit
 # it. Absent/unreadable = capability not activated = fail-closed (all sends denied).
@@ -382,7 +382,7 @@ def evaluate(event: dict) -> tuple[str, str]:
                 return DENY, "google boundary: send_gmail_message denied -- no recipients (WS4)"
             # A recipient counts as whitelisted only if it is ASCII AND its lowercase form is
             # on the list. The ASCII check is on the RAW address so a homoglyph cannot
-            # .lower()/fold into a whitelisted ASCII string (adversary finding 2026-07-27).
+            # .lower()/fold into a whitelisted ASCII string (adversary finding 2026-08-01).
             non_wl = [r for r in recipients if not (r.isascii() and r.lower() in whitelist)]
             runner_send = os.environ.get("RUNNER_CONTEXT") == "1"
             if non_wl:
@@ -401,7 +401,7 @@ def evaluate(event: dict) -> tuple[str, str]:
                 return EXPLICIT_ALLOW, (
                     "send_gmail_message: all recipients whitelisted -- auto-approved on runner (WS4)"
                 )
-            # Interactive whitelisted send still prompts the owner (owner directive 2026-07-27).
+            # Interactive whitelisted send still prompts the owner (owner directive 2026-08-01).
             return ALLOW, (
                 "send_gmail_message: all recipients whitelisted -- interactive owner prompt (WS4)"
             )
@@ -442,7 +442,7 @@ def evaluate(event: dict) -> tuple[str, str]:
     # without this a prompt-injected email could run an allow-listed Bash command
     # (e.g. python3 -c "...open(whitelist,'a')...") to poison the send whitelist or any Red
     # file. Mirrors the runner posture. BRIDGE_CONTEXT is hard-enforced in decide() regardless
-    # of GUARD_MODE, so this bites in shadow too (adversary finding 2026-07-27).
+    # of GUARD_MODE, so this bites in shadow too (adversary finding 2026-08-01).
     if os.environ.get("BRIDGE_CONTEXT") == "1":
         if tool == "bash":
             return DENY, "telegram bridge: Bash is disabled on the bridge path"
@@ -516,13 +516,13 @@ def evaluate(event: dict) -> tuple[str, str]:
             return ALLOW, "setting SAFE_MODE flag"
 
         # Red paths (5.1) -- owner-only A1, blocked regardless of SAFE_MODE.
-        # Exemption (B1, SEC-0001 2026-07-01; tightened 2026-07-27): the owner's LIVE
+        # Exemption (B1, SEC-0001 2026-07-01; tightened 2026-08-01): the owner's LIVE
         # interactive Claude Code session -- origin empty AND neither the scheduled runner
         # (RUNNER_CONTEXT) NOR the Telegram bridge (BRIDGE_CONTEXT) -- may write Red paths,
         # the out-of-band A1 channel for role-file edits. The bridge spawns top-level Eco
         # (origin empty, RUNNER_CONTEXT unset) on untrusted email input, so it must be
         # excluded here or the owner-only Red set (incl. the send whitelist) is not actually
-        # owner-only (adversary finding 2026-07-27). Sub-agents (origin set) and every
+        # owner-only (adversary finding 2026-08-01). Sub-agents (origin set) and every
         # runner/bridge-spawned agent are denied unconditionally.
         if _is_red(rel):
             if (origin == ""
@@ -590,7 +590,7 @@ def decide(event: dict, mode: str) -> tuple[str, str]:
     runner = os.environ.get("RUNNER_CONTEXT") == "1"
     # BRIDGE_CONTEXT marks a Telegram-bridge-spawned Claude (untrusted email input). Like the
     # runner, it is hard-enforced regardless of GUARD_MODE -- a semi-autonomous path must not
-    # rely on shadow leniency (adversary finding 2026-07-27).
+    # rely on shadow leniency (adversary finding 2026-08-01).
     bridge = os.environ.get("BRIDGE_CONTEXT") == "1"
     try:
         decision, reason = evaluate(event)
@@ -603,7 +603,7 @@ def decide(event: dict, mode: str) -> tuple[str, str]:
     # Red-path denials are a hard owner-only-A1 boundary, not a phase-in rule: enforce them
     # regardless of GUARD_MODE (like the google/handoff boundaries). Without this a bridge or
     # sub-agent Red-path DENY would degrade to would-DENY -> ALLOW while the guard is still in
-    # shadow, leaving the send whitelist writable off the owner session (adversary 2026-07-27).
+    # shadow, leaving the send whitelist writable off the owner session (adversary 2026-08-01).
     red_block = decision == DENY and reason.startswith("Red path")
     if runner or bridge or mode == "enforce" or handoff_block or google_block or red_block:
         return decision, reason

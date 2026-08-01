@@ -1,7 +1,7 @@
 # Human-Communication Policy
 
 - **Policy ID:** POL-001
-- **Version:** 1.1 (2026-07-27 -- added section 2b, when to message the owner; owner A1)
+- **Version:** 1.1 (2026-08-01 -- added section 2b, when to message the owner; owner A1)
 - **Status:** LIVE -- owner A1 granted 2026-07-09 (jecki via Telegram); active company-wide
 - **Owner:** Dalia (Quality & Governance)
 - **HR gate:** CLEARED -- Anat sign-off 2026-06-27 (section 2)
@@ -83,10 +83,10 @@ No other changes to section 2 or 2a. Section 3 not reviewed (Mike's domain).
 
 ---
 
-## 2b. When to message the owner -- proactive contact (owner A1 2026-07-27)
+## 2b. When to message the owner -- proactive contact (owner A1 2026-08-01)
 
 This section governs WHEN an agent initiates contact with the owner (jecki), separate from HOW
-(sections 2, 2a). Owner directive 2026-07-27: communicate when it matters, stay silent otherwise.
+(sections 2, 2a). Owner directive 2026-08-01: communicate when it matters, stay silent otherwise.
 The goal is minimum noise -- signal only.
 
 - ONE VOICE. Only Eco (CEO) speaks to the owner on a cadence. Every other agent feeds Eco through
@@ -222,4 +222,4 @@ CS-0001 is A1-approved AND a product is live.
 | 0.4 | 2026-06-27 | Mike (VP CS) | CS sign-off on section 3: floor rules confirmed sound; four CS gaps noted for CS-0001 drafting; no changes to floor text; activation condition stated explicitly; CS input gate cleared |
 | 0.5 | 2026-07-08 | Dalia (Q&G) | Pre-A1 final: status -> PRE-A1 READY; header updated to reflect both gates cleared; section 2 HR flag markers replaced with gate-cleared summary (sign-off evidence preserved); section 3 CS flag markers replaced with gate-cleared summary; CS-0001 overlap note added (section 3); activation gate (section 6) rewritten to state the only remaining gate is owner A1 and to clarify that CS-0001 approval is not required to activate this policy at company level (only required for section 3 to be operationally used); version history updated |
 | 1.0 | 2026-07-09 | Eco (CEO), owner A1 | Owner A1 granted (jecki via Telegram). Status PRE-A1 READY -> LIVE; version 0.5 -> 1.0; activation gate item 3 marked DONE; policy active company-wide. Section 3 customer-comms stays dark until CS-0001 A1 + product live. Decisions-log entry 2026-07-09. |
-| 1.1 | 2026-07-27 | Eco (CEO), owner A1 | Added section 2b (when to message the owner): one voice, one morning digest, urgent-only otherwise, quiet hours 22:00-09:00 emergencies-only, message structure, pull-not-push. Codifies the owner IM-noise-reduction contract (plan i-am-receiving-from-reactive-harbor.md). Dalia to formalize wording at the next Q&G pass. |
+| 1.1 | 2026-08-01 | Eco (CEO), owner A1 | Added section 2b (when to message the owner): one voice, one morning digest, urgent-only otherwise, quiet hours 22:00-09:00 emergencies-only, message structure, pull-not-push. Codifies the owner IM-noise-reduction contract (plan i-am-receiving-from-reactive-harbor.md). Dalia to formalize wording at the next Q&G pass. |

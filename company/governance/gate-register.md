@@ -769,3 +769,44 @@ GUARD_MODE=enforce.
 SEC-0001. Not self-granted: Security cleared risk, Legal N/A, owner directed the outcome.
 
 **Opened by:** Eco (design) / owner (gate A1) | **Date:** 2026-07-27 | **Recorded by:** Eco, 2026-07-27
+
+---
+
+## GR-020 -- Gmail READ scope widened + Eco autonomous send to whitelist (2026-08-01)
+
+Type: capability change on the eco.synthetic.org@gmail.com surface (no new vendor/tool; reuses
+GR-009 workspace-mcp). Owner A1: jecki, 2026-08-01 (plan i-am-receiving-from-reactive-harbor.md).
+Renumbered from the "GR-019" placeholder mistakenly used in the rollout drafts -- GR-019 is
+File-and-Flush (above); this gate is GR-020.
+
+**Capability 1 -- Gmail READ widened:** from the GR-014 Adam-only bound to all unread on the own
+account (is:unread newer_than:7d), via the Rambo Stage-1 screen; Eco processes only SAFE summaries
+(two-stage pipeline unchanged). Supersedes C-E1 (Adam-only query).
+
+**Capability 2 -- Eco autonomous send to an owner-only whitelist:** send_gmail_message allowed on
+the runner path when EVERY recipient is on company/governance/email-send-whitelist.md (guard.py,
+EXPLICIT_ALLOW); interactive sends still prompt the owner; non-whitelisted on runner DENIED;
+missing whitelist = fail-closed. Whitelist is in the guard Red set (owner-only editable). Seed:
+jecki.elbaz@gmail.com, leighton.adam@gmail.com, shelly.synthetic.org@gmail.com.
+
+**Rambo (Security): PASS-WITH-CONDITIONS** (guard design + G1-G13). Adversary-verified in two
+rounds; both findings fixed -- the bridge could edit the owner-only whitelist via Write AND via
+Bash. Closed: BRIDGE_CONTEXT excluded from the Red-path owner exemption; Red-path denials
+hard-enforced regardless of GUARD_MODE; Bash + sub-agent spawn denied on the bridge path. Proof:
+.claude/hooks/test_guard.py (76 tests green).
+
+**Eyal (Legal): PASS-WITH-CONDITIONS.** Google ToS / Israeli anti-spam (Amendment 40) / PPL all
+clear with minimization. BLOCKING: C-E4 (Anthropic DPA / compliance Item 6). Analysis:
+company/legal/anthropic-dpa-item6-path-a-2026-08-01.md. Send conditions C-S2..C-S8 binding
+(owner-cc external mandatory, operational content only, minimize Adam, no customer send, C-E2
+minimization) -- embedded in Eco.md rule 5.
+
+**Blocking for go-live (both capabilities):** C-E4. Owner chose Path A (execute the Anthropic DPA).
+The DPA applies only to Anthropic Commercial/API accounts, not Consumer/Max; owner is Max-only, so
+Path A needs opening an API account (Lital estimate ~$13-28/mo). C-S1 Rambo send-guard: CLEARED.
+
+**Gate status:** SECURITY + LEGAL CLEAR-WITH-CONDITIONS. Capability BUILT but INERT (no whitelist
+file created; all sends fail-closed). PARKED by owner 2026-08-01 pending the Path A decision.
+Not self-granted: Security cleared risk, Legal cleared terms, owner directed and parked.
+
+**Opened by:** Eco / owner (plan 2026-08-01) | **Date:** 2026-08-01 | **Recorded by:** Eco, 2026-08-01

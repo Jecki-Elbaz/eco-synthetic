@@ -5,7 +5,7 @@ Reads memory/agent-runs.jsonl and reports how many Telegram pushes actually reac
 per day (records with "sent": true), plus how many non-emergency pushes quiet-hours held. Writes
 a small running table to memory/push-counter.md so the owner can watch the noise level.
 
-Purpose: verify the 2026-07-27 noise-reduction (plan i-am-receiving-from-reactive-harbor.md)
+Purpose: verify the 2026-08-01 noise-reduction (plan i-am-receiving-from-reactive-harbor.md)
 actually dropped owner pushes from ~16/day toward ~1/day, and support ongoing re-evaluation.
 
 Run standalone (`python integrations/dashboard/push_counter.py`) or wire one call into the
@@ -53,7 +53,7 @@ def build() -> str:
         "# Owner push counter",
         "",
         "Telegram pushes that reached the owner per day (agent-runs.jsonl `sent:true`), and the",
-        "non-emergency pushes quiet-hours held for the morning digest. Target after the 2026-07-27",
+        "non-emergency pushes quiet-hours held for the morning digest. Target after the 2026-08-01",
         "noise fix: ~1/day. Regenerate: `python integrations/dashboard/push_counter.py`.",
         "",
         "| Date (UTC) | Pushes sent | Held (quiet hours) |",

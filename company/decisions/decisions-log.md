@@ -2084,3 +2084,19 @@ dashboard push-counter. Owner action pending: Path A (open API account after Lit
 - **Estimated saving:** ~4-5 nightly spawns x ~$1.4 = ~$6-7/day; Eco ~$17/day -> ~$10-11/day (~40%). Visible on the dashboard Cost column from tomorrow.
 - **Bigger levers NOT yet applied (owner call -- they change behavior more):** (a) split the 2h prompt so the full stale-sweep + handoff processing runs ONCE/day (AM brief) and the 2h cycle is light urgent-only triage -- the heavy write-work every 2h is the token driver; (b) change-based gate (skip if board/decisions-log/handoff unchanged since last run); (c) run the 2h triage on Haiku, reserve Sonnet for the AM brief. Each an A2 tweak; proposed for owner sign-off since they alter proactivity behavior/quality.
 - **Files affected:** integrations/runner/runner.py (quiet-hours skip in the Eco 2h cost gate), company/decisions/decisions-log.md (this entry, EOF-append per red line 6a).
+
+---
+
+## 2026-08-01 -- Date-label correction + gate renumber (Eco, owner-directed)
+
+Correction to the noise-reduction / email-autonomy rollout entry above. The rollout executed over
+a session spanning ~2026-07-27 to 2026-08-01; actual completion is 2026-08-01. Several artifacts
+(the prior entry header, commit messages, and code comments) were mistakenly labeled 2026-07-27 --
+anchored on a stale repo date instead of the system date. Corrected 2026-08-01: doc and code date
+labels now read 2026-08-01. Commit messages already pushed keep the 07-27 label (not rewritten;
+git author-dates are correct).
+
+Gate renumber: Eyal's Gmail-read-widen + autonomous-send gate was drafted as "GR-019", colliding
+with the File-and-Flush gate that already holds GR-019. Renumbered GR-020 (gate-register.md,
+2026-08-01). The capability remains BUILT but INERT and PARKED by the owner pending the Path A /
+Anthropic-API-account decision.

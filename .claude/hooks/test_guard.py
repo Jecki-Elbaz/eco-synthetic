@@ -81,7 +81,7 @@ def test_red_write_allowed_for_owner_interactive_session():
 
 
 def test_red_write_denied_on_bridge_path(monkeypatch):
-    # 2026-07-27 fix: the Telegram bridge spawns top-level Eco (origin empty, RUNNER_CONTEXT
+    # 2026-08-01 fix: the Telegram bridge spawns top-level Eco (origin empty, RUNNER_CONTEXT
     # unset) on untrusted email input. BRIDGE_CONTEXT=1 must exclude it from the B1 owner
     # exemption, so it cannot write Red paths (settings, role files, the send whitelist).
     monkeypatch.setenv("BRIDGE_CONTEXT", "1")
@@ -135,7 +135,7 @@ def test_owner_still_allowed_after_bridge_fix():
     assert decision == guard.ALLOW
 
 
-# --- send_gmail_message whitelist gate (WS4, 2026-07-27) ---
+# --- send_gmail_message whitelist gate (WS4, 2026-08-01) ---
 
 _WL_SEED = "jecki.elbaz@gmail.com\nleighton.adam@gmail.com\nshelly.synthetic.org@gmail.com\n"
 
@@ -162,7 +162,7 @@ def test_send_whitelisted_runner_explicit_allow(monkeypatch, wl):
 
 
 def test_send_whitelisted_interactive_prompts_not_explicit(wl):
-    # Owner directive 2026-07-27: interactive whitelisted sends still prompt (plain ALLOW).
+    # Owner directive 2026-08-01: interactive whitelisted sends still prompt (plain ALLOW).
     decision, reason = guard.decide(_send(to="jecki.elbaz@gmail.com"), "enforce")
     assert decision == guard.ALLOW
     assert decision != guard.EXPLICIT_ALLOW
@@ -243,7 +243,7 @@ def test_send_whitelist_deny_hard_enforced_in_shadow(monkeypatch, wl):
 
 def test_bridge_bash_write_to_red_denied(monkeypatch):
     # The Bash vector the Write-only test missed: a bridge Bash command must be denied so a
-    # prompt-injected email cannot poison the whitelist via a shell call (adversary 2026-07-27).
+    # prompt-injected email cannot poison the whitelist via a shell call (adversary 2026-08-01).
     monkeypatch.setenv("BRIDGE_CONTEXT", "1")
     cmd = "python3 -c \"open('company/governance/email-send-whitelist.md','a').write('evil@x.com')\""
     decision, reason = guard.decide(ev("Bash", command=cmd), "enforce")

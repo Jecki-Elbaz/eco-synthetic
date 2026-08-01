@@ -46,13 +46,18 @@ company/decisions/decisions-log.md, check for .board.md.lock or .decisions-log.m
 the project root. If present and < 30s old: wait up to 30s. Write your sentinel first, then
 the file, then delete the sentinel. See integrations/file-lock/procedure.md.
 
+APPEND-ONLY WRITE RULE (CLAUDE.md red line 6a, SEC-0001 B2): company/decisions/decisions-log.md
+and memory/log.md are APPEND-ONLY. To append an entry: (1) Read the full current file content.
+(2) Use the Write tool with the full existing content plus your new entry at the bottom.
+NEVER use the Edit tool on these files. NEVER alter existing entries.
+
 Format: Hebrew, right-to-left, plain prose, max 120 words. No markdown tables, no ## headers.
 Start directly -- no ack line (scheduled push, not a reply). Sent to jecki's Telegram by the runner.
 ```
 
 ---
 
-<!-- Eco PM Summary + Health Block RETIRED 2026-07-27 (owner directive: one morning digest is
+<!-- Eco PM Summary + Health Block RETIRED 2026-08-01 (owner directive: one morning digest is
 the only scheduled owner touch). Removed as a job to stop the second daily push. Trigger health
 now lives on memory/owner-dashboard.md (DASH-001) and in the morning digest when it matters.
 Kept as an HTML comment (not a heading) so the parser never registers it as a job. -->
@@ -121,7 +126,7 @@ Read memory/board.md. Check only for these conditions:
    note alone executes nothing; if the same row hits a 3rd cycle, escalate to the owner to
    dispatch it in an interactive session instead of appending a 4th note.
 
-OWNER-FACING ONLY IF GENUINELY URGENT NOW (owner directive 2026-07-27). Message jecki this
+OWNER-FACING ONLY IF GENUINELY URGENT NOW (owner directive 2026-08-01). Message jecki this
 cycle ONLY if, right now, one of these holds: (a) an A1 sign-off he owes with a real deadline;
 (b) money, a customer, or a production incident; (c) a security SUSPICIOUS finding; (d) work
 blocked that only jecki can unblock. If so, your reply's FIRST line must be exactly:
@@ -143,6 +148,11 @@ SHARED-FILE WRITE RULE (AUD-001): before writing to memory/board.md or
 company/decisions/decisions-log.md, check for .board.md.lock or .decisions-log.md.lock in
 the project root. If present and < 30s old: wait up to 30s. Write your sentinel first, then
 the file, then delete the sentinel. See integrations/file-lock/procedure.md.
+
+APPEND-ONLY WRITE RULE (CLAUDE.md red line 6a, SEC-0001 B2): company/decisions/decisions-log.md
+and memory/log.md are APPEND-ONLY. To append an entry: (1) Read the full current file content.
+(2) Use the Write tool with the full existing content plus your new entry at the bottom.
+NEVER use the Edit tool on these files. NEVER alter existing entries.
 
 Format: plain prose. No ack line. No "all clear" message. Silence is correct when nothing is wrong.
 ```
@@ -346,6 +356,11 @@ Steps:
 
 Write findings to company/security/reports/permission-drift-<YYYY-MM-DD>.md.
 Structure: BLOCKING FLAGS section (must be resolved before next scan), REVIEW items, CLEAR items.
+
+APPEND-ONLY WRITE RULE (CLAUDE.md red line 6a, SEC-0001 B2): company/decisions/decisions-log.md
+and memory/log.md are APPEND-ONLY. To append an entry: (1) Read the full current file content.
+(2) Use the Write tool with the full existing content plus your new entry at the bottom.
+NEVER use the Edit tool on these files. NEVER alter existing entries.
 
 If any BLOCKING FLAG exists: write "ESCALATE_TO_ECO_BLOCKING" on the last line.
 The runner reads this line and triggers an immediate Eco notification (does not wait for AM brief).
@@ -590,6 +605,11 @@ SHARED-FILE WRITE RULE (AUD-001): before writing to memory/board.md or
 company/decisions/decisions-log.md, check for .board.md.lock or .decisions-log.md.lock in
 the project root. If present and < 30s old: wait up to 30s. Write your sentinel first, then
 the file, then delete the sentinel. See integrations/file-lock/procedure.md.
+
+APPEND-ONLY WRITE RULE (CLAUDE.md red line 6a, SEC-0001 B2): company/decisions/decisions-log.md
+and memory/log.md are APPEND-ONLY. To append an entry: (1) Read the full current file content.
+(2) Use the Write tool with the full existing content plus your new entry at the bottom.
+NEVER use the Edit tool on these files. NEVER alter existing entries.
 
 Do not send to Telegram.
 ```

@@ -1,6 +1,6 @@
 # Calendar convention -- Eco's Google Calendar as a trackable surface
 
-Owner directive 2026-07-27 (jecki, A1): Eco manages his own Google Calendar
+Owner directive 2026-08-01 (jecki, A1): Eco manages his own Google Calendar
 (eco.synthetic.org@gmail.com) so milestones, important events, and scheduled activities are
 trackable by the owner -- and later by agents where it is effective. Status: CONVENTION ADOPTED;
 owner asked for convention-only for now, so NO events are auto-created until the owner reviews

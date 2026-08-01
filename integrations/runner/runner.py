@@ -490,7 +490,7 @@ def _last_sunday(year: int, month: int) -> datetime:
 def _israel_offset_hours(t: datetime) -> int:
     """UTC offset for Israel: +3 in DST, else +2. Dependency-free on purpose -- this box
     has no system tz database and tzdata is not installed, so zoneinfo cannot resolve
-    'Asia/Jerusalem' (verified 2026-07-27, Python 3.14). Israel DST runs from the Friday
+    'Asia/Jerusalem' (verified 2026-08-01, Python 3.14). Israel DST runs from the Friday
     before the last Sunday of March (02:00 local) to the last Sunday of October (02:00
     local); boundaries are approximated to the hour, which never matters for the broad
     22:00-09:00 quiet window."""
@@ -515,7 +515,7 @@ QUIET_END_HOUR = 9     # exclusive, owner-local
 
 def quiet_hours_active(t: datetime | None = None) -> bool:
     """True during the owner-local quiet window [22:00, 09:00). The owner is out of office
-    then; only EMERGENCY notifications pierce it (owner directive 2026-07-27). Everything
+    then; only EMERGENCY notifications pierce it (owner directive 2026-08-01). Everything
     held is re-derived by the ~09:00 digest."""
     h = owner_local(t).hour
     return h >= QUIET_START_HOUR or h < QUIET_END_HOUR
@@ -525,7 +525,7 @@ def _is_no_actionable(out: str) -> bool:
     """True when the agent output signals 'nothing to send' -- the sentinel appears as the
     FIRST or LAST non-empty line. Robust to a trailing note after the sentinel (Rambo's inbox
     screen) or a reasoning preamble before it (Eco). Replaces a fragile endswith() that shipped
-    the 'no new mail' spam whenever any text followed the sentinel (fixed 2026-07-27)."""
+    the 'no new mail' spam whenever any text followed the sentinel (fixed 2026-08-01)."""
     lines = [ln.strip() for ln in out.splitlines() if ln.strip()]
     return bool(lines) and (
         lines[0] == "NO_ACTIONABLE_CONTENT" or lines[-1] == "NO_ACTIONABLE_CONTENT"
