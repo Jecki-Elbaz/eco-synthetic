@@ -1,8 +1,30 @@
-# Eco-Synthetic — Project CLAUDE.md
+# Eco-Synthetic -- Project CLAUDE.md
 
 ## What this file is
-Security baseline and access rules for this project (backlog items 5–7, `[SCAFFOLD]`).
+Security baseline and access rules for this project (backlog items 5-7, `[SCAFFOLD]`).
 Rules in this file OVERRIDE default behavior. No exceptions.
+
+---
+
+## Session-start rule: drain the dispatch queue (owner A1 2026-08-02)
+
+At the START of every interactive session in this project, read `memory/dispatch-queue.md`.
+
+It holds work a scheduled runner cycle identified but could not dispatch itself. The runner may
+dispatch only rambo, eyal, dalia and anat, capped at 3 per cycle; the code-builders and
+Bash-holders (gal, shir, adi, noa, oren) are owner-session-only by security design (SEC-0001),
+so an interactive session is the ONLY path that can reach them.
+
+For each row with status `pending`:
+1. Dispatch the target agent with a real task envelope (task_id, objective, context_refs, gate,
+   expected output, report-back target).
+2. Set the row's status to `dispatched YYYY-MM-DD`.
+3. When the work lands, set it to `done YYYY-MM-DD`.
+
+If the queue is empty, that is a one-line check and you move on. This rule exists because before
+2026-08-02 the runner could dispatch nobody: Eco's stale-sweep could only append "REACTIVATED"
+notes into board rows no agent would ever read, and P1 work sat for 18 to 50 days collecting
+notes that executed nothing.
 
 ---
 

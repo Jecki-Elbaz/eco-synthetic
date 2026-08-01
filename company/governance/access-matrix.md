@@ -6,7 +6,7 @@ Oracle chronicle row, runner output paths, Designer marketing gate notes, Dalia/
 PATH_SCOPE mirror rows. Change D notes updated to reflect the Rambo AUD-011 scan delivered
 2026-07-25 (CLEAR-WITH-CONDITIONS).
 
-**Owned by:** Dalia (Quality & Governance) — defines structure; Rambo (Security) — enforces.
+**Owned by:** Dalia (Quality & Governance) -- defines structure; Rambo (Security) -- enforces.
 Per constitution §9: access is need-to-know with read / write / archive rights.
 This matrix is enforced by `CLAUDE.md` deny-list and `.claude/settings.json` tool permissions.
 
@@ -23,15 +23,17 @@ This matrix is enforced by `CLAUDE.md` deny-list and `.claude/settings.json` too
 | `company/governance/` | **Restricted** | Eco, Dalia, Rambo, Eyal | Dalia (access-matrix), Eyal (gate-register), Rambo (security baseline) | |
 | `memory/global/` | **Restricted** | Need-to-know only; Eco + relevant staff | Eco, relevant VP or staff with context | Never shared broadly without Eco approval |
 | `memory/owner-office/` | **Retired** | jecki | -- | Migrated to Shelly's standalone project on her separation (2026-06-20); no longer used in this repo |
-| `memory/board.md` | **Company-shared** | All agents | Each agent writes to its own task rows | Cross-company task board |
+| `memory/board.md` | **Company-shared** | All agents | Each agent writes to its own task rows | Cross-company task board. BOARD-WRITE 2026-08-02 (owner A1): guard PATH_SCOPE now grants `memory/board.md` to every acting agent. Until then 22 of 32 agents could read the board but not write it, so their status existed only inside an ephemeral spawn transcript -- a large part of why ownership looked invisible. Own rows only; concurrency handled by `integrations/file-lock/`. |
+| `memory/dispatch-queue.md` | **Company-shared** | All agents | Runner-path Eco appends pending rows; any interactive session updates status | Work the scheduled runner identified but cannot dispatch itself (owner-session-only agents: gal, shir, adi, noa, oren; or the per-cycle dispatch cap was spent). Drained at interactive session start per CLAUDE.md. Added 2026-08-02. |
+| `memory/runner-spawn-count.json` | **Code-managed** | All agents | Guard + runner ONLY -- agents denied | Per-cycle sub-agent dispatch budget. The guard hard-denies agent writes so no agent can reset its own allowance. Added 2026-08-02. |
 | `memory/log.md` | **Company-shared** | All agents | Each agent appends its own entries | Running activity log; append-only in practice |
 | `memory/wiki/` | **Company-shared** | All agents (need-to-know) | Eco (read/write, A3 autonomous -- no owner trigger for routine updates), Dalia, designated knowledge owners | Knowledge base; Obsidian-compatible |
 | `memory/wiki/raw/` | **Ingest staging** | Eco | jecki (owner), Claude Code | Staging area for /ingest; working copies only -- originals stay in sources/ |
 | `projects/<name>/` | **Partitioned** | That project's assigned agents + on-demand SME (Sami) | That project's assigned agents | Eco and relevant VPs may read any project |
 | `projects/<name>/memory/` | **Partitioned** | Project agents | Project agents | Project-scoped working memory |
-| `marketing/` | **Sales group** | Hila, Tim, Eco (narrative posts), Eyal (clearance reads) | Hila (assets), Tim (direction), Sally (VP Sales, per role file + guard F-S807) | Eco for company-narrative posts only. Alex: no write access to marketing/. Designer (Tal): visual-design write is GATED on AUD-011 -- Rambo scan DELIVERED 2026-07-25 (CLEAR-WITH-CONDITIONS): C1 restricts Tal to marketing/brand/ + marketing/avatars/ ONLY (never full marketing/); activation still requires the Eco/Dalia confirmation of the C1-scoped grant + a SEPARATE guard.py PATH_SCOPE edit (owner A1 + Shir apply, per scan C2). Until then Tal hands assets to Hila. After activation: Hila keeps strategy/voice/content; Tal owns visual design files; brand-guidelines edits need Hila editorial review (scan C4). |
-| `marketing/brand/` | **Sales group** | Hila, Tim; A1 publish gate | Hila (drafts, A3); publish = A1 | Designer (Tal): write access GATED on AUD-011 (see marketing/ parent row; within Rambo C1 scope once activated). |
-| `marketing/avatars/` | **Sales group** | Hila, Tim; A1 publish gate | Hila (drafts, A3); publish = A1 | Designer (Tal): write access GATED on AUD-011 (see marketing/ parent row; within Rambo C1 scope once activated). |
+| `marketing/` | **Sales group** | Hila, Sally (VP Sales), Eco (narrative posts), Eyal (clearance reads) | Hila (assets), Sally (VP Sales -- direction; per role file + guard F-S807) | Eco for company-narrative posts only. Alex: no write access to marketing/. Designer (Tal): visual-design write is GATED on AUD-011 -- Rambo scan DELIVERED 2026-07-25 (CLEAR-WITH-CONDITIONS): C1 restricts Tal to marketing/brand/ + marketing/avatars/ ONLY (never full marketing/); activation still requires the Eco/Dalia confirmation of the C1-scoped grant + a SEPARATE guard.py PATH_SCOPE edit (owner A1 + Shir apply, per scan C2). Until then Tal hands assets to Hila. After activation: Hila keeps strategy/voice/content; Tal owns visual design files; brand-guidelines edits need Hila editorial review (scan C4). |
+| `marketing/brand/` | **Sales group** | Hila, Sally (VP Sales); A1 publish gate | Hila (drafts, A3); publish = A1 | Designer (Tal): write access GATED on AUD-011 (see marketing/ parent row; within Rambo C1 scope once activated). |
+| `marketing/avatars/` | **Sales group** | Hila, Sally (VP Sales); A1 publish gate | Hila (drafts, A3); publish = A1 | Designer (Tal): write access GATED on AUD-011 (see marketing/ parent row; within Rambo C1 scope once activated). |
 | `.claude/agents/` | **Owner/CEO only** | Eco (operational reads), jecki; READ also granted to: Anat (HR -- certification interviews and R&R competency review), Rambo (Security -- permission-scope scans per scan policy), Dalia (Q&G -- quality audits and tone governance), Assaf (OE -- agent fitness loop and model-matrix sync), RedTeam/Red (Red-Team Security Tester -- target-accurate adversarial probe design; same operational read basis as Rambo/Anat, no write; Phase 1 audit F-R03, owner A1 2026-06-23) | jecki (A1 for any change) | Agent role files are A1 to create/change/retire. Read access for Anat, Rambo, Dalia, Assaf is a formalized matrix grant, not a special exception: these are legitimate business-need reads with no write. T-0012 reconciliation: A2 (Eco decides, jecki notified, Dalia + Rambo reviewed, logged 2026-06-16). Write remains owner A1 only. |
 | `integrations/` | **Partitioned** | Shir (DevOps), Eco | Shir (DevOps), under VP R&D approval | Telegram bridge and future integrations |
 | `reports/daily-summaries/` | **Owner + CEO only** | jecki (owner), Eco | Eco (writes on each summary run) | Daily end-of-day summaries; filename format daily-summary-YYYY-MM-DD-HHMM.md; A1 required to grant any other agent read access |
@@ -50,6 +52,7 @@ This matrix is enforced by `CLAUDE.md` deny-list and `.claude/settings.json` too
 | `company/cs/tickets/` | **Restricted** | Mike, Jack, Eco, jecki | Jenny (tier-1 CS; ticket summaries only) | PPL retention: 2 years from close, then delete/anonymize (AUD-004 / Eyal CS retention). |
 | `company/cs/accounts/` | **Restricted** | Mike, Jenny, Eco, jecki | Jack (CSM + Account Manager) | Mike reviews. |
 | `company/cs/training/` | **Restricted** | Mike, Jenny, Jack, Eco, jecki | Ella (Customer Trainer) | Mike reviews. |
+| `company/training/` | **Restricted** | All agents (their own onboarding material), Assaf, Anat, Eco | Yossi (Training and Enablement) | INTERNAL agent training -- distinct from `company/cs/training/`, which is customer-facing and Ella's. Added 2026-08-02: this path appeared in no matrix row and Yossi held no guard PATH_SCOPE at all, so the writes his certified role file promises would have broken on the enforce flip. Yossi's guard scope is `company/training/`, `company/governance/skills-register.md`, `memory/log.md`, `memory/board.md`; pending Rambo B5. |
 | `company/research/` | **Restricted** | Eco, relevant VPs (on Eco designation), jecki | Zvika (research analyst; write when explicitly designated by Eco per task) | Eco designates exact path per task; directory created on first designated task. (AUD-006 Change G) |
 | Google Drive (read-only) | External | Eco, Claude Code | read via MCP; no write |
 | Google Calendar (read-only) | External | Eco (context) | read only; no create/edit |
@@ -64,7 +67,7 @@ tools, no matrix write entry (guard ALLOWED_AGENTS membership is for spawn permi
 
 ## Per-agent working memory
 
-Each agent's working memory (scratch space, drafts) is private to that agent by default — not shared unless the agent explicitly writes to a shared space.
+Each agent's working memory (scratch space, drafts) is private to that agent by default -- not shared unless the agent explicitly writes to a shared space.
 
 ---
 

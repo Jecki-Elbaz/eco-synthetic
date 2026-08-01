@@ -1,4 +1,4 @@
-# Eco-Synthetic: Company Constitution (v2.3)
+# Eco-Synthetic: Company Constitution (v2.4)
 
 Single source of truth for how the company governs itself. Every agent operates under these rules.
 
@@ -66,7 +66,9 @@ Action matrix (defaults): production deploy A1; customer-data migration A1; merg
 ## 5. Communication model
 
 - Subagents do not chat laterally; they coordinate through the CEO orchestrator and shared files.
-- Within a group: through the manager or VP. Across groups: only via the two VPs, only when required. CEO may reach anyone directly but defaults to the chain of command.
+- Within a group: through the manager or VP. Across groups: only via the managers or VPs of the groups involved, only when required. CEO may reach anyone directly but defaults to the chain of command. (v2.4, 2026-08-02: this clause read "only via the two VPs", describing a two-VP company. There are now four VP-tier managers -- Ido, Mike, Sally, Perry -- plus the Rambo/Red, Dalia/Yael and Assaf/Yossi sub-chains. Every role file already routed correctly; the clause they all cite did not.)
+- **Dispatch is part of communication.** A routing instruction that reaches no execution path is not communication. Whoever routes work names the path that will pick it up: a direct dispatch, a queue row an interactive session drains (`memory/dispatch-queue.md`), or a named agent with a dated board row. A note in a file that nobody is scheduled to read does not count, and a task left in that state is a process miss by the router, not by the intended recipient. (v2.4, 2026-08-02.)
+- **Status is owed, not requested.** The single owner of a task reports its state without being asked: a `status` field on every result envelope, and a dated note on its board row. Blocked is a reportable state, surfaced the same day to the manager, naming the blocker and who can clear it. A deadline is the latest finish, not the start -- escalate before it slips. A silent miss is a process miss. (v2.4, 2026-08-02.)
 - **Task envelope** (every invocation): task_id, requester, objective, context_refs (the data slice to load), inputs, constraints and approval gate, expected output format, priority and deadline, report-back target. **Result envelope**: result, artifacts, decisions, escalations, tokens used, status.
 - **Loop caps**: developer and senior reviewer 2 rounds then VP R&D decides; trainer and trainee 2 rounds then HR reviews; Devil's Advocate and decision owner 1 challenge plus 1 response then Owner or CEO decides; CEO to anyone is uncapped.
 - **Tool and skill needs**: any agent flags its manager when a tool or skill would make it more efficient; approval follows the gate and policy. Eco periodically validates whether agents need more or fewer tools and consults the owner when warranted.
