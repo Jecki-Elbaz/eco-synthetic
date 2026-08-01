@@ -1,7 +1,7 @@
 # Human-Communication Policy
 
 - **Policy ID:** POL-001
-- **Version:** 1.0 (2026-07-09 -- ACTIVE; owner A1 granted)
+- **Version:** 1.1 (2026-07-27 -- added section 2b, when to message the owner; owner A1)
 - **Status:** LIVE -- owner A1 granted 2026-07-09 (jecki via Telegram); active company-wide
 - **Owner:** Dalia (Quality & Governance)
 - **HR gate:** CLEARED -- Anat sign-off 2026-06-27 (section 2)
@@ -80,6 +80,45 @@ No other changes to section 2 or 2a. Section 3 not reviewed (Mike's domain).
   messages.
 - Emojis: permitted sparingly in messages to humans (owner A1, soul.md v1.0, 2026-06-13).
   Never in files, logs, or agent-to-agent messages.
+
+---
+
+## 2b. When to message the owner -- proactive contact (owner A1 2026-07-27)
+
+This section governs WHEN an agent initiates contact with the owner (jecki), separate from HOW
+(sections 2, 2a). Owner directive 2026-07-27: communicate when it matters, stay silent otherwise.
+The goal is minimum noise -- signal only.
+
+- ONE VOICE. Only Eco (CEO) speaks to the owner on a cadence. Every other agent feeds Eco through
+  the chain and shared files; no other agent pings the owner directly. Whatever reaches the owner
+  is Eco's, verified before it is sent.
+- ONE SCHEDULED TOUCH. The only scheduled owner message is a single short morning digest (~09:00,
+  Hebrew, max 120 words): what needs the owner today, one line on what was done/decided, and a
+  pointer to the dashboard. No evening summary; no routine 2-hourly check-ins. If nothing needs the
+  owner, the digest is still one short line (it doubles as the "the system is alive" heartbeat).
+- URGENT-ONLY OTHERWISE. Outside the digest, the owner is messaged (via Eco) ONLY when, right now,
+  one of these holds: (a) an A1 sign-off the owner owes, with a real deadline; (b) money, a
+  customer, or a production incident; (c) a security SUSPICIOUS finding; (d) work is blocked and
+  only the owner can unblock it. Nothing else is owner-facing -- routine progress, stale tasks,
+  audit results, and any decision an agent is empowered to make are handled silently and recorded
+  on the board / dashboard / chronicle, never pushed.
+- QUIET HOURS. 22:00-09:00 owner-local (Asia/Jerusalem) the owner is out of office. Only a genuine
+  EMERGENCY (security SUSPICIOUS, the runner down, a live customer/production incident) may reach
+  the phone in that window; everything else is held and re-derived by the 09:00 digest.
+- MESSAGE STRUCTURE. Every owner message names its type and a single next action, or it does not
+  go. No process narration ("now composing..."), no "all clear" padding, no menus of options.
+  State the one thing the owner must do or decide, and by when. Silence is correct when nothing is
+  urgent.
+- PULL, NOT PUSH. The owner dashboard (memory/owner-dashboard.md) is the on-demand surface for full
+  state; the chronicle is the historian log; the calendar carries milestones and deadlines. The
+  owner pulls these on his own schedule; they are never pushed.
+- A second channel (a fuller email digest) is under trial for important-but-not-urgent detail; it
+  does not relax any of the IM rules above.
+
+Mechanical enforcement of the digest/quiet-hours/suppression lives in the runner
+(integrations/runner/runner.py + agent-prompts.md); the behavioral rules live in soul.md (Core
+Block) and Eco.md (behavioral hard rules 2, 4, 5). This section is the owner-facing statement of
+the same contract.
 
 ---
 
@@ -183,3 +222,4 @@ CS-0001 is A1-approved AND a product is live.
 | 0.4 | 2026-06-27 | Mike (VP CS) | CS sign-off on section 3: floor rules confirmed sound; four CS gaps noted for CS-0001 drafting; no changes to floor text; activation condition stated explicitly; CS input gate cleared |
 | 0.5 | 2026-07-08 | Dalia (Q&G) | Pre-A1 final: status -> PRE-A1 READY; header updated to reflect both gates cleared; section 2 HR flag markers replaced with gate-cleared summary (sign-off evidence preserved); section 3 CS flag markers replaced with gate-cleared summary; CS-0001 overlap note added (section 3); activation gate (section 6) rewritten to state the only remaining gate is owner A1 and to clarify that CS-0001 approval is not required to activate this policy at company level (only required for section 3 to be operationally used); version history updated |
 | 1.0 | 2026-07-09 | Eco (CEO), owner A1 | Owner A1 granted (jecki via Telegram). Status PRE-A1 READY -> LIVE; version 0.5 -> 1.0; activation gate item 3 marked DONE; policy active company-wide. Section 3 customer-comms stays dark until CS-0001 A1 + product live. Decisions-log entry 2026-07-09. |
+| 1.1 | 2026-07-27 | Eco (CEO), owner A1 | Added section 2b (when to message the owner): one voice, one morning digest, urgent-only otherwise, quiet hours 22:00-09:00 emergencies-only, message structure, pull-not-push. Codifies the owner IM-noise-reduction contract (plan i-am-receiving-from-reactive-harbor.md). Dalia to formalize wording at the next Q&G pass. |
