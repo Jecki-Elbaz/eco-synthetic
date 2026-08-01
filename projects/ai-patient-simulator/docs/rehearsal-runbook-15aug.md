@@ -719,7 +719,7 @@ and the arc cap blocks session 4 with 403 ARC_COMPLETE.
 Confirm ArcSessionSummary for session 1 is written:
 
 ```sql
-SELECT "sessionNumber", "finalTrustLevel", "finalOpenness", "finalAlliance",
+SELECT "sessionNumber", "finalTrustLevel", "finalOpennessLevel", "finalAllianceLevel",
        "notableMomentsSummary"
 FROM "ArcSessionSummary"
 WHERE "userId" = 'seed-user---0004-0000-0000-000000000004'
@@ -728,7 +728,7 @@ ORDER BY "sessionNumber";
 ```
 
 Expected: 1 row, sessionNumber = 1, finalTrustLevel non-null (value within 0.70),
-finalOpenness non-null (within 0.65), finalAlliance non-null (within 0.70).
+finalOpennessLevel non-null (within 0.65), finalAllianceLevel non-null (within 0.70).
 
 Record these values in your notes -- you need them for the trust-continuity check at
 session 2 start and to identify a distinctive phrase from notableMomentsSummary.
@@ -792,14 +792,14 @@ Capture: rehearsal-evidence-h-arcsessionsummary-after-s1.png
 
 10. Run the ArcSessionSummary query:
 ```sql
-SELECT "sessionNumber", "finalTrustLevel", "finalOpenness", "finalAlliance"
+SELECT "sessionNumber", "finalTrustLevel", "finalOpennessLevel", "finalAllianceLevel"
 FROM "ArcSessionSummary"
 WHERE "userId" = 'seed-user---0004-0000-0000-000000000004'
   AND "templateId" = 'seed-tpl---0001-0000-0000-000000000001'
 ORDER BY "sessionNumber";
 ```
-Expected: 2 rows (sessions 1 and 2). Record session-2 finalTrustLevel, finalOpenness,
-finalAlliance in your notes (needed for session-3 trust-continuity check).
+Expected: 2 rows (sessions 1 and 2). Record session-2 finalTrustLevel, finalOpennessLevel,
+finalAllianceLevel in your notes (needed for session-3 trust-continuity check).
 EVIDENCE: rehearsal-evidence-h-arcsessionsummary-after-s2.png
 
 Also: search the API console (scroll back to session-2 start) for the ArcLoaderService
@@ -843,16 +843,16 @@ START IMMEDIATELY after session 2 finishes. Do not take a break.
 
 18. Run the final ArcSessionSummary query:
 ```sql
-SELECT "sessionNumber", "finalTrustLevel", "finalOpenness", "finalAlliance"
+SELECT "sessionNumber", "finalTrustLevel", "finalOpennessLevel", "finalAllianceLevel"
 FROM "ArcSessionSummary"
 WHERE "userId" = 'seed-user---0004-0000-0000-000000000004'
   AND "templateId" = 'seed-tpl---0001-0000-0000-000000000001'
 ORDER BY "sessionNumber";
 ```
 Expected: 3 rows. Confirm ALL values are within ceilings:
-  finalTrustLevel  <= 0.70 for all sessions
-  finalOpenness    <= 0.65 for all sessions
-  finalAlliance    <= 0.70 for all sessions
+  finalTrustLevel       <= 0.70 for all sessions
+  finalOpennessLevel    <= 0.65 for all sessions
+  finalAllianceLevel    <= 0.70 for all sessions
 EVIDENCE: rehearsal-evidence-h-arcsessionsummary-after-s3.png
 
 ---
