@@ -477,10 +477,49 @@ def test_owner_session_can_still_spawn_code_builders():
     assert d(ev("Task", subagent_type="shir")) == guard.ALLOW
 
 
-def test_bridge_cannot_spawn_code_builders(monkeypatch):
+@pytest.mark.parametrize("builder", ["gal", "shir", "adi", "oren", "noa"])
+def test_bridge_cannot_spawn_code_builders(monkeypatch, builder):
     # The bridge spawns top-level Eco (origin empty) on untrusted email input.
+    # Parametrized per Rambo review 2026-08-02 (MISS-2) -- this covered only gal.
     monkeypatch.setenv("BRIDGE_CONTEXT", "1")
-    assert guard.decide(ev("Task", subagent_type="gal"), "enforce")[0] == guard.DENY
+    assert guard.decide(ev("Task", subagent_type=builder), "enforce")[0] == guard.DENY
+
+
+def test_corrupt_counter_after_cap_fails_closed(dispatch):
+    # Rambo review 2026-08-02 (MISS-1). Spend the cap, then corrupt the counter file. Reading
+    # a present-but-unparseable budget as "0 spent" would hand back a fresh cycle allowance.
+    for _ in range(guard.RUNNER_SPAWN_CAP):
+        assert guard.decide(ev("Task", subagent_type="rambo"), "enforce")[0] == guard.ALLOW
+    guard.SPAWN_COUNT_FILE.write_text("{not json at all", encoding="utf-8")
+    decision, reason = guard.decide(ev("Task", subagent_type="rambo"), "enforce")
+    assert decision == guard.DENY
+    assert "unreadable" in reason
+
+
+def test_missing_counter_is_not_a_denial(dispatch):
+    # The complementary case: a counter file that does not exist yet is the normal start of a
+    # cycle, not corruption. Fail-closed must not mean fail-always.
+    assert not guard.SPAWN_COUNT_FILE.exists()
+    assert guard.decide(ev("Task", subagent_type="rambo"), "enforce")[0] == guard.ALLOW
+
+
+def test_manage_gmail_filter_denied_on_runner(monkeypatch):
+    # Rambo review 2026-08-02 (MISS-3). Forwarding rules are send-equivalent blast radius.
+    monkeypatch.setenv("RUNNER_CONTEXT", "1")
+    decision, reason = guard.decide(
+        {"tool_name": "mcp__google_workspace__manage_gmail_filter",
+         "tool_input": {"user_google_email": guard.ECO_GOOGLE_ACCOUNT}}, "enforce")
+    assert decision == guard.DENY
+    assert "never available on the runner path" in reason
+
+
+def test_allowlisted_dispatch_allowed_in_shadow_mode(dispatch):
+    # Rambo review 2026-08-02 (MISS-4). The runner path is hard-enforced in BOTH directions:
+    # its denials bite in shadow, and a legitimate dispatch must still be granted there --
+    # otherwise flipping GUARD_MODE would silently change dispatch behaviour.
+    decision, reason = guard.decide(ev("Task", subagent_type="rambo"), "shadow")
+    assert decision == guard.ALLOW
+    assert "runner dispatch" in reason
 
 
 def test_runner_dispatch_denied_in_shadow_mode(dispatch):

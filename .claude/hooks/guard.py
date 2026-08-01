@@ -364,11 +364,17 @@ def _runner_spawn_take_slot() -> "tuple[bool, str]":
     cycle = os.environ.get("RUNNER_CYCLE_ID", "")
     if not cycle:
         return False, "no RUNNER_CYCLE_ID in env (fail-closed)"
-    try:
-        data = json.loads(SPAWN_COUNT_FILE.read_text(encoding="utf-8"))
-        count = int(data.get("count", 0)) if data.get("cycle_id") == cycle else 0
-    except (OSError, ValueError, TypeError, AttributeError):
-        count = 0
+    if not SPAWN_COUNT_FILE.exists():
+        count = 0  # first dispatch of the cycle -- nothing spent yet
+    else:
+        try:
+            data = json.loads(SPAWN_COUNT_FILE.read_text(encoding="utf-8"))
+            count = int(data.get("count", 0)) if data.get("cycle_id") == cycle else 0
+        except (OSError, ValueError, TypeError, AttributeError):
+            # The file EXISTS but cannot be read. Treating that as "0 spent" would let a
+            # corrupted counter hand back a fresh budget after the cap was already reached
+            # (Rambo review 2026-08-02, MISS-1). A present-but-unreadable budget is a denial.
+            return False, "dispatch counter unreadable (fail-closed)"
     if count >= RUNNER_SPAWN_CAP:
         return False, f"per-cycle dispatch cap {RUNNER_SPAWN_CAP} reached"
     try:
