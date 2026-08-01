@@ -97,7 +97,7 @@
   <div class="banner" id="banner"><div class="dot"></div><div><b id="bannerhead"></b> <span id="bannertext"></span></div></div>
   <div class="sechead"><h2>Per-agent, last 7 days</h2><div class="h">grouped by function - sorted by activity within each group</div></div>
   <div class="tablewrap"><div class="scroll"><table>
-    <thead><tr><th>Agent</th><th>Status</th><th>Activations (7d)</th><th class="num">Err rate</th><th>Models</th><th class="num">Output vol</th><th>Last active</th><th>Tasks (done / wip / open)</th><th class="num">Esc / sent</th></tr></thead>
+    <thead><tr><th>Agent</th><th>Status</th><th>Activations (7d)</th><th class="num">Err rate</th><th>Models</th><th class="num">Cost (7d)</th><th class="num">Tokens</th><th class="num">Compute</th><th>Last active</th><th>Tasks (done / wip / open)</th><th class="num">Esc / sent</th></tr></thead>
     <tbody id="rows"></tbody>
   </table></div></div>
   <footer>
@@ -113,14 +113,14 @@
       <ul>
         <li><b>Activations</b> = scheduled runner jobs that ran (bar is vs the busiest agent); <b>active days</b> beneath.</li>
         <li><b>Models:</b> <span class="m O" style="width:auto;padding:0 5px;height:auto">O</span> Opus <span class="m S" style="width:auto;padding:0 5px;height:auto">S</span> Sonnet <span class="m H" style="width:auto;padding:0 5px;height:auto">H</span> Haiku.</li>
-        <li><b>Output vol</b> = characters written (size proxy). <b>Tasks</b> from the board: done / in-progress / open.</li>
+        <li><b>Cost / Tokens</b> = real spend + total tokens (incl. cache) for the window. <b>Compute</b> = LLM wall-time. <b>Tasks</b> from the board: done / in-progress / open.</li>
       </ul>
     </div>
     <div class="note">
       <h3>Data honesty</h3>
       <ul>
-        <li><b>Token/cost:</b> the <code>cost_usd</code>/token fields exist (AUD-007) but populate only once capture flows; shown as n/a until then.</li>
-        <li><b>"Hours" don't apply</b> - agents are invoked, not clocked. Activations + active-days are the proxies; true compute-time needs a runner <code>duration_ms</code> field.</li>
+        <li><b>Cost + tokens are real</b> - from the CLI's <code>total_cost_usd</code> + usage (incl. cache read/creation), captured since 2026-07-18.</li>
+        <li><b>Compute-time is new</b> - <code>duration_ms</code> logging started 2026-07-29, so the Compute column accrues from now forward; older runs show "-".</li>
         <li><b>Scheduled-only telemetry:</b> project/APS agents show few activations but real completed tasks - their sprint work runs outside this log.</li>
       </ul>
     </div>
@@ -143,6 +143,8 @@ const A=DATA.agents;
 function g(n){return A[n]||{runs7:0,errors7:0,out_chars7:0,sent7:0,esc7:0,active_days:0,last_active:null,models:{},tasks_done:0,tasks_inprog:0,tasks_open:0,tasks_blocked:0,tasks_total:0};}
 let maxRuns=1; Object.values(A).forEach(a=>{if(a.runs7>maxRuns)maxRuns=a.runs7;});
 function fmt(n){return n>=1000?(n/1000).toFixed(n>=10000?0:1)+"k":(""+n);}
+function fmtTok(n){return !n?"-":n>=1e6?(n/1e6).toFixed(2)+"M":n>=1e3?(n/1e3).toFixed(0)+"k":(""+n);}
+function fmtHrs(ms){if(!ms)return "-";const h=ms/3600000;return h<1?Math.max(1,Math.round(ms/60000))+"m":h.toFixed(1)+"h";}
 function agoStr(iso){if(!iso)return "-";const d=(new Date(DATA.window_end)-new Date(iso))/3600000;if(d<1)return Math.max(1,Math.round(d*60))+"m ago";if(d<24)return Math.round(d)+"h ago";return Math.round(d/24)+"d ago";}
 function status(a,type){const r=a.runs7,e=a.errors7,rate=r?e/r:0;
   if(r>0&&rate>=0.9)return["st-fail","failing"];if(r>0&&rate>=0.45)return["st-degr","degraded"];if(r>0)return["st-active","active"];
@@ -155,16 +157,16 @@ const rows=document.getElementById("rows");
 ROSTER.forEach(([grp,members])=>{
   const wd=members.map(([n,role,type])=>({n,role,type,a:g(n)}));
   wd.sort((x,y)=>(y.a.runs7-x.a.runs7)||(y.a.tasks_done-x.a.tasks_done));
-  rows.insertAdjacentHTML("beforeend",`<tr class="grouprow"><td colspan="9"><span class="gl">${grp}</span></td></tr>`);
+  rows.insertAdjacentHTML("beforeend",`<tr class="grouprow"><td colspan="11"><span class="gl">${grp}</span></td></tr>`);
   wd.forEach(({n,role,type,a})=>{
     const [sc,sl]=status(a,type);const pct=Math.round(a.runs7/maxRuns*100);
     const act=a.runs7>0?`<div class="actcell"><div class="actnum"><span>${a.runs7}</span><span class="d">${a.active_days}d active</span></div><div class="track"><div class="fill" style="width:${Math.max(pct,4)}%"></div></div></div>`:`<div class="actcell"><span class="dim num">0</span></div>`;
     const disp=n==="Designer"?"Designer <span class='dim' style='font-weight:400'>(Tal)</span>":(n==="RedTeam"?"Red <span class='dim' style='font-weight:400'>(Red-Team)</span>":n);
-    rows.insertAdjacentHTML("beforeend",`<tr><td><div class="ag">${disp}</div><div class="role">${role}</div></td><td><span class="chip ${sc}"><span class="cd"></span>${sl}</span></td><td>${act}</td><td class="num">${errCell(a)}</td><td>${modChips(a.models)}</td><td class="num big">${a.out_chars7?fmt(a.out_chars7):'<span class="dim" style="font-size:13px">-</span>'}</td><td class="num dim" style="font-size:12px">${agoStr(a.last_active)}</td><td><div class="tasks"><span class="tp d" title="done"><b>${a.tasks_done}</b></span><span class="tp p" title="in-progress"><b>${a.tasks_inprog}</b></span><span class="tp o" title="open"><b>${a.tasks_open+a.tasks_blocked}</b></span></div></td><td class="num dim" style="font-size:12px">${a.esc7} / ${a.sent7}</td></tr>`);
+    rows.insertAdjacentHTML("beforeend",`<tr><td><div class="ag">${disp}</div><div class="role">${role}</div></td><td><span class="chip ${sc}"><span class="cd"></span>${sl}</span></td><td>${act}</td><td class="num">${errCell(a)}</td><td>${modChips(a.models)}</td><td class="num big">${a.cost7?('$'+a.cost7.toFixed(2)):'<span class="dim" style="font-size:13px">-</span>'}</td><td class="num dim" style="font-size:12px">${fmtTok(a.tokens7)}</td><td class="num dim" style="font-size:12px">${fmtHrs(a.compute_ms7)}</td><td class="num dim" style="font-size:12px">${agoStr(a.last_active)}</td><td><div class="tasks"><span class="tp d" title="done"><b>${a.tasks_done}</b></span><span class="tp p" title="in-progress"><b>${a.tasks_inprog}</b></span><span class="tp o" title="open"><b>${a.tasks_open+a.tasks_blocked}</b></span></div></td><td class="num dim" style="font-size:12px">${a.esc7} / ${a.sent7}</td></tr>`);
   });
 });
 const c=DATA.company;const errRate=c.runs?Math.round(c.errors/c.runs*100):0;
-document.getElementById("tiles").innerHTML=[["Activations 7d",fmt(c.runs),"scheduled runner jobs",""],["Runner error rate",errRate+"%",c.errors+" of "+c.runs+" errored",errRate>=50?"critc":errRate>=25?"warnc":"goodc"],["Tasks resolved",c.tasks_done,"across the board","goodc"],["Tasks in flight",c.tasks_open,"open + in-progress",""],["Owner pings sent",c.sent,"Telegram deliveries",""],["Token / cost","n/a","instrumented, not flowing","warnc"]].map(([k,v,n,cl])=>`<div class="tile"><div class="k">${k}</div><div class="v ${cl}">${v}</div><div class="n">${n}</div></div>`).join("");
+document.getElementById("tiles").innerHTML=[["Activations 7d",fmt(c.runs),"scheduled runner jobs",""],["Runner error rate",errRate+"%",c.errors+" of "+c.runs+" errored",errRate>=50?"critc":errRate>=25?"warnc":"goodc"],["Tasks resolved",c.tasks_done,"across the board","goodc"],["Tasks in flight",c.tasks_open,"open + in-progress",""],["Owner pings sent",c.sent,"Telegram deliveries",""],["Cost (7d)","$"+(c.cost||0).toFixed(2),fmtTok(c.tokens)+" tokens",""]].map(([k,v,n,cl])=>`<div class="tile"><div class="k">${k}</div><div class="v ${cl}">${v}</div><div class="n">${n}</div></div>`).join("");
 const ws=new Date(DATA.window_start),we=new Date(DATA.window_end),o={month:"short",day:"numeric"};
 document.getElementById("win").innerHTML=`window <b>${ws.toLocaleDateString(undefined,o)} - ${we.toLocaleDateString(undefined,o)}</b><br>as of <b>${we.toLocaleDateString(undefined,o)} ${we.toTimeString().slice(0,5)} UTC</b>`;
 const rambo=g("Rambo"),eco=g("Eco"),bn=document.getElementById("banner");

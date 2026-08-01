@@ -61,7 +61,8 @@ def compute() -> dict:
     win = now - timedelta(days=7)
 
     A = collections.defaultdict(lambda: {"runs": 0, "errors": 0, "out": 0, "sent": 0, "esc": 0,
-        "models": collections.Counter(), "days": set(), "last": None})
+        "models": collections.Counter(), "days": set(), "last": None,
+        "cost": 0.0, "tokens": 0, "dur": 0})
     for d in recs:
         ag = _agent_of(d)
         try:
@@ -77,6 +78,9 @@ def compute() -> dict:
         if ev == "done":
             A[ag]["runs"] += 1
             A[ag]["out"] += d.get("out_chars") or 0
+            A[ag]["cost"] += d.get("cost_usd") or 0
+            A[ag]["tokens"] += d.get("tokens_total") or ((d.get("input_tokens") or 0) + (d.get("output_tokens") or 0))
+            A[ag]["dur"] += d.get("duration_ms") or 0
             if d.get("sent"):
                 A[ag]["sent"] += 1
             if d.get("escalate"):
@@ -84,9 +88,10 @@ def compute() -> dict:
             if d.get("rc") not in (0, None):
                 A[ag]["errors"] += 1
             A[ag]["days"].add(t.date().isoformat())
-        elif ev == "error":
+        elif ev in ("error", "error_final"):
             A[ag]["runs"] += 1
             A[ag]["errors"] += 1
+            A[ag]["dur"] += d.get("duration_ms") or 0
             A[ag]["days"].add(t.date().isoformat())
         if A[ag]["last"] is None or d["ts"] > A[ag]["last"]:
             A[ag]["last"] = d["ts"]
@@ -116,21 +121,26 @@ def compute() -> dict:
         pass
 
     out = {"window_start": win.isoformat(), "window_end": now.isoformat(), "agents": {}}
-    comp = {"runs": 0, "out_chars": 0, "errors": 0, "sent": 0, "tasks_done": 0, "tasks_open": 0}
+    comp = {"runs": 0, "out_chars": 0, "errors": 0, "sent": 0, "tasks_done": 0, "tasks_open": 0,
+            "cost": 0.0, "tokens": 0, "compute_ms": 0}
     for ag in sorted(set(list(A.keys()) + list(B.keys()))):
         if ag in ("jecki", "owner"):
             continue
         a = A.get(ag) or {"runs": 0, "errors": 0, "out": 0, "sent": 0, "esc": 0,
-                          "models": collections.Counter(), "days": set(), "last": None}
+                          "models": collections.Counter(), "days": set(), "last": None,
+                          "cost": 0.0, "tokens": 0, "dur": 0}
         b = B.get(ag) or {"done": 0, "inprog": 0, "open": 0, "blocked": 0, "total": 0}
         out["agents"][ag] = {
             "runs7": a["runs"], "errors7": a["errors"], "out_chars7": a["out"], "sent7": a["sent"],
             "esc7": a["esc"], "active_days": len(a["days"]), "last_active": a["last"],
-            "models": dict(a["models"]), "tasks_done": b["done"], "tasks_inprog": b["inprog"],
+            "models": dict(a["models"]), "cost7": round(a["cost"], 4), "tokens7": a["tokens"],
+            "compute_ms7": a["dur"], "tasks_done": b["done"], "tasks_inprog": b["inprog"],
             "tasks_open": b["open"], "tasks_blocked": b["blocked"], "tasks_total": b["total"],
         }
         comp["runs"] += a["runs"]; comp["out_chars"] += a["out"]; comp["errors"] += a["errors"]
         comp["sent"] += a["sent"]; comp["tasks_done"] += b["done"]; comp["tasks_open"] += b["open"] + b["inprog"]
+        comp["cost"] += a["cost"]; comp["tokens"] += a["tokens"]; comp["compute_ms"] += a["dur"]
+    comp["cost"] = round(comp["cost"], 2)
     out["company"] = comp
     return out
 

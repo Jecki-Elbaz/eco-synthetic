@@ -20,7 +20,7 @@ Usage: runner.py [--mode readonly|act] [--dry-run] [--only AgentName]
 Run by Task Scheduler ~every 2h. The PreToolUse guard (.claude/hooks/guard.py) still
 evaluates every write inside each spawned agent session.
 """
-import sys, os, re, json, subprocess, shutil, argparse, contextlib
+import sys, os, re, json, time, subprocess, shutil, argparse, contextlib
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
 
@@ -322,7 +322,7 @@ def _extract_error_detail(raw: str) -> str:
 
 def _parse_json_output(raw: str) -> tuple:
     """SHIR-FIX-07: parse --output-format json stdout.
-    Returns (text, cost_usd, model_used, usage_dict). Graceful fallback on non-JSON."""
+    Returns (text, cost_usd, model_used, usage_dict, duration_api_ms). Fallback on non-JSON."""
     try:
         data = json.loads(raw)
         # ECO-CMDLINE-FIX 2026-07-18: the CLI envelope uses total_cost_usd (not
@@ -331,9 +331,12 @@ def _parse_json_output(raw: str) -> tuple:
         model = data.get("model")
         if not model and isinstance(data.get("modelUsage"), dict):
             model = ",".join(sorted(data["modelUsage"].keys()))
-        return (data.get("result", raw), cost, model, data.get("usage", {}))
+        # DASH-DURATION 2026-07-29: the envelope also carries duration_api_ms + duration_ms;
+        # surface the API duration for the dashboard's compute-time column.
+        dur = data.get("duration_api_ms") or data.get("duration_ms")
+        return (data.get("result", raw), cost, model, data.get("usage", {}) or {}, dur)
     except (json.JSONDecodeError, AttributeError, TypeError):
-        return raw, None, None, {}
+        return raw, None, None, {}, None
 
 
 def agent_model(agent: str) -> str:
@@ -577,6 +580,7 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
            "--allowedTools", tools, "--append-system-prompt", role_text(agent)]
     stdin_data = prompt.encode("utf-8")
     # SHIR-FIX-06: one bounded retry on session-limit / connection / stall errors
+    t0 = time.monotonic()
     rc, raw, err_tag = _invoke_claude(cmd, stdin_data, env, timeout, str(ROOT))
     if err_tag:
         log({"key": key, "event": "retry", "err": err_tag})
@@ -589,7 +593,8 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
             # alert so failures are self-diagnosing even when the tag is truncated.
             stdout_snip = _stdout_diag(raw)
             log({"key": key, "event": "error_final", "err": final_err,
-                 "stdout": raw[:600]})
+                 "stdout": raw[:600],
+                 "duration_ms": int((time.monotonic() - t0) * 1000)})
             # Alert via the existing Telegram pathway; failure is also in agent-runs.jsonl.
             send_telegram(
                 f"[Runner FAIL -- {agent}]\n"
@@ -600,7 +605,13 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
             )
             return {"ran": True, "error": True}
     # SHIR-FIX-07: extract text + cost fields from JSON envelope
-    out, cost_usd, model_used, usage = _parse_json_output(raw)
+    out, cost_usd, model_used, usage, dur_api_ms = _parse_json_output(raw)
+    # DASH-DURATION/TOKENS 2026-07-29: wall-clock duration is always present (even on the
+    # JSON-fallback path); tokens_total includes cache tokens (bare input_tokens omits them).
+    duration_ms = int((time.monotonic() - t0) * 1000)
+    tokens_total = sum((usage or {}).get(k) or 0 for k in
+                       ("input_tokens", "cache_creation_input_tokens",
+                        "cache_read_input_tokens", "output_tokens"))
     last_line = out.splitlines()[-1].strip() if out else ""
     escalate = last_line.startswith("ESCALATE_TO_ECO")
     sent = False
@@ -615,7 +626,9 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
          "sent": sent, "escalate": escalate, "summary": out[-600:],
          "cost_usd": cost_usd, "model": model_used,
          "input_tokens": (usage or {}).get("input_tokens"),
-         "output_tokens": (usage or {}).get("output_tokens")})
+         "output_tokens": (usage or {}).get("output_tokens"),
+         "tokens_total": tokens_total, "duration_ms": duration_ms,
+         "duration_api_ms": dur_api_ms})
     return {"ran": True, "escalate": escalate}
 
 
