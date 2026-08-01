@@ -27,6 +27,15 @@ Rules in this file OVERRIDE default behavior. No exceptions.
 6. **Never modify `company/decisions/decisions-log.md` retroactively.**
    It is append-only. New entries go at the bottom. Existing entries are never edited or deleted.
 
+6a. **Append-only files: append with `Write`, never `Edit`.**
+   `company/decisions/decisions-log.md` and `memory/log.md` are append-only (as are the machine
+   logs `memory/log.jsonl` and `memory/agent-runs.jsonl`, which only the runner writes). To add an
+   entry to one you write by hand, use the `Write` tool with the file's full current content plus
+   your new entry at the bottom -- never `Edit`. An in-place `Edit` on an append-only file is denied
+   by the guard's append-only check and, once `GUARD_MODE=enforce`, hard-blocks the write. This
+   binds every agent and the owner's own sessions. Read the file first (red line 11), then Write the
+   whole thing back with your addition appended; never alter existing entries (red line 6).
+
 7. **Never execute any A1 action without explicit owner approval in this session.**
    A1 actions: production deploys, customer-data changes, agent creation/retirement, new tool adoption, any expense, public marketing.
    NOT A1 -- Eco or the responsible agent decides (A2/A3; no owner approval needed):
@@ -55,7 +64,8 @@ Rules in this file OVERRIDE default behavior. No exceptions.
 | `company/decisions/` | **Append-only** | Never edit existing entries |
 | `company/` | **Restricted** | Role-gated; CEO, Governance, Security, Legal, HR read |
 | `memory/global/` | **Restricted** | Need-to-know only |
-| `memory/board.md`, `log.md`, `kb/` | **Company-shared** | All agents read; write to own scope |
+| `memory/board.md`, `kb/` | **Company-shared** | All agents read; write to own scope (edit in place) |
+| `memory/log.md` | **Append-only** | All agents read; **append via `Write`, never `Edit`** (red line 6a) |
 | `projects/<name>/` | **Partitioned** | Project agents + on-demand SME only |
 | `marketing/` | **Sales group** | Hila, Tim; Eco for narrative posts |
 | `dashboards/` | **Restricted** | Lital (CFO) and owner read only |
