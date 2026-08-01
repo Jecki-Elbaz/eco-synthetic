@@ -546,6 +546,15 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
     agent, key = job["agent"], job["key"]
     # Cost gate on the frequent Eco 2h check-in only.
     if agent.lower() == "eco" and "2h" in job["cadence"]:
+        # COST-TRIM 2026-07-29 (Eco A2, cadence tweak): during owner quiet hours the 2h
+        # check-in CANNOT notify (owner_notify drops non-emergencies 22:00-09:00) and its
+        # write-work (stale-sweep, handoff replies) is not time-critical overnight -- so skip
+        # the expensive spawn entirely. ~4-5 spawns/night at ~$1.4 each were the single biggest
+        # slice of Eco runner cost. Urgent overnight signals still come from the other jobs
+        # (Rambo inbox screen, git-hygiene) which run regardless; the 09:00 cycle catches up.
+        if quiet_hours_active():
+            log({"key": key, "event": "gate_skip", "reason": "quiet_hours"})
+            return {"ran": False, "reason": "quiet_hours"}
         if actionable_gate() == 0:
             log({"key": key, "event": "gate_skip", "actionable": 0})
             return {"ran": False, "reason": "gate_skip"}
