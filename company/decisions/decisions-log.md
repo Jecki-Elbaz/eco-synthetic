@@ -2100,3 +2100,14 @@ Gate renumber: Eyal's Gmail-read-widen + autonomous-send gate was drafted as "GR
 with the File-and-Flush gate that already holds GR-019. Renumbered GR-020 (gate-register.md,
 2026-08-01). The capability remains BUILT but INERT and PARKED by the owner pending the Path A /
 Anthropic-API-account decision.
+
+
+## 2026-07-29 -- Eco runner cost trim, SURGICAL option: change-gate (2h) + stale-sweep moved to AM brief (A2)
+
+- **Author / gate:** Eco (A2 cadence tweak per CLAUDE.md "job frequency"/"internal reports" NOT-A1 list); owner-directed, after the owner correctly pushed back that a blunt a-c cut would damage Eco's throughput. The blunt levers (everything once/day; Haiku for the orchestrator) were REJECTED as damaging; only the surgical cut was taken.
+- **(b) change-based gate (runner.py):** run_job's Eco-2h cost gate now skips the spawn when NO watched input changed since the last 2h run. Watched: memory/board.md, decisions-log.md, company/governance/schedules.md, + the shelly-outbox and inbox-screened dirs (file + dir mtimes). Fail-OPEN on any uncertainty (never silently skip real work). Verified: future last_run -> skip; 30d-old -> fire. The 2h cycle now fires only on genuinely new input (Adam reply, new/blocked task, handoff) -- still within 2h, so Adam/Shelly responsiveness is preserved.
+- **(a) prompt split (agent-prompts.md):** the expensive full 72h whole-board STALE-TASK SWEEP (with on-disk deliverable verification) MOVED from the every-2h prompt to the daily AM-brief prompt (guaranteed once/day). The 2h prompt now carries only a pointer + keeps the cheap time-sensitive checks (newly-blocked/past-due/overdue-trigger/owner-action, Shelly handoff, Adam screened-mail). A 72h-stale task is caught the same day either way; the change-gate is safe precisely because the daily sweep is the backstop.
+- **Deliberately UNCHANGED:** Eco's runner model stays Sonnet (no Haiku downgrade) -- orchestration judgment quality untouched. Cross-project responsiveness (Adam/Shelly) unchanged (<=2h on any new input).
+- **Estimated effect:** on top of the quiet-hours skip (~$17 -> ~$10-11/day), the change-gate cuts idle daytime spawns and the split makes remaining 2h cycles cheaper -> Eco ~$5-6/day (~65-70% total), with no loss of responsiveness or decision quality. Visible on the dashboard Cost column over the next day.
+- **Verified:** runner.py compiles; eco_2h_inputs_changed logic correct (skip/fire); parse_prompts() returns the Eco AM Brief + 2h jobs (13 total); AM brief hosts the full sweep, 2h carries the pointer.
+- **Files affected:** integrations/runner/runner.py (change-gate helper + Eco-2h gate wiring), integrations/runner/agent-prompts.md (sweep moved 2h -> AM brief), company/decisions/decisions-log.md (this entry, EOF-append per red line 6a).

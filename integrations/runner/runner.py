@@ -448,6 +448,49 @@ def actionable_gate() -> int:
         return -1
 
 
+# COST-TRIM surgical (b) 2026-07-29 (Eco A2): change-based gate for the Eco 2h check-in.
+# The 2h cycle exists to TRIAGE new input (newly-blocked/past-due tasks, overdue triggers,
+# owner-action needs, Shelly handoffs, Adam's Rambo-screened replies). If NONE of its watched
+# inputs changed since the last 2h run, there is nothing new to triage -> skip the expensive
+# spawn. This is only safe because the time-based full 72h stale-sweep now runs in the daily
+# AM-brief prompt (guaranteed once/day), so the 2h cycle no longer fires "just in case".
+# Pure-code, zero-token. Fail-OPEN (return True) on ANY uncertainty -- never silently skip work.
+_ECO_2H_INPUT_FILES = [BOARD, DECISIONS_LOG, ROOT / "company" / "governance" / "schedules.md"]
+_ECO_2H_INPUT_DIRS = [
+    Path(r"C:\Users\Jecki\DEV\shared\handoff\shelly-outbox"),   # Shelly's incoming messages
+    ROOT / "shared" / "handoff" / "inbox-screened",             # Rambo-screened Adam mail
+]
+
+
+def eco_2h_inputs_changed(state_key: str) -> bool:
+    """True if any watched Eco-2h input was modified after the last 2h run for state_key."""
+    try:
+        st = json.loads(STATE.read_text(encoding="utf-8"))
+        last = st.get(state_key, {}).get("last")
+        if not last:
+            return True  # never ran -> fire
+        last_ts = datetime.fromisoformat(last).timestamp()
+    except (OSError, ValueError, KeyError, TypeError):
+        return True  # fail open
+    newest = 0.0
+    for p in _ECO_2H_INPUT_FILES:
+        try:
+            newest = max(newest, p.stat().st_mtime)
+        except OSError:
+            pass
+    for d in _ECO_2H_INPUT_DIRS:
+        try:
+            newest = max(newest, d.stat().st_mtime)  # dir mtime catches file add/remove
+            for f in d.iterdir():
+                try:
+                    newest = max(newest, f.stat().st_mtime)
+                except OSError:
+                    pass
+        except OSError:
+            pass
+    return newest > last_ts
+
+
 def two_h_notify_muted() -> bool:
     """Time-boxed owner-notification mute for the 2h check-in (auto-expires).
     The job still RUNS and logs; only the owner Telegram ping is suppressed while
@@ -555,6 +598,10 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
         if quiet_hours_active():
             log({"key": key, "event": "gate_skip", "reason": "quiet_hours"})
             return {"ran": False, "reason": "quiet_hours"}
+        # COST-TRIM surgical (b): skip if no watched input changed since the last 2h run.
+        if not eco_2h_inputs_changed(key):
+            log({"key": key, "event": "gate_skip", "reason": "no_change"})
+            return {"ran": False, "reason": "no_change"}
         if actionable_gate() == 0:
             log({"key": key, "event": "gate_skip", "actionable": 0})
             return {"ran": False, "reason": "gate_skip"}

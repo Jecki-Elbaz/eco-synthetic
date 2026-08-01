@@ -30,6 +30,21 @@ Steps:
    SUSPICIOUS finding; or work blocked that only jecki can unblock. Nothing else is owner-facing.
 2. Note in ONE line what you (Eco) decided or moved since yesterday.
 
+3. FULL STALE-TASK SWEEP (owner directive 2026-07-14, board T-0045; moved here from the 2h cycle
+   2026-07-29 as the once-daily full pass -- the 2h cycle now only triages NEW input). Scan
+   memory/board.md for any task with status open or in-progress whose row shows NO dated progress
+   in the last 72h AND no stated good reason to wait (a named blocker, a gate, a future due date,
+   waiting-on-owner, or a recurring cadence all count as good reasons). For each hit:
+   VERIFY-BEFORE-REACTIVATE (ECO-FIX 2026-07-25, red line 11): if the row names a target deliverable
+   file, CHECK whether it already exists on disk and when it was last written. If it exists, do NOT
+   reactivate -- append a dated note that the deliverable is on disk and the row needs
+   closure/next-step routing, and surface THAT. Otherwise append a dated "REACTIVATED <YYYY-MM-DD>
+   by Eco stale-sweep: <next step>" note into detailed_desc AND actually route/dispatch it to the
+   responsible agent, stating which execution path picks it up -- a reactivation note alone executes
+   nothing. If the same row hits a 3rd cycle, escalate to the owner to dispatch in an interactive
+   session. This is INTERNAL: do NOT list swept tasks in the digest unless one independently meets
+   the "needs jecki today" bar in step 1.
+
 Produce a SHORT morning digest for jecki, in HEBREW, right-to-left:
 - If anything needs him today: one line per item, each a single explicit ask (what + by when).
 - If nothing needs him today: say so in one line (e.g. "אין פעולות שדורשות אותך היום").
@@ -105,26 +120,10 @@ Read memory/board.md. Check only for these conditions:
    NEVER read raw mail yourself; only Rambo-screened files. Quarantined files (verdict
    SUSPICIOUS) are owner-only -- do not process them.
 
-7. STALE-TASK SWEEP (owner directive 2026-07-14, board T-0045 -- the default reactivation
-   trigger): scan memory/board.md for any task with status open or in-progress whose row
-   shows NO dated progress in the last 72h AND no stated good reason to wait (a named
-   blocker, a gate, a future due date, waiting-on-owner, or a recurring cadence all count
-   as good reasons). Each hit is an INTERNAL process miss -- NOT owner-facing. On an act
-   cycle, append a dated "REACTIVATED <YYYY-MM-DD> by Eco stale-sweep: <next step>" note into
-   that row's detailed_desc AND actually route/dispatch it to the responsible agent -- a note
-   that executes nothing is not progress; own the dispatch. Do NOT message jecki about a stale
-   task unless it independently meets the URGENT bar below. A company of agents leaves nothing
-   sitting without a stated reason.
-   VERIFY-BEFORE-REACTIVATE (ECO-FIX 2026-07-25, red line 11): BEFORE reactivating, if the
-   row names a target deliverable file, CHECK whether that file already exists on disk and
-   when it was last written. AUD-010 was reactivated 4 times (07-19..07-25) while its
-   deliverable (company/hr/aud-010-role-file-batch-2026-07-14.md) had existed since
-   2026-07-14 -- the stall was a bookkeeping gap, not a work gap. If the deliverable
-   exists: do NOT reactivate; instead append a dated note that the deliverable is on disk
-   and the row needs closure/next-step routing, and surface THAT to the owner. Also state
-   in every reactivation which execution path is expected to pick it up -- a reactivation
-   note alone executes nothing; if the same row hits a 3rd cycle, escalate to the owner to
-   dispatch it in an interactive session instead of appending a 4th note.
+7. STALE-TASK SWEEP -- MOVED to the daily AM brief (2026-07-29 cost-trim, Eco A2). Do NOT run
+   the full 72h whole-board sweep on the 2h cycle; the AM brief owns it once/day. On the 2h cycle,
+   act only on NEW input (checks 1-6). If you happen to notice a SPECIFIC task that is clearly
+   blocking something meeting the URGENT bar below, surface just that; otherwise do not sweep.
 
 OWNER-FACING ONLY IF GENUINELY URGENT NOW (owner directive 2026-08-01). Message jecki this
 cycle ONLY if, right now, one of these holds: (a) an A1 sign-off he owes with a real deadline;
