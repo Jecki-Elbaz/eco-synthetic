@@ -1,7 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Write(//c/Users/Jecki/DEV/shared/handoff/**)",
+      "Edit(//c/Users/Jecki/DEV/shared/handoff/**)",
       "WebSearch(*)",
       "WebFetch(*)",
       "mcp__claude_ai_Gmail__create_draft",
@@ -61,9 +61,9 @@
       "Bash(npx prisma *)"
     ],
     "deny": [
-      "Write(.env)",
-      "Write(.env.*)",
-      "Write(sources/*)",
+      "Edit(.env)",
+      "Edit(.env.*)",
+      "Edit(sources/*)",
       "Bash(rm -rf*)",
       "Bash(curl *)",
       "Bash(wget *)",
@@ -81,7 +81,7 @@
       "mcp__claude_ai_Google_Calendar__update_event"
     ]
   },
-    "cleanupPeriodDays": 30,
+  "cleanupPeriodDays": 30,
   "hooks": {
     "PreToolUse": [
       {

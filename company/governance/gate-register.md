@@ -810,3 +810,137 @@ file created; all sends fail-closed). PARKED by owner 2026-08-01 pending the Pat
 Not self-granted: Security cleared risk, Legal cleared terms, owner directed and parked.
 
 **Opened by:** Eco / owner (plan 2026-08-01) | **Date:** 2026-08-01 | **Recorded by:** Eco, 2026-08-01
+
+---
+
+## GR-009 addendum -- 2026-08-02 (T-0046: manage_gmail_filter on google_owner connector)
+
+Appended, not edited. Prior GR-009 rows and addendums above stand as written. Same
+pinned connector (workspace-mcp==1.21.3, commit f974a126d12f56af1b878b4cd3e039f0982af138);
+no version bump; no new vendor.
+
+**What changed.** Adding manage_gmail_filter (create + delete, NO forwarding rules) to
+the google_owner connector on jecki.elbaz@gmail.com (owner-creds credential store in
+the Shelly repo). Current scope of google_owner: search/read Gmail, label create/manage,
+label modify, draft. Filter management is absent and requested. No change to
+google_workspace connector or to any Shelly-account scope.
+
+**Source:** Shelly gate request 2026-07-12
+(shared/handoff/shelly-outbox/gate-request-owner-gmail-filter-tool-2026-07-12.md).
+Owner A1 on record 2026-07-12 (pre-gate for tool class). Task T-0046 on board.
+
+**Rambo (Security) verdict:** Rambo scan filed separately -- see company/security/reports/
+(parallel review, 2026-08-02). Eyal Rambo-leg placeholder: PENDING Rambo file.
+
+**Eyal (Legal) verdict: CLEAR-WITH-CONDITIONS.** MIT license unchanged (CLEAR, no
+re-review). Google API ToS: CLEAR -- filter management is a scope addition within the
+same internal-single-account-use framework cleared at GR-009 base (2026-07-01). No new
+vendor, no new terms, no new DPA obligation. C-E4 does NOT block this gate: the
+manage_gmail_filter API call does not route data through the LLM; any email-analysis
+step that precedes filter-criteria proposals is separately governed by GR-014 and C-E4
+as already in force. Full analysis: company/legal/gate-t0046-gmail-filter-terms-review-eyal-2026-08-02.md.
+
+**Conditions (Eyal, binding):**
+- C-TF1 (HARD): No forwarding-rule tools. Scope = filter create + delete only. Permitted
+  filter actions: apply label, mark important, mark read, skip inbox, archive, Trash.
+  NO forwarding to any external address. Legal requirement: automated forwarding is a
+  third-party personal-data transfer without adequate basis under PPL.
+- C-TF2: Filter creation = per-action owner approval (Shelly proposes criteria, owner
+  confirms, Shelly creates). GR-009 C-R1 applies. No autonomous filter creation.
+- C-TF3: Filter deletion = per-action owner approval. Same gate as C-TF2.
+- C-TF4: Scope = jecki.elbaz@gmail.com via google_owner/owner-creds only. GR-009 C-R3
+  stands. This addendum covers filter management only; no other scope on the owner account
+  is expanded.
+- C-TF5: Any LLM analysis step used to derive filter criteria remains subject to GR-014
+  conditions and C-E4. This gate does not expand email-analysis permissions.
+
+**Gate status:** Eyal CLEAR-WITH-CONDITIONS (C-TF1 to C-TF5). Rambo PENDING (parallel,
+see company/security/reports/). NOT approved for install until BOTH legs clear AND owner
+A1 obtained at install.
+
+**Opened by:** Eyal (Eyal dispatch 2026-08-02) | **Date:** 2026-08-02 | **Triggered by:** T-0046
+
+---
+
+## GR-021 -- Autonomous Compose+Send for Shelly (shelly.synthetic.org@gmail.com) 2026-08-02
+
+**NOTE ON GR NUMBER:** The T-0049 board row and the task envelope said "register as
+GR-020." GR-020 is ALREADY OCCUPIED (Gmail READ scope widened + Eco autonomous send
+to whitelist, recorded 2026-08-01, above). This gate is GR-021. Eco must update
+T-0049 board row, Shelly board rows, and downstream handoff references.
+
+**Type:** Capability change on the shelly.synthetic.org@gmail.com surface (no new vendor;
+reuses GR-009 workspace-mcp). Owner approved direction in-session 2026-07-27.
+**Task:** T-0049 on board.
+**Source:** Shelly gate request 2026-07-27
+(shared/handoff/shelly-outbox/gate-request-autonomous-send-2026-07-27.md).
+
+**What it is.** Grant Shelly autonomous compose-and-send from shelly.synthetic.org@gmail.com
+without per-action owner approval. Owner-specified design: locked send-allowlist (owner-
+edited only, guard.py enforced); mandatory owner BCC on every send; frozen split-send
+(composer writes frozen message to queue; separate send-job flushes stored bytes; no
+composition at send time; no inbound-mail read; no loop). Proposed conditions C1-C7 in
+the gate request (allowlist, BCC-owner, frozen split-send, idempotent+rate-cap, no-taint
+compose, guard secret/PII scan, shelly.synthetic.org-only scope).
+
+This is a HIGH blast-radius request. Autonomous send is the single largest guardrail
+maintained since T-0037 and CS-0001.
+
+**Rambo (Security) verdict:** Rambo scan filed separately -- see company/security/reports/
+(parallel review, 2026-08-02). Eyal Rambo-leg placeholder: PENDING Rambo file.
+
+**Eyal (Legal) verdict: CLEAR-WITH-CONDITIONS.** Google API ToS: CLEAR -- the prior
+GR-009 C-L1 no-autonomous-send condition was a company-policy control, not a Google ToS
+restriction; ToS does not prohibit autonomous agent send on a validly OAuth-authorized
+account. MIT license: CLEAR (no change from GR-009 base). Israeli anti-spam Amendment
+40: CLEAR for personal/administrative/transactional content; BLOCKED for commercial or
+marketing content without recipient opt-in. Attribution/disclosure: no confirmed statutory
+mandate in Israeli law through August 2025 requiring AI-authorship labeling, but disclosure
+footer is mandatory as a legal risk-reduction condition (misrepresentation risk, Israeli
+Civil Wrongs Ordinance and contract law). Record-keeping: no current statutory mandate
+for personal Gmail use; proactive send log required by condition.
+
+BLOCKING: C-E4 (Anthropic DPA, compliance-backlog Item 6). Autonomous composition runs
+through the LLM and processes third-party personal data. C-E4 is OPEN. No go-live until
+resolved. Path A decision (open API/Console account) from GR-020 also resolves C-E4 for
+this gate. Both gates unblock on the same owner action.
+
+Full analysis: company/legal/gate-gr020-autonomous-send-legal-review-eyal-2026-08-02.md.
+
+**Conditions (Eyal, binding):**
+- C-AS1 (BLOCKING -- hard go-live gate): C-E4 must close before autonomous send is
+  enabled. LLM composition of emails directed at identifiable individuals = third-party
+  personal data processing. No autonomous send until Anthropic DPA is in place under
+  Commercial Terms. Path A resolution of GR-020 C-E4 unblocks GR-021 simultaneously.
+- C-AS2 (MANDATORY): Agent-authorship disclosure footer on every autonomously composed
+  and sent email. Suggested: "This message was composed and sent by an AI assistant on
+  behalf of [Owner Name]." Not confirmed as a statutory mandate through August 2025;
+  strongly advised to mitigate misrepresentation claims. Flag to local counsel before
+  extending to business counterparties.
+- C-AS3 (HARD): No commercial or marketing content on the autonomous send path. Content
+  must be transactional, administrative, or personal only. Commercial solicitation to
+  recipients without prior opt-in violates Israeli Communications Law Amendment 40.
+  Applies regardless of allowlist status.
+- C-AS4 (ACKNOWLEDGED): Owner BCC is a detective audit control only. Not a preventive
+  gate. No conditions may represent BCC as equivalent to pre-send owner review. Shelly
+  risk R2 is legally accurate and must be reflected in any documentation of this gate.
+- C-AS5 (HARD): No legal commitments, contractual offers, representations creating reliance,
+  or warranty statements in autonomously composed emails. Any such content = hold and route
+  to owner for in-session review before send. If doubt exists, hold and route.
+- C-AS6: Frozen split-send architecture (composer writes, separate send-job flushes; no
+  composition at send time) is a required structural control endorsed as legally significant.
+  Rambo to confirm technical enforcement at security review.
+- C-AS7: Send log mandatory. Every autonomously sent email must be logged: To address,
+  Subject, Timestamp, brief content summary (NOT verbatim body -- PPL minimization).
+  Log retained minimum 2 years. Owner must be able to produce the log on request.
+- C-AS8: Allowlist expansion requires fresh Eyal review. Addition of business counterparties,
+  vendors, or external commercial contacts materially changes the Amendment 40 and
+  misrepresentation-risk analysis. Each such addition is a scope expansion, not an
+  administrative update.
+
+**Gate status:** Eyal CLEAR-WITH-CONDITIONS (C-AS1 to C-AS8); C-AS1 (C-E4) BLOCKS
+go-live. Rambo PENDING (parallel, see company/security/reports/). NOT approved for
+install or go-live until: (1) BOTH gate legs clear; (2) C-E4/C-AS1 resolved; (3) owner
+A1 obtained. Eyal verdict alone does not authorize any installation.
+
+**Opened by:** Eyal (Eyal dispatch 2026-08-02) | **Date:** 2026-08-02 | **Triggered by:** T-0049

@@ -240,6 +240,20 @@ PATH_SCOPE: dict[str, list[str]] = {
     ],
 }
 
+# Absolute prohibitions -- CLAUDE.md red lines 1 and 2. Writes denied for EVERY caller with no
+# exemption, including the owner's own interactive session (the owner edits .env by hand,
+# outside Claude). Unlike Red paths below, there is no A1 channel here: red line 1 is "never
+# read, write, reference, or log .env" and red line 2 is "never write to sources/".
+#
+# Added 2026-08-02 after a live tool probe found BOTH enforcement layers were absent:
+# .claude/settings.json carried `Write(.env)`, `Write(.env.*)` and `Write(sources/*)` deny
+# rules, and the CLI reports at startup that Write(path) rules are NOT matched by file
+# permission checks -- only Edit(path) rules are, and those cover all file-editing tools. So
+# those three deny rules had always been inert. The guard never covered either path either.
+# Two layers of enforcement for two absolute red lines, neither of which did anything.
+FORBIDDEN_WRITE_EXACT = {".env"}
+FORBIDDEN_WRITE_PREFIXES = ("sources/", ".env.")
+
 # Section 4/5.1 -- Red paths: writes denied for everyone (owner A1 only, out of band).
 RED_PREFIXES = (
     ".claude/agents/",
@@ -628,6 +642,14 @@ def evaluate(event: dict) -> tuple[str, str]:
         fp = ti.get("file_path") or ti.get("path") or ""
         rel = _relpath(str(fp))
 
+        # Absolute prohibitions (red lines 1 and 2) -- checked FIRST, no exemption for anyone.
+        if rel in FORBIDDEN_WRITE_EXACT or rel.startswith(FORBIDDEN_WRITE_PREFIXES):
+            return DENY, (
+                f"absolute prohibition '{rel}': red line 1 (.env / credential files) and "
+                f"red line 2 (sources/ is read-only -- copy to a working folder first). "
+                f"No A1 channel; this denial has no exemption."
+            )
+
         # Runner dispatch counter (2026-08-02): code-managed budget. An agent must never be
         # able to reset its own per-cycle dispatch allowance. Owner interactive sessions still
         # pass (origin empty, no RUNNER_CONTEXT) so the counter can be cleared by hand.
@@ -736,7 +758,10 @@ def decide(event: dict, mode: str) -> tuple[str, str]:
     # sub-agent Red-path DENY would degrade to would-DENY -> ALLOW while the guard is still in
     # shadow, leaving the send whitelist writable off the owner session (adversary 2026-08-01).
     red_block = decision == DENY and reason.startswith("Red path")
-    if runner or bridge or mode == "enforce" or handoff_block or google_block or red_block:
+    # Red lines 1 and 2 are absolute, so their denial cannot degrade to would-DENY in shadow.
+    absolute_block = decision == DENY and reason.startswith("absolute prohibition")
+    if (runner or bridge or mode == "enforce" or handoff_block or google_block
+            or red_block or absolute_block):
         return decision, reason
     if decision == DENY:
         return ALLOW, f"[shadow] would-DENY: {reason}"

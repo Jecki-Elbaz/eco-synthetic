@@ -588,6 +588,54 @@ def test_secret_scan_hard_enforced_in_shadow():
     assert decision == guard.DENY
 
 
+# --- Absolute prohibitions: red lines 1 and 2 (2026-08-02) ---
+#
+# A live tool probe found these had NO working enforcement anywhere: the settings.json deny
+# rules used Write(path), which the CLI does not match against file permission checks (only
+# Edit(path) rules are, and those cover all file-editing tools), and the guard never covered
+# .env or sources/ at all. Two layers, neither enforcing.
+
+@pytest.mark.parametrize("path", [".env", ".env.dev", ".env.prod", ".env.global",
+                                   "sources/anything.md", "sources/skills/x/SKILL.md"])
+def test_absolute_prohibitions_denied_for_everyone(path):
+    for mode in ("enforce", "shadow"):
+        decision, reason = guard.decide(
+            ev("Write", file_path=path, content="x"), mode)
+        assert decision == guard.DENY, f"{path} allowed in {mode}"
+        assert "absolute prohibition" in reason
+        assert guard.decide(ev("Edit", file_path=path), mode)[0] == guard.DENY
+
+
+def test_absolute_prohibition_has_no_owner_exemption():
+    # Unlike Red paths, there is no A1 channel here. The owner's own interactive session --
+    # origin empty, no RUNNER_CONTEXT, no BRIDGE_CONTEXT -- is denied too. The owner edits
+    # .env by hand, outside Claude.
+    assert d(ev("Write", file_path=".env", content="KEY=value")) == guard.DENY
+
+
+def test_absolute_prohibition_denied_for_sub_agents_and_runner(monkeypatch):
+    assert d(ev("Write", _agent_type="shir", file_path="sources/x.md",
+                content="y")) == guard.DENY
+    monkeypatch.setenv("RUNNER_CONTEXT", "1")
+    assert guard.decide(ev("Write", file_path=".env", content="x"), "shadow")[0] == guard.DENY
+
+
+def test_sources_prefix_does_not_overmatch():
+    # "sources/" must not swallow a legitimately named sibling path.
+    assert d(ev("Write", file_path="company/sources-policy.md", content="x")) == guard.ALLOW
+
+
+def test_settings_json_has_no_inert_write_rules():
+    # Regression: the CLI ignores Write(path) permission rules. Any rule reintroduced in that
+    # form is silently inert, which is how three red-line deny rules did nothing.
+    import json as _json
+    cfg = _json.loads((ROOT / ".claude" / "settings.json").read_text(encoding="utf-8"))
+    perms = cfg.get("permissions", {})
+    inert = [r for key in ("allow", "deny", "ask")
+             for r in (perms.get(key) or []) if r.startswith("Write(")]
+    assert not inert, f"inert Write(path) rules found (use Edit(path)): {inert}"
+
+
 # --- Yossi write scope (2026-08-02) ---
 
 def test_yossi_can_write_his_own_scope():
