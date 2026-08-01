@@ -398,6 +398,195 @@ def test_main_thread_has_no_origin_and_is_allowed_on_working_paths():
     assert d(ev("Write", file_path="projects/x.md", content="y")) == guard.ALLOW
 
 
+# --- Runner-path sub-agent dispatch (owner A1 2026-08-02) ---
+#
+# The runner was hard-denied from spawning ANY agent, which meant Eco's stale-sweep could only
+# append notes no agent would ever read. It may now dispatch a small non-Bash allowlist under
+# four limits: allowlist only, depth 1, act cycles only, capped per cycle. These tests are the
+# proof that each limit actually bites -- and that opening dispatch did not open the
+# code-builders (gal/shir/adi/oren/noa), whose owner-only restriction previously rested on the
+# now-false invariant "the runner cannot spawn anyone".
+
+
+@pytest.fixture
+def dispatch(tmp_path, monkeypatch):
+    """Runner act-cycle context with an isolated per-cycle dispatch counter."""
+    monkeypatch.setenv("RUNNER_CONTEXT", "1")
+    monkeypatch.setenv("RUNNER_MODE", "act")
+    monkeypatch.setenv("RUNNER_CYCLE_ID", "probe-cycle-1")
+    monkeypatch.setattr(guard, "SPAWN_COUNT_FILE", tmp_path / "runner-spawn-count.json")
+    return tmp_path
+
+
+def test_runner_dispatch_allows_allowlisted_agent(dispatch):
+    decision, reason = guard.decide(ev("Task", subagent_type="rambo"), "enforce")
+    assert decision == guard.ALLOW
+    assert "slot 1/3" in reason
+
+
+def test_runner_dispatch_cap_denies_fourth(dispatch):
+    for _ in range(guard.RUNNER_SPAWN_CAP):
+        assert guard.decide(ev("Task", subagent_type="dalia"), "enforce")[0] == guard.ALLOW
+    decision, reason = guard.decide(ev("Task", subagent_type="dalia"), "enforce")
+    assert decision == guard.DENY
+    assert "cap" in reason
+    assert "dispatch-queue" in reason
+
+
+def test_runner_dispatch_denies_non_allowlisted(dispatch):
+    # assaf is on ALLOWED_AGENTS (may act, may be spawned from an owner session) but is NOT on
+    # the narrower runner-dispatch allowlist.
+    decision, reason = guard.decide(ev("Task", subagent_type="assaf"), "enforce")
+    assert decision == guard.DENY
+    assert "RUNNER_SPAWN_ALLOW" in reason
+
+
+def test_runner_dispatch_denies_nested_spawn(dispatch):
+    # Depth 1 only: anat holds the Agent tool, so without this a dispatched anat could chain.
+    decision, reason = guard.decide(
+        ev("Task", _agent_type="anat", subagent_type="rambo"), "enforce"
+    )
+    assert decision == guard.DENY
+    assert "nested" in reason
+
+
+def test_runner_dispatch_denied_on_readonly_cycle(dispatch, monkeypatch):
+    monkeypatch.setenv("RUNNER_MODE", "readonly")
+    decision, reason = guard.decide(ev("Task", subagent_type="rambo"), "enforce")
+    assert decision == guard.DENY
+    assert "act cycles" in reason
+
+
+def test_runner_dispatch_fails_closed_without_cycle_id(dispatch, monkeypatch):
+    # No cycle id = no budget can be accounted for = deny, never an uncounted dispatch.
+    monkeypatch.delenv("RUNNER_CYCLE_ID", raising=False)
+    decision, reason = guard.decide(ev("Task", subagent_type="rambo"), "enforce")
+    assert decision == guard.DENY
+    assert "RUNNER_CYCLE_ID" in reason
+
+
+@pytest.mark.parametrize("builder", ["gal", "shir", "adi", "oren", "noa"])
+def test_runner_cannot_dispatch_code_builders(dispatch, builder):
+    # The invariant fix. These are owner-session-only; the runner must queue them instead.
+    assert guard.decide(ev("Task", subagent_type=builder), "enforce")[0] == guard.DENY
+
+
+def test_owner_session_can_still_spawn_code_builders():
+    # Regression: opening runner dispatch must not restrict the owner's own session.
+    assert d(ev("Task", subagent_type="gal")) == guard.ALLOW
+    assert d(ev("Task", subagent_type="shir")) == guard.ALLOW
+
+
+def test_bridge_cannot_spawn_code_builders(monkeypatch):
+    # The bridge spawns top-level Eco (origin empty) on untrusted email input.
+    monkeypatch.setenv("BRIDGE_CONTEXT", "1")
+    assert guard.decide(ev("Task", subagent_type="gal"), "enforce")[0] == guard.DENY
+
+
+def test_runner_dispatch_denied_in_shadow_mode(dispatch):
+    # RUNNER_CONTEXT is hard-enforced regardless of GUARD_MODE, so the limits bite in shadow.
+    assert guard.decide(ev("Task", subagent_type="assaf"), "shadow")[0] == guard.DENY
+
+
+def test_dispatch_counter_not_writable_by_agents(dispatch):
+    # An agent must not be able to reset its own per-cycle dispatch budget.
+    decision, reason = guard.decide(
+        ev("Write", file_path=guard.SPAWN_COUNT_REL, content="{}"), "enforce"
+    )
+    assert decision == guard.DENY
+    assert "code-managed" in reason
+
+
+def test_dispatch_counter_not_writable_by_sub_agent(monkeypatch):
+    monkeypatch.delenv("RUNNER_CONTEXT", raising=False)
+    decision, reason = guard.decide(
+        ev("Write", _agent_type="dalia", file_path=guard.SPAWN_COUNT_REL, content="{}"),
+        "enforce",
+    )
+    assert decision == guard.DENY
+
+
+def test_runner_spawn_allowlist_holds_no_bash_agents():
+    # Structural invariant, not behaviour: every runner-dispatchable agent must be Bash-free
+    # and must not be owner-session-only. A future role-file edit that grants Bash to one of
+    # these should break this test, not the fleet.
+    for name in guard.RUNNER_SPAWN_ALLOW:
+        assert name in guard.ALLOWED_AGENTS
+        assert name not in guard.OWNER_SPAWN_ONLY
+        role = ROOT / ".claude" / "agents" / f"{name.capitalize()}.md"
+        if role.is_file():
+            head = role.read_text(encoding="utf-8")[:2000]
+            tools_line = next(
+                (ln for ln in head.splitlines() if ln.lower().startswith("tools:")), ""
+            )
+            assert "bash" not in tools_line.lower(), f"{name} now holds Bash"
+
+
+# --- In-repo handoff secret scan (2026-08-02) ---
+
+def test_secret_scan_covers_in_repo_handoff():
+    # _is_handoff() resolved only against the out-of-repo drop folder, so writes into the
+    # in-repo two-stage inbox screen dir bypassed the hard-enforced credential scan entirely.
+    target = str(ROOT / "shared" / "handoff" / "inbox-screened" / "probe.md")
+    decision, reason = guard.decide(
+        ev("Write", file_path=target, content="api_key: sk-abcdefghijklmnopqrstuvwxyz012345"),
+        "enforce",
+    )
+    assert decision == guard.DENY
+    assert "secret pattern" in reason
+
+
+def test_in_repo_handoff_clean_write_allowed():
+    target = str(ROOT / "shared" / "handoff" / "inbox-screened" / "probe.md")
+    assert d(ev("Write", file_path=target, content="SCREEN-CLEAR: no actionable content")) == guard.ALLOW
+
+
+def test_secret_scan_hard_enforced_in_shadow():
+    target = str(ROOT / "shared" / "handoff" / "inbox-screened" / "probe.md")
+    decision, _ = guard.decide(
+        ev("Write", file_path=target, content="token: ghp_" + "a" * 36), "shadow"
+    )
+    assert decision == guard.DENY
+
+
+# --- Yossi write scope (2026-08-02) ---
+
+def test_yossi_can_write_his_own_scope():
+    # Yossi was certified-live with A3 write duties but was absent from ALLOWED_AGENTS and
+    # PATH_SCOPE, so every write his role file promises would have broken on the enforce flip.
+    assert d(ev("Write", _agent_type="yossi", file_path="company/training/x.md",
+                content="y")) == guard.ALLOW
+
+
+def test_yossi_still_scoped():
+    decision, reason = guard.decide(
+        ev("Write", _agent_type="yossi", file_path="projects/x.md", content="y"), "enforce"
+    )
+    assert decision == guard.DENY
+    assert "path-scope violation" in reason
+
+
+# --- Board write access for status reporting (2026-08-02) ---
+
+@pytest.mark.parametrize("agent", ["adi", "noa", "jenny", "jack", "ella", "oracle",
+                                    "yael", "zvika", "designer", "sami", "roman"])
+def test_agents_can_report_status_on_the_board(agent):
+    # memory/board.md is the company's only working status channel. 22 of 32 agents could not
+    # write it, so their status existed only inside an ephemeral spawn transcript.
+    assert d(ev("Write", _agent_type=agent, file_path="memory/board.md",
+                content="row")) == guard.ALLOW
+
+
+def test_board_access_did_not_widen_other_scopes():
+    # Regression: granting board.md must not have granted anything else.
+    decision, reason = guard.decide(
+        ev("Write", _agent_type="jenny", file_path="company/governance/gate-register.md",
+           content="x"), "enforce"
+    )
+    assert decision == guard.DENY
+    assert "path-scope violation" in reason
+
+
 def test_shadow_never_blocks():
     # In shadow mode, denials are wrapped as would-DENY rather than hard-blocking.
     # Main-session Red path writes are ALLOWED outright via the B1 exemption and never

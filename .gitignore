@@ -17,6 +17,7 @@ __pycache__/
 *.py[cod]
 *.pyo
 .pytest_cache/
+.pytest-basetemp/
 .coverage
 htmlcov/
 dist/
@@ -52,6 +53,8 @@ memory/chats/
 memory/SAFE_MODE
 memory/agent-runs.jsonl
 memory/runner-state.json
+memory/runner-spawn-count.json
+memory/task-hygiene-report.md
 
 # Owner-office workspace -- Shelly personal-task data; never commit (A3 hardening 2026-06-12)
 memory/owner-office/

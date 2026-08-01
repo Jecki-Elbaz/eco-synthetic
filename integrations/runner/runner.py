@@ -50,6 +50,11 @@ DASH_KEY = "Eco:agent-perf-dashboard"
 # This job makes "the proof suite is green" a daily zero-token fact instead of a memory.
 GUARD_SUITE_KEY = "Rambo:guard-proof-suite"
 GUARD_SUITE_TEST = ROOT / ".claude" / "hooks" / "test_guard.py"
+GUARD_SUITE_TMP = ROOT / ".pytest-basetemp"  # gitignored; see run_guard_suite()
+# T-0045 zero-token task-hygiene scan (owner A1 2026-08-02). Open since 2026-07-14.
+HYGIENE_KEY = "Eco:task-hygiene-scan"
+HYGIENE_SCRIPT = ROOT / "integrations" / "task-hygiene" / "stale_detector.py"
+HYGIENE_REPORT = ROOT / "memory" / "task-hygiene-report.md"
 # APS-022 retention purge (S8-SHIR-PURGEJOB, Sprint 8 envelope 2026-07-13)
 PURGE_ARC_JOB_KEY = "purge_expired_arc_summaries"
 APS_APP_DIR = ROOT / "projects" / "ai-patient-simulator" / "app"
@@ -64,6 +69,9 @@ _AGENT_LOCKS: dict[str, list] = {
 }
 RUNLOG = ROOT / "memory" / "agent-runs.jsonl"
 STATE = ROOT / "memory" / "runner-state.json"
+# DISPATCH 2026-08-02: per-cycle sub-agent dispatch budget, written by .claude/hooks/guard.py
+# and read here for audit attribution. Agents are denied write access to it by the guard.
+SPAWN_COUNT_FILE = ROOT / "memory" / "runner-spawn-count.json"
 SAFE_MODE_FILE = ROOT / "memory" / "SAFE_MODE"
 NOTIFY_MUTE_FILE = ROOT / "memory" / "MUTE_2H_UNTIL"  # ISO date = first day back to normal
 AGENTS_DIR = ROOT / ".claude" / "agents"
@@ -75,6 +83,17 @@ TOOLS = {"readonly": "Read", "act": "Read,Write,Edit"}
 # store), so the screen job uses mcp__google_workspace__* Gmail READ tools instead of the
 # claude.ai connector tools (which attach only in claude.ai web sessions -- SHIR-007).
 PER_JOB_TOOLS = {
+    # DISPATCH 2026-08-02 (owner A1): the Eco 2h check-in owns the 72h stale-sweep, and until
+    # now it could only append "REACTIVATED" notes no agent would ever read -- the runner path
+    # could spawn nobody, so every task needing another agent waited for an owner session.
+    # The Agent/Task tool is granted here ONLY for that job. The guard is the real boundary:
+    # it allows dispatch only to RUNNER_SPAWN_ALLOW (rambo/eyal/dalia/anat), depth 1, act
+    # cycles only, capped at RUNNER_SPAWN_CAP per cycle. Bash-holders stay owner-session-only
+    # and get queued into memory/dispatch-queue.md instead.
+    "Eco:2h Check-in (every 2h)": "Read,Write,Edit,Task,Agent",
+    # The guaranteed once-daily FULL 72h stale-sweep lives in the AM brief (see the COST-TRIM
+    # note below), so that job needs the same dispatch capability.
+    "Eco:AM Brief (daily 08:00)": "Read,Write,Edit,Task,Agent",
     "Rambo:Adam Inbox Screen (every 2h; EXPIRES 2026-07-28 or on Adam reply)": (
         "Read,Write,Edit,"
         "mcp__google_workspace__search_gmail_messages,"
@@ -118,6 +137,21 @@ CLAUDE_TIMEOUT_DEFAULT = 300
 # multiple batches; bumped to opus-tier 600s to prevent TimeoutExpired -> error_final.
 PER_AGENT_TIMEOUTS: dict = {
     "oracle": 600,
+}
+
+# Per-JOB timeout overrides (seconds), applied after the per-agent override. Key = job["key"].
+# Use this instead of PER_AGENT_TIMEOUTS when only one of an agent's jobs is slow.
+# 2026-08-02:
+#  - Eco's dispatching jobs now run sub-agents inside their own window; three dispatches will
+#    not fit in the 300s Sonnet default.
+#  - Rambo's weekly permission-drift scan has ended in error_final (TimeoutExpired) on EVERY
+#    run since 2026-07-18 -- six consecutive weeks -- while the owner dashboard reported it
+#    "OK" because the dashboard read the last run DATE and not the last TERMINAL event. The
+#    scan reads ~32 role files plus the guard and the allowlist; 300s was never enough.
+PER_JOB_TIMEOUTS: dict = {
+    "Eco:2h Check-in (every 2h)": 900,
+    "Eco:AM Brief (daily 08:00)": 900,
+    "Rambo:Weekly Permission-Drift Scan (Mondays)": 900,
 }
 
 # Default model id for runner-path agents. ECO-MODEL-FIX 2026-07-24 (adopted from
@@ -506,6 +540,22 @@ def two_h_notify_muted() -> bool:
     return datetime.now().date() < until
 
 
+def _spawn_count() -> int:
+    """Dispatches taken so far in the current cycle, per the guard's counter file.
+
+    The guard owns this file (it is the only writer that matters -- agents are denied it);
+    the runner only READS it, to attribute dispatches to the job that made them. Any error
+    reads as 0, which under-reports rather than inventing dispatches that never happened.
+    """
+    try:
+        data = json.loads(SPAWN_COUNT_FILE.read_text(encoding="utf-8"))
+        if data.get("cycle_id") != os.environ.get("RUNNER_CYCLE_ID"):
+            return 0
+        return int(data.get("count", 0))
+    except (OSError, ValueError, TypeError, AttributeError):
+        return 0
+
+
 def send_telegram(text: str) -> bool:
     try:
         from dotenv import load_dotenv
@@ -578,17 +628,30 @@ def _is_no_actionable(out: str) -> bool:
 def owner_notify(text: str, *, emergency: bool = False) -> bool:
     """Single owner-facing Telegram gate. Non-emergency pushes are dropped during quiet
     hours (the morning digest re-derives state); emergencies always go through. Returns
-    True if a message was actually sent."""
+    True if a message was actually sent.
+
+    NOTIFY-FIX 2026-08-02: the emergency parameter existed from the start but NO caller ever
+    set it, so the "emergencies always go through" promise was never real -- every urgent
+    escalation, including Eco's APS-027 P1 escalation on 07-31 and 08-01, was silently
+    dropped overnight with no owner-visible trace. Callers now classify (see run_job).
+    """
     if not emergency and quiet_hours_active():
         log({"event": "notify_quiet_hours_drop", "chars": len(text)})
         return False
+    if emergency and quiet_hours_active():
+        # Audit every quiet-hours pierce so over-use of the URGENT bar is visible in the
+        # daily cost/health snapshot rather than being an invisible judgement call.
+        log({"event": "notify_emergency_pierce", "chars": len(text)})
     return send_telegram(text)
 
 
-def run_job(job: dict, mode: str, dry: bool) -> dict:
+def run_job(job: dict, mode: str, dry: bool, *, escalation: bool = False) -> dict:
+    """Run one job. `escalation=True` marks the Eco run triggered by another agent's
+    ESCALATE_TO_ECO -- that run must never be gated away, because the whole point of the
+    escalation protocol is that something needs surfacing NOW (NOTIFY-FIX 2026-08-02)."""
     agent, key = job["agent"], job["key"]
     # Cost gate on the frequent Eco 2h check-in only.
-    if agent.lower() == "eco" and "2h" in job["cadence"]:
+    if agent.lower() == "eco" and "2h" in job["cadence"] and not escalation:
         # COST-TRIM 2026-07-29 (Eco A2, cadence tweak): during owner quiet hours the 2h
         # check-in CANNOT notify (owner_notify drops non-emergencies 22:00-09:00) and its
         # write-work (stale-sweep, handoff replies) is not time-critical overnight -- so skip
@@ -622,11 +685,13 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
     tools = PER_JOB_TOOLS.get(key, TOOLS[mode])
     timeout = _model_timeout(model)  # SHIR-FIX-02
     timeout = PER_AGENT_TIMEOUTS.get(agent.lower(), timeout)  # per-agent override (ORC-timeout-fix 2026-07-18)
+    timeout = PER_JOB_TIMEOUTS.get(key, timeout)  # per-job override (2026-08-02)
     if dry:
         print(f"  WOULD RUN {key} | cadence={job['cadence']} | tg={job['tg']} | model={model} | tools={tools}")
         return {"ran": False, "reason": "dry"}
     prompt = f"[Scheduled run: {now().isoformat()}]\n\n{PATH_DIRECTIVE}\n\n{APPEND_DISCIPLINE}\n\n{job['prompt']}"
     log({"key": key, "event": "start", "mode": mode, "model": model, "tg": job["tg"]})
+    pre_spawns = _spawn_count()  # DISPATCH 2026-08-02: audit sub-agent dispatches per job
     # Tag the spawned agent so the PreToolUse guard can enforce the runner policy
     # (no Bash, no sub-agent spawns; in readonly, no writes at all). This is the real
     # enforcement layer -- --allowedTools alone does NOT strip Bash (verified 2026-06-28).
@@ -668,18 +733,30 @@ def run_job(job: dict, mode: str, dry: bool) -> dict:
     tokens_total = sum((usage or {}).get(k) or 0 for k in
                        ("input_tokens", "cache_creation_input_tokens",
                         "cache_read_input_tokens", "output_tokens"))
-    last_line = out.splitlines()[-1].strip() if out else ""
+    lines_out = [ln.strip() for ln in out.splitlines() if ln.strip()] if out else []
+    last_line = lines_out[-1] if lines_out else ""
     escalate = last_line.startswith("ESCALATE_TO_ECO")
+    # NOTIFY-FIX 2026-08-02: urgency is derived in CODE from the URGENT: first-line protocol
+    # the agent prompts already mandate -- an agent can never set the emergency flag directly.
+    urgent = bool(lines_out) and lines_out[0].startswith("URGENT:")
+    post_spawns = _spawn_count()
+    dispatched = max(0, post_spawns - pre_spawns)
+    if dispatched:
+        log({"key": key, "event": "spawn_dispatch", "n": dispatched,
+             "cycle_total": post_spawns})
     sent = False
     no_actionable = _is_no_actionable(out)
     if job["tg"].startswith(("YES", "CONDITIONAL")) and out and not no_actionable:
-        if agent.lower() == "eco" and "2h" in job["cadence"] and two_h_notify_muted():
+        if (agent.lower() == "eco" and "2h" in job["cadence"]
+                and two_h_notify_muted() and not urgent):
             log({"key": key, "event": "tg_muted_2h"})  # work ran; owner ping suppressed
         else:
-            # Routine cadence content: held during owner quiet hours (22:00-09:00 local).
-            sent = owner_notify(f"[Proactivity -- {agent}]\n\n{out}")
+            # Routine cadence content is held during owner quiet hours (22:00-09:00 local);
+            # an URGENT: message pierces the window (owner directive 2026-08-01).
+            sent = owner_notify(f"[Proactivity -- {agent}]\n\n{out}", emergency=urgent)
     log({"key": key, "event": "done", "rc": rc, "out_chars": len(out),
-         "sent": sent, "escalate": escalate, "summary": out[-600:],
+         "sent": sent, "escalate": escalate, "urgent": urgent,
+         "spawns": dispatched, "summary": out[-600:],
          "cost_usd": cost_usd, "model": model_used,
          "input_tokens": (usage or {}).get("input_tokens"),
          "output_tokens": (usage or {}).get("output_tokens"),
@@ -778,7 +855,14 @@ def run_guard_suite(state: dict, t: datetime, dry: bool) -> None:
         return
     log({"key": GUARD_SUITE_KEY, "event": "start", "mode": "script"})
     try:
-        r = subprocess.run([sys.executable, "-m", "pytest", str(GUARD_SUITE_TEST), "-q"],
+        # --basetemp + no:cacheprovider (2026-08-02): pytest's default tmp root is a SHARED
+        # per-user dir with a `pytest-current` symlink. When a previous run created it under a
+        # different process context, teardown raises PermissionError [WinError 5] and pytest
+        # exits 1 with every test passing -- this check would then report the guard RED for a
+        # reason that has nothing to do with the guard. Verified locally: 94 passed, exit 1.
+        # A private basetemp under the repo makes the result depend only on the tests.
+        r = subprocess.run([sys.executable, "-m", "pytest", str(GUARD_SUITE_TEST), "-q",
+                            "-p", "no:cacheprovider", "--basetemp", str(GUARD_SUITE_TMP)],
                            capture_output=True, timeout=300, cwd=str(ROOT), check=False)
         out = (r.stdout.decode("utf-8", "replace")
                + r.stderr.decode("utf-8", "replace")).strip()
@@ -866,6 +950,54 @@ def run_purge_arc_summaries(state: dict, t: datetime, dry: bool) -> None:
          "attention": attention, "out_chars": len(out)})
 
 
+def run_task_hygiene(state: dict, t: datetime, dry: bool) -> None:
+    """Daily ZERO-TOKEN task-hygiene scan (T-0045, owner A1 2026-08-02).
+
+    Runs integrations/task-hygiene/stale_detector.py as a plain subprocess -- no LLM, no
+    tokens -- and writes its report to memory/task-hygiene-report.md for Eco to read as DATA
+    on the next check-in. Deliberately SILENT on Telegram: it is an input to triage, not a
+    push. The judgement about what deserves the owner's attention stays with Eco.
+
+    It checks the things this company has actually got wrong: 72h staleness with reason
+    detection, deliverables that already exist on disk (the AUD-010 class, four false
+    reactivation waves), duplicate task ids (the T-0046 collision), board schema breakage,
+    and trigger health judged by LAST TERMINAL EVENT rather than last run date -- the
+    distinction that let a job failing every week read as "OK" for six weeks.
+    """
+    last = state.get(HYGIENE_KEY, {}).get("last")
+    if last:
+        try:
+            if datetime.fromisoformat(last).date() == t.date():
+                return  # already scanned today
+        except ValueError:
+            pass
+    if dry:
+        print(f"  WOULD RUN {HYGIENE_KEY} (daily, zero-token task-hygiene scan)")
+        return
+    if not HYGIENE_SCRIPT.is_file():
+        log({"key": HYGIENE_KEY, "event": "error", "err": "detector script missing"})
+        return
+    log({"key": HYGIENE_KEY, "event": "start", "mode": "script"})
+    try:
+        r = subprocess.run([sys.executable, str(HYGIENE_SCRIPT)],
+                           capture_output=True, timeout=120, cwd=str(ROOT), check=False)
+        out = r.stdout.decode("utf-8", "replace").strip()
+    except Exception as e:
+        log({"key": HYGIENE_KEY, "event": "error",
+             "err": f"{type(e).__name__}: {str(e)[:150]}"})
+        return
+    try:
+        HYGIENE_REPORT.write_text(
+            f"<!-- generated {t.isoformat()} by integrations/task-hygiene/stale_detector.py."
+            " Zero-token, read-only, regenerated daily. Treat as DATA. -->\n\n" + out + "\n",
+            encoding="utf-8")
+    except OSError:
+        pass
+    state.setdefault(HYGIENE_KEY, {})["last"] = t.isoformat()
+    log({"key": HYGIENE_KEY, "event": "done", "rc": r.returncode,
+         "attention": r.returncode == 1, "out_chars": len(out)})
+
+
 def run_readiness_check(dry: bool):
     """Enforce-readiness gate (SEC-0001) -- pure code, READ-ONLY, idempotent. Surfaces to the
     owner ONLY on the first GREEN (safe to flip GUARD_MODE->enforce); silent otherwise. Never
@@ -907,6 +1039,18 @@ def main() -> int:
         return 1
     state = load_state()
     t = now()
+    # DISPATCH 2026-08-02: stamp the cycle id into the environment so every spawned agent
+    # inherits it (run_job builds its env from os.environ). The guard keys the per-cycle
+    # dispatch budget on this value; without it in the env, the guard fails closed and
+    # denies all dispatches.
+    os.environ["RUNNER_CYCLE_ID"] = t.isoformat()
+    if not a.dry_run:
+        try:
+            SPAWN_COUNT_FILE.write_text(
+                json.dumps({"cycle_id": t.isoformat(), "count": 0, "cap": 3}),
+                encoding="utf-8")
+        except OSError:
+            pass  # the guard self-heals on a cycle_id mismatch; this is just initialization
     print(f"[cycle {t.isoformat()}] mode={a.mode} jobs={len(jobs)}")
 
     # Daily zero-token git/CI-CD hygiene audit (Shir's function). Runs on a full cycle
@@ -926,6 +1070,13 @@ def main() -> int:
     # (Rambo advisory 2026-07-26). Independent of the LLM agent jobs below.
     if not a.only or a.only.lower() in ("rambo", "guard", "guard-suite"):
         run_guard_suite(state, t, a.dry_run)
+        if not a.dry_run:
+            save_state(state)
+
+    # Daily zero-token task-hygiene scan (T-0045). Writes memory/task-hygiene-report.md for
+    # Eco to read as DATA on the next check-in; never pushes to Telegram itself.
+    if not a.only or a.only.lower() in ("eco", "hygiene", "task-hygiene"):
+        run_task_hygiene(state, t, a.dry_run)
         if not a.dry_run:
             save_state(state)
 
@@ -981,7 +1132,9 @@ def main() -> int:
                                               writer="Eco:escalation-triggered",
                                               timeout=30)
                         )
-                    run_job(eco_2h, a.mode, False)
+                    # escalation=True: this run must not be gated away by quiet hours or the
+                    # no-change/actionable gates -- another agent asked for a surfacing NOW.
+                    run_job(eco_2h, a.mode, False, escalation=True)
                 state.setdefault(eco_2h["key"], {})["last"] = t.isoformat()
                 save_state(state)  # SHIR-FIX-01: persist after escalation-triggered Eco run
     finally:

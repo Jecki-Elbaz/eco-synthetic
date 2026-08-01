@@ -32,6 +32,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 HANDOFF_PATH = Path("C:/Users/Jecki/DEV/shared/handoff")
+# The cross-project drop folder above lives OUTSIDE the repo. The two-stage inbox screen
+# (Rambo -> Eco) writes to an in-repo handoff dir as well, which the secret scan missed
+# entirely until 2026-08-02 -- _is_handoff() resolved against the absolute path only, so a
+# Write into shared/handoff/inbox-screened/ bypassed the hard-enforced credential check.
+REPO_HANDOFF_PATH = ROOT / "shared" / "handoff"
 MODE_FILE = ROOT / "memory" / "GUARD_MODE"
 LOG_FILE = ROOT / "memory" / "agent-guard.log"
 SAFE_MODE_FILE = ROOT / "memory" / "SAFE_MODE"
@@ -56,6 +61,11 @@ ALLOWED_AGENTS = {
     # Yossi deliberately EXCLUDED pending Rambo B5 + C2/C3 (see guard-diff report Part 3).
     "sally", "alex", "mike", "jenny", "jack", "ella",
     "sami", "roman", "zvika", "designer", "meetingprep",
+    # 2026-08-02 (owner A1): yossi was certified-live with A3 write duties but was never
+    # added here or to PATH_SCOPE, so every write his role file promises would have broken
+    # the moment GUARD_MODE flipped to enforce. Added with a tight PATH_SCOPE below; the
+    # pending Rambo B5 review is recorded in the runner-spawn review artifact.
+    "yossi",
 }
 
 # Agents that may ACT (above) but may NOT be spawned via the Agent/Task tool. RedTeam is OFF
@@ -65,9 +75,29 @@ SPAWN_DENY = {"redteam"}
 # Agents that may be launched ONLY from an owner/top-level session, never spawned by another
 # sub-agent (SEC-0001, owner directive 2026-06-30). The code-builders may ACT (PATH_SCOPE) and
 # may be launched by the owner's own Claude Code session (origin empty), but an allow-listed
-# sub-agent (e.g. anat) may NOT spawn them. The runner cannot spawn anyone (RUNNER_CONTEXT) and
-# the Telegram bridge has no Agent tool, so "origin empty" reliably means the owner's session.
+# sub-agent (e.g. anat) may NOT spawn them.
+# 2026-08-02: the old comment here asserted "the runner cannot spawn anyone, so origin empty
+# reliably means the owner's session". RUNNER_SPAWN_ALLOW makes that false, so the check below
+# now tests RUNNER_CONTEXT/BRIDGE_CONTEXT explicitly instead of relying on origin alone.
 OWNER_SPAWN_ONLY = {"gal", "shir", "adi", "oren", "noa"}
+
+# --- Runner-path sub-agent dispatch (owner A1 2026-08-02) ----------------------
+# Until now the scheduled runner was hard-denied from spawning ANY agent. The consequence was
+# structural: Eco's 72h stale-sweep could only append "REACTIVATED" notes into board rows that
+# no agent would ever read, so every task needing another agent stalled until the owner opened
+# an interactive session (SHIR-007, T-0004, the T-0046/T-0049 gate reviews).
+# The runner may now dispatch a small set of NON-Bash agents, under four hard limits:
+#   1. allowlist only (below)          3. act cycles only (no dispatch on readonly)
+#   2. depth 1 (no nested spawn)       4. capped per cycle (RUNNER_SPAWN_CAP)
+# Bash-holders and code-builders stay owner-session-only; work needing them is queued in
+# memory/dispatch-queue.md and drained at interactive session start.
+# Oren is deliberately EXCLUDED despite holding no Bash: he is in OWNER_SPAWN_ONLY per the
+# SEC-0001 code-builder restriction, and lifting that needs its own owner A1.
+# Sync: company/governance/agent-tool-spawn-allowlist.md.
+RUNNER_SPAWN_ALLOW = {"rambo", "eyal", "dalia", "anat"}
+RUNNER_SPAWN_CAP = 3  # dispatches per runner cycle, all jobs combined
+SPAWN_COUNT_REL = "memory/runner-spawn-count.json"
+SPAWN_COUNT_FILE = ROOT / "memory" / "runner-spawn-count.json"
 
 # Per-agent write-path scope (SEC-0001, 2026-06-30; Rambo design). For any KNOWN sub-agent
 # (origin set) that is in this map, a governed write whose repo-relative path does not start
@@ -124,13 +154,21 @@ PATH_SCOPE: dict[str, list[str]] = {
         "memory/", "company/decisions/decisions-log.md",
     ],
     "erez": [
-        "projects/", "memory/log.md", "company/decisions/decisions-log.md",
+        "projects/", "memory/log.md", "memory/board.md",
+        "company/decisions/decisions-log.md",
     ],
     "oracle": [
-        "company/chronicle/", "memory/log.md",
+        "company/chronicle/", "memory/log.md", "memory/board.md",
     ],
     "yael": [
-        "company/governance/file-index.md", "memory/log.md",
+        "company/governance/file-index.md", "memory/wiki/file-index.md",
+        "memory/log.md", "memory/board.md",
+    ],
+    # 2026-08-02 (owner A1): yossi is certified-live with A3 write duties (training material,
+    # skills-register upkeep) but held no scope at all -- an enforce-mode break waiting to happen.
+    "yossi": [
+        "company/training/", "company/governance/skills-register.md",
+        "memory/log.md", "memory/board.md",
     ],
     "gal": [
         "projects/", "memory/board.md", "memory/log.md",
@@ -140,17 +178,22 @@ PATH_SCOPE: dict[str, list[str]] = {
         "integrations/", "memory/board.md", "memory/log.md",
         "company/decisions/decisions-log.md",
     ],
+    # BOARD-WRITE 2026-08-02 (owner A1): memory/board.md is the company's only working status
+    # channel, yet 22 of 32 agents could not write it -- their status existed only inside an
+    # ephemeral spawn transcript, which is a large part of why ownership looked invisible.
+    # Every acting agent may now write its OWN rows (single-owner discipline stays behavioral;
+    # the file-lock in integrations/file-lock/ handles concurrency).
     "adi": [
-        "projects/delivery-saas/docs/qa/", "memory/log.md",
+        "projects/delivery-saas/docs/qa/", "memory/log.md", "memory/board.md",
     ],
     "noa": [
-        "projects/ai-patient-simulator/", "memory/log.md",
+        "projects/ai-patient-simulator/", "memory/log.md", "memory/board.md",
     ],
     "oren": [
-        "projects/delivery-saas/docs/review/", "memory/log.md",
+        "projects/delivery-saas/docs/review/", "memory/log.md", "memory/board.md",
     ],
     "redteam": [
-        "company/audits/redteam/", "memory/log.md",
+        "company/audits/redteam/", "memory/log.md", "memory/board.md",
     ],
     # AUD-009 F-S807 (owner A1 2026-07-26): Sales + CS group
     "sally": [
@@ -166,27 +209,27 @@ PATH_SCOPE: dict[str, list[str]] = {
         "company/decisions/decisions-log.md",
     ],
     "jenny": [
-        "company/cs/tickets/", "memory/log.md",
+        "company/cs/tickets/", "memory/log.md", "memory/board.md",
     ],
     "jack": [
-        "company/cs/accounts/", "memory/log.md",
+        "company/cs/accounts/", "memory/log.md", "memory/board.md",
     ],
     "ella": [
-        "company/cs/training/", "memory/log.md",
+        "company/cs/training/", "memory/log.md", "memory/board.md",
     ],
     # AUD-009 F-S807: on-demand / SME agents
     "sami": [
-        "projects/", "memory/log.md",
+        "projects/", "memory/log.md", "memory/board.md",
     ],
     "roman": [
-        "projects/delivery-saas/docs/algorithms/", "memory/log.md",
+        "projects/delivery-saas/docs/algorithms/", "memory/log.md", "memory/board.md",
     ],
     "zvika": [
-        "projects/", "company/research/", "memory/log.md",
+        "projects/", "company/research/", "memory/log.md", "memory/board.md",
     ],
     # AUD-009 F-S807: Design
     "designer": [
-        "projects/delivery-saas/docs/", "memory/log.md",
+        "projects/delivery-saas/docs/", "memory/log.md", "memory/board.md",
         # NOTE: marketing/ is GATED -- add only after AUD-011 activates (Rambo scan
         # delivered 2026-07-25 CLEAR-WITH-CONDITIONS C1: marketing/brand/ +
         # marketing/avatars/ only; Dalia A2 leg still pending -> separate guard edit).
@@ -217,6 +260,7 @@ APPEND_ONLY = {
     "memory/log.jsonl",
     "memory/log.md",
     "memory/agent-runs.jsonl",
+    "memory/append-canary.md",  # C4 gate -- pure-append coverage target (Rambo 2026-08-01, owner A1 2026-08-02)
 }
 
 SAFE_MODE_REL = "memory/SAFE_MODE"
@@ -265,9 +309,16 @@ def _relpath(file_path: str) -> str:
 
 def _is_handoff(file_path: str) -> bool:
     try:
-        return Path(file_path).resolve().is_relative_to(HANDOFF_PATH.resolve())
+        p = Path(file_path).resolve()
     except (ValueError, OSError):
         return False
+    for base in (HANDOFF_PATH, REPO_HANDOFF_PATH):
+        try:
+            if p.is_relative_to(base.resolve()):
+                return True
+        except (ValueError, OSError):
+            continue
+    return False
 
 
 def _contains_secret(content: str) -> str | None:
@@ -298,6 +349,37 @@ def _safe_mode_active() -> bool:
     except OSError:
         # Cannot determine -> treat as active (fail safe: halt).
         return True
+
+
+def _runner_spawn_take_slot() -> "tuple[bool, str]":
+    """Claim one runner-cycle dispatch slot. Returns (granted, detail).
+
+    The guard is stateless per call, so the per-cycle budget lives in
+    memory/runner-spawn-count.json keyed on the RUNNER_CYCLE_ID the runner stamps into the
+    spawned agent's environment. A stale cycle_id resets the count. Every error path is
+    fail-CLOSED: no cycle id, an unwritable counter, or a corrupt file all deny the dispatch
+    rather than granting an uncounted one. A retried job reuses the same RUNNER_CYCLE_ID, so
+    the retry cannot double the cycle's budget.
+    """
+    cycle = os.environ.get("RUNNER_CYCLE_ID", "")
+    if not cycle:
+        return False, "no RUNNER_CYCLE_ID in env (fail-closed)"
+    try:
+        data = json.loads(SPAWN_COUNT_FILE.read_text(encoding="utf-8"))
+        count = int(data.get("count", 0)) if data.get("cycle_id") == cycle else 0
+    except (OSError, ValueError, TypeError, AttributeError):
+        count = 0
+    if count >= RUNNER_SPAWN_CAP:
+        return False, f"per-cycle dispatch cap {RUNNER_SPAWN_CAP} reached"
+    try:
+        SPAWN_COUNT_FILE.parent.mkdir(parents=True, exist_ok=True)
+        SPAWN_COUNT_FILE.write_text(
+            json.dumps({"cycle_id": cycle, "count": count + 1, "cap": RUNNER_SPAWN_CAP}),
+            encoding="utf-8",
+        )
+    except OSError:
+        return False, "dispatch counter unwritable (fail-closed)"
+    return True, f"slot {count + 1}/{RUNNER_SPAWN_CAP}"
 
 
 def _current_content(rel: str) -> str:
@@ -429,7 +511,21 @@ def evaluate(event: dict) -> tuple[str, str]:
         if tool == "bash":
             return DENY, "autonomous runner: Bash is disabled on the scheduled path"
         if tool in ("task", "agent"):
-            return DENY, "autonomous runner: sub-agent spawning is disabled"
+            # Bounded dispatch (owner A1 2026-08-02). These are deny-only pre-checks; a
+            # candidate that clears them falls through to the general spawn block below,
+            # where SAFE_MODE / SPAWN_DENY / ALLOWED_AGENTS / OWNER_SPAWN_ONLY still apply
+            # and the per-cycle slot is taken LAST (a denied attempt never burns budget).
+            if runner_mode != "act":
+                return DENY, "runner dispatch: allowed only on act cycles"
+            if str(event.get("agent_type", "")):
+                return DENY, "runner dispatch: nested spawn (depth > 1) is disabled"
+            sub_r = str(ti.get("subagent_type", "") or ti.get("agent_type", "")).lower()
+            if sub_r not in RUNNER_SPAWN_ALLOW:
+                return DENY, (
+                    f"runner dispatch: '{sub_r or '(unspecified)'}' is not on "
+                    f"RUNNER_SPAWN_ALLOW ({', '.join(sorted(RUNNER_SPAWN_ALLOW))}); "
+                    f"queue it in memory/dispatch-queue.md for an interactive session"
+                )
         # Readonly cycle = genuinely zero writes, regardless of path.
         if runner_mode == "readonly" and tool in ("write", "edit", "multiedit"):
             return DENY, "readonly runner cycle: all writes blocked"
@@ -493,18 +589,47 @@ def evaluate(event: dict) -> tuple[str, str]:
                 f"(5.2); allowed: {', '.join(sorted(ALLOWED_AGENTS))}"
             )
         # Owner-sessions-only launch: a restricted-spawn agent may be launched only from a
-        # top-level/owner session (origin empty), not spawned by another sub-agent.
-        if sub in OWNER_SPAWN_ONLY and origin:
+        # top-level/owner session, not spawned by another sub-agent and not by an automated
+        # path. Until 2026-08-02 this tested `origin` alone, which was safe only while the
+        # runner could spawn nobody; RUNNER_SPAWN_ALLOW ends that invariant, so the automated
+        # contexts are now named explicitly. Without this, a runner-path Eco (origin empty)
+        # could dispatch Gal or Shir.
+        if sub in OWNER_SPAWN_ONLY and (
+            origin
+            or os.environ.get("RUNNER_CONTEXT") == "1"
+            or os.environ.get("BRIDGE_CONTEXT") == "1"
+        ):
+            launched_by = origin or (
+                "the scheduled runner" if os.environ.get("RUNNER_CONTEXT") == "1"
+                else "the Telegram bridge"
+            )
             return DENY, (
                 f"agent '{sub}' may be launched only from an owner/top-level session, "
-                f"not spawned by sub-agent '{origin}' (SEC-0001 owner-spawn restriction)"
+                f"not spawned by {launched_by} (SEC-0001 owner-spawn restriction)"
             )
+        # Runner dispatch: take the per-cycle slot only after every deny check has passed.
+        if os.environ.get("RUNNER_CONTEXT") == "1":
+            granted, detail = _runner_spawn_take_slot()
+            if not granted:
+                return DENY, (
+                    f"runner dispatch: {detail}; queue the task in memory/dispatch-queue.md"
+                )
+            return ALLOW, f"runner dispatch: '{sub}' ({detail})"
         return ALLOW, f"allow-listed sub-agent '{sub}'"
 
     # --- File writes (Write / Edit / MultiEdit) ---
     if tool in ("write", "edit", "multiedit"):
         fp = ti.get("file_path") or ti.get("path") or ""
         rel = _relpath(str(fp))
+
+        # Runner dispatch counter (2026-08-02): code-managed budget. An agent must never be
+        # able to reset its own per-cycle dispatch allowance. Owner interactive sessions still
+        # pass (origin empty, no RUNNER_CONTEXT) so the counter can be cleared by hand.
+        if rel == SPAWN_COUNT_REL and (origin or os.environ.get("RUNNER_CONTEXT") == "1"):
+            return DENY, (
+                "runner dispatch counter is code-managed (runner.py/guard only); "
+                "agents may not write it"
+            )
 
         # SAFE_MODE flag protection (5.4) -- evaluated before generic rules.
         if rel == SAFE_MODE_REL:
@@ -627,6 +752,9 @@ def _log(event: dict, mode: str, decision: str, reason: str) -> None:
             # distinguish owner (origin empty, not runner) from sub-agents and runner agents.
             "origin": str(event.get("agent_type", "") or ""),
             "runner": os.environ.get("RUNNER_CONTEXT") == "1",
+            # 2026-08-02: joins a guard decision to the runner cycle that produced it, so a
+            # dispatch can be traced from agent-runs.jsonl into agent-guard.log.
+            "cycle_id": os.environ.get("RUNNER_CYCLE_ID") or None,
         }
         with LOG_FILE.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(rec) + "\n")
