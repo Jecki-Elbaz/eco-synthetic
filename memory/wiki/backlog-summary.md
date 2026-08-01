@@ -18,7 +18,7 @@ Updated: 2026-06-18 (T-0016 wiki refresh by Eco). Live agents: 21.
 
 - T-0001: Go-live structure and R&R review -- in-progress. Noam VP Product title confirmed (2026-06-17). Remaining: Eco HR cert gap resolution.
 - T-0014: Initial permission scan -- open. Agents certified 2026-06-17/18 all received B5 scans during certification. Remaining scope: Eco, Anat, Hila, Shelly (original batch never scanned). Assigned to Rambo. P1/immediate.
-- T-0012: Access-matrix reconciliation (Dalia) -- blocked flag stale. Dalia is LIVE (2026-06-17). Dalia to activate. Scope: Anat, Rambo, Dalia, Assaf .claude/agents/ read exceptions. A2.
+- T-0012: Access-matrix reconciliation (Dalia) -- DONE. Folded into AUD-006 (access-matrix.md v1.1); Anat/Rambo/Dalia/Assaf all hold formalized .claude/agents/ read exceptions. Closure verified 2026-07-28 (T-0018 board row).
 - T-0013: Gate-register bootstrapping review (Eyal) -- blocked flag stale. Eyal is LIVE (2026-06-17). Eyal to activate.
 - HIRE-001/002: Yael (Knowledge) and Chronicler -- B1+B2 done 2026-06-18. B3 next session. P2/P1.
 

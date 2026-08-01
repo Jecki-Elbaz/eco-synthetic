@@ -495,5 +495,20 @@ proactivity program CLOSED).
 
 ---
 
+### Angle 46 -- "We diagnosed an 8-day auth outage and fixed it with a permanent token."
+
+Hook: for 8 days our runner was intermittently failing with "OAuth session expired" -- Eco
+2h-check-ins dropping, the Adam inbox screen going dark, PM summaries not starting. We
+traced it to a refresh-race in the credentials.json lifecycle. The fix: replace the
+periodically-refreshed credential with a long-lived MAX-plan token (claude setup-token),
+set as a user env var visible to the Windows Task Scheduler job. Five clean days later,
+T-0048 closed: the fix held, the fix was proven, the system moved on.
+Human truth: most intermittent failures look unsolvable until you understand the exact
+path the credential takes from the secure store to the subprocess. Ours did. We fixed it
+with one owner keystroke.
+Proof: memory/board.md T-0048 row (DONE 2026-07-31, 5 consecutive clean days confirmed).
+
+---
+
 NOTE for Hila: do not publish raw. Confirm every claim against the cited source, run the
 Legal claims-clearance + Security gate, and route to owner A1 before any post goes out.
