@@ -29,7 +29,7 @@ Status values: `pending` -> `dispatched YYYY-MM-DD` -> `done YYYY-MM-DD`.
 
 | queued | task_id | target_agent | reason | requested_by | status |
 |--------|---------|--------------|--------|--------------|--------|
-| 2026-08-02 | T-0004 | gal | Model router Phase A build: 50 days in-progress, no build output on disk. Bash-holder, owner-session-only. Envelope exists: company/r-and-d/model-router-phase-a-envelope-ido-2026-07-25.md | owner-session-2026-08-02 | dispatched 2026-08-02 |
+| 2026-08-02 | T-0004 | gal | Model router Phase A build: 50 days in-progress, no build output on disk. Bash-holder, owner-session-only. Envelope exists: company/r-and-d/model-router-phase-a-envelope-ido-2026-07-25.md | owner-session-2026-08-02 | done 2026-08-02 -- Phase A delivered, 39 tests green, commit 226f357; release gate still Ido's |
 
 Not queued, verified done before dispatch: SHIR-007 (git sort) closed 2026-08-02 by a
 concurrent owner-dispatched Shir session, 5 commits pushed a4a28a2..7fb6408. Checked the row
