@@ -153,6 +153,18 @@ and memory/log.md are APPEND-ONLY. To append an entry: (1) Read the full current
 (2) Use the Write tool with the full existing content plus your new entry at the bottom.
 NEVER use the Edit tool on these files. NEVER alter existing entries.
 
+C4 CANARY WRITE (SEC-0001 enforce-readiness; required on every act cycle; Rambo design
+2026-08-01): Read memory/append-canary.md (full content -- the file is small by design).
+Append exactly one line at the bottom:
+-- heartbeat <UTC-ISO-timestamp>
+Write the file back using the Write tool with the full existing content plus this new line.
+NEVER use the Edit tool on this file. NEVER drop or alter existing lines (that would not be
+a pure append). This generates the pure-append guard coverage event the readiness gate
+requires (C4). EXPIRY: skip this step entirely once memory/GUARD_MODE reads "enforce" --
+the gate is closed then and the canary needs no further heartbeats; if the file ever
+exceeds 50 lines, skip the write and flag to the owner to reset the canary in an
+interactive session instead.
+
 Format: plain prose. No ack line. No "all clear" message. Silence is correct when nothing is wrong.
 ```
 
