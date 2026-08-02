@@ -2166,3 +2166,36 @@ Owner A1 granted in interactive session; Eco applied. All 6 file-index reference
 - **Effect on open items:** compliance-backlog ITEM-6 moved from OVERDUE to DEFERRED/event-triggered. T-0047 (inbox-triage re-scope) unblocked -- proceeds under existing GR-014 terms. T-0049/GR-021 DPA condition lifted (security FLAG remains). The dashboard "open an Anthropic API account (~$13-28/mo)" ask is withdrawn -- no spend.
 - **Alternatives considered:** Opening a commercial API/Console account now (Eyal/Lital recommendation) -- rejected by the owner: it is premature spend for a dev environment with no real customer data at scale. The legal analysis (company/legal/gate-gr020-autonomous-send-legal-review-eyal-2026-08-02.md and gate-register GR-020/GR-021) is retained as a record and becomes live again at the re-arm trigger.
 - **Files affected:** company/governance/compliance-backlog.md (ITEM-6 re-keyed), CLAUDE.md (C-E4 posture line), memory/board.md (T-0047, T-0049 rows), memory/owner-dashboard.md (ask withdrawn). (EOF-append; no existing entries altered.)
+
+
+## 2026-08-02 -- Perspective pass (Perry, Designer, Sami, Luci, Yossi) + dispositions (Eco A2, owner-directed)
+
+- CONTEXT: owner challenged that advisory / on-demand agents were left idle instead of having
+  their judgment used on live work. Eco dispatched a 5-agent sealed pass. Full record:
+  company/reviews/perspective-pass-2026-08-02.md. Standing steer captured in Eco memory
+  (activate advisory agents; idle-by-design is not a pass to skip their judgment).
+- STREAM A (APS-027 relay): product structurally sound; RELAY GATED on a 10-item pre-relay
+  checklist. Section 4 real-provider regen already done this session (parallel work); still MUST
+  verify Sami-C3/C5 welfare+briefing gates, context-panel labeling, ARC_COMPLETE renders (not raw
+  403), no PII; Designer: sessions 2/3 have NO UX spec -> Noa live walkthrough + screenshots.
+  APS-030 defects (challenge-dial one-directional; empty notableMomentsSummary) already a board
+  row routed to Ido. Package remains floor-only; ceiling asks #1/#2 still open.
+- STREAM B (audit): FIX-NOW execution PAUSED. Luci (independence) + Yossi (training) independently
+  found the grading instrument (Assaf fitness loop) had a verify-before-claim breach (F-QUAL01)
+  in-cycle -> confidence in the FIT verdicts is not yet earned. Actions: (a) independent closure
+  verification dispatched to Dalia (self-excluding her own Phase 7 leg) -- confirm VERIFIED rows are
+  actually closed on disk, re-label unsampled Oracle/Yael/Perry as UNTESTED, re-rate AUD-001
+  file-lock out of BACKLOG (it races on the same files the auditors read); (b) individual F-QUAL
+  coaching already tracked under AUD-012 (SOURCE-READ RULE already applied to Assaf.md 2026-07-14)
+  -- not duplicated; (c) NET-NEW: no training-material inventory exists at all -> AUD-014 opened
+  (Yossi author + Anat R&R).
+- OWNER POLICY APPLIED: no DPA for any project not defined as live/in-production with real user
+  data; re-arms only at a real at-scale go-live. Luci's F-D22 flag ACKNOWLEDGED and DE-SCOPED on
+  that basis; the Anthropic API / production account is NOT recommended for internal or dev use.
+  (owner A1 2026-08-02.)
+- VERIFY-BEFORE-CLAIM CORRECTIONS (red line 11): checked against the LIVE board -- Perry's claim
+  "T-0057 not on the board" was WRONG (T-0057 exists, assigned Perry); APS-030 already a row
+  assigned Ido; F-QUAL items already under AUD-012. The agents' reads lagged the fast-moving board;
+  Eco verified before acting, so NO duplicate rows were created.
+- FILES: company/reviews/perspective-pass-2026-08-02.md (new); memory/board.md (APS-027 pre-relay
+  note + new row AUD-014); company/decisions/decisions-log.md (this entry, EOF-append per red line 6a).
