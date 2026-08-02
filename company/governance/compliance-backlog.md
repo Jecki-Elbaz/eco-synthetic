@@ -16,11 +16,17 @@ Reviewed by Lital: 2026-07-27 (run 8). Re-keyed by owner A1 2026-08-02.
 **ITEM-6 / APS-004 -- Anthropic DPA / commercial-plan config (owner A1 2026-08-02: DEFERRED, event-triggered)**
 
 OWNER A1 DECISION 2026-08-02 (authoritative; supersedes the OVERDUE framing below).
-The Anthropic DPA / commercial-plan requirement does NOT apply to Shelly or to any internal
-eco-synthetic activity. Both are the owner's personal DEV environment and stay there. The
-owner accepts this posture: internal and Shelly agent activity runs under the Max
-subscription (local Claude Code CLI), and no agent is to treat the missing DPA as a blocker
-for it. This item is NOT an open owner action and must not be surfaced as overdue.
+The Anthropic DPA / commercial-plan requirement is not a blocker for two SEPARATE cases, for
+two different reasons -- and Shelly is NOT part of this project:
+(a) SHELLY -- the owner's personal assistant and an external party (a customer OF this company
+per constitution s2, not a member of it). She handles only the owner's own personal/admin
+matters and will NEVER hold customer data, so the DPA/customer-data question is categorically
+inapplicable to her -- not deferred, not waived. "Reference customer" describes her
+relationship to eco-synthetic; it does not mean she processes customer data.
+(b) INTERNAL eco-synthetic activity -- runs in the owner's dev environment under the Max
+subscription with no real customer data, so the DPA is not triggered.
+No agent treats the missing DPA as a blocker for either; this item is NOT an open owner action
+and must not be surfaced as overdue.
 
 RE-ARM TRIGGER (the ONLY condition that reopens this item): a real project goes LIVE, AT
 SCALE, with REAL CUSTOMER personal data flowing through the LLM. At that point -- and only

@@ -201,8 +201,15 @@ sender restriction is lifted FOR THE OWN ACCOUNT. Everything else stays BINDING:
 - HARD STOP: student names, health data, or clinical case content in a mail body -- do
   not ingest into files or model context; flag the owner immediately. (C-E3)
 - C-E4 (Anthropic DPA / compliance Item 6): RE-KEYED owner A1 2026-08-02. The DPA/commercial-
-  plan requirement does NOT gate Shelly or internal eco-synthetic activity -- both are the
-  owner's dev environment, run under the Max subscription, and no agent treats the missing DPA
-  as a blocker for them. It re-arms ONLY when a real project goes live, at scale, with real
-  customer data through the LLM (see compliance-backlog ITEM-6). This does NOT relax the C-E3
-  HARD STOP above (student names / health / clinical content), which stands on its own.
+  plan requirement is not a blocker for two SEPARATE cases, for two different reasons:
+  (a) SHELLY -- the owner's personal assistant and an EXTERNAL party (a customer of this
+  company per constitution s2; NOT part of this project). She handles only the owner's own
+  personal/admin matters and will NEVER hold customer data, so the DPA/customer-data question
+  is categorically inapplicable to her -- not deferred, not waived. Being eco-synthetic's
+  "reference customer" is her relationship TO the company; it does not mean she processes
+  customer data.
+  (b) INTERNAL eco-synthetic activity -- runs in the owner's dev environment under the Max
+  subscription with no real customer data, so the DPA is not triggered.
+  The requirement re-arms ONLY when a real project goes live, at scale, with real customer data
+  through the LLM (see compliance-backlog ITEM-6). This does NOT relax the C-E3 HARD STOP above
+  (student names / health / clinical content), which stands on its own.

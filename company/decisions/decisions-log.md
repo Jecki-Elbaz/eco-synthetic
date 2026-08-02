@@ -2225,3 +2225,10 @@ Owner A1 granted in interactive session; Eco applied. All 6 file-index reference
   one stale label routed for reconciliation. No FIX-NOW re-execution was needed.
 - FILES: company/audits/2026-06/agent-fitness-scorecard.md (Oracle/Yael/Perry UNTESTED + footnote),
   company/audits/2026-06/phase7-performance-audit.md (correction banner), this entry.
+
+## 2026-08-02 -- Clarification: Shelly is external and never holds customer data (owner A1)
+
+- **Author / gate:** jecki (A1, interactive session); Eco applied.
+- **Decision:** Clarifies the DPA re-key entry earlier this date. Shelly is the owner's personal assistant and an EXTERNAL party -- a customer OF eco-synthetic per constitution section 2, NOT part of this project. She handles only the owner's own personal/admin matters and will NEVER hold customer data. The Anthropic DPA / customer-data question is therefore CATEGORICALLY INAPPLICABLE to her (not merely deferred or waived, as the earlier entry's grouping of "Shelly or internal activity" could be read to imply). Being eco-synthetic's "reference customer" (access-matrix company/customers/) describes her RELATIONSHIP to the company; it does not make her a processor of customer data. Her gate requests (T-0046, T-0049/GR-021) appear on eco-synthetic's board only because Rambo and Eyal review them as a service to her, not because she is internal.
+- **Rationale:** Owner correction. The prior entry lumped Shelly together with internal eco-synthetic dev activity under one "not required" umbrella, which blurred that (a) Shelly is external and (b) the reason it does not apply to her is that she has no customer data, ever -- a stronger and permanent fact, not a dev-environment posture that could change.
+- **Files affected:** CLAUDE.md (C-E4 line), company/governance/compliance-backlog.md (ITEM-6), memory (agent working memory). No change to the re-arm trigger or to the GR-021 security block. (EOF-append; no existing entries altered.)
