@@ -20,7 +20,7 @@ Usage: runner.py [--mode readonly|act] [--dry-run] [--only AgentName]
 Run by Task Scheduler ~every 2h. The PreToolUse guard (.claude/hooks/guard.py) still
 evaluates every write inside each spawned agent session.
 """
-import sys, os, re, json, time, subprocess, shutil, argparse, contextlib
+import sys, os, re, json, time, subprocess, shutil, argparse, contextlib, tempfile
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
 
@@ -50,7 +50,6 @@ DASH_KEY = "Eco:agent-perf-dashboard"
 # This job makes "the proof suite is green" a daily zero-token fact instead of a memory.
 GUARD_SUITE_KEY = "Rambo:guard-proof-suite"
 GUARD_SUITE_TEST = ROOT / ".claude" / "hooks" / "test_guard.py"
-GUARD_SUITE_TMP = ROOT / ".pytest-basetemp"  # gitignored; see run_guard_suite()
 # T-0045 zero-token task-hygiene scan (owner A1 2026-08-02). Open since 2026-07-14.
 HYGIENE_KEY = "Eco:task-hygiene-scan"
 HYGIENE_SCRIPT = ROOT / "integrations" / "task-hygiene" / "stale_detector.py"
@@ -855,15 +854,26 @@ def run_guard_suite(state: dict, t: datetime, dry: bool) -> None:
         return
     log({"key": GUARD_SUITE_KEY, "event": "start", "mode": "script"})
     try:
-        # --basetemp + no:cacheprovider (2026-08-02): pytest's default tmp root is a SHARED
-        # per-user dir with a `pytest-current` symlink. When a previous run created it under a
-        # different process context, teardown raises PermissionError [WinError 5] and pytest
-        # exits 1 with every test passing -- this check would then report the guard RED for a
-        # reason that has nothing to do with the guard. Verified locally: 94 passed, exit 1.
-        # A private basetemp under the repo makes the result depend only on the tests.
+        # FRESH UNIQUE basetemp per run in the SYSTEM temp (2026-08-02). Without an explicit
+        # --basetemp, pytest keeps a shared per-user tmp root with a `pytest-current` symlink and
+        # runs a numbered-dir cleanup that, on Windows, tries to unlink a symlink from a prior
+        # run and raises PermissionError [WinError 5] -- so pytest exits 1 with EVERY test
+        # passing, and this check would report the guard RED for a reason unrelated to the guard.
+        # An explicit unique basetemp skips that symlink machinery entirely. It must live in the
+        # system temp, NOT a repo-local dir: a repo-local reused root accumulates leftover
+        # symlinks that later mkdir/mkdtemp calls trip on with the same WinError. Verified: three
+        # consecutive runs exit 0.
+        run_tmp = tempfile.mkdtemp(prefix="guard-suite-")
         r = subprocess.run([sys.executable, "-m", "pytest", str(GUARD_SUITE_TEST), "-q",
-                            "-p", "no:cacheprovider", "--basetemp", str(GUARD_SUITE_TMP)],
+                            "-p", "no:cacheprovider", "--basetemp", run_tmp],
                            capture_output=True, timeout=300, cwd=str(ROOT), check=False)
+        # Cleanup is best-effort and fully isolated -- it MUST NOT affect the result. A lingering
+        # temp dir under %TEMP% is harmless (the OS reclaims it); a cleanup error reported as
+        # "guard suite could not run" is exactly the false-RED this whole change exists to stop.
+        try:
+            shutil.rmtree(run_tmp, ignore_errors=True)
+        except OSError:
+            pass
         out = (r.stdout.decode("utf-8", "replace")
                + r.stderr.decode("utf-8", "replace")).strip()
     except Exception as e:
