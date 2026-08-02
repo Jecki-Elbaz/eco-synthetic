@@ -1,0 +1,59 @@
+diff --git a/projects/ai-patient-simulator/app/packages/engine-test-harness/src/__tests__/state-updater.spec.ts b/projects/ai-patient-simulator/app/packages/engine-test-harness/src/__tests__/state-updater.spec.ts
+index 6142547..a0041c9 100644
+--- a/projects/ai-patient-simulator/app/packages/engine-test-harness/src/__tests__/state-updater.spec.ts
++++ b/projects/ai-patient-simulator/app/packages/engine-test-harness/src/__tests__/state-updater.spec.ts
+@@ -162,11 +162,33 @@ describe("StateUpdater", () => {
+ 
+   // --- Challenge-level modulation ---
+ 
+-  it("level 1 produces larger delta than level 5 on the same analyser input", () => {
++  it("level 1 produces larger delta than level 3, and level 3 larger than level 5", () => {
+     const { nextState: next1 } = updater.update(BASE_STATE, HIGH_EMPATHY_ANALYSER, 1);
++    const { nextState: next3 } = updater.update(BASE_STATE, HIGH_EMPATHY_ANALYSER, 3);
+     const { nextState: next5 } = updater.update(BASE_STATE, HIGH_EMPATHY_ANALYSER, 5);
+-    // At level 1 (more responsive) trust should increase more than at level 5 (resistant)
+-    expect(next1.trust - BASE_STATE.trust).toBeGreaterThan(next5.trust - BASE_STATE.trust);
++    // Level 1 = 1.4x multiplier, level 3 = 1.0x, level 5 = 0.6x -> strictly decreasing.
++    expect(next1.trust - BASE_STATE.trust).toBeGreaterThan(next3.trust - BASE_STATE.trust);
++    expect(next3.trust - BASE_STATE.trust).toBeGreaterThan(next5.trust - BASE_STATE.trust);
++  });
++
++  it("APS-030 regression: levels 1, 2, 3 yield strictly distinct trust deltas (not all identical)", () => {
++    // Pre-fix bug: Math.min(1.0,...) clamped levels 1-3 multiplier to 1.0 -> identical deltas.
++    // Post-fix: multipliers are 1.4 / 1.2 / 1.0 -> strictly decreasing trust after update.
++    const { nextState: next1 } = updater.update(BASE_STATE, HIGH_EMPATHY_ANALYSER, 1);
++    const { nextState: next2 } = updater.update(BASE_STATE, HIGH_EMPATHY_ANALYSER, 2);
++    const { nextState: next3 } = updater.update(BASE_STATE, HIGH_EMPATHY_ANALYSER, 3);
++    // Exact expected deltas: level1=+0.07, level2=+0.06, level3=+0.05 (with default config)
++    expect(next1.trust).toBeGreaterThan(next2.trust);
++    expect(next2.trust).toBeGreaterThan(next3.trust);
++  });
++
++  it("APS-030 regression: all 5 levels produce monotonically decreasing trust delta", () => {
++    const trusts = [1, 2, 3, 4, 5].map(
++      (level) => updater.update(BASE_STATE, HIGH_EMPATHY_ANALYSER, level).nextState.trust,
++    );
++    for (let i = 0; i < trusts.length - 1; i++) {
++      expect(trusts[i]).toBeGreaterThan(trusts[i + 1]!);
++    }
+   });
+ 
+   it("5 consecutive high-empathy turns never push trust above 1.0", () => {
+diff --git a/projects/ai-patient-simulator/app/packages/engine/src/state/state-updater.ts b/projects/ai-patient-simulator/app/packages/engine/src/state/state-updater.ts
+index ec41eed..450785f 100644
+--- a/projects/ai-patient-simulator/app/packages/engine/src/state/state-updater.ts
++++ b/projects/ai-patient-simulator/app/packages/engine/src/state/state-updater.ts
+@@ -47,8 +47,11 @@ export class StateUpdater {
+     const cfg = this.config;
+ 
+     // Challenge-level multiplier: level 1 = 1.4x, level 3 = 1.0x, level 5 = 0.6x.
+-    // TODO: clinical advisor to define exact curve.
+-    const levelMultiplier = clamp(1.4 - (challengeLevel - 1) * 0.2);
++    // APS-030 fix: removed Math.min(1.0,...) upper clamp that previously made levels 1-3
++    // identical (all clamped to 1.00). Only a lower bound at 0.0 is applied here;
++    // per-dimension state bounds are enforced downstream in applyDelta() via clamp().
++    // TODO: clinical advisor to define exact curve before Sprint 2 go-live.
++    const levelMultiplier = Math.max(0.0, 1.4 - (challengeLevel - 1) * 0.2);
+ 
+     const effectiveMax = cfg.maxDeltaPerTurn * levelMultiplier;
+ 
