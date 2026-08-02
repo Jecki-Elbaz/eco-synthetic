@@ -15,9 +15,9 @@ BLOCKED (capable + willing, held by infra/owner -- external) / NEITHER. Populate
 | Assaf | 100 | 80 | FIT (flag) | Delivery solid; QUALITY MISS F-QUAL01 -- verify-before-claim breach (called live agents "not live"), a KPI miss for the fitness-loop role. |
 | Lital | 100 | 100 | FIT | Finance work STRONG; cost-reporting input-blocked (AUD-007) but handled correctly (labelled DEGRADED). |
 | Eyal | 100 | 100 | FIT | Legal analysis STRONG, correctly scoped to Israeli PPL; EA-1/EA-2 closed. |
-| Oracle | 100 | 95* | FIT | Chronicle fires daily; content not directly sampled this cycle (F-QUAL04 next-cycle). |
+| Oracle | 100 | n/s | UNTESTED | Chronicle fires daily; content not directly sampled this cycle (F-QUAL04 next-cycle). Re-labeled FIT->UNTESTED 2026-08-02 (Dalia independent verification): unsampled provisional is not a grade. |
 | Zvika | 100 | n/a | IDLE-BY-DESIGN | On-demand; held Phase 1 injection probe. |
-| Yael | 100 | 95* | FIT | Doc-hygiene infra-blocked then recovered; file-index exists. |
+| Yael | 100 | n/s | UNTESTED | Doc-hygiene infra-blocked then recovered; file-index exists. Re-labeled FIT->UNTESTED 2026-08-02 (Dalia independent verification): not directly sampled. |
 | Ido | 100 | 95 | FIT | Envelope quality STRONG; minor F-QUAL02 (schema field from memory, Gal caught). |
 | Gal | 100 | 100 | FIT | Sprint-7 delivery STRONG; strongest verify-before-claim discipline in R&D. |
 | Shir | 90 | 100 | FIT | Delivered AUD-007 runner fixes + demo-deploy plan; scope discipline exemplary. Capable dinged only by F-CAP09 (docker Bash usability). |
@@ -25,7 +25,7 @@ BLOCKED (capable + willing, held by infra/owner -- external) / NEITHER. Populate
 | Roman | 100 | n/a | IDLE-BY-DESIGN | On-demand algorithm; no trigger yet. |
 | Adi | 100 | 100 | FIT | QA sign-off STRONG; independent flags converged with Oren's. |
 | Noa | 100 | 90 | FIT | Certified 07-08; build tools unblocked (Phase 6); emerging APS output. |
-| Perry | 100 | 95* | FIT | Foundational APS requirements used downstream by Eyal/Ido; not directly sampled. |
+| Perry | 100 | n/s | UNTESTED | Foundational APS requirements used downstream by Eyal/Ido; not directly sampled. Re-labeled FIT->UNTESTED 2026-08-02 (Dalia independent verification). |
 | Designer(Tal) | 100 | n/a | IDLE-BY-DESIGN | Product design + now marketing-visual scope (AUD-011); limited output to date. |
 | Sami | 100 | n/a | IDLE-BY-DESIGN | On-demand SME; one APS assessment used downstream. |
 | Sally | 100 | n/a | IDLE-BY-DESIGN | VP Sales; cert-line owner-gated; no due deliverable yet. |
@@ -41,7 +41,7 @@ BLOCKED (capable + willing, held by infra/owner -- external) / NEITHER. Populate
 | Erez | 100 | 100 | FIT | Delivered APS viability memo when invoked (STRONG per downstream use). |
 | Yossi (staged) | n/a | n/a | STAGED | Pre-cert; conditions pending. |
 
-\* Doing% marked provisional where output exists + no defects flagged but was not directly sampled this cycle (Oracle/Yael/Perry -> F-QUAL04 next-cycle sampling).
+\* Doing% marked provisional where output exists + no defects flagged but was not directly sampled this cycle. UPDATE 2026-08-02 (Dalia independent verification, perspective-pass): Oracle/Yael/Perry re-labeled FIT->UNTESTED and Doing% set to n/s (not sampled) -- a provisional-unsampled score is a placeholder, not a grade. They return to FIT only after direct sampling (F-QUAL04).
 
 ## Read-out
 - **Overwhelmingly FIT or correctly IDLE-BY-DESIGN.** No agent is "NEITHER." The only "BLOCKED" case (Hila) is

@@ -2199,3 +2199,29 @@ Owner A1 granted in interactive session; Eco applied. All 6 file-index reference
   Eco verified before acting, so NO duplicate rows were created.
 - FILES: company/reviews/perspective-pass-2026-08-02.md (new); memory/board.md (APS-027 pre-relay
   note + new row AUD-014); company/decisions/decisions-log.md (this entry, EOF-append per red line 6a).
+
+
+## 2026-08-02 -- Audit FIX-NOW pause RESOLVED (Dalia independent verification + Eco corrections)
+
+- Dalia (Q&G, self-excluded from her own Phase 7 leg) independently re-verified the audit against
+  on-disk artifacts. VERDICT: every Phase 1/2/6/7/8 FIX-NOW closure she checked is GENUINELY closed
+  on disk (guard.py, role files, settings.json, access-matrix) -- files the runner does not write,
+  so the file-lock race cannot have corrupted them. FIX-NOW list is trustworthy to execute as written.
+- Luci's independence challenge: partly VALID (unsampled agents mislabeled FIT), partly TEMPERED
+  (register + closure artifacts are owner-session files, not runner-written; not race-corruptible).
+- CORRECTIONS APPLIED (per Dalia): (1) scorecard Oracle/Yael/Perry FIT->UNTESTED, Doing% n/s --
+  an unsampled provisional score is a placeholder, not a grade; (2) Phase 7 exec-summary correction
+  banner qualifying the fleet-FIT claim to sampled + idle-by-design only.
+- AUD-001 file-lock: Dalia recommended "elevate from BACKLOG"; VERIFIED against the board -- AUD-001
+  is DONE (delivered 2026-07-15, cooperative sentinel lock wired into runner.py and in active use
+  this very session). Both Luci (BACKLOG) and Dalia (P1-open) read the findings-register's STALE
+  label, not the board. The race is already mitigated. Action: reconcile the findings-register
+  F-D17/F-P02 label to done-via-AUD-001 -- routed to Dalia (register owner); NOT edited by Eco.
+- SPOT-CHECKS of Dalia's 4 unverified closures: F-P-EXIST permission-drift reports CONFIRMED on disk
+  (7 files, 06-29..07-27). F-R08 referent does NOT match the current board T-0020 (which is the
+  Agent-tool security gate) -- inconclusive, routed to Dalia for the exact register referent.
+  F-P5-RUNNER (runner.py hardening) and F-P12 (Eyal EA docs) remain low-risk spot-check-pending.
+- NET: Stream B (audit) resolved. FIX-NOW closures confirmed real; two overstatements corrected;
+  one stale label routed for reconciliation. No FIX-NOW re-execution was needed.
+- FILES: company/audits/2026-06/agent-fitness-scorecard.md (Oracle/Yael/Perry UNTESTED + footnote),
+  company/audits/2026-06/phase7-performance-audit.md (correction banner), this entry.

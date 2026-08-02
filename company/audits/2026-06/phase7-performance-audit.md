@@ -29,6 +29,15 @@ The two program questions are now answered with evidence: every live agent CAN d
 
 Tally: 1 major quality finding + 2 minor + 2 observations. Zero critical; zero real performance misses.
 
+> CORRECTION 2026-08-02 (Dalia, independent closure verification -- perspective-pass): the FIT
+> verdict and the "every live agent IS doing its job" claim cover DIRECTLY-SAMPLED + idle-by-design
+> agents only. Oracle, Yael and Perry were NOT directly sampled and are re-labeled UNTESTED on the
+> scorecard; qualify the summary accordingly. An independent re-read CONFIRMED every Phase 1/2/6/7/8
+> FIX-NOW closure is genuinely closed on disk (guard.py, role files, settings.json). The file-lock
+> race raised as a challenge is mitigated in practice: AUD-001 shipped 2026-07-15 and the cooperative
+> sentinel lock is in active use. Four low-risk closures (F-R08, F-P-EXIST drift reports, F-P5-RUNNER,
+> F-P12) remain spot-check-pending.
+
 ## 2. The one finding that matters -- F-QUAL01 (Assaf)
 
 The single real quality miss is, pointedly, the Op-Ex agent's own: in the Phase 6 inputs/deps leg, Assaf reported
