@@ -11,7 +11,9 @@
 ## 1. What we ask Adam to rule on (Sami C1 scope, verbatim intent)
 
 1. CEILINGS: after two well-handled sessions, how cooperative may the patient
-   plausibly be at session-3 start? Confirm or adjust:
+   plausibly be at session-3 start? These values are engineering placeholders, NOT
+   clinically-validated defaults -- please SET or adjust them; your clinical judgment is
+   the authority here, not a confirmation of our numbers:
    - trust ceiling 0.70 | openness ceiling 0.65 | alliance ceiling 0.70 (0-1 scale)
    - floors (irreducible difficulty regardless of student performance):
      trust 0.15 | openness 0.10 | alliance 0.10
@@ -80,6 +82,13 @@ exact*; the production (APS-004) provider will differ somewhat. (2) The default
 StubProvider CANNOT produce this at all: it returns a constant analyser (empathy 0.5), so
 trust never moves (verified: 15 identical stub turns -> trust delta 0.0000). Any earlier
 flat data was a stub artefact, not a finding.
+
+**Scope note (what this exhibit is / is not).** This is an engine/API calibration exhibit, not
+a UI walkthrough. The 3-session arc cap is enforced at the API level: a 4th-session attempt
+returns HTTP 403 with `code=ARC_COMPLETE` (verified against the live stack). The browser
+rendering of that end-state, and the multi-session student UI flow, are pending the session-start
+UI build and are not part of this calibration exhibit -- the numbers above are what matter for
+your calibration, and they are engine-computed regardless of the UI.
 
 ### Per-session summary (ArcSessionSummary)
 
