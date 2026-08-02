@@ -10,6 +10,33 @@ pattern of problems. Dalia may also propose one after a quality audit finding.
 
 ---
 
+## Post-mortem triggers -- mandatory, not discretionary
+
+A lessons-learned session is REQUIRED (not optional) when any of the following conditions are
+confirmed. Named opener: Dalia. Deadline: same session as the confirming finding.
+
+1. **P1 task slip:** any task with P1 priority misses its deadline or slips without a prior
+   escalation on record. Dalia opens the session without waiting for Eco or owner to request it.
+
+2. **False-alarm streak:** three or more consecutive automated alerts or escalations on the same
+   topic that turn out to be false (wrong source, stale data, retired job, phantom defect). Third
+   false alarm is the trigger; do not wait for a fourth.
+
+3. **Silent-drop or dead-channel incident:** a message, escalation, or status update that should
+   have reached an agent or the owner demonstrably did not, and no agent reported the blockage
+   before the deadline passed. "Demonstrably" means a file or log shows the event was generated
+   but cannot be found at the destination.
+
+4. **Recurring scan finding:** the same finding (by substance, not exact wording) appears in
+   three or more consecutive scheduled scans -- permission-drift, quality-audit, cert-drift, or
+   any other scheduled review -- without being resolved or formally deferred with a stated reason.
+   Third recurrence is the trigger.
+
+If Eco backing is needed to compel agent participation, Dalia requests it immediately (same session).
+Dalia does not wait for Eco or owner to nominate the session. The trigger is self-executing.
+
+---
+
 ## Phase 1 -- Scope and Notify
 
 Dalia + Eco.
