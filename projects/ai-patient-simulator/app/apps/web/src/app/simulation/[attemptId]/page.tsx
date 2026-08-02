@@ -13,7 +13,11 @@ interface PageProps {
   //   resume=1 -> attempt is IN_PROGRESS; fetch transcript on mount.
   //   elapsed=<N> -> seconds elapsed before interruption (for timer display).
   //   elapsed absent -> null (show "-- : --" per Ido A3 ruling).
-  searchParams: { lang?: string; resume?: string; elapsed?: string };
+  // S5-NOA-ARC-STUDENT (wiring fix 2026-08-02): arc session params.
+  //   sessionNumber=<N> -> passed to SimulationScreen so isArcContinuation resolves
+  //     true at N>=2, enabling welfare modal, gap briefing, and context panel.
+  //   maxSessions=<M> -> total sessions in this arc (default 3 if absent).
+  searchParams: { lang?: string; resume?: string; elapsed?: string; sessionNumber?: string; maxSessions?: string };
 }
 
 function SimulationContent({
@@ -21,11 +25,17 @@ function SimulationContent({
   langParam,
   isResume,
   initialElapsedSeconds,
+  sessionNumber,
+  maxSessions,
 }: {
   attemptId: string;
   langParam?: string;
   isResume: boolean;
   initialElapsedSeconds?: number | null;
+  // S5-NOA-ARC-STUDENT wiring (2026-08-02): arc session number so SimulationScreen
+  // can resolve isArcContinuation and show welfare modal + gap briefing at sessions 2+.
+  sessionNumber?: number | null;
+  maxSessions?: number;
 }) {
   const lang: "he" | "en" = langParam === "en" ? "en" : "he";
   return (
@@ -42,13 +52,19 @@ function SimulationContent({
       {...(initialElapsedSeconds !== undefined
         ? { initialElapsedSeconds }
         : {})}
+      {...(sessionNumber !== undefined
+        ? { sessionNumber }
+        : {})}
+      {...(maxSessions !== undefined
+        ? { maxSessions }
+        : {})}
     />
   );
 }
 
 export default function SimulationPage({ params, searchParams }: PageProps) {
   const { attemptId } = params;
-  const { lang: langParam, resume, elapsed } = searchParams;
+  const { lang: langParam, resume, elapsed, sessionNumber, maxSessions } = searchParams;
 
   // Parse resume context from search params.
   const isResume = resume === "1";
@@ -66,6 +82,19 @@ export default function SimulationPage({ params, searchParams }: PageProps) {
   }
   // When !isResume, resolvedElapsed stays undefined (omitted from spread below)
 
+  // S5-NOA-ARC-STUDENT wiring (2026-08-02): parse arc session params so the page
+  // can pass sessionNumber to SimulationScreen, enabling welfare modal + gap briefing.
+  // sessionNumber=<N> (N integer >= 1) -> passed as number; absent or non-numeric -> null.
+  // maxSessions=<M> -> defaults to 3 if absent (matches SimulationScreen default).
+  const resolvedSessionNumber: number | null =
+    sessionNumber !== undefined && sessionNumber !== "" && !isNaN(Number(sessionNumber))
+      ? Number(sessionNumber)
+      : null;
+  const resolvedMaxSessions: number | undefined =
+    maxSessions !== undefined && maxSessions !== "" && !isNaN(Number(maxSessions))
+      ? Number(maxSessions)
+      : undefined;
+
   return (
     <RequireAuth>
       <SimulationContent
@@ -73,6 +102,8 @@ export default function SimulationPage({ params, searchParams }: PageProps) {
         {...(langParam !== undefined ? { langParam } : {})}
         isResume={isResume}
         {...(resolvedElapsed !== undefined ? { initialElapsedSeconds: resolvedElapsed } : {})}
+        sessionNumber={resolvedSessionNumber}
+        {...(resolvedMaxSessions !== undefined ? { maxSessions: resolvedMaxSessions } : {})}
       />
     </RequireAuth>
   );

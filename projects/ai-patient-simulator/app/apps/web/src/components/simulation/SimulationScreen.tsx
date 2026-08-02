@@ -451,6 +451,16 @@ export default function SimulationScreen({
           <span>
             {/* Sami arc context text -- verbatim from envelope, N and max substituted. */}
             {`זוהי פגישה ${String(sessionNumber)} מתוך ${String(maxSessions)} -- המשך מפגישה ${String((sessionNumber as number) - 1)}.`}
+            {" "}
+            {/* Sami C1 (2026-08-02): label this panel as context-only so the reviewer
+                can distinguish model-inferred carry-forward from authored ground truth.
+                Mirrors the server-side prompt header in context-builder.ts. */}
+            <span
+              style={{ fontSize: "0.75rem", opacity: 0.75, fontWeight: 400 }}
+              data-testid="arc-context-panel-label"
+            >
+              {"(הקשר בלבד -- לא אמת-הבסיס)"}
+            </span>
           </span>
           <button
             type="button"
