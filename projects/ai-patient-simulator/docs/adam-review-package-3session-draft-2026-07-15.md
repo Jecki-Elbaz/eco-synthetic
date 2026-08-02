@@ -63,24 +63,64 @@ Example C -- mixed (good session 1, poor session 2):
   no clamp typically fires; raw carry applies. The bands Adam gives in ask #2
   tell us whether unclamped mid-range carries also need bounds.
 
-## 4. THE LIVE RUN (regenerate FRESH within a few days of the relay -- placeholder)
+## 4. THE LIVE RUN (regenerated 2026-08-02 -- real 3-session arc)
 
-HONESTY NOTE for the owner (do not relay stale numbers): scripted StubProvider
-E2E sessions are 1-2 trivial turns -- state stays flat (verified 2026-07-15:
-trust 0.30 across all three sessions, delta 0, empty narratives). A meaningful
-run for Adam needs MULTI-TURN sessions that exercise the delta rules -- run the
-rehearsal runbook criterion (h) block (3 contiguous sessions, student-01, the
-scripted turn sets) against the live stack, then capture:
-  - Per-session ArcSessionSummary rows (SQL in the runbook (h) section: final
-    trust/openness/alliance + notableMomentsSummary + pre/post-clamp log lines).
-  - Session-3 opening context (ArcLoaderService log line).
-  - Per-turn trust curve per session (runbook criterion (a) SQL).
-Package that as a table + the transcripts, and attach Sections 1-3 above.
+Full detail, sample transcript, and reproduction steps:
+`adam-review-package-section4-liverun-2026-08-02.md`. Summary below.
+
+**How it was produced:** a real 3-session arc, driven through the live HTTP API
+(invite-login -> create attempt -> 5 turns -> finish, x3 contiguous sessions, same
+student). ONLY the student turns were scripted (session 1 clumsy, session 2 mixed,
+session 3 skilled, in Hebrew, as a student would type). Every trust/openness/alliance
+value is what the engine computed -- nothing authored or hand-tuned.
+
+**Two caveats that bound the numbers.** (1) This used the DEV provider (local Claude Code
+CLI on the owner Max plan), which ignores temperature -- behaviour is *indicative, not
+exact*; the production (APS-004) provider will differ somewhat. (2) The default
+StubProvider CANNOT produce this at all: it returns a constant analyser (empathy 0.5), so
+trust never moves (verified: 15 identical stub turns -> trust delta 0.0000). Any earlier
+flat data was a stub artefact, not a finding.
+
+### Per-session summary (ArcSessionSummary)
+
+| session | trustDeltaApplied | finalTrust | finalOpenness | finalAlliance |
+|---------|-------------------|------------|---------------|---------------|
+| 1 | -0.150 | **0.150** | 0.200 | 0.200 |
+| 2 |  0.000 | **0.150** | 0.200 | 0.200 |
+| 3 | +0.100 | **0.250** | 0.280 | 0.300 |
+
+### The headline: the FLOOR fired twice; the CEILING was never approached.
+
+Sessions 1 and 2 ended in-session at trust 0.100 and 0.080; both were clamped UP to the
+`minTrust` floor (0.15) at carry -- visible in the server logs (pre-clamp 0.100/0.080 ->
+post-clamp 0.150). This is Example B from Section 3 happening for real: a weak student
+cannot drive the patient into implausible shutdown. Trust continuity holds -- session 3
+opened at exactly 0.150 (= session-2 final), loading from session 2, not session 1.
+
+The ceiling (0.70) was never tested -- the best session peaked at 0.250. **So this run
+exercises the FLOOR, not the ceiling. Adam's ceiling asks (#1, #2) remain OPEN and cannot
+be answered from this data.** A stronger-student / longer run would be needed to test them.
+
+### What this says for the relay
+- The **floor** is the binding constraint for weak students and it works; 0.15 is being
+  hit repeatedly, so Adam's floor calibration matters in practice.
+- The **ceiling** is still an engineering guess -- ask #1 stands unchanged.
+- **Recovery is asymmetric:** two bad sessions cost more than one good session recovers
+  (0.30 -> 0.15 -> 0.15 -> 0.25). Adam to say whether that is clinically right.
+
+### Engineering findings (internal; board APS-030 -- share only if Adam asks about tuning)
+1. The challenge-level dial is one-directional: `levelMultiplier` is clamped at 1.0, so
+   levels 1/2/3 behave identically; the documented "level 1 = 1.4x" is unreachable.
+2. `notableMomentsSummary` was empty (short sessions never triggered summarisation), which
+   makes rehearsal criterion (h) invariant 2 vacuous until sessions are long enough.
 
 ## 5. Relay checklist (owner)
 
-[ ] Regenerate Section 4 from a fresh multi-turn run (runbook (h)).
-[ ] Attach transcripts of the three sessions (owner-reviewed before sending).
+[x] Regenerate Section 4 from a fresh multi-turn run -- DONE 2026-08-02 (see Section 4 +
+    adam-review-package-section4-liverun-2026-08-02.md). NOTE: this run exercises the FLOOR
+    only; the ceiling is untested, so the relay must keep ceiling asks #1/#2 open.
+[ ] Attach transcripts of the three sessions (owner-reviewed before sending). Full session-3
+    transcript sample in the Section 4 file; one turn returned an English fallback (disclosed).
 [ ] Send Sections 1-4 to Adam from the eco account, owner cc'd (Eco may draft
     the cover email on request -- drafting is authorized, sending is owner-only).
 [ ] Deadline math: Adam's read in the "first days of August" leaves tuning room

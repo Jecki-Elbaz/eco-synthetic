@@ -117,6 +117,44 @@ Session 3 turn 1 opens at exactly **0.150** -- the session-2 `finalTrustLevel`. 
 loader carried the clamped value forward correctly, and session 3 loaded from session 2
 (not from session 1).
 
+### The clamp is visible in the server logs, not just inferred from the DB.
+
+`ArcWriterService` logs the pre- and post-clamp state at each session write (this is the
+"pre/post-clamp log lines" evidence the rehearsal runbook criterion (h) asks for):
+
+```
+ArcWriter session 1 ... pre-clamp trust=0.100 openness=0.200 alliance=0.200 | post-clamp trust=0.150 openness=0.200 alliance=0.200
+ArcWriter session 2 ... pre-clamp trust=0.080 openness=0.200 alliance=0.200 | post-clamp trust=0.150 openness=0.200 alliance=0.200
+ArcWriter session 3 ... pre-clamp trust=0.250 openness=0.280 alliance=0.300 | post-clamp trust=0.250 openness=0.280 alliance=0.300
+```
+
+Sessions 1 and 2 show the raw value (0.100, 0.080) being lifted to the 0.15 floor;
+session 3 is inside the bounds and passes through unchanged.
+
+---
+
+## 4.2b Sample transcript -- session 3 (real model output, unedited)
+
+The persona holds across the boundary: guarded, non-verbal cues, resists a too-direct
+question. Student turns are the scripted skilled set; patient turns are the live model.
+
+| turn | speaker | text (truncated) |
+|------|---------|------------------|
+| 1 | student | אני שמח שחזרת. איך היה מאז שנפגשנו? |
+| 1 | patient | (מנידה קלות בכתפיים, מביטה הצידה) בסדר, אני מניחה. היה... שבוע. עבודה כרגיל, המון דדליינים... |
+| 2 | student | נשמע שהיה שם הרבה. ספרי לי מה עבר עלייך באותו רגע. |
+| 2 | patient | (מביטה למטה, אצבעות משחקות בשרוול) לא יודעת... "עבר עליי" זה מילה גדולה. פשוט... יש הרבה... |
+| 4 | patient | (עוצרת, כאילו מנסה לחשוב באמת) לא יודעת... אולי פשוט שמישהו לא ילחץ עליי להסביר הכל... |
+| 5 | patient | (מכווצת קלות את המצח, נסוגה מעט אחורה בכיסא) "מה זה עורר בך" - זה שאלה כזאת... ישירה... |
+
+**Fidelity anomaly to disclose:** on session-3 turn 3, the patient reply came back as an
+English fallback string ("I'm not sure how to respond to that right now.") instead of
+Hebrew persona text -- one turn out of 15. The state engine still scored that turn as
+high-empathy and trust rose normally (0.200 -> 0.250), so the mechanics were unaffected,
+but the patient *text* on that turn is not usable persona output. This is consistent with
+the dev-CLI caveat (temperature ignored, occasional off-contract output) and is exactly
+the kind of thing a production provider must not do. Flag if Adam reviews transcripts.
+
 ---
 
 ## 4.3 What this run says to Adam
