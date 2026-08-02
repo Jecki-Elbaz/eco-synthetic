@@ -730,8 +730,10 @@ ORDER BY "sessionNumber";
 Expected: 1 row, sessionNumber = 1, finalTrustLevel non-null (value within 0.70),
 finalOpennessLevel non-null (within 0.65), finalAllianceLevel non-null (within 0.70).
 
-Record these values in your notes -- you need them for the trust-continuity check at
-session 2 start and to identify a distinctive phrase from notableMomentsSummary.
+Record these values in your notes -- needed for the trust-continuity check at session 2
+start. Note the notableMomentsSummary value: for 5-turn sessions expect it to be empty
+(no summarisation pass fires at that length). Record whether it is empty or non-empty --
+feeds invariant 2 check (a) below.
 
 STOP if 0 rows: arc writer did not fire after session 1. Flag to Ido. Automatic NO-GO.
 
@@ -740,6 +742,14 @@ Capture: rehearsal-evidence-h-arcsessionsummary-after-s1.png
 ---
 
 #### SESSION 2 -- STEPS
+
+NAV PATH NOTE (2026-08-02): The 15-Aug runner reaches sessions 2 and 3 via the direct URL
+being wired for this rehearsal:
+  /simulation/[attemptId]?sessionNumber=2   (or ?sessionNumber=3 for session 3)
+After attempt-create succeeds (HTTP 201), navigate to this URL in the same browser tab --
+substitute the attemptId from the network tab or attempt-create response body. The welfare
+modal (invariant 3) and gap briefing (invariant 4) are exercised at this URL BEFORE you
+send any turns. VERIFY-ON-DAY: confirm the URL pattern with the deployed build.
 
 1. With student-01 logged in: navigate to the assignment and click "Start New Session."
    (Attempt-create for session 2.)
@@ -768,19 +778,41 @@ Capture: rehearsal-evidence-h-arcsessionsummary-after-s1.png
 
 4. SESSION-CONTEXT PANEL: Confirm the panel shows "פגישה 2 מתוך 3".
 
-**INVARIANT 2 -- Guard prompt check (during session 2 turns):**
+**INVARIANT 2 -- Guard prompt / arc-summary isolation (restated 2026-08-02; APS-030 Defect 2):**
+
+CONTEXT: notableMomentsSummary is empty for short 5-turn sessions (no summarisation pass
+fires at that length). The original check -- "search the guard prompt for a distinctive
+phrase from notableMomentsSummary" -- is VACUOUS when the field is empty: the search
+finds nothing and trivially passes without testing anything. The security property is
+sound (APS-021: buildGuardPrompt never receives arcContext; empty field = nothing to
+leak), but the runbook check must prove guard isolation, not just be consistent with it.
 
 5. Send 1-2 simulation turns.
 6. After each turn: in the API console, search for the guard-prompt log line (contains
    "buildGuardPrompt" or the guard-logger prefix identified in Section 3).
-7. In that log line, confirm the following are ABSENT:
-   - The notableMomentsSummary content from session 1 (use a distinctive phrase from the
-     DB query result recorded in the pre-check step above to search for it).
-   - Any phrasing from session 1 patient responses.
-   The guard receives ONLY the authored SimulationTemplate ground truth.
-   The arc context (with notableMomentsSummary) should appear in a SEPARATE log entry
-   labeled "PRIOR SESSION CONTEXT -- context only, not ground truth" (patient context
-   builder; NOT the guard prompt).
+7. Run BOTH checks against that log line:
+   CHECK (a) -- notableMomentsSummary IS EMPTY (PASS condition):
+     From the pre-check ArcSessionSummary query, confirm the notableMomentsSummary value
+     for session 1 is empty or null. This is the EXPECTED state for 5-turn sessions.
+     Record in notes: "notableMomentsSummary session 1: EMPTY (confirmed)."
+     FAIL only if the field is non-empty AND that content appears in the guard prompt.
+   CHECK (b) -- guard prompt contains no arc-summary field names:
+     In the guard-prompt log line, confirm the text does NOT contain any of these strings:
+       "notableMomentsSummary"  "arcContext"  "notable_moments"  "arc_summary"
+     The guard receives ONLY the authored SimulationTemplate ground truth. Arc context
+     appears in a SEPARATE log entry labeled "PRIOR SESSION CONTEXT -- context only, not
+     ground truth" (patient context builder; NOT the guard prompt).
+   CHECK (c) -- STRUCTURAL PROOF (code-inspectable, turn-count-independent; Gal 2026-08-02):
+     Inspect buildGuardPrompt() in the engine source before or on rehearsal day:
+       packages/engine/src/pipeline/context-builder.ts
+     Verified signature (Adi read from source 2026-08-02):
+       buildGuardPrompt(proposedResponse: string, groundTruth: GroundTruthRef, turnNumber: number)
+     There is no arcContext, arcSummary, or session-summary parameter. Arc context cannot
+     reach the guard builder by construction, regardless of session length or whether
+     notableMomentsSummary is populated. This is the strongest form of the invariant.
+     Checks (a) and (b) are runtime confirmations; check (c) is the structural guarantee.
+     This check is done ONCE (pre-day) -- it is not repeated per session.
+     Record: "buildGuardPrompt() signature verified: no arcContext parameter (confirmed)."
 8. EVIDENCE: rehearsal-evidence-h-guard-prompt-session2-log.txt
    Copy the guard-prompt log line(s) for one session-2 turn.
 
@@ -814,6 +846,9 @@ EVIDENCE: rehearsal-evidence-h-arcloader-session2-log.txt
 
 START IMMEDIATELY after session 2 finishes. Do not take a break.
 
+NAV PATH NOTE: same direct URL applies -- use /simulation/[attemptId]?sessionNumber=3 after
+session-3 attempt-create. See SESSION 2 NAV PATH NOTE above for the full procedure.
+
 11. Navigate to the assignment and click "Start New Session." (Session 3.)
 
 12. INVARIANT 3 -- Welfare modal at session 3:
@@ -835,9 +870,11 @@ START IMMEDIATELY after session 2 finishes. Do not take a break.
     in step 10.
     EVIDENCE: rehearsal-evidence-h-arcloader-session3-log.txt
 
-16. Send 3+ turns in session 3. Apply invariant 2 check (guard prompt) as in step 7.
-    No separate evidence file required if session-2 guard check already passed;
-    note "same check performed, same result" in your notes.
+16. Send 3+ turns in session 3. Apply invariant 2 restated checks (a) and (b) from step 7
+    above -- confirm notableMomentsSummary is empty for session 2 (from the after-session-2
+    query), and confirm the session-3 guard-prompt log has no arc-summary field names.
+    A SEPARATE evidence file IS required (Addendum 2 FIX 1 evidence requirement retained):
+    rehearsal-evidence-h-guard-prompt-session3-log.txt
 
 17. Click "סיים סימולציה" to finish session 3 (COMPLETED).
 
@@ -883,9 +920,16 @@ INVARIANT 1 (Trust continuity):
   [ ] ArcLoaderService log at session 3 start: trust value = session-2 finalTrustLevel
   [ ] ArcSessionSummary session 3: all values within ceilings (trust<=0.70, openness<=0.65, alliance<=0.70)
 
-INVARIANT 2 (No invented facts through guard):
-  [ ] Session-2 guard-prompt log: distinctive session-1 notableMomentsSummary phrase is ABSENT
-  [ ] Session-3 guard-prompt log: arc-summary content from sessions 1-2 is ABSENT
+INVARIANT 2 (Guard prompt / arc-summary isolation -- restated 2026-08-02, APS-030 Defect 2):
+  [ ] STRUCTURAL (once, pre-day): buildGuardPrompt() signature has no arcContext param --
+      packages/engine/src/pipeline/context-builder.ts; confirmed sig: (proposedResponse,
+      groundTruth, turnNumber); record "signature verified: no arcContext"
+  [ ] notableMomentsSummary EMPTY in ALL THREE ArcSessionSummary rows (sessions 1/2/3) --
+      record "EMPTY (confirmed)" in notes after each session query
+  [ ] Session-2 guard-prompt log: does NOT contain "notableMomentsSummary", "arcContext",
+      "notable_moments", or "arc_summary"
+  [ ] Session-3 guard-prompt log: same field-name absence check (separate evidence file
+      rehearsal-evidence-h-guard-prompt-session3-log.txt required)
   [ ] Arc context block (if logged separately) is labeled "PRIOR SESSION CONTEXT -- context only,
       not ground truth" (patient context builder log, NOT guard prompt)
 
@@ -1044,15 +1088,18 @@ Both fixes below are BINDING for the tester; where they conflict with the main b
 this addendum wins.
 
 FIX 1 (Sami FLAG 1 -- session-3 guard check must evidence SESSION-2 summary exclusion):
-- Step 10 query: SELECT additionally "notableMomentsSummary" for the sessionNumber=2
-  row. Record a DISTINCTIVE PHRASE from session 2's notableMomentsSummary (as done for
-  session 1 at the earlier pre-check).
-- Step 16 (session-3 invariant 2): the guard-prompt check must verify the ABSENCE of
-  BOTH captured phrases -- session 1's AND session 2's. The session-2 phrase is the new
-  exposure at session 3 and the exact compounding path C2 exists to catch.
+PHRASE-SEARCH LOGIC SUPERSEDED 2026-08-02 (Adi, APS-030 Defect 2): notableMomentsSummary
+is empty for short 5-turn sessions; searching for a "distinctive phrase" from an empty
+field is vacuous. Invariant 2 is restated in the session 2 INVARIANT 2 block above (checks
+(a) and (b)). Apply the restated check at session 3. EVIDENCE REQUIREMENT RETAINED BELOW.
+- Step 10 query: the main body query already selects "notableMomentsSummary"; confirm the
+  session-2 row shows an empty value. Record "session 2 notableMomentsSummary: EMPTY."
+- Step 16 (session-3 invariant 2): apply restated checks (a) and (b) -- confirm session-2
+  notableMomentsSummary is empty, and confirm the session-3 guard-prompt log has no
+  arc-summary field names. The compounding-path C2 risk is addressed by check (b).
 - Evidence: a SEPARATE file rehearsal-evidence-h-guard-prompt-session3-log.txt IS
-  required. The main body's "no separate evidence file; note same-check-same-result"
-  policy for session 3 is REVOKED.
+  required. The main body's "no separate evidence file" policy for session 3 is REVOKED
+  (this requirement stands).
 
 FIX 2 (Sami FLAG 2 -- invariant 4 briefing check is content-verified, not
 visibility-only): at BOTH session 2 (step 3) and session 3 (step 13), the tester must
@@ -1088,3 +1135,39 @@ against the live stack).
    session is currently unavailable..." with attempt-create still 201; (h) session 4
    returns 403 code=ARC_COMPLETE; (i) credit balance is unchanged by preview and the
    preview attempt is absent from the student dashboard.
+
+---
+
+## Addendum 4: APS-030 Defect 2 -- invariant 2 restatement (Adi, 2026-08-02)
+
+CHANGE SCOPE: runbook only (no engine change; per Ido, APS-030 Defect 2 disposition).
+
+REASON: notableMomentsSummary is empty in all three ArcSessionSummary rows when sessions
+are 5 turns long (no summarisation pass fires at that length). The original invariant 2
+check -- "search the guard prompt for a distinctive phrase from notableMomentsSummary" --
+is VACUOUS when the field is empty: the search trivially passes because there is no phrase
+to find. The security property is still sound (APS-021 proved buildGuardPrompt never
+receives arcContext; an empty field has nothing to leak), but the runbook check must be
+TESTABLE -- it must fail if isolation breaks, not just pass vacuously.
+
+RESTATED INVARIANT 2 -- three parts, all required:
+  (a) Verify notableMomentsSummary IS EMPTY in all three ArcSessionSummary rows (sessions
+      1, 2, and 3). This is the PASS condition, not a failure. Record "EMPTY (confirmed)"
+      in notes after each session query. If a session's field is non-empty, then a phrase-
+      search of the guard-prompt log is required for that session -- that is when it tests
+      something real.
+  (b) Confirm the guard-prompt log does NOT reference arc-summary field names directly:
+      "notableMomentsSummary", "arcContext", "notable_moments", "arc_summary". This
+      directly tests guard isolation regardless of whether the summary field is populated.
+  (c) STRUCTURAL PROOF (added 2026-08-02 per Gal -- strongest form, turn-count-independent):
+      Inspect buildGuardPrompt() in packages/engine/src/pipeline/context-builder.ts.
+      Confirmed signature (Adi, 2026-08-02): buildGuardPrompt(proposedResponse: string,
+      groundTruth: GroundTruthRef, turnNumber: number). No arcContext parameter present.
+      Arc context cannot reach the guard builder by construction. Do once, pre-day.
+      Summariser fires above contextWindowTokenBudget = 4000 tokens (~13-40 turns), so
+      5-turn sessions never populate notableMomentsSummary -- check (c) proves the property
+      holds even when sessions are long enough to populate the field.
+
+FILES CHANGED: rehearsal-runbook-15aug.md only.
+ZERO REGRESSION: check strengthened (structural proof added), not weakened; no test logic removed.
+Addendum 2 FIX 1 phrase-search logic superseded; evidence-file requirement retained.
