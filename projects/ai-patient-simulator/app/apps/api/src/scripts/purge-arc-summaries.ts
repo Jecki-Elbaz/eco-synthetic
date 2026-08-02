@@ -21,7 +21,7 @@ export interface PurgeRow {
   userId: string;
   templateId: string;
   sessionNumber: number;
-  retainUntil: Date;
+  retainUntil: Date | null;
 }
 
 export interface PurgeResult {

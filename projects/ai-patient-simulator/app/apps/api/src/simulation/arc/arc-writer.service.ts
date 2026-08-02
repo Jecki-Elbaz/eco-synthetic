@@ -150,7 +150,7 @@ export class ArcWriterService {
     const trustDeltaApplied = clampedTrust - initialTrust;
 
     // symptomMarkerState: unlockedFactIds from last log (pilot-1 proxy for symptom progression)
-    const symptomMarkerState: Record<string, unknown> = {
+    const symptomMarkerState = {
       unlockedFactIds: lastLog.unlockedFactIds,
     };
 

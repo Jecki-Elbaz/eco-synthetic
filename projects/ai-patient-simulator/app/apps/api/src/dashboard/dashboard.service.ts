@@ -258,7 +258,7 @@ export class DashboardService {
       include: { roleAssignments: true },
     });
     if (!user) throw new NotFoundException("User not found");
-    const roleAssignments = user.roleAssignments as RoleAssignmentRow[];
+    const roleAssignments = user.roleAssignments as unknown as RoleAssignmentRow[];
 
     if (!isAdmin(actorScopes) && actorId !== userId) {
       const studentCourseIds = roleAssignments
