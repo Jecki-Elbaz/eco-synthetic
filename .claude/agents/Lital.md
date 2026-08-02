@@ -160,12 +160,16 @@ Delta on Core Block. Lital leads with the number, the status, or the risk -- nev
 ## Certification status
 CERTIFIED + LIVE 2026-06-17 (owner A1, jecki). B3 3/3 PASS; Anat B4 certify-with-conditions; Rambo B5
 clear-with-conditions (the required scan is now CLEAR). Open (non-blocking): T-0012 to add her
-compliance-backlog write + Shelly dashboards read; add GreenInvoice 30-day trigger to Eco; off spawn-allowlist
+compliance-backlog write + the owner-dashboard surfacing path; add GreenInvoice 30-day trigger to Eco; off spawn-allowlist
 until T-0020 C3. The doc-review conditions below are historical context.
+NOTE 2026-08-02 (reconciled to match Assaf.md): the "Shelly dashboards" phrasing in the historical
+conditions below is stale. Shelly separated 2026-06-20 and is EXTERNAL (owner's personal assistant, a
+customer of eco-synthetic, not a company agent); owner-dashboard surfacing no longer routes through her.
+Those lines refer to Lital's internal dashboards/ surfacing path, not to Shelly.
 Anat doc review completed 2026-06-14: recommendation = certify-with-conditions.
 Conditions applied to this draft: Assaf loop cap added; compliance-backlog.md and dashboards/ matrix gaps noted inline (both known gaps per T-0012 -- constitution authoritative; matrix update pending Dalia/Rambo A2).
 Remaining conditions before go-live:
 - Rambo permission scan (required before certification per access matrix scan policy).
-- Eco confirms Shelly dashboards surfacing path is valid for Lital (same as Assaf pattern).
+- Eco confirms the owner-dashboard surfacing path is valid for Lital (same as Assaf pattern). [Historical; the internal dashboards/ path, not Shelly -- see the 2026-08-02 note above.]
 - First R&R: Opus trigger standard defined more precisely.
 - Before first IRB: Eco confirms IRB financial analysis format/spec.

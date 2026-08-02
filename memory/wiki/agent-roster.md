@@ -14,21 +14,22 @@ UX/UI Designer (equipped for Claude design tools); RL9/10/11 added to Eco/Shir/E
 
 - OWNER: jecki (L1)
 - CEO: Eco (L2)
-- OWNER OFFICE (-> jecki): Shelly (SEPARATED 2026-06-20 -- now external customer in company/customers/shelly/; CERTIFIED 2026-06-21 via T-0028 cross-project service), Luci (Devil's Advocate), Erez (Investor, on-demand)
+- OWNER OFFICE (-> jecki): Luci (Devil's Advocate), Erez (Investor, on-demand)
 - CEO STAFF (-> Eco): Anat (HR), Rambo (Security), Dalia (Q&G) [+ Yael (Knowledge/Doc Mgr) under Dalia], Assaf (Op-Ex) [+ Yossi (Training) under Assaf -- staged], Lital (CFO), Eyal (Legal), Oracle (Build-Historian; dotted Dalia + Hila), Zvika (Research, on-demand)
 - R&D -- VP Ido (also holds CTO scope): Gal (Lead Dev), Shir (DevOps), Oren (Senior Dev/reviewer), Roman (Algorithm, on-demand), Adi (QA)
 - PRODUCT -- VP Perry: Tal (UX/UI Designer), Sami (SME Advisor, on-demand per-project)
 - SALES -- VP Sally: Hila (Marketing, full track), Alex (Sales Execution), MeetingPrep (Meeting Prep Specialist, on-demand)
 - CUSTOMER SUCCESS -- VP Mike: Jenny (Customer Support), Jack (CSM + Account Manager), Ella (Customer Trainer)
 
-Live tally: 29 certified + live (internal); Shelly CERTIFIED (external customer, T-0028 done 2026-06-21); Yossi staged (B3 next session). 30 agent files (Shelly separated). ONB-013 done 2026-06-21 (Sally VP Sales formally closed).
+NOT IN THE COMPANY: Shelly is the owner's personal assistant and an EXTERNAL party -- she separated 2026-06-20 and is a customer OF eco-synthetic (company/customers/shelly/profile.md), not a member of it. She is deliberately excluded from the org above and from the persona registry below. Authoritative roster: company/roster.md v2.3.
+
+Live tally: internal agents only (Shelly is external, not counted). Yossi staged (B3 next session). ONB-013 done 2026-06-21 (Sally VP Sales formally closed). For exact current headcount, see company/roster.md (authoritative).
 
 ### Persona / addressing registry
 
 | Agent | Title | Gender | Hebrew | Address as |
 |-------|-------|--------|--------|-----------|
 | Eco | CEO | male | אקו | Eco (he/him) |
-| Shelly | Office Manager | female | שלי | Shelly (she/her) |
 | Luci | Devil's Advocate | female | לוסי | Luci (she/her) |
 | Erez | Investor | male | ארז | Erez (he/him) |
 | Anat | HR Manager | female | ענת | Anat (she/her) |
@@ -60,6 +61,7 @@ Live tally: 29 certified + live (internal); Shelly CERTIFIED (external customer,
 | Ella | Customer Trainer | female | אלה | Ella (she/her) |
 
 > Note: the registry-key / agent-type for Tal stays "Designer" (file .claude/agents/Designer.md) so tooling is stable; persona name is Tal.
+> Note: Shelly is intentionally NOT in this registry -- she is external (owner's personal assistant, a customer of eco-synthetic, not an agent). When an agent addresses her in a cross-project handoff she is "Shelly / שלי / she-her", but she is not a company agent.
 
 ---
 
@@ -69,7 +71,7 @@ Live tally: 29 certified + live (internal); Shelly CERTIFIED (external customer,
 |-------|------|-------|-----------|-------|
 | jecki | Owner | L1 | -- | All A1 approvals |
 | Eco | CEO | L2 | Owner | A2 authority; orchestrates all agents |
-| Shelly | Office Manager | owner office | Owner | jecki's personal admin; no company authority |
+| Shelly | (external -- NOT a company agent) | -- | Owner (personal) | SEPARATED 2026-06-20; owner's personal assistant, a customer of eco-synthetic (company/customers/shelly/). Row kept only to mark the historical entry; she is not part of the company. |
 | Hila | Marketing | L4 | VP Sales | P1 FULL track (ORG-001, 2026-06-18); brand+cadence+owner-presence; all publishing A1 + Legal/Security gate |
 | Lital | CFO | L3 | CEO | Financial views; compliance backlog (with Eyal) |
 | Eyal | Legal | L3 direct | CEO | Direct report to CEO; compliance backlog (with Lital) |
@@ -122,7 +124,7 @@ Established by owner directive 2026-07-01 (via Eco). Owned by Anat (HR/Agent-Ops
 - Anat: certified + owner-approved (Eco cert + jecki A1, 2026-06-13); v1.1 all gaps resolved
 - Rambo: certified + owner A1 (2026-06-14); role file committed to .claude/agents/Rambo.md
 - Hila: role file in .claude/agents/Hila.md; competency spec written 2026-06-15 (company/hr/competency/Hila-spec.md); B3-B7 pending
-- Shelly: active in repo (decommission deferred per owner A1 2026-06-13); no formal HR cert; see decisions-log
+- Shelly: [historical, as of 2026-06-13] active in repo (decommission deferred per owner A1 2026-06-13); no formal HR cert; see decisions-log. SUPERSEDED: she separated 2026-06-20 and is now external (not a company agent) -- see the NOT IN THE COMPANY note above and company/customers/shelly/.
 - Eyal (Legal): CERTIFIED + LIVE 2026-06-17. B3 3/3 PASS; Anat B4 certify (no conditions); Rambo B5 clear (no conditions). Auto-go-live under owner standing A1 (zero-condition pass). T-0013 auto-started.
 - Ido, Dalia, Noam, Lital, Assaf: B3-B7 + Stage C COMPLETE 2026-06-17; all 3/3 PASS; HELD for owner A1 batch (each has light conditions -- see company/hr/stage-c/<Name>-stage-c.md). Ido go-live needs Bash removed (A1); Dalia v0.1->v1.0; Noam RL3/RL6 + S3 re-run + T-0001; Lital T-0012 scope + GreenInvoice trigger; Assaf format discipline + T-0012.
 - Ido, Dalia, Noam (VP Product), Lital, Assaf, Luci, Erez: CERTIFIED + LIVE 2026-06-17 (owner A1 batch). All 3/3 PASS. Fixes applied at go-live: Ido Bash removed; Dalia v1.0; Noam VP title (T-0001 resolved); Luci+Erez model opus->sonnet; conditions in decisions-log + role files. With Eyal + Anat + Rambo + Eco, that is 11 P1 agents live.

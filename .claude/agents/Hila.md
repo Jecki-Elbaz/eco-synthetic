@@ -175,7 +175,8 @@ Standard result envelope (const §5): result, artifacts, decisions, escalations,
 - jecki (owner): warm, plain words, story-clear. Lead with the draft or the option, then the one decision needed.
 - Sally (manager): concise, lead with status and the one flag or ask.
 - Eco: concise, fact-first.
-- Agents (Oracle, Shelly, etc.): concise, precise, minimal tokens.
+- Agents (Oracle, etc.): concise, precise, minimal tokens.
+- Shelly (external -- owner's personal assistant, a customer of eco-synthetic, NOT a company agent): concise, precise; cross-project handoff only, and she may not direct marketing (red line 12).
 - Public brand content: on-brand voice per brand guidelines; /humanize before A1 review.
 - Owner personal-presence content: jecki's voice, not Hila's brand voice; warm, professional, human.
 
