@@ -200,5 +200,9 @@ sender restriction is lifted FOR THE OWN ACCOUNT. Everything else stays BINDING:
 - NO RAW MAIL IN TRACKED FILES: topic + action-item summaries only. (M5, C-E2)
 - HARD STOP: student names, health data, or clinical case content in a mail body -- do
   not ingest into files or model context; flag the owner immediately. (C-E3)
-- C-E4 residual (Anthropic DPA / compliance Item 6 open): LLM processing of email bodies
-  is owner-accepted for the Adam business thread ONLY; anything wider waits for Item 6.
+- C-E4 (Anthropic DPA / compliance Item 6): RE-KEYED owner A1 2026-08-02. The DPA/commercial-
+  plan requirement does NOT gate Shelly or internal eco-synthetic activity -- both are the
+  owner's dev environment, run under the Max subscription, and no agent treats the missing DPA
+  as a blocker for them. It re-arms ONLY when a real project goes live, at scale, with real
+  customer data through the LLM (see compliance-backlog ITEM-6). This does NOT relax the C-E3
+  HARD STOP above (student names / health / clinical content), which stands on its own.

@@ -9,28 +9,39 @@ Last finance-leg review: Lital, 2026-07-27 (scheduled runner, run 8).
 
 ---
 
-## OVERDUE -- ACTION REQUIRED
+## DEFERRED -- EVENT-TRIGGERED (not an open action)
 
-Reviewed by Lital: 2026-07-27 (run 8)
+Reviewed by Lital: 2026-07-27 (run 8). Re-keyed by owner A1 2026-08-02.
 
-**ITEM-6 / APS-004 -- Anthropic config 3 owner steps (target was 2026-07-07; NOW 20 DAYS PAST)**
+**ITEM-6 / APS-004 -- Anthropic DPA / commercial-plan config (owner A1 2026-08-02: DEFERRED, event-triggered)**
 
-Owner: jecki (A1). Responsible party: jecki.
+OWNER A1 DECISION 2026-08-02 (authoritative; supersedes the OVERDUE framing below).
+The Anthropic DPA / commercial-plan requirement does NOT apply to Shelly or to any internal
+eco-synthetic activity. Both are the owner's personal DEV environment and stay there. The
+owner accepts this posture: internal and Shelly agent activity runs under the Max
+subscription (local Claude Code CLI), and no agent is to treat the missing DPA as a blocker
+for it. This item is NOT an open owner action and must not be surfaced as overdue.
 
-Three A1 steps were targeted for completion before APS Sprint 2 (2026-07-07):
+RE-ARM TRIGGER (the ONLY condition that reopens this item): a real project goes LIVE, AT
+SCALE, with REAL CUSTOMER personal data flowing through the LLM. At that point -- and only
+then -- Eyal re-raises the three steps below as a genuine pre-go-live gate and surfaces it to
+the owner. "Dev", "internal", "Shelly", and "experimental" do not meet this trigger; a
+production launch handling other people's real data does.
+NOTE: this re-key concerns the DPA/commercial-plan posture only. It does NOT lift the C-E3
+HARD STOP (student names / health / clinical case content never enters files or model
+context) -- that boundary stands independently.
+
+The three steps, retained for the re-arm event (NOT current actions):
 1. Confirm Anthropic account is on commercial plan (DPA applies).
 2. Confirm/enable zero data-retention in Anthropic console.
 3. Download and retain a copy of the Anthropic DPA.
 
-None confirmed completed as of this review (run 8, 2026-07-27). Git status confirms
-ongoing APS LLM integration: new claude-code.provider.ts in engine/src/llm/providers/,
-plus modifications to llm.module.ts and engine/src/index.ts. Student data retention
-logic confirmed in code since run 6 (migration arc_session_summary_retain_until, purge
-scripts, DSR tests in place). The compliance gate must close before student data enters
-the LLM pipeline. Gap between code progress and compliance gate is widening. 20 days
-past the owner's own internal target.
-
-ESCALATE_TO_ECO_OVERDUE
+HISTORICAL CONTEXT (pre-2026-08-02 re-key; retained as record, no longer actionable):
+The prior review framed this as "20 days past target" because three steps had a 2026-07-07
+calendar target. That target was superseded twice: first by the owner's 2026-06-30 directive
+moving DPA acceptance to the production go-live gate (APS-004), and now by the 2026-08-02 A1
+decision above making it event-triggered on a real at-scale customer-data launch. No student
+or customer data has ever reached an LLM; everything runs on StubProvider / the local CLI.
 
 ECO CORRECTION (2026-07-27, 2h check-in, verify-before-claim): the "20 days past target"
 framing does not reflect the owner's own directive on record. Board row APS-004 (owner
