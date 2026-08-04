@@ -107,6 +107,27 @@ if "ANTHROPIC_API_KEY" in os.environ:
 # ── Telegram tokens ───────────────────────────────────────────────────────────
 ECO_TOKEN: str = os.environ["ECO_TELEGRAM_BOT_TOKEN"]
 
+# ── Owner identity (R1-CODE, T-0020 2026-08-05) ───────────────────────────────
+# The sole authorized sender's chat_id, read from OWNER_CHAT_ID in .env AFTER
+# load_dotenv() so the value is available. Stored as str; comparisons use
+# str(chat_id) == OWNER_CHAT to avoid int/str ambiguity.
+# Replaces the spoofable first-registrant model: ownership is now static and
+# cannot be claimed by racing the /start command. Non-owner senders are silently
+# ignored (log only) so no information about the gate leaks to a prober.
+# Set OWNER_CHAT_ID in .env. Never commit this value to source control.
+OWNER_CHAT: str = os.environ.get("OWNER_CHAT_ID", "").strip()
+if not OWNER_CHAT:
+    print(
+        "\nERROR: OWNER_CHAT_ID is not set in your environment (or .env).\n"
+        "\n"
+        "This bridge requires a static owner chat-ID to enforce sender authentication\n"
+        "(R1-CODE, T-0020). Add OWNER_CHAT_ID=<your_telegram_chat_id> to .env and\n"
+        "restart. To learn your chat_id, send any message to your bot then inspect\n"
+        "the Telegram getUpdates response -- see DEPLOY.md for details.\n",
+        file=sys.stderr,
+    )
+    sys.exit(1)
+
 # ── Models ────────────────────────────────────────────────────────────────────
 ECO_DEFAULT_MODEL = "claude-sonnet-4-6"
 ECO_ESCALATED_MODEL = "claude-opus-4-8"
@@ -208,6 +229,14 @@ _ECO_GOOGLE_TOOLS: list[str] = [
 _AGENT_TOOLS: dict[str, list[str]] = {
     "eco": ["Read", "Write", "Edit"] + _ECO_GOOGLE_TOOLS,
 }
+
+# R2-CODE (T-0020 2026-08-05): tools the bridge NEVER passes to --allowedTools.
+# call_claude_cli strips these from whatever _AGENT_TOOLS supplies, as a
+# defense-in-depth layer. Primary enforcement is guard.py; this prevents the
+# flag from even advertising these tools to a bridge-spawned agent.
+# Note: --allowedTools alone does not reliably block Bash on all CLI versions
+# (verified; guard.py is the authoritative blocker) -- keeping both layers.
+_BRIDGE_DENIED_TOOLS: frozenset[str] = frozenset({"Bash", "WebFetch"})
 
 
 # ── Owner chat registry (populated on first /start per bot) ──────────────────
@@ -483,6 +512,10 @@ def call_claude_cli(
     import time as _time
     import tempfile
     import os as _os
+    # R2-CODE (T-0020): strip denied tools before building --allowedTools.
+    # This is a defense-in-depth filter; guard.py is the primary enforcement layer.
+    if allowed_tools:
+        allowed_tools = [t for t in allowed_tools if t not in _BRIDGE_DENIED_TOOLS]
     tools_str = ",".join(allowed_tools) if allowed_tools else "Read"
     # Write system prompt to a temp file to avoid Windows command-line length limits.
     with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False, encoding="utf-8") as tf:
@@ -724,6 +757,10 @@ def make_handlers(bot_name: str, system_prompt: str):
         if update.effective_chat is None or update.message is None:
             return
         chat_id = update.effective_chat.id
+        # R1-CODE: silently ignore any sender who is not the verified owner.
+        if not _is_owner_chat(chat_id):
+            log.warning("on_start: ignored non-owner sender chat_id=%d", chat_id)
+            return
         _register_owner_chat(bot_name, chat_id)
         save_history(bot_name, chat_id, [])
         append_log(agent_display, chat_id, "start", "none", None, None)
@@ -748,6 +785,10 @@ def make_handlers(bot_name: str, system_prompt: str):
         if update.effective_chat is None or update.message is None:
             return
         chat_id = update.effective_chat.id
+        # R1-CODE: silently ignore any sender who is not the verified owner.
+        if not _is_owner_chat(chat_id):
+            log.warning("on_tasks: ignored non-owner sender chat_id=%d", chat_id)
+            return
 
         tasks = load_agent_tasks(agent_display)
         task_block = _format_tasks(tasks)
@@ -775,6 +816,10 @@ def make_handlers(bot_name: str, system_prompt: str):
         ):
             return
         chat_id = update.effective_chat.id
+        # R1-CODE: silently ignore any sender who is not the verified owner.
+        if not _is_owner_chat(chat_id):
+            log.warning("on_message: ignored non-owner sender chat_id=%d", chat_id)
+            return
         user_text = update.message.text
         history = load_history(bot_name, chat_id)
         history.append({"role": "user", "content": user_text})
@@ -785,6 +830,10 @@ def make_handlers(bot_name: str, system_prompt: str):
 
     async def on_status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         if update.effective_chat is None or update.message is None:
+            return
+        # R1-CODE: silently ignore any sender who is not the verified owner.
+        if not _is_owner_chat(update.effective_chat.id):
+            log.warning("on_status: ignored non-owner sender chat_id=%d", update.effective_chat.id)
             return
         now = datetime.now(timezone.utc)
         uptime = _fmt_duration(now - _bridge_start_ts)
@@ -880,20 +929,26 @@ async def _wakeup_task(
 
 # ── Deterministic kill switch (pure code, no model) ───────────────────────────
 # /halt writes memory/SAFE_MODE; /resume removes it. These bypass the LLM entirely
-# so the kill switch works even if claude is down or the token is expired. Gated to
-# the registered owner chat (same trust model as the private bot token).
+# so the kill switch works even if claude is down or the token is expired.
 
-def _is_owner_chat(bot_name: str, chat_id: int) -> bool:
-    _register_owner_chat(bot_name, chat_id)  # first chat to interact becomes owner
-    return _owner_chat.get(bot_name) == chat_id
+def _is_owner_chat(chat_id: int) -> bool:
+    """Return True iff chat_id matches the static owner constant (R1-CODE, T-0020).
+
+    Previously this called _register_owner_chat() first, which granted owner status
+    to the first caller -- a spoofable first-registrant model. Now it checks only
+    the OWNER_CHAT constant loaded at startup from OWNER_CHAT_ID in .env.
+    """
+    return str(chat_id) == OWNER_CHAT
 
 
 async def on_halt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.effective_chat is None or update.message is None:
         return
     chat_id = update.effective_chat.id
-    if not _is_owner_chat("eco", chat_id):
-        await update.message.reply_text("Not authorized.")
+    # R1-CODE: check against static OWNER_CHAT constant. Silently ignored --
+    # no reply to a non-owner so the gate's existence is not leaked.
+    if not _is_owner_chat(chat_id):
+        log.warning("on_halt: ignored non-owner sender chat_id=%d", chat_id)
         return
     try:
         ts = datetime.now(timezone.utc).isoformat()
@@ -923,8 +978,10 @@ async def on_resume(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.effective_chat is None or update.message is None:
         return
     chat_id = update.effective_chat.id
-    if not _is_owner_chat("eco", chat_id):
-        await update.message.reply_text("Not authorized.")
+    # R1-CODE: check against static OWNER_CHAT constant. Silently ignored --
+    # no reply to a non-owner so the gate's existence is not leaked.
+    if not _is_owner_chat(chat_id):
+        log.warning("on_resume: ignored non-owner sender chat_id=%d", chat_id)
         return
     try:
         existed = SAFE_MODE_FILE.exists()
