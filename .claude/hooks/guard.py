@@ -760,8 +760,14 @@ def decide(event: dict, mode: str) -> tuple[str, str]:
     red_block = decision == DENY and reason.startswith("Red path")
     # Red lines 1 and 2 are absolute, so their denial cannot degrade to would-DENY in shadow.
     absolute_block = decision == DENY and reason.startswith("absolute prohibition")
+    # Append-only audit-trail integrity is a security guarantee, not a phase-in rule: an Edit on
+    # an APPEND_ONLY file (or a non-pure-append Write) must not degrade to would-DENY -> ALLOW in
+    # shadow, or any agent could silently rewrite decisions-log.md / memory/log.md (red lines 6/6a).
+    # Same category as Red paths (promoted 2026-08-01). Owner A1 2026-08-05 (Rambo incident report
+    # appendonly-shadow-degradation-rambo-2026-08-02.md). Matches both 5.3 DENY reasons.
+    append_only_block = decision == DENY and reason.startswith("append-only '")
     if (runner or bridge or mode == "enforce" or handoff_block or google_block
-            or red_block or absolute_block):
+            or red_block or absolute_block or append_only_block):
         return decision, reason
     if decision == DENY:
         return ALLOW, f"[shadow] would-DENY: {reason}"
