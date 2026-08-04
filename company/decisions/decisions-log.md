@@ -2245,3 +2245,141 @@ Owner A1 granted in interactive session; Eco applied. All 6 file-index reference
 - **Consequence:** the 2026-08-02 Gmail cover-email draft (package-review framing) is MOOT; it will be reshaped to a "here is a link + your login" email once the instance + credentials exist. Nothing is sent; no agent contacts Adam.
 - **Board:** APS-031 (this work) opened; APS-027 continues to hold the underlying review obligation. Path confirm pending from the owner before the R&D provider build is dispatched.
 - **Files affected:** memory/board.md (APS-031), company/decisions/decisions-log.md (this entry, appended EOF-only per red line 6a).
+
+## 2026-08-02 -- Task-ID naming scheme ADOPTED (Dalia A2)
+
+- **Author / gate:** Dalia (Q&G, A2 for naming-convention adoption per documentation-standard.md standard-adoption process). Vocabulary complete 2026-08-02 (owner/jecki iterated); Yael PARTIAL-APPROVE applied (gap fixed: Roman added to section 3a-i). Dalia independent A2 review 2026-08-02.
+- **Decision:** APPROVE. draft-task-id-scheme.md (company/governance/draft-task-id-scheme.md, status DRAFT vocabulary-complete) is adopted as the company-wide task-board naming convention. The SCOPE-TEAM-SCOPEFLAG-desc-NNN format is the standard for all new board rows effective immediately. Migration of open/in-progress/blocked board rows per section 6 is authorized. Yael (naming-convention owner) executes the migration; Eco may assist as board orchestrator.
+- **Five-point governance check:**
+  1. Red-line compliance: migration plan correctly exempts decisions-log.md (append-only, never edited or appended by the migration). memory/board.md is edit-in-place per access-matrix -- rename is routine internal work, not A1. No red-line violations.
+  2. Access-matrix consistency: OE (Assaf + Yossi OE leg) and HIST (Oracle) SCOPE codes are task-board labels only. No file access is granted, changed, or revoked. No access-matrix amendment required.
+  3. Decisions-log traceability: frozen old-ID references remain valid. Renamed board rows carry "formerly <old_id>" in detailed_desc. Lookup chain is complete for both renamed-open and frozen-done rows. Executor note: the "formerly" note must persist permanently, not be removed at task close -- Yael to include in migration execution guide.
+  4. Delegation soundness: Yael as closed-registry manager mirrors the existing documentation-standard.md model. Dalia retains A2 escalation for any contentious, structural, or constitutional code addition. Confirmed appropriate.
+  5. Overall soundness: scheme resolves the T-0046 collision class, mixed prefix semantics, and absent INT/EXT signal. INT/EXT flag enables CS-0001/A1 gate compliance scanning via grep. Closed registry prevents prefix drift. Migration is conservative (frozen rows untouched). Worked-example serials in section 5 are illustrative only; actual migration assigns serials starting at 001 per SCOPE-TEAM bucket.
+- **Handoff:** Yael executes migration (section 6) against memory/board.md open/in-progress/blocked rows. Yael sets document status to APPROVED and files it permanently under company/governance/. No existing decisions-log entries, gate-register IDs, or compliance-backlog IDs are touched.
+- **Files affected:** company/governance/draft-task-id-scheme.md (status -> APPROVED; Yael relocates to permanent home), memory/board.md (migration per section 6, Yael executes), company/decisions/decisions-log.md (this entry).
+
+
+## 2026-08-02 -- Demo LLM provider: TRIAL Gemini instead of Anthropic (owner direction)
+
+- **Author / gate:** owner jecki, in interactive session. Direction, not yet executed.
+- **Decision:** For the Adam hosted demo (board row APS-031, renamed by a concurrent task-id-scheme
+  session to APS-DEV-EXT-hosted-demo-adam-004), TRIAL Google Gemini as the LLM provider instead of
+  the Anthropic API -- primarily for the free tier / lower cost. If Gemini proves good and cheap in
+  the trial, consider it for the pilot going forward as well.
+- **Status:** build + deploy ON HOLD until the owner opens a Gemini API key/account (owner-stated hold).
+- **Implication -- NEW VENDOR, so the Anthropic prep does NOT carry over as-is:** the committed
+  Anthropic gate results (Rambo GR-023 PASS-WITH-CONDITIONS; Eyal CLEAR-WITH-CONDITIONS; Ido
+  AnthropicProvider envelope; Lital Anthropic cost -- all in commit e0fdded) are Anthropic-specific.
+  Adopting Gemini requires a fresh Security+Legal gate (Rambo: scan the Google SDK / REST usage;
+  Eyal: Google/Gemini terms, especially the free-tier "data may be used to improve products" clause,
+  which points the opposite way from Anthropic's no-train default), a re-pointed GeminiProvider build
+  envelope (Ido), and a re-cost (Lital -- likely ~$0 on free tier, rate-limited). Same engine
+  LLMProvider interface (stub + claude-code already prove it), so build effort is comparable and
+  nothing already built is wasted.
+- **Trial kit:** a local eval harness at scratchpad/gemini-eval.mjs runs the three real APS call
+  types (Hebrew patient turn, analyser, guard) through the Gemini REST API and reports quality,
+  latency, real token counts, and a rough (assumed-price) cost -- ready to run once the owner has a
+  key. Not wired into the app; the run is owner-directed. Uses fetch (no SDK dependency added yet, so
+  nothing for Rambo to scan until adoption is decided).
+- **Dispatches held:** the Gemini re-gate (Rambo/Eyal) + re-pointed envelope (Ido) + build (Gal) are
+  NOT dispatched -- owner hold + Anthropic agent session-limit (resets ~21:40 IL). Fire when the owner
+  has the key and says go.
+- **Files affected:** company/decisions/decisions-log.md (this entry, appended EOF-only per red line 6a).
+
+## 2026-08-04 -- Tool-Library Effectiveness Program approved (owner A1)
+
+- **Author / gate:** jecki (owner A1, interactive session). Plan of record: C:\Users\Jecki\.claude\plans\i-want-you-to-sleepy-sonnet.md.
+- **Decision (eight parts):**
+  1. **OWNERSHIP:** Assaf (OE) is the global owner of tool-library effectiveness end-to-end (catalog currency, gating coverage, utilization). Yossi (Training) executes curation under Assaf. Board row OE-CORE-INT-tool-library-catalog-001 executes under this decision.
+  2. **SHELF READ-RULE + RAMBO PRE-SCAN MANDATE:** no agent (including Assaf/Yossi) reads any sources/ file until its row in company/governance/shelf-scan-register.md (new) is CLEAN. Rambo scans all 116 IL Skills + IL MCP clippings (backfill 2026-08-04, owner-session batches); every future clipping gets a scan row before any curator read. Agents understand tools ONLY via tool-library-catalog.md descriptions. Two clearances stay distinct: shelf-scan clears a clipping for READING; tool USE still requires the full /tool-gate on the actual tool source.
+  3. **NEW SCHEDULE ROWS (A1):** "Assaf -- Weekly Catalog Sweep" (change-gated: deterministic shelf-manifest check skips the LLM job when sources/, catalog, and gate-register are unchanged since last completed sweep) and "Zvika -- Weekly External Tool Scout" (bounded to company/governance/scout-sources.md, new A1-controlled source list). Three-file schedule rule applies (agent-prompts.md + schedules.md + owner-dashboard.md).
+  4. **CATALOG CHANGE CONTROL:** adding NEW tools to the catalog/shelf and changing descriptions = owner A1, decided via the weekly suggestions email; clerical status-column sync mirroring gate-register outcomes = A2. sources/ remains agent-write-forbidden (guard absolute prohibition) -- shelf intake is owner-mediated.
+  5. **WEEKLY SUGGESTIONS EMAIL:** Assaf's sweep assembles scout candidates + fitness-loop utilization recommendations + stale-pin flags into a weekly email to the owner. Delivery via company/governance/email-send-whitelist.md (created this date; sole recipient jecki.elbaz@gmail.com). The CLAUDE.md "no autonomous send" norm is amended with this single whitelisted owner-report carve-out. Owner replies are the A1 record for catalog changes.
+  6. **ROLE-FILE DELTAS (A1, applied this date):** Assaf.md (catalog ownership + sweep + tool-utilization fitness dimension + suggestions email; sources/ no-access replaced by CLEAN-row carve-out), Yossi.md (curation executor + same carve-out), Zvika.md (external tool scout scope, scout-sources.md-bounded), Rambo.md (weekly scan consumes company/governance/gate-queue.md, new Assaf->Rambo handoff file).
+  7. **CROSS-PROJECT PATTERN:** sweep publishes a sanitized extract to C:\Users\Jecki\DEV\shared\tool-catalog\catalog-extract.md; Shelly (and future projects) may READ the extract and request adoption via her outbox; central gate; local pinned install by owner. No direct installs from the catalog.
+  8. **DEFERRED:** guard.py read-quarantine enforcement of sources/ (hook matcher + read branch + settings.json Red-path edit) -- separate work after SEC-0001 enforce flip.
+
+(EOF-append; no existing entries altered.)
+
+## 2026-08-05 -- Model version-bump gate ADOPTED (Eco A2); sonnet-5/sonnet-4-6 reconcile in progress
+
+- **Author / gate:** Eco (CEO, A2), owner-interactive session (owner directed "Eco, take the
+  required actions... let me know once resolved or if you see a problem"). Related board row:
+  OE-CORE-INT-model-id-reconcile-004.
+- **Background:** integrations/runner/runner.py's DEFAULT_MODEL fallback had drifted to
+  claude-sonnet-5 (an ungoverned bump, no gate record) while every role-file frontmatter and the
+  model-router's DEFAULT_CLAUDE_MODEL stayed pinned to claude-sonnet-4-6. No documented procedure
+  existed for an in-family model version bump (model-matrix.md referenced a "model-adoption gate"
+  that was never itself defined).
+- **Entitlement leg (closed 2026-08-05):** direct query of memory/agent-runs.jsonl showed 100 of
+  100 Eco runner-path "done" events tagged sonnet-5 (2026-07-25 to 2026-08-04) with rc=0 -- zero
+  failures. Every genuine Eco LLM-invocation failure in the full log has model=None (failed before
+  model resolution: session limits, API connectivity, pre-2026-07-26 OAuth Testing-mode 7-day
+  fuse); the last one was 2026-07-18, a week before integrations/runner/eco-2h-auth-failure-
+  diagnosis-2026-07-25.md contested sonnet-5 entitlement. Conclusion: entitlement is fine; that
+  diagnosis note's claim was stale, not the runner.
+- **Cost finding (material, disclosed per this entry):** Assaf independently verified a real cost
+  regression tied to the sonnet-5 fallback, isolated to the model itself (not job-mix or verbosity
+  -- output-token volume flat at -2.7% while cost per 1k output tokens rose +41.5% on the "Eco:2h
+  Check-in" job, comparing 21 pre-switch runs avg $1.0539/run [$0.08395/1k out] against 89
+  post-switch runs avg $1.4503/run [$0.11879/1k out]). eco-cost-trend.md independently shows
+  last_24h_usd $7.76 vs prior_24h $3.28 against a $5-6/day target. This has been running since
+  approximately 2026-07-24/25 (roughly 10 days as of this entry) -- the accumulated overshoot is
+  real and owner should have visibility into the magnitude; nothing retroactive to do about tokens
+  already spent.
+- **Gate procedure drafted, reviewed, adopted:** company/governance/draft-model-version-bump-gate.md
+  drafted 2026-08-04 (this session) to define the missing in-family version-bump procedure
+  (distinct from constitution section 17's new-provider-adoption gate, which this does not
+  replace). Dalia reviewed 2026-08-05: verdict PARTIAL-APPROVE-WITH-CONDITIONS, four conditions
+  (C1 authority citation -- the draft had wrongly stated Dalia holds unilateral A2; C2
+  provider-match tripwire added as step 1a; C3 gate-register.md/model-matrix.md duplication
+  resolved, model-matrix.md made sole-authoritative for bump history; C4 stale entitlement
+  rationale corrected). All four applied same day. Full review:
+  company/governance/gate-review-model-version-bump-dalia-2026-08-05.md.
+- **Eco's A2 ruling (this entry):** the procedure is governed by Dalia.md:59 (A2, Eco decides
+  after consulting Dalia + Assaf), not Dalia.md:46's stricter company-wide-policy-activation
+  clause -- this is internal governance scaffolding in company/governance/ (same class as
+  gate-register.md, access-matrix.md), not a company/policies/ substantive commitment. Precedent:
+  the task-ID naming scheme (draft-task-id-scheme.md) was adopted the same way, on Dalia's A2, no
+  separate owner A1 event. No red line or constitutionally-binding change is touched. PROCEDURE
+  ADOPTED on this basis. This A2 covers adopting the procedure itself -- any SPECIFIC future bump
+  that edits `.claude/agents/` frontmatter still separately requires A1 per the access matrix,
+  unchanged by this ruling.
+- **Canonical-id decision (Assaf, OE, model-matrix owner):** realign DEFAULT_MODEL /
+  RUNNER_ECO_MODEL in runner.py to claude-sonnet-4-6, matching every role-file frontmatter and the
+  model-router's DEFAULT_CLAUDE_MODEL. Assaf's recommendation: proceed now, does not require a
+  fresh owner A1 -- this is a rollback to the already-approved, already-entitled id the runner
+  originally used before the ungoverned bump (SHIR-FIX-03 era, Ido A3 2026-07-11), cost-reducing
+  and consistency-restoring, not a new spend commitment; falls under the CLAUDE.md carve-out for
+  reversible internal edits within an already-approved scope. Assaf edited company/model-matrix.md
+  section 3 (corrected stale "working as designed" framing) and appended a dated note to
+  integrations/runner/aud-007-delivery-shir-2026-07-12.md recording the interim sonnet-5 excursion
+  and this decision.
+- **Build leg -- NOT YET APPLIED, correctly blocked once already:** a first dispatch attempt to
+  Shir (this session) to apply the one-line runner.py fix was REFUSED by Shir -- correctly. Her
+  own verification found no recorded Eco adoption decision existed yet at dispatch time (this
+  entry did not yet exist), no dispatch-queue.md row, and no Ido authorization -- and her role
+  file (Shir.md) requires tasking by Ido, with only a narrow git/CI-CD-hygiene exception that does
+  not cover this change. She logged the refusal to memory/log.md (2026-08-05, OE-CORE-INT-model-
+  id-reconcile-004 entry) rather than proceeding on an unverified claim. This is the process
+  working as intended, not a failure -- flagging it here so the record is honest about the false
+  start rather than only showing the corrected path. With this entry now on record, the next step
+  is Eco tasking Ido (Shir's actual chain of command, and the same VP who A3-approved the original
+  SHIR-FIX-03 mechanism this reverses) to issue Shir a proper task envelope for the one-line fix.
+- **Files affected:** company/governance/draft-model-version-bump-gate.md (Status -> ADOPTED, C1-C4
+  applied), company/governance/gate-review-model-version-bump-dalia-2026-08-05.md (new),
+  company/model-matrix.md (section 3 corrected), integrations/runner/aud-007-delivery-shir-2026-07-12.md
+  (dated note appended), memory/board.md (OE-CORE-INT-model-id-reconcile-004 updated), memory/log.md
+  (Shir's refusal entry), company/decisions/decisions-log.md (this entry, appended EOF-only per red
+  line 6a -- appended via redirect rather than full-file Read+Write due to file size; see red-line-6a
+  large-file gap noted elsewhere in this log for Ido/Rambo's same constraint).
+
+## 2026-08-05 -- Guard append-only rule promoted to hard-enforce-in-shadow (owner A1)
+
+- **Gate:** owner (jecki) A1, interactive session. Origin: owner-directed "loop in Rambo about the guard gap" following a Dalia sub-agent Edit on decisions-log.md (2026-08-02). Rambo investigated (company/security/reports/appendonly-shadow-degradation-rambo-2026-08-02.md); verdict: guard fired correctly and logged a would-DENY (not a bypass), but shadow-mode degradation left the append-only rule unenforced -- HIGH severity, recommended promotion to hard-enforce-in-shadow. Owner granted A1; Claude applied + verified.
+- **Decision:** guard.py decide() now hard-enforces APPEND_ONLY denials regardless of GUARD_MODE (new append_only_block term, same hard-enforced set as Red-path/handoff/google/absolute-prohibition). In shadow mode, an in-place Edit or a non-pure-append Write on any APPEND_ONLY file (company/decisions/decisions-log.md, memory/log.md, memory/append-canary.md) now hard-DENIES instead of degrading to would-DENY -> ALLOW.
+- **Rationale:** audit-trail integrity is a security guarantee, not a phase-in rule (red lines 6/6a: "binds every agent and the owner's own sessions"). Same category as the Red-path promotion 2026-08-01 (adversary finding). Rambo's log audit found 114 would-DENY events on decisions-log.md since 2026-06-18 -- all clean appends so far, but the guard's job is to block the case that is NOT clean, and shadow leniency would have allowed that too. The harness's "[Logging/Audit Tampering]" warning is post-hoc only and never blocks; it is not a substitute for guard enforcement.
+- **Verification (Claude, this session):** py_compile clean; diff isolated to the intended 7-line addition (git diff --stat: 1 file, +7/-1); three live functional tests against the actual hook in shadow mode -- (A) sub-agent Edit on decisions-log.md now DENY/exit 2 [the original incident, now blocked]; (B) benign Edit on a non-append-only file still ALLOW/exit 0 [confirms no over-blocking]; (C) non-pure-append Write on decisions-log.md correctly DENY/exit 2. Fix is live immediately -- the hook reads guard.py from disk on every call; no restart or commit required for it to take effect.
+- **This entry itself** is appended via a verified OS-level EOF append rather than the Write tool's full-content reconstruction, for the same reason Shir's SEC-0001 C4 analysis already endorsed that method for this specific file: at 313KB/2303 lines with CRLF line endings, a full in-context reconstruction carries real transcription/line-ending risk that a byte-level append does not. Verified: pre-append sha256 d72d19bc...; exact prior tail bytes confirmed byte-for-byte before appending; post-append prefix-integrity re-verified (old content is an exact prefix of the new file).
+- **Files affected:** .claude/hooks/guard.py (append_only_block addition), company/decisions/decisions-log.md (this entry, appended EOF-only per red line 6a).
